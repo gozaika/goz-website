@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Restaurant hero illustration v1">
+  <rect width="800" height="600" fill="#FFF8F0"/>
+  <rect x="0" y="320" width="800" height="280" fill="#1A5C38"/>
+  <rect x="90" y="220" width="620" height="170" rx="20" fill="#EAF3DE"/>
+  <rect x="120" y="250" width="190" height="110" rx="12" fill="#FFF8F0"/>
+  <rect x="330" y="250" width="190" height="110" rx="12" fill="#FFF8F0"/>
+  <rect x="540" y="250" width="140" height="110" rx="12" fill="#FFF8F0"/>
+  <path d="M150 310 L190 282 L232 300 L270 265" fill="none" stroke="#FF6B35" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <polygon points="268,246 296,270 261,279" fill="#FF6B35"/>
+  <rect x="560" y="272" width="88" height="70" rx="10" fill="#FF6B35"/>
+  <path d="M575 272 C575 252, 633 252, 633 272" fill="none" stroke="#1A5C38" stroke-width="6" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Browse icon v1">
+  <rect width="120" height="120" rx="24" fill="#FFF8F0"/>
+  <rect x="30" y="14" width="60" height="92" rx="12" fill="#1A5C38"/>
+  <rect x="35" y="24" width="50" height="62" rx="8" fill="#EAF3DE"/>
+  <rect x="40" y="30" width="40" height="12" rx="4" fill="#FF6B35"/>
+  <rect x="40" y="46" width="26" height="8" rx="4" fill="#1A5C38"/>
+  <rect x="40" y="58" width="32" height="8" rx="4" fill="#1A5C38"/>
+  <circle cx="74" cy="50" r="5" fill="#D4A017"/>
+  <path d="M74 56 L70 64 L78 64 Z" fill="#D4A017"/>
+  <circle cx="60" cy="94" r="4" fill="#FFF8F0"/>
+</svg>

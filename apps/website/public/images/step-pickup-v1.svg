@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Pickup icon v1">
+  <rect width="120" height="120" rx="24" fill="#FFF8F0"/>
+  <rect x="22" y="56" width="32" height="30" rx="6" fill="#1A5C38"/>
+  <rect x="26" y="60" width="24" height="18" rx="4" fill="#EAF3DE"/>
+  <path d="M38 84 C48 90, 64 90, 72 82" fill="none" stroke="#1A5C38" stroke-width="4" stroke-linecap="round"/>
+  <rect x="70" y="30" width="28" height="40" rx="6" fill="#1A5C38"/>
+  <rect x="74" y="36" width="20" height="24" rx="4" fill="#EAF3DE"/>
+  <path d="M77 41 H91 M77 46 H91 M77 51 H91 M77 56 H91" stroke="#1A5C38" stroke-width="1.5"/>
+  <rect x="50" y="48" width="34" height="38" rx="6" fill="#FF6B35"/>
+  <path d="M55 48 C55 40, 79 40, 79 48" fill="none" stroke="#1A5C38" stroke-width="3" stroke-linecap="round"/>
+</svg>

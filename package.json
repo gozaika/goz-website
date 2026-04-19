@@ -1,0 +1,23 @@
+{
+  "name": "@gozaika/monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm --workspace @gozaika/website run dev",
+    "build": "npm --workspace @gozaika/website run build",
+    "start": "npm --workspace @gozaika/website run start",
+    "lint": "npm --workspace @gozaika/website run lint",
+    "typecheck": "npm --workspace @gozaika/website run typecheck",
+    "test:e2e": "npm --workspace @gozaika/website run e2e",
+    "test:a11y": "npm --workspace @gozaika/website run a11y",
+    "test:lighthouse": "npm --workspace @gozaika/website run lhci",
+    "ci": "npm run lint && npm run typecheck && npm run build && npm run test:e2e && npm run test:a11y && npm run test:lighthouse"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}

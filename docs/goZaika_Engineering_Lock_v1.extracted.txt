@@ -1,0 +1,917 @@
+goZaika
+Engineering Lock  v1.0
+Routes · Security · Bot Mitigation · CI Pipeline · Release Gates
+Final authority document. Resolves all remaining open engineering items.
+RESOLVES
+1.  Complete canonical route matrix — one table, all fields, frozen
+2.  Rate limiting — full implementation with Supabase + Upstash, copyable code
+3.  Bot/spam mitigation — Cloudflare Turnstile decision + integration
+4.  CI pipeline — staged gates: lint/type/build → smoke e2e → a11y → perf
+5.  Release confidence checklist updated with automated gate statuses
+Part 1 — Canonical Route Matrix
+This is the single source of truth for all routes. All fields are explicit. One row per route. No ambiguity.
+Route
+Title (≤60 chars)
+Main Nav
+Footer
+Index?
+Canonical
+Redirect Sources
+robots / meta
+/
+goZaika — Discover. Pickup. Devour.
+No*
+No**
+YES
+https://gozaika.vercel.app/
+none
+index, follow
+/how-it-works
+How a BAM Bag Works | goZaika
+YES
+YES (Discover)
+YES
+…/how-it-works
+none
+index, follow
+/for-restaurants
+Partner With goZaika
+YES
+YES (Partners)
+YES
+…/for-restaurants
+/restaurants
+index, follow
+/about
+About goZaika
+YES
+YES (Company)
+YES
+…/about
+none
+index, follow
+/faq
+FAQ | goZaika
+YES
+YES (Discover)
+YES
+…/faq
+none
+index, follow
+/contact
+Contact goZaika
+No
+YES (Company)
+YES
+…/contact
+none
+index, follow
+/privacy-policy
+Privacy Policy | goZaika
+No
+YES (Legal)
+YES
+…/privacy-policy
+/privacy
+index, follow
+/terms-of-service
+Terms of Service | goZaika
+No
+YES (Legal)
+YES
+…/terms-of-service
+/terms
+index, follow
+/refund-policy
+Cancellation & Refund Policy
+No
+YES (Legal)
+YES
+…/refund-policy
+/refund, /cancellation-policy
+index, follow
+/food-safety-policy
+Food Safety Policy | goZaika
+No
+YES (Legal)
+YES
+…/food-safety-policy
+/food-safety
+index, follow
+/grievance-redressal
+Grievance Redressal | goZaika
+No
+YES (Legal)
+YES
+…/grievance-redressal
+/grievance
+index, follow
+/api/waitlist
+—
+No
+No
+NO
+—
+—
+noindex (API)
+/api/contact
+—
+No
+No
+NO
+—
+—
+noindex (API)
+/api/partner-interest
+—
+No
+No
+NO
+—
+—
+noindex (API)
+/api/og (Vercel)
+—
+No
+No
+NO
+—
+—
+noindex (auto)
+/sitemap.xml
+—
+No
+No
+NO
+—
+—
+noindex (auto)
+/robots.txt
+—
+No
+No
+NO
+—
+—
+served as text/plain
+RouteTitle (≤60 chars)Main NavFooterIndex?CanonicalRedirect Sourcesrobots / meta
+/goZaika — Discover. Pickup. Devour.No*No**YEShttps://gozaika.vercel.app/noneindex, follow
+/how-it-worksHow a BAM Bag Works | goZaikaYESYES (Discover)YES…/how-it-worksnoneindex, follow
+/for-restaurantsPartner With goZaikaYESYES (Partners)YES…/for-restaurants/restaurantsindex, follow
+/aboutAbout goZaikaYESYES (Company)YES…/aboutnoneindex, follow
+/faqFAQ | goZaikaYESYES (Discover)YES…/faqnoneindex, follow
+/contactContact goZaikaNoYES (Company)YES…/contactnoneindex, follow
+/privacy-policyPrivacy Policy | goZaikaNoYES (Legal)YES…/privacy-policy/privacyindex, follow
+/terms-of-serviceTerms of Service | goZaikaNoYES (Legal)YES…/terms-of-service/termsindex, follow
+/refund-policyCancellation & Refund PolicyNoYES (Legal)YES…/refund-policy/refund, /cancellation-policyindex, follow
+/food-safety-policyFood Safety Policy | goZaikaNoYES (Legal)YES…/food-safety-policy/food-safetyindex, follow
+/grievance-redressalGrievance Redressal | goZaikaNoYES (Legal)YES…/grievance-redressal/grievanceindex, follow
+/api/waitlist—NoNoNO——noindex (API)
+/api/contact—NoNoNO——noindex (API)
+/api/partner-interest—NoNoNO——noindex (API)
+/api/og (Vercel)—NoNoNO——noindex (auto)
+/sitemap.xml—NoNoNO——noindex (auto)
+/robots.txt—NoNoNO——served as text/plain
+ℹ  * Homepage: the goZaika logo in the nav serves as the 'home' link — no explicit 'Home' nav item needed.
+ℹ  ** Homepage is accessible from every page via the logo. No footer 'Home' link needed.
+ℹ  Canonical URLs: swap domain to gozaika.in when purchased. Update in next.config.ts: env.NEXT_PUBLIC_BASE_URL.
+1.1  robots.txt
+Create app/robots.ts — Next.js generates /robots.txt automatically:
+import { MetadataRoute } from 'next'
+export default function robots(): MetadataRoute.Robots {
+const base = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://gozaika.vercel.app'
+return {
+rules: [
+{
+userAgent: '*',
+allow: '/',
+disallow: ['/api/', '/_next/'],
+},
+],
+sitemap: `${base}/sitemap.xml`,
+}
+}
+1.2  Canonical Tag in Each Page
+Add to generateMetadata in every page. Use a helper:
+// lib/metadata.ts
+const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://gozaika.vercel.app'
+export function canonical(path: string) {
+return { alternates: { canonical: `${BASE}${path}` } }
+}
+// Usage in any page:
+export const metadata: Metadata = {
+...canonical('/for-restaurants'),
+title: 'Partner With goZaika',
+description: '...',
+}
+Part 2 — Rate Limiting: Full Implementation
+DECISION: Upstash Redis (free tier) for rate limiting
+Why not in-memory Map: Vercel runs serverless functions — each invocation is a fresh
+process. An in-memory Map resets on every cold start and is meaningless for rate limiting.
+Why Upstash: Redis-as-a-service. Free tier: 10,000 commands/day (~8K requests).
+Specifically designed for Vercel Edge + serverless. First-class Next.js support.
+Zero infrastructure. Works on free Vercel plan. Setup: 5 minutes.
+Rate limits applied: All three public API routes (/api/waitlist, /api/contact,
+/api/partner-interest). Limits: 5 requests per IP per 15 minutes per endpoint.
+DECISION: Upstash Redis (free tier) for rate limiting
+Why not in-memory Map: Vercel runs serverless functions — each invocation is a fresh
+process. An in-memory Map resets on every cold start and is meaningless for rate limiting.
+Why Upstash: Redis-as-a-service. Free tier: 10,000 commands/day (~8K requests).
+Specifically designed for Vercel Edge + serverless. First-class Next.js support.
+Zero infrastructure. Works on free Vercel plan. Setup: 5 minutes.
+Rate limits applied: All three public API routes (/api/waitlist, /api/contact,
+/api/partner-interest). Limits: 5 requests per IP per 15 minutes per endpoint.
+2.1  Upstash Setup
+Go to upstash.com → Create Database → free tier → region: AWS ap-south-1 (Mumbai)
+Copy: UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN
+Add to .env.local and Vercel environment variables
+Install: npm install @upstash/ratelimit @upstash/redis
+2.2  Rate Limiter Module
+Create lib/ratelimit.ts — one file, used by all API routes:
+// lib/ratelimit.ts
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
+import { NextRequest } from 'next/server'
+const redis = new Redis({
+url:   process.env.UPSTASH_REDIS_REST_URL!,
+token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+})
+// 5 requests per 15 minutes, sliding window
+const limiter = new Ratelimit({
+redis,
+limiter: Ratelimit.slidingWindow(5, '15 m'),
+analytics: true,   // visible in Upstash dashboard
+prefix: 'gozaika', // namespace keys in Redis
+})
+/**
+* Returns null if allowed, or a Response with 429 if blocked.
+* Usage:
+*   const block = await checkRateLimit(req, 'waitlist')
+*   if (block) return block
+*/
+export async function checkRateLimit(
+req: NextRequest,
+identifier: string
+): Promise<Response | null> {
+const ip =
+req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+req.headers.get('x-real-ip') ??
+'127.0.0.1'
+const key = `${identifier}:${ip}`
+const { success, limit, remaining, reset } = await limiter.limit(key)
+if (!success) {
+const retryAfter = Math.ceil((reset - Date.now()) / 1000)
+return new Response(
+JSON.stringify({
+ok: false,
+error: 'Too many requests. Please try again later.',
+}),
+{
+status: 429,
+headers: {
+'Content-Type': 'application/json',
+'X-RateLimit-Limit':     String(limit),
+'X-RateLimit-Remaining': String(remaining),
+'Retry-After':           String(retryAfter),
+},
+}
+)
+}
+return null
+}
+2.3  Integration into API Routes
+All three public API routes follow this exact pattern:
+// app/api/waitlist/route.ts
+import { NextRequest } from 'next/server'
+import { checkRateLimit } from '@/lib/ratelimit'
+import { supabase } from '@/lib/supabase'
+import { Resend } from 'resend'
+const resend = new Resend(process.env.RESEND_API_KEY)
+export async function POST(req: NextRequest) {
+// ① Rate limit check — must be first
+const block = await checkRateLimit(req, 'waitlist')
+if (block) return block
+// ② Parse + validate body
+let body: unknown
+try { body = await req.json() }
+catch { return Response.json({ ok: false, error: 'Invalid JSON' }, { status: 400 }) }
+const { name, email, city, role } = body as Record<string, string>
+if (!name?.trim() || !email?.trim() || !city?.trim() || !role?.trim())
+return Response.json({ ok: false, error: 'All fields required' }, { status: 400 })
+if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+return Response.json({ ok: false, error: 'Invalid email' }, { status: 400 })
+if (!['consumer', 'restaurant'].includes(role))
+return Response.json({ ok: false, error: 'Invalid role' }, { status: 400 })
+// ③ Persist to Supabase
+const { error: dbErr } = await supabase
+.from('waitlist_leads')
+.insert({ name: name.trim(), email: email.toLowerCase().trim(), city, role })
+if (dbErr && dbErr.code !== '23505')  // 23505 = unique violation (already on list)
+return Response.json({ ok: false, error: 'Database error' }, { status: 500 })
+// ④ Notify via Resend (non-blocking — fire and forget)
+void resend.emails.send({
+from: 'goZaika Waitlist <noreply@resend.dev>',
+to:   'waitlist@gozaika.in',
+subject: `Waitlist: ${name} (${city} · ${role})`,
+text:    `Name: ${name}\nEmail: ${email}\nCity: ${city}\nRole: ${role}`,
+})
+return Response.json({ ok: true })
+}
+2.4  Input Sanitisation
+All text fields are sanitised before DB insert. Add this to lib/sanitize.ts:
+// lib/sanitize.ts
+/**
+* Strip HTML tags and trim whitespace.
+* Use on ALL string inputs before DB insert.
+*/
+export function sanitize(value: unknown, maxLength = 500): string {
+if (typeof value !== 'string') return ''
+return value
+.replace(/<[^>]*>/g, '')  // strip HTML
+.replace(/[\u0000-\u001F]/g, '')  // strip control chars
+.trim()
+.slice(0, maxLength)
+}
+// Usage in API route:
+import { sanitize } from '@/lib/sanitize'
+const cleanName    = sanitize(name, 100)
+const cleanMessage = sanitize(message, 2000)
+2.5  Supabase Additional Hardening
+Add these constraints in Supabase SQL Editor to enforce data quality at DB level:
+-- Email format constraint
+ALTER TABLE waitlist_leads
+ADD CONSTRAINT email_format
+CHECK (email ~ '^[^\s@]+@[^\s@]+\.[^\s@]+$');
+-- Name length constraint
+ALTER TABLE waitlist_leads
+ADD CONSTRAINT name_length
+CHECK (char_length(name) BETWEEN 1 AND 100);
+-- Message length constraint
+ALTER TABLE contact_submissions
+ADD CONSTRAINT message_length
+CHECK (char_length(message) BETWEEN 10 AND 2000);
+-- Rate limiting on DB side (belt-and-suspenders):
+-- Max 5 inserts per email per hour in waitlist_leads
+-- (Handled at API layer — DB constraint is a backup, not primary)
+Part 3 — Bot & Spam Mitigation
+DECISION: Cloudflare Turnstile on all three public forms
+Why Turnstile over hCaptcha, reCAPTCHA v2, or reCAPTCHA v3:
+Turnstile:    Free (no tiers). Non-intrusive (no puzzle). GDPR/DPDP-safe (no
+fingerprinting). Works invisibly for humans. Blocks bots effectively.
+Native Cloudflare CDN integration — low latency for Indian users.
+Simple React integration: one component, one server-side verify call.
+hCaptcha:     Similar to Turnstile but shows puzzles — worse UX.
+reCAPTCHA v2: Puzzles, Google data collection — privacy concern for DPDP compliance.
+reCAPTCHA v3: Invisible but opaque scoring; sends user behaviour data to Google.
+For a premium-positioned Indian product: Turnstile is the right call.
+Cost: ₹0. Setup: 10 minutes.
+Why Turnstile over hCaptcha, reCAPTCHA v2, or reCAPTCHA v3:
+Turnstile:    Free (no tiers). Non-intrusive (no puzzle). GDPR/DPDP-safe (no
+fingerprinting). Works invisibly for humans. Blocks bots effectively.
+Native Cloudflare CDN integration — low latency for Indian users.
+Simple React integration: one component, one server-side verify call.
+hCaptcha:     Similar to Turnstile but shows puzzles — worse UX.
+reCAPTCHA v2: Puzzles, Google data collection — privacy concern for DPDP compliance.
+reCAPTCHA v3: Invisible but opaque scoring; sends user behaviour data to Google.
+For a premium-positioned Indian product: Turnstile is the right call.
+Cost: ₹0. Setup: 10 minutes.
+3.1  Turnstile Setup
+Go to dash.cloudflare.com → Turnstile → Add Site
+Name: goZaika Website. Domain: gozaika.vercel.app (update when domain ready)
+Widget type: Managed (invisible — shows challenge only when suspicious)
+Copy: Site Key (public) and Secret Key (server-only)
+Add to .env.local:
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAA...   # public — safe to expose
+TURNSTILE_SECRET_KEY=0x4AAAA...             # PRIVATE — never in client code
+Add TURNSTILE_SECRET_KEY to Vercel env vars (server-only — do NOT mark as public)
+Install: npm install @marsidev/react-turnstile
+3.2  Client-Side Turnstile Component
+Create components/ui/TurnstileWidget.tsx:
+// components/ui/TurnstileWidget.tsx
+'use client'
+import { Turnstile } from '@marsidev/react-turnstile'
+interface Props {
+onVerify: (token: string) => void
+onExpire?: () => void
+}
+export function TurnstileWidget({ onVerify, onExpire }: Props) {
+return (
+<Turnstile
+siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+onSuccess={onVerify}
+onExpire={onExpire}
+options={{ theme: 'light', size: 'invisible' }}
+/>
+)
+}
+3.3  Form Integration Pattern
+Every public form uses the same 3-step pattern:
+// In WaitlistForm.tsx (same pattern for all 3 forms)
+'use client'
+import { useState } from 'react'
+import { TurnstileWidget } from '@/components/ui/TurnstileWidget'
+export function WaitlistForm() {
+const [cfToken, setCfToken] = useState<string | null>(null)
+const [status, setStatus] = useState<'idle'|'loading'|'success'|'error'>('idle')
+const handleSubmit = async (e: React.FormEvent) => {
+e.preventDefault()
+if (!cfToken) return  // Turnstile not yet verified — do nothing
+setStatus('loading')
+const res = await fetch('/api/waitlist', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ name, email, city, role, cfToken }),
+})
+setStatus(res.ok ? 'success' : 'error')
+}
+return (
+<form onSubmit={handleSubmit}>
+{/* ... form fields ... */}
+<TurnstileWidget
+onVerify={(token) => setCfToken(token)}
+onExpire={() => setCfToken(null)}
+/>
+<button type='submit' disabled={!cfToken || status === 'loading'}>
+{status === 'loading' ? 'Joining...' : 'Join Waitlist'}
+</button>
+</form>
+)
+}
+3.4  Server-Side Token Verification
+Create lib/turnstile.ts:
+// lib/turnstile.ts
+export async function verifyTurnstile(token: string): Promise<boolean> {
+const res = await fetch(
+'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+{
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+secret:   process.env.TURNSTILE_SECRET_KEY,
+response: token,
+}),
+}
+)
+const data = await res.json() as { success: boolean }
+return data.success
+}
+Add to every API route immediately after rate limit check:
+// ① Rate limit
+const block = await checkRateLimit(req, 'waitlist')
+if (block) return block
+// ② Bot check
+const { cfToken, ...fields } = body as Record<string, string>
+if (!cfToken)
+return Response.json({ ok: false, error: 'Security check required' }, { status: 400 })
+const humanVerified = await verifyTurnstile(cfToken)
+if (!humanVerified)
+return Response.json({ ok: false, error: 'Security check failed' }, { status: 403 })
+// ③ Validate + sanitise + persist...
+3.5  Security Layers Summary
+Layer
+Mechanism
+Where
+Blocks
+1. Bot challenge
+Cloudflare Turnstile (invisible widget)
+Client form + API verify
+Automated bots, scrapers, form spam
+2. Rate limiting
+Upstash Redis sliding window (5 req/15 min)
+API route, first check
+Brute-force, credential stuffing
+3. Input validation
+Field-level type checks + regex
+API route, after rate limit
+Malformed data, injection attempts
+4. Sanitisation
+Strip HTML + control chars + max length
+lib/sanitize.ts
+XSS via stored content
+5. DB constraints
+CHECK constraints on email/length
+Supabase schema
+Data integrity backstop
+6. RLS policies
+Anonymous INSERT only, no SELECT
+Supabase RLS
+Data exfiltration via anon key
+7. HTTPS everywhere
+Vercel enforces HTTPS, HSTS
+Vercel config (automatic)
+MITM, eavesdropping
+8. Secret management
+Server-only env vars, never in bundle
+Vercel + .env.local
+Key exposure in client JS
+LayerMechanismWhereBlocks
+1. Bot challengeCloudflare Turnstile (invisible widget)Client form + API verifyAutomated bots, scrapers, form spam
+2. Rate limitingUpstash Redis sliding window (5 req/15 min)API route, first checkBrute-force, credential stuffing
+3. Input validationField-level type checks + regexAPI route, after rate limitMalformed data, injection attempts
+4. SanitisationStrip HTML + control chars + max lengthlib/sanitize.tsXSS via stored content
+5. DB constraintsCHECK constraints on email/lengthSupabase schemaData integrity backstop
+6. RLS policiesAnonymous INSERT only, no SELECTSupabase RLSData exfiltration via anon key
+7. HTTPS everywhereVercel enforces HTTPS, HSTSVercel config (automatic)MITM, eavesdropping
+8. Secret managementServer-only env vars, never in bundleVercel + .env.localKey exposure in client JS
+Part 4 — CI Pipeline with Quality Gates
+RECOMMENDATION: 4-stage pipeline. All stages run on every PR to main.
+Stage 1: Fast gates    — lint, typecheck, build        (~90s)   BLOCKING
+Stage 2: Smoke e2e     — Playwright: 5 critical paths  (~60s)   BLOCKING
+Stage 3: Accessibility — axe-core: 0 critical/serious  (~60s)   BLOCKING
+Stage 4: Performance   — Lighthouse CI: mobile ≥90     (~120s)  BLOCKING
+Total wall time: ~6 minutes. Every PR is safe to merge only if all 4 pass.
+Cost: GitHub Actions free tier = 2,000 minutes/month (more than enough).
+RECOMMENDATION: 4-stage pipeline. All stages run on every PR to main.
+Stage 1: Fast gates    — lint, typecheck, build        (~90s)   BLOCKING
+Stage 2: Smoke e2e     — Playwright: 5 critical paths  (~60s)   BLOCKING
+Stage 3: Accessibility — axe-core: 0 critical/serious  (~60s)   BLOCKING
+Stage 4: Performance   — Lighthouse CI: mobile ≥90     (~120s)  BLOCKING
+Total wall time: ~6 minutes. Every PR is safe to merge only if all 4 pass.
+Cost: GitHub Actions free tier = 2,000 minutes/month (more than enough).
+4.1  Full CI Workflow
+Create .github/workflows/ci.yml — paste this entire file:
+name: CI
+on:
+push:
+branches: [main, dev]
+pull_request:
+branches: [main, dev]
+env:
+NODE_VERSION: '20'
+jobs:
+# ─────────────────────────────────────
+# STAGE 1: lint / typecheck / build
+# ─────────────────────────────────────
+quality:
+name: Quality Gates
+runs-on: ubuntu-latest
+steps:
+- uses: actions/checkout@v4
+- uses: actions/setup-node@v4
+with:
+node-version: ${{ env.NODE_VERSION }}
+cache: npm
+- run: npm ci
+- run: npm run lint          # zero ESLint errors
+- run: npm run typecheck     # zero TypeScript errors
+- run: npm run build         # next build must succeed
+# ─────────────────────────────────────
+# STAGE 2: smoke e2e (Playwright)
+# ─────────────────────────────────────
+e2e:
+name: Smoke E2E
+runs-on: ubuntu-latest
+needs: quality          # only runs if Stage 1 passes
+steps:
+- uses: actions/checkout@v4
+- uses: actions/setup-node@v4
+with:
+node-version: ${{ env.NODE_VERSION }}
+cache: npm
+- run: npm ci
+- run: npx playwright install chromium --with-deps
+- run: npm run build
+- run: npm run e2e
+env:
+CI: true
+# ─────────────────────────────────────
+# STAGE 3: accessibility (axe + Playwright)
+# ─────────────────────────────────────
+accessibility:
+name: Accessibility Audit
+runs-on: ubuntu-latest
+needs: quality
+steps:
+- uses: actions/checkout@v4
+- uses: actions/setup-node@v4
+with:
+node-version: ${{ env.NODE_VERSION }}
+cache: npm
+- run: npm ci
+- run: npx playwright install chromium --with-deps
+- run: npm run build
+- run: npm run a11y
+# ─────────────────────────────────────
+# STAGE 4: performance (Lighthouse CI)
+# ─────────────────────────────────────
+performance:
+name: Performance Audit
+runs-on: ubuntu-latest
+needs: quality
+steps:
+- uses: actions/checkout@v4
+- uses: actions/setup-node@v4
+with:
+node-version: ${{ env.NODE_VERSION }}
+cache: npm
+- run: npm ci
+- run: npm run build
+- run: npx @lhci/cli@0.14.x autorun
+env:
+LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+4.2  Playwright Smoke E2E Tests
+Install: npm install -D @playwright/test
+Create tests/smoke.spec.ts:
+import { test, expect } from '@playwright/test'
+const BASE = 'http://localhost:3000'
+// ── Critical path 1: Homepage loads ──────────────────────
+test('homepage renders hero headline', async ({ page }) => {
+await page.goto(BASE)
+await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+await expect(page.title()).resolves.toContain('goZaika')
+})
+// ── Critical path 2: Navigation links work ───────────────
+test('main nav links are accessible', async ({ page }) => {
+await page.goto(BASE)
+for (const [label, path] of [
+['How It Works',    '/how-it-works'],
+['For Restaurants', '/for-restaurants'],
+['About',           '/about'],
+['FAQ',             '/faq'],
+]) {
+await page.goto(BASE)
+await page.getByRole('link', { name: label }).click()
+await expect(page).toHaveURL(BASE + path)
+await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+}
+})
+// ── Critical path 3: Redirects work ──────────────────────
+test('canonical redirects resolve', async ({ page }) => {
+const redirects = [
+['/privacy',      '/privacy-policy'],
+['/terms',        '/terms-of-service'],
+['/refund',       '/refund-policy'],
+['/food-safety',  '/food-safety-policy'],
+['/grievance',    '/grievance-redressal'],
+]
+for (const [from, to] of redirects) {
+const res = await page.goto(BASE + from)
+await expect(page).toHaveURL(BASE + to)
+expect(res?.status()).not.toBe(404)
+}
+})
+// ── Critical path 4: Contact form renders ─────────────────
+test('contact form is interactive', async ({ page }) => {
+await page.goto(BASE + '/contact')
+const nameInput = page.getByLabel('Name')
+await expect(nameInput).toBeVisible()
+await nameInput.fill('Test User')
+await expect(nameInput).toHaveValue('Test User')
+})
+// ── Critical path 5: 404 page exists ─────────────────────
+test('unknown routes show 404', async ({ page }) => {
+const res = await page.goto(BASE + '/this-page-does-not-exist-zz99')
+expect(res?.status()).toBe(404)
+})
+Add to package.json:
+"e2e": "playwright test tests/smoke.spec.ts --reporter=github"
+Create playwright.config.ts:
+import { defineConfig } from '@playwright/test'
+export default defineConfig({
+testDir: './tests',
+use: { baseURL: 'http://localhost:3000' },
+webServer: {
+command: 'npm run start',   // next start (after build)
+url: 'http://localhost:3000',
+reuseExistingServer: !process.env.CI,
+timeout: 60_000,
+},
+})
+4.3  Accessibility Automation (axe + Playwright)
+Install: npm install -D axe-playwright
+Create tests/a11y.spec.ts:
+import { test, expect } from '@playwright/test'
+import { checkA11y, injectAxe } from 'axe-playwright'
+const PAGES = [
+'/',
+'/how-it-works',
+'/for-restaurants',
+'/about',
+'/faq',
+'/contact',
+]
+for (const path of PAGES) {
+test(`a11y: ${path} has zero critical/serious violations`, async ({ page }) => {
+await page.goto(`http://localhost:3000${path}`)
+await injectAxe(page)
+await checkA11y(page, undefined, {
+detailedReport: true,
+detailedReportOptions: { html: true },
+runOptions: {
+// Only fail on critical and serious — warn on moderate/minor
+resultTypes: ['violations'],
+rules: {
+// Known acceptable: turnstile iframe may trigger 'frame-title'
+'frame-title': { enabled: false },
+},
+},
+})
+})
+}
+Add to package.json:
+"a11y": "playwright test tests/a11y.spec.ts --reporter=github"
+4.4  Lighthouse CI Configuration
+Install: npm install -D @lhci/cli
+Create lighthouserc.js in project root:
+module.exports = {
+ci: {
+collect: {
+startServerCommand: 'npm run start',
+url: [
+'http://localhost:3000/',
+'http://localhost:3000/how-it-works',
+'http://localhost:3000/for-restaurants',
+],
+numberOfRuns: 3,          // median of 3 runs for stability
+settings: {
+preset: 'desktop',      // also run mobile below
+emulatedFormFactor: 'mobile',
+throttlingMethod: 'simulate',
+screenEmulation: {
+mobile: true,
+width: 390,
+height: 844,
+deviceScaleFactor: 3,
+},
+},
+},
+assert: {
+assertions: {
+// ── HARD GATES — build fails if below ──────────────────
+'categories:performance':    ['error', { minScore: 0.90 }],
+'categories:accessibility':  ['error', { minScore: 0.95 }],
+'categories:best-practices': ['error', { minScore: 0.95 }],
+'categories:seo':            ['error', { minScore: 0.95 }],
+// ── CWV hard gates ──────────────────────────────────────
+'largest-contentful-paint':  ['error', { maxNumericValue: 2000 }],
+'cumulative-layout-shift':   ['error', { maxNumericValue: 0.05 }],
+'total-blocking-time':       ['error', { maxNumericValue: 200 }],
+// ── Bundle size gates ───────────────────────────────────
+'total-byte-weight':         ['error', { maxNumericValue: 512000 }],  // 500KB
+'unused-javascript':         ['warn',  { maxNumericValue: 50000 }],   // warn > 50KB
+// ── Best practice gates ─────────────────────────────────
+'uses-https':                ['error', {}],
+'uses-text-compression':     ['error', {}],
+'uses-responsive-images':    ['error', {}],
+'no-unload-listeners':       ['warn', {}],
+},
+},
+upload: {
+target: 'temporary-public-storage',  // free Lighthouse CI storage
+},
+},
+}
+Add to package.json:
+"lhci": "lhci autorun"
+4.5  Package.json Scripts (Complete Set)
+Full scripts block — paste into package.json:
+"scripts": {
+"dev":        "next dev",
+"build":      "next build",
+"start":      "next start",
+"lint":       "next lint",
+"typecheck":  "tsc --noEmit",
+"e2e":        "playwright test tests/smoke.spec.ts --reporter=github",
+"a11y":       "playwright test tests/a11y.spec.ts --reporter=github",
+"lhci":       "lhci autorun",
+"ci":         "npm run lint && npm run typecheck && npm run build",
+"analyze":    "ANALYZE=true next build"
+}
+4.6  CI Gate Summary Table
+Stage
+Check
+Pass Criteria
+Fail Behaviour
+Duration
+1
+ESLint
+Zero errors (warnings OK)
+PR blocked
+~20s
+1
+TypeScript strict
+Zero errors
+PR blocked
+~30s
+1
+next build
+Clean build, no errors
+PR blocked
+~45s
+2
+Smoke E2E (5 tests)
+All 5 pass: homepage, nav, redirects, form, 404
+PR blocked
+~60s
+3
+axe a11y (6 pages)
+Zero critical/serious WCAG violations
+PR blocked
+~60s
+4
+Lighthouse mobile (3 pages)
+Perf ≥90, A11y ≥95, SEO ≥95, BP ≥95
+PR blocked
+~2min
+4
+CWV — LCP
+< 2000ms
+PR blocked
+within Stage 4
+4
+CWV — CLS
+< 0.05
+PR blocked
+within Stage 4
+4
+CWV — TBT
+< 200ms
+PR blocked
+within Stage 4
+4
+Bundle size
+< 500KB total page weight
+PR blocked
+within Stage 4
+StageCheckPass CriteriaFail BehaviourDuration
+1ESLintZero errors (warnings OK)PR blocked~20s
+1TypeScript strictZero errorsPR blocked~30s
+1next buildClean build, no errorsPR blocked~45s
+2Smoke E2E (5 tests)All 5 pass: homepage, nav, redirects, form, 404PR blocked~60s
+3axe a11y (6 pages)Zero critical/serious WCAG violationsPR blocked~60s
+4Lighthouse mobile (3 pages)Perf ≥90, A11y ≥95, SEO ≥95, BP ≥95PR blocked~2min
+4CWV — LCP< 2000msPR blockedwithin Stage 4
+4CWV — CLS< 0.05PR blockedwithin Stage 4
+4CWV — TBT< 200msPR blockedwithin Stage 4
+4Bundle size< 500KB total page weightPR blockedwithin Stage 4
+ℹ  Total CI time: ~5-6 minutes. Stages 2/3/4 run in parallel after Stage 1 passes, so wall time is max(Stage2, Stage3, Stage4) + Stage1 ≈ 4 minutes.
+ℹ  First-run setup: npm install adds ~30s. GitHub Actions caches node_modules between runs via 'cache: npm' — subsequent runs are faster.
+Appendix — Environment Variables Master List
+Complete list of all environment variables. All must be set in both .env.local (dev) and Vercel dashboard (production).
+Variable
+Scope
+Required
+Source
+Notes
+NEXT_PUBLIC_BASE_URL
+Client + Server
+Yes
+Manual
+https://gozaika.vercel.app (update on domain purchase)
+NEXT_PUBLIC_GA_ID
+Client + Server
+Yes
+Google Analytics
+Format: G-XXXXXXXXXX
+NEXT_PUBLIC_SUPABASE_URL
+Client + Server
+Yes
+Supabase dashboard
+Safe to expose — paired with anon key
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+Client + Server
+Yes
+Supabase dashboard
+Safe to expose — RLS restricts access
+NEXT_PUBLIC_TURNSTILE_SITE_KEY
+Client + Server
+Yes
+Cloudflare Turnstile
+Safe to expose — public widget key
+RESEND_API_KEY
+Server only
+Yes
+Resend dashboard
+Never expose to client
+UPSTASH_REDIS_REST_URL
+Server only
+Yes
+Upstash dashboard
+Never expose to client
+UPSTASH_REDIS_REST_TOKEN
+Server only
+Yes
+Upstash dashboard
+Never expose to client
+TURNSTILE_SECRET_KEY
+Server only
+Yes
+Cloudflare Turnstile
+Never expose to client
+LHCI_GITHUB_APP_TOKEN
+CI only (GitHub Secret)
+Yes for Stage 4
+Lighthouse CI GitHub App
+Used for Lighthouse CI PR status comments
+VariableScopeRequiredSourceNotes
+NEXT_PUBLIC_BASE_URLClient + ServerYesManualhttps://gozaika.vercel.app (update on domain purchase)
+NEXT_PUBLIC_GA_IDClient + ServerYesGoogle AnalyticsFormat: G-XXXXXXXXXX
+NEXT_PUBLIC_SUPABASE_URLClient + ServerYesSupabase dashboardSafe to expose — paired with anon key
+NEXT_PUBLIC_SUPABASE_ANON_KEYClient + ServerYesSupabase dashboardSafe to expose — RLS restricts access
+NEXT_PUBLIC_TURNSTILE_SITE_KEYClient + ServerYesCloudflare TurnstileSafe to expose — public widget key
+RESEND_API_KEYServer onlyYesResend dashboardNever expose to client
+UPSTASH_REDIS_REST_URLServer onlyYesUpstash dashboardNever expose to client
+UPSTASH_REDIS_REST_TOKENServer onlyYesUpstash dashboardNever expose to client
+TURNSTILE_SECRET_KEYServer onlyYesCloudflare TurnstileNever expose to client
+LHCI_GITHUB_APP_TOKENCI only (GitHub Secret)Yes for Stage 4Lighthouse CI GitHub AppUsed for Lighthouse CI PR status comments
+goZaika Engineering Lock v1.0  ·  All open engineering items resolved

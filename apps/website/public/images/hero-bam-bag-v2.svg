@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img" aria-label="Hero BAM Bag illustration v2">
+  <rect width="600" height="600" fill="#FFF8F0"/>
+  <path d="M80 350 C160 250, 260 230, 350 260 C430 287, 500 350, 520 430 L80 430 Z" fill="#EAF3DE"/>
+  <rect x="200" y="170" width="210" height="260" rx="22" fill="#FF6B35"/>
+  <path d="M236 170 C236 120, 374 120, 374 170" fill="none" stroke="#1A5C38" stroke-width="18" stroke-linecap="round"/>
+  <rect x="250" y="232" width="110" height="110" rx="16" fill="#FFF8F0"/>
+  <path d="M305 245 C324 230, 344 241, 348 262 C352 280, 340 298, 321 304 C316 288, 304 281, 291 284 C283 269, 288 251, 305 245Z" fill="#1A5C38"/>
+  <circle cx="166" cy="214" r="20" fill="#D4A017"/>
+  <circle cx="438" cy="214" r="20" fill="#1A5C38"/>
+  <circle cx="467" cy="265" r="12" fill="#D4A017"/>
+</svg>

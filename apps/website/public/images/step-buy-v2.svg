@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Buy icon v2">
+  <rect width="120" height="120" rx="24" fill="#EAF3DE"/>
+  <rect x="18" y="20" width="84" height="78" rx="12" fill="#1A5C38"/>
+  <rect x="26" y="28" width="68" height="44" rx="8" fill="#FFF8F0"/>
+  <rect x="32" y="34" width="56" height="8" rx="4" fill="#FF6B35"/>
+  <rect x="32" y="46" width="40" height="6" rx="3" fill="#1A5C38"/>
+  <rect x="32" y="56" width="30" height="6" rx="3" fill="#1A5C38"/>
+  <circle cx="84" cy="82" r="14" fill="#FF6B35"/>
+  <path d="M78 82 L83 87 L92 76" fill="none" stroke="#FFF8F0" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

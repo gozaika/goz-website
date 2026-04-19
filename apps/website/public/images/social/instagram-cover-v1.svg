@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080" role="img" aria-label="Instagram cover v1">
+  <rect width="1080" height="1080" fill="#1A5C38"/>
+  <rect x="100" y="740" width="880" height="170" rx="24" fill="#FF6B35"/>
+  <text x="130" y="500" fill="#FFF8F0" font-size="122" font-family="Poppins, Arial, sans-serif" font-weight="700">goZaika</text>
+  <text x="130" y="630" fill="#EAF3DE" font-size="64" font-family="Poppins, Arial, sans-serif" font-weight="500">Coming to Hyderabad soon</text>
+  <text x="130" y="820" fill="#1A5C38" font-size="46" font-family="Poppins, Arial, sans-serif" font-weight="600">Discover. Pickup. Devour.</text>
+</svg>

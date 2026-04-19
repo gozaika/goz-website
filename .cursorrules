@@ -1,0 +1,513 @@
+# goZaika — Cursor Rules
+# Stack: Next.js 14 App Router · TypeScript strict · Tailwind CSS · Supabase · Upstash Redis · Resend
+# These rules apply to every file in every workspace in this monorepo.
+# Last updated: 2025 · Version: 1.0
+
+# ════════════════════════════════════════════════════════════════════
+# 0. PROJECT CONTEXT
+# ════════════════════════════════════════════════════════════════════
+
+You are building goZaika — India's first premium-access mystery meal drop platform.
+Three apps share this monorepo:
+  apps/web          — marketing website (Next.js, static-first, public)
+  apps/customer     — consumer app (Next.js, auth required, high concurrency)
+  apps/restaurant   — restaurant partner app (Next.js, auth required, low concurrency)
+  packages/ui       — shared component library
+  packages/db       — Supabase client, types, queries
+  packages/config   — shared eslint, tsconfig, tailwind preset
+
+Brand constants (use these exact values — never hardcode elsewhere):
+  Primary orange:  #FF6B35  (Saffron Flame)
+  Primary green:   #1A5C38  (Forest Deep)
+  Accent gold:     #D4A017  (Heritage Gold)
+  Background:      #FFF8F0  (Warm Cream)
+  Font display:    Playfair Display
+  Font sans:       Poppins
+
+Banned words in all copy and UI strings:
+  leftover, stale, cheap, bargain, clearance, discount meal,
+  food rescue, rescue app, liquidation, surplus food (marketing only),
+  surprise box, mystery box, grab bag, last-minute deal, food waste (marketing only)
+
+# ════════════════════════════════════════════════════════════════════
+# 1. TYPESCRIPT
+# ════════════════════════════════════════════════════════════════════
+
+ALWAYS use TypeScript. Never use JavaScript files (.js / .jsx) except config files
+that explicitly require it (e.g. next.config.js, postcss.config.js).
+
+Use strict mode. tsconfig.json must include:
+  "strict": true,
+  "noUncheckedIndexedAccess": true,
+  "noImplicitOverride": true
+
+Type annotations:
+- ALWAYS annotate function parameters and return types explicitly.
+- NEVER use `any`. Use `unknown` + type narrowing instead.
+- NEVER use type assertions (`as Type`) unless absolutely unavoidable.
+  When you must, add a comment explaining why.
+- Prefer `interface` over `type` for object shapes that may be extended.
+- Use `type` for unions, intersections, and utility types.
+- Export types from the file that owns them. Re-export from index files.
+
+Bad:  const handler = async (req: any) => { ... }
+Good: const handler = async (req: NextRequest): Promise<Response> => { ... }
+
+Bad:  const data = result as UserData
+Good: if (!isUserData(result)) throw new Error('...'); const data = result;
+
+Naming:
+- Types and interfaces: PascalCase (User, WaitlistLead, BagListing)
+- Enums: PascalCase with PascalCase members (BagStatus.Available)
+- Constants: SCREAMING_SNAKE_CASE for module-level, camelCase for function-scope
+- Generic parameters: T, TData, TError, TInput — single letter for simple, descriptive for complex
+
+Null handling:
+- NEVER use non-null assertion (!) except in tests or when value is guaranteed by framework.
+  When you use !, add a comment: // safe: guaranteed by Supabase RLS policy
+- Use optional chaining (?.) and nullish coalescing (??) freely.
+- Prefer early returns over deep nesting for null checks.
+
+# ════════════════════════════════════════════════════════════════════
+# 2. NEXT.JS APP ROUTER
+# ════════════════════════════════════════════════════════════════════
+
+File conventions:
+  app/page.tsx          — page component (server component by default)
+  app/layout.tsx        — layout (server component, persistent across route)
+  app/loading.tsx       — Suspense fallback UI
+  app/error.tsx         — error boundary UI (must be 'use client')
+  app/not-found.tsx     — 404 UI
+  app/[route]/page.tsx  — dynamic route
+
+Server vs Client components:
+- DEFAULT to Server Components. Add 'use client' only when required.
+- Required for 'use client': useState, useEffect, event handlers, browser APIs,
+  third-party client libs (Framer Motion, Turnstile widget).
+- NEVER fetch data in a Client Component if it can be done in a Server Component above it.
+- Push 'use client' as far down the tree as possible (leaf components).
+
+Bad pattern — 'use client' at page level:
+  'use client'
+  export default function Page() {
+    const [data, setData] = useState([])
+    useEffect(() => { fetch('/api/...') }, [])  // ← fetch in client
+  }
+
+Good pattern — server fetches, client handles interaction:
+  // app/faq/page.tsx — Server Component
+  export default async function FAQPage() {
+    const faqs = await getFaqs()  // server-side DB query
+    return <FAQList faqs={faqs} />  // FAQList is 'use client' for accordion
+  }
+
+Data fetching:
+- Use React Server Components with direct Supabase queries (packages/db) for page data.
+- Use fetch() with Next.js caching for external APIs.
+- Never use getServerSideProps or getStaticProps (App Router does not use these).
+- Use React Suspense + loading.tsx for streaming large data sets.
+
+Route handlers (app/api/*/route.ts):
+- ALWAYS use NextRequest (not Request) as parameter type.
+- ALWAYS run security checks in this order: rate-limit → bot-check → validate → sanitise → persist.
+- ALWAYS return typed responses using Response.json().
+- NEVER throw unhandled errors — wrap in try/catch and return { ok: false, error: string }.
+- Export only the HTTP methods the route supports (GET, POST, etc.).
+
+Example API route structure:
+  export async function POST(req: NextRequest): Promise<Response> {
+    // 1. Rate limit
+    const block = await checkRateLimit(req, 'endpoint-name')
+    if (block) return block
+
+    // 2. Bot check
+    const body = await req.json().catch(() => null)
+    if (!body) return Response.json({ ok: false, error: 'Invalid JSON' }, { status: 400 })
+    const verified = await verifyTurnstile(body.cfToken)
+    if (!verified) return Response.json({ ok: false, error: 'Security check failed' }, { status: 403 })
+
+    // 3. Validate
+    // 4. Sanitise
+    // 5. Persist
+    // 6. Side effects (email, etc.)
+
+    return Response.json({ ok: true })
+  }
+
+Metadata:
+- Every page.tsx MUST export metadata or generateMetadata.
+- ALWAYS include: title, description, canonical (via canonical() helper), openGraph.
+- title format: 'Page Name | goZaika' (inner pages) or full brand sentence (homepage).
+
+# ════════════════════════════════════════════════════════════════════
+# 3. REACT COMPONENTS
+# ════════════════════════════════════════════════════════════════════
+
+Structure — every component file follows this order:
+  1. Imports (external → internal → types — each group alphabetically sorted)
+  2. Types/interfaces local to this file
+  3. Constants local to this file
+  4. Component function
+  5. Sub-components (if small enough to co-locate)
+  6. Default export
+
+Component rules:
+- ONE component per file. Exception: small sub-components (<30 lines) used only by the parent.
+- File name matches component name exactly: UserCard.tsx exports UserCard.
+- Use named exports for components, not default exports.
+  Exception: page.tsx, layout.tsx, loading.tsx, error.tsx must use default exports (Next.js requirement).
+- Props interface name: ComponentNameProps (e.g. WaitlistFormProps).
+- Destructure props in the function signature.
+- Use explicit return type for all components: React.ReactElement | null.
+
+Event handlers:
+- Name pattern: handle[Action] for internal, on[Action] for props.
+  Internal: handleSubmit, handleClick, handleChange
+  Props:    onClick, onSuccess, onError, onChange
+- NEVER use anonymous arrow functions as event handlers in JSX — extract to named handlers.
+
+Bad:  <button onClick={() => setOpen(true)}>Open</button>
+Good: const handleOpen = () => setOpen(true)
+      <button onClick={handleOpen}>Open</button>
+
+Accessibility (mandatory on every interactive element):
+- All images: alt attribute. Decorative images: alt="" role="presentation".
+- All form inputs: <label> with htmlFor matching input id. Never placeholder-only.
+- All buttons: visible label or aria-label.
+- All icon-only buttons: aria-label describing the action.
+- Interactive elements that are not <button> or <a>: add role, tabIndex={0}, and keyboard handler.
+- Loading states: aria-busy="true" on the container.
+- Error states: aria-describedby pointing to error message id.
+
+# ════════════════════════════════════════════════════════════════════
+# 4. TAILWIND CSS
+# ════════════════════════════════════════════════════════════════════
+
+ALWAYS use Tailwind utility classes. NEVER write custom CSS except in globals.css for:
+  - CSS custom properties (variables)
+  - Font-face declarations
+  - Third-party overrides that cannot be done with Tailwind
+
+Brand colour usage — ALWAYS use the token class, NEVER the hex value:
+  bg-saffron         not bg-[#FF6B35]
+  text-forest        not text-[#1A5C38]
+  border-saffron     not border-[#FF6B35]
+
+Class ordering — follow this sequence (use Prettier Tailwind plugin to auto-sort):
+  1. Layout (display, position, float)
+  2. Spacing (margin, padding)
+  3. Sizing (width, height)
+  4. Typography (font, text, leading, tracking)
+  5. Visual (bg, border, shadow, opacity)
+  6. Interactive (cursor, pointer-events, select)
+  7. Responsive modifiers (sm: md: lg: xl:)
+  8. State modifiers (hover: focus: active: disabled:)
+  9. Dark mode (dark:)
+  10. Aria/data variants (aria-: data-:)
+
+Responsive — always mobile-first:
+  Base class:   mobile (< 640px)
+  sm:           640px+
+  md:           768px+
+  lg:           1024px+
+  xl:           1280px+
+
+Never use arbitrary values ([...]) for colours or spacing that exist as design tokens.
+Arbitrary values are acceptable ONLY for one-off layout values with no token equivalent.
+
+clsx/cn pattern — use for conditional classes:
+  import { cn } from '@/lib/utils'
+  <div className={cn('base-classes', isActive && 'active-classes', className)} />
+
+# ════════════════════════════════════════════════════════════════════
+# 5. SUPABASE PATTERNS
+# ════════════════════════════════════════════════════════════════════
+
+Client singleton — ALWAYS import from packages/db, never create inline:
+  import { supabase } from '@gozaika/db'     // client-side / RSC
+  import { supabaseAdmin } from '@gozaika/db' // server-only, service role
+
+Never use supabaseAdmin in client components or API routes accessible without admin auth.
+
+Query patterns:
+- ALWAYS handle both data and error from Supabase responses:
+  const { data, error } = await supabase.from('table').select()
+  if (error) throw new Error(`DB error: ${error.message}`)
+
+- ALWAYS use .select() with explicit column list, not '*':
+  Good: .select('id, name, email, created_at')
+  Bad:  .select('*')  // over-fetches, leaks columns
+
+- ALWAYS add .limit() to list queries. Default maximum: 100.
+
+- For auth-dependent queries, ALWAYS pass the user's JWT:
+  const { data: { user } } = await supabase.auth.getUser()
+  // RLS handles access — do not manually filter by user_id in app code
+
+Type generation:
+- Run 'supabase gen types typescript' after schema changes.
+- Import generated types from packages/db/types.ts — never re-declare table shapes manually.
+
+Real-time:
+- Use Supabase Realtime for bag availability updates only.
+- ALWAYS unsubscribe in useEffect cleanup.
+- Name channels descriptively: 'bag-availability:hyderabad', not 'channel-1'.
+
+# ════════════════════════════════════════════════════════════════════
+# 6. SECURITY
+# ════════════════════════════════════════════════════════════════════
+
+Environment variables:
+- NEXT_PUBLIC_ prefix: safe to expose to client bundle. Verified safe before adding.
+- No prefix: server-only. NEVER reference in 'use client' components.
+- NEVER commit .env.local to git (it's in .gitignore — verify this).
+- ALWAYS document every env var in .env.example with a description and format example.
+
+Input handling:
+- ALWAYS sanitise user input using lib/sanitize.ts before DB insert.
+- ALWAYS validate on the server, regardless of client-side validation.
+- NEVER trust req.body types — always validate with Zod or manual type guards.
+- Maximum field lengths MUST be enforced in: (1) HTML maxLength, (2) API validation, (3) DB constraint.
+
+API security checklist for every public route:
+  ✓ Rate limit (checkRateLimit from lib/ratelimit.ts)
+  ✓ Bot check (verifyTurnstile from lib/turnstile.ts)
+  ✓ Input validation (required fields, type checks, format checks)
+  ✓ Input sanitisation (sanitize() from lib/sanitize.ts)
+  ✓ Error responses never leak internal details (no stack traces, no SQL errors)
+
+Secrets:
+- NEVER log secrets, tokens, or PII to console in production.
+- Use process.env.NODE_ENV === 'development' guard for debug logging.
+- NEVER store passwords, API keys, or tokens in Supabase as plaintext.
+
+# ════════════════════════════════════════════════════════════════════
+# 7. ERROR HANDLING
+# ════════════════════════════════════════════════════════════════════
+
+Server-side errors:
+- ALWAYS use try/catch in async functions that interact with DB or external APIs.
+- Log errors with context (which function, which operation) not just the message.
+- Return user-friendly error messages. Log the technical details server-side.
+- Distinguish between expected errors (validation, duplicate email) and unexpected errors (DB down).
+
+Client-side errors:
+- ALWAYS implement error, loading, and success states for every async operation.
+- Show user-facing error messages in plain language. Never show raw API errors to users.
+- Use React Error Boundaries at route level (app/error.tsx).
+
+Error state naming convention:
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+# ════════════════════════════════════════════════════════════════════
+# 8. PERFORMANCE
+# ════════════════════════════════════════════════════════════════════
+
+Images:
+- ALWAYS use next/image for all images. Never <img> tags.
+- ALWAYS provide explicit width and height to prevent CLS.
+- ALWAYS provide descriptive alt text.
+- Use priority={true} ONLY for above-the-fold images (hero, LCP candidate).
+- Format: WebP preferred. Use sizes prop for responsive images.
+
+Fonts:
+- ALWAYS load fonts via next/font/google in app/layout.tsx.
+- NEVER use @import in CSS for fonts (blocks rendering).
+- Maximum 2 font families: Poppins + Playfair Display. No additions without explicit decision.
+
+JavaScript:
+- NEVER import entire libraries when you need one function:
+  Bad:  import _ from 'lodash'
+  Good: import debounce from 'lodash/debounce'
+- Use dynamic imports for components not needed on initial render:
+  const HeavyChart = dynamic(() => import('@/components/HeavyChart'), { ssr: false })
+- Framer Motion: import from 'framer-motion/motion' (tree-shakeable), not 'framer-motion'.
+
+Animation rules (non-negotiable):
+- Maximum duration: 400ms for any single animation.
+- ALWAYS implement useReducedMotion and skip animations when active.
+- NEVER use parallax effects.
+- ONLY scroll-triggered entrances (not auto-play loops for marketing sections).
+- On mobile (< 768px): use opacity-only animations (skip translate/scale for perf).
+
+# ════════════════════════════════════════════════════════════════════
+# 9. CODE DOCUMENTATION
+# ════════════════════════════════════════════════════════════════════
+
+JSDoc requirements:
+- ALL exported functions: JSDoc with @param, @returns, @throws (if applicable).
+- ALL exported types and interfaces: JSDoc description.
+- Complex logic: inline comments explaining WHY, not WHAT.
+- Supabase queries that use non-obvious filters: comment explaining the business rule.
+
+JSDoc format:
+  /**
+   * Verifies a Cloudflare Turnstile token server-side.
+   * Must be called in API routes before processing any form submission.
+   *
+   * @param token - The cf-turnstile-response token from the client widget
+   * @returns true if the token is valid and the request is from a human
+   * @throws Never — returns false on network errors to fail open gracefully
+   */
+  export async function verifyTurnstile(token: string): Promise<boolean>
+
+TODO format — always include owner and ticket/issue reference:
+  // TODO(@founder): Replace with real restaurant data from DB — issue #42
+  // FIXME(@founder): Race condition in concurrent bag claims — investigate before launch
+  // HACK: Turnstile iframe triggers axe frame-title warning — disabled in a11y test
+
+File header comments — required for all files in lib/ and packages/:
+  /**
+   * @file lib/ratelimit.ts
+   * @description Upstash Redis sliding-window rate limiter for public API routes.
+   *              5 requests per 15 minutes per IP per endpoint.
+   * @see https://upstash.com/docs/redis/sdks/ratelimit/overview
+   */
+
+# ════════════════════════════════════════════════════════════════════
+# 10. FILE AND FOLDER NAMING
+# ════════════════════════════════════════════════════════════════════
+
+Files:
+  Components:     PascalCase.tsx          (WaitlistForm.tsx)
+  Hooks:          camelCase.ts, use prefix (useWaitlistForm.ts)
+  Utils/lib:      camelCase.ts            (ratelimit.ts, sanitize.ts)
+  API routes:     route.ts                (app/api/waitlist/route.ts)
+  Types:          camelCase.types.ts      (waitlist.types.ts)
+  Tests:          ComponentName.test.tsx  (WaitlistForm.test.tsx)
+  E2E tests:      description.spec.ts     (smoke.spec.ts)
+  Constants:      camelCase.ts or UPPER_FILE.ts for large const modules
+
+Folders:
+  app/            Next.js App Router pages
+  components/
+    layout/       Header, Footer, Nav
+    sections/     Full-page sections (HeroSection, HowItWorks)
+    ui/           Primitive components (Button, Card, Input)
+    forms/        Form components (WaitlistForm, ContactForm)
+  lib/            Utility modules (ratelimit, sanitize, analytics, turnstile)
+  hooks/          Custom React hooks
+  types/          Shared TypeScript types
+  public/
+    images/       Page images (WebP/PNG)
+    logos/        Brand SVG files only
+    fonts/        Self-hosted fonts only (prefer next/font)
+
+# ════════════════════════════════════════════════════════════════════
+# 11. IMPORT ORGANISATION
+# ════════════════════════════════════════════════════════════════════
+
+Import order (enforced by ESLint import/order rule):
+  1. React (always first if needed: import React from 'react')
+  2. Next.js (next/*, next/navigation, next/image, etc.)
+  3. External packages (alphabetical)
+  4. Internal packages (@gozaika/ui, @gozaika/db, @gozaika/config)
+  5. App-internal absolute (@/components/*, @/lib/*, @/hooks/*)
+  6. Relative imports (./Component, ../lib/utils)
+  7. Type-only imports (import type { ... })
+
+Blank line between each group.
+
+Bad:
+  import { useState } from 'react'
+  import Header from './Header'
+  import { supabase } from '@gozaika/db'
+  import { Button } from '@/components/ui/Button'
+
+Good:
+  import { useState } from 'react'
+
+  import { supabase } from '@gozaika/db'
+
+  import { Button } from '@/components/ui/Button'
+  import { cn } from '@/lib/utils'
+
+  import { Header } from './Header'
+
+# ════════════════════════════════════════════════════════════════════
+# 12. TESTING
+# ════════════════════════════════════════════════════════════════════
+
+Test file co-location:
+  components/ui/Button.tsx
+  components/ui/Button.test.tsx  ← co-located, same folder
+
+E2E tests:
+  tests/smoke.spec.ts   ← critical user paths
+  tests/a11y.spec.ts    ← accessibility automation
+
+Unit test conventions:
+- Describe block: component or function name.
+- It blocks: behaviour description in plain English ('renders error state when API fails').
+- NEVER test implementation details — test behaviour from user perspective.
+- Mock Supabase and external APIs using MSW (Mock Service Worker).
+- Every form component must have tests for: renders, fills, submits, success state, error state.
+
+Coverage targets (enforced in CI on packages/ui and packages/db):
+  Statements: ≥ 80%
+  Branches:   ≥ 75%
+  Functions:  ≥ 80%
+
+# ════════════════════════════════════════════════════════════════════
+# 13. GIT AND COMMIT HYGIENE
+# ════════════════════════════════════════════════════════════════════
+
+Conventional commits (enforced via commitlint):
+  feat:     new feature
+  fix:      bug fix
+  style:    formatting, no logic change
+  refactor: restructure, no behaviour change
+  test:     add or update tests
+  docs:     documentation only
+  chore:    build, deps, config
+  perf:     performance improvement
+  a11y:     accessibility improvement
+  security: security fix (rate limit, validation, etc.)
+
+Scope (optional but encouraged):
+  feat(web/hero): add email capture form with Turnstile
+  fix(api/waitlist): handle duplicate email gracefully
+
+Branch naming:
+  feature/section-or-component-name
+  fix/issue-description
+  chore/dependency-or-config-name
+
+NEVER commit directly to main. All changes via PR with passing CI.
+
+# ════════════════════════════════════════════════════════════════════
+# 14. WHAT TO ALWAYS DO WHEN GENERATING CODE
+# ════════════════════════════════════════════════════════════════════
+
+1. Read the existing code in the file before modifying — do not overwrite working code.
+2. Maintain existing patterns in the file — do not introduce a different pattern than what's there.
+3. Add JSDoc to every new exported function and type.
+4. Add aria attributes to every new interactive element.
+5. Handle loading, error, and empty states for every async operation.
+6. Use brand tokens (bg-saffron, text-forest) never hex values.
+7. Make every new component mobile-first and test at 390px width mentally.
+8. Run the security checklist for every new API route.
+9. Add a file header comment to every new file in lib/ or packages/.
+10. Check: does this code follow the same pattern as adjacent files? If not, explain why.
+
+# ════════════════════════════════════════════════════════════════════
+# 15. WHAT TO NEVER DO
+# ════════════════════════════════════════════════════════════════════
+
+- NEVER use `any` type.
+- NEVER use non-null assertion `!` without a justifying comment.
+- NEVER write inline styles (style={{ }}). Use Tailwind or cn().
+- NEVER hardcode brand colours as hex values in className or style.
+- NEVER fetch data in a Client Component when a Server Component can do it.
+- NEVER import entire packages when tree-shakeable imports exist.
+- NEVER skip error handling in async functions.
+- NEVER add console.log without wrapping in a dev-only guard.
+- NEVER commit secrets, .env files, or API keys.
+- NEVER use banned goZaika vocabulary (leftover, stale, cheap, discount meal, etc.).
+- NEVER add parallax animations.
+- NEVER use animations longer than 400ms.
+- NEVER add a new npm package without checking: bundle size impact, maintenance status, licence.
+- NEVER create a new component without checking if it already exists in packages/ui.
+- NEVER bypass CI checks — fix the root cause, do not disable the rule.
+

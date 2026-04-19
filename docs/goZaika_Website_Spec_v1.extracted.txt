@@ -1,0 +1,650 @@
+goZaika
+Website Specification v1.0
+Next.js · React · Tailwind CSS · Vercel
+Static Launch Edition — Phase 1
+India’s first premium-access mystery meal drop platform
+confidential · pre-launch · founder document
+Section I — SVG Logo Analysis
+Both uploaded SVG files are clean vector assets with zero raster content embedded. They are production-ready subject to two colour corrections.
+1.1  flame.svg — App Icon / BAM Bag Mark
+A 512×512 SVG with viewBox cropped to the flame region (88 64 320 320). The flame silhouette is the tabler-icons open path, filled with orange. A mask cuts the text “BAM” as negative space through the flame body.
+Strengths
+Fully clean vector — no embedded rasters
+BAM text cut as mask is clever at 512px+ (icon scale)
+Flame shape is crisp and scalable to any size
+Mask technique means BAM is invisible at small sizes (subtle)
+Issues to Fix
+Colour #EF8400 (amber) ≠ brand spec #FF6B35 (coral-orange)
+Open path fill is not Z-closed — works but is non-standard
+BAM stroke paths use Q curves not a real font — acceptable
+No background rectangle for app store square format
+1.2  gozaika.svg — Horizontal Wordmark
+A 600×153px horizontal wordmark. Each letter g, Z, a, i, k, a is a standalone vector path with per-letter translate+scale transforms. The flame from flame.svg is composited into the ‘o’ position, so the word reads g[flame]Zaika = goZaika. Truly vector — no rasters whatsoever.
+Strengths
+Fully clean vector — confirmed no rasters
+Letter paths are font-independent (no Google Fonts dependency)
+Flame-as-‘o’ is a clever brand device
+BAM mask in flame is subtle at wordmark scale (correct)
+Ready for SVG export, React component, Framer, Canva
+Issues to Fix
+Orange colour: #EF8400 should be corrected to #FF6B35
+Green colour: #37674E should be corrected to #1A5C38
+No white variant exists yet (needed for dark backgrounds)
+No horizontal safe-area padding in viewBox
+1.3  Colour Correction Instructions
+Open both SVG files in a text editor (VS Code) and do a find-and-replace:
+#EF8400  →  #FF6B35   (Saffron Flame — all orange elements)
+#37674E  →  #1A5C38   (Forest Deep — all green elements)
+After correction save as gozaika-logo-color.svg and gozaika-logo-white.svg (replace all colour values with #FFFFFF for the white variant).
+1.4  White Variant (gozaika-logo-white.svg)
+For the white wordmark: open gozaika.svg, replace #FF6B35 with #FFFFFF and #1A5C38 with #FFFFFF. This creates a single-colour white mark for dark nav bars, footers, and dark-mode contexts.
+1.5  App Icon (gozaika-app-icon.svg)
+Wrap flame.svg in a Forest Green (#1A5C38) rounded-rectangle background with rx="80" for iOS/Android safe corners. Export as 1024×1024 PNG for app stores. The BAM text mask will be visible and meaningful at this size.
+Section II — Website Strategy
+2.1  Recommendation: Next.js over Framer
+AGREED — Next.js/React is the right call for goZaika’s situation
+You launch a public URL in 1–2 weeks at zero cost
+Vercel free tier gives you gozaika.vercel.app immediately (no domain needed)
+Static Phase 1 requires zero backend, zero database, zero monthly cost
+The same codebase evolves into the full product — no migration later
+Full design control — pixel-perfect to the brand spec you have
+Better SEO than Framer out of the box (SSG + metadata API)
+Framer CMS at ₸4,000/month was unnecessary cost for a pre-revenue startup
+AI-assisted coding (Cursor + Claude) makes Next.js as fast as Framer for a founder
+2.2  Phase Strategy
+Phase 1 — Static Launch (Now)
+All content hardcoded in TypeScript
+No database, no API calls, no auth
+Contact form via Resend free tier
+Deploy to Vercel free tier instantly
+URL: gozaika.vercel.app
+Timeline: 7–10 days with AI assistance
+Cost: ₹0 per month
+Phase 2 — Dynamic (After Tech Build)
+Restaurant listings from PostgreSQL via Node API
+FAQ and city data from DB
+Waitlist form saves to DB
+Dynamic city/neighbourhood pages
+Add custom domain when socializing with investors
+Zero code rewrite — swap hardcoded arrays for API calls
+Cost: domain only (₹500–1,000/year)
+Phase 1 — Static Launch (Now)
+All content hardcoded in TypeScript
+No database, no API calls, no auth
+Contact form via Resend free tier
+Deploy to Vercel free tier instantly
+URL: gozaika.vercel.app
+Timeline: 7–10 days with AI assistance
+Cost: ₹0 per monthPhase 2 — Dynamic (After Tech Build)
+Restaurant listings from PostgreSQL via Node API
+FAQ and city data from DB
+Waitlist form saves to DB
+Dynamic city/neighbourhood pages
+Add custom domain when socializing with investors
+Zero code rewrite — swap hardcoded arrays for API calls
+Cost: domain only (₹500–1,000/year)
+2.3  Free Hosting Decision Tree
+Create GitHub repo (github.com — free)
+Push Next.js code to GitHub
+Connect repo to Vercel (vercel.com — free Hobby plan)
+Auto-deploy on every push to main branch
+Share gozaika.vercel.app with restaurants, investors, collaborators
+Purchase gozaika.in domain only when you need a professional address for investors
+💡 Vercel Hobby (free) allows 100 GB bandwidth/month — more than enough for a pre-launch site with dozens of visitors per day.
+2.4  Cost Breakdown for Phase 1
+Service
+Plan
+Monthly Cost
+Vercel (hosting)
+Hobby (free)
+₹0
+GitHub
+Free
+₹0
+Resend (email form)
+Free (100 emails/day)
+₹0
+Domain (.vercel.app)
+Included
+₹0
+Cursor IDE
+Free (2-week trial)
+₹0
+gozaika.in domain
+NOT needed for Phase 1
+₹0
+TOTAL
+₹0 / month
+ServicePlanMonthly Cost
+Vercel (hosting)Hobby (free)₹0
+GitHubFree₹0
+Resend (email form)Free (100 emails/day)₹0
+Domain (.vercel.app)Included₹0
+Cursor IDEFree (2-week trial)₹0
+gozaika.in domainNOT needed for Phase 1₹0
+TOTAL₹0 / month
+Section III — Technology Stack
+3.1  Core Stack
+Recommended Stack — All Free Tiers
+Next.js 14  (App Router)  —  framework, SSG, routing, metadata
+TypeScript  —  type safety, better AI autocomplete with Cursor
+Tailwind CSS v3  —  utility-first styling, no CSS files needed
+shadcn/ui  —  copy-paste component library built on Radix UI + Tailwind
+Framer Motion  —  animations (scroll reveals, page transitions)
+Lucide React  —  icon library (same icons as the brand spec)
+Resend  —  transactional email for contact form (free: 100/day)
+Vercel  —  hosting, CI/CD, preview deployments (free Hobby plan)
+GitHub  —  source control, triggers Vercel deploys automatically
+3.2  Project Structure
+gozaika-web/
+├── app/                    Next.js App Router pages
+│   ├── page.tsx            Homepage /
+│   ├── how-it-works/       /how-it-works
+│   ├── for-restaurants/    /for-restaurants
+│   ├── about/              /about
+│   ├── faq/                /faq
+│   ├── contact/            /contact
+│   ├── privacy/            /privacy-policy
+│   ├── terms/              /terms-of-service
+│   └── layout.tsx          Root layout (nav + footer)
+├── components/
+│   ├── layout/             Header, Footer, Nav
+│   ├── sections/           Hero, HowItWorks, etc.
+│   └── ui/                 shadcn components
+├── lib/
+│   ├── content.ts          All page copy (single source of truth)
+│   └── faqs.ts             FAQ data array
+├── public/
+│   └── logos/              SVG logo files
+├── tailwind.config.ts      Brand colours + fonts
+└── next.config.ts
+3.3  Brand Tokens in Tailwind
+Add these to tailwind.config.ts so all components use consistent brand colours:
+extend: {
+colors: {
+saffron:  { DEFAULT: '#FF6B35', light: '#FFF0E8' },
+forest:   { DEFAULT: '#1A5C38', light: '#EAF3DE' },
+gold:     { DEFAULT: '#D4A017' },
+cream:    { DEFAULT: '#FFF8F0' },
+},
+fontFamily: {
+display: ['Playfair Display', 'Georgia', 'serif'],
+sans:    ['Poppins', 'Inter', 'sans-serif'],
+},
+}
+💡 Add Poppins and Playfair Display via next/font/google in app/layout.tsx — no external script tag needed with Next.js.
+Section IV — Site Architecture
+4.1  Page Map
+Route
+Page Name
+Purpose
+/
+Homepage
+Hero + How It Works + Value Props + Waitlist CTA. Primary landing for all audiences.
+/how-it-works
+How It Works
+Consumer journey: browse → buy → pickup → discover. Animated step-by-step.
+/for-restaurants
+For Restaurants
+Partner pitch: revenue, brand, zero delivery. Commission table. Interest form.
+/about
+About
+Mission, problem statement, founder story placeholder, values.
+/faq
+FAQ
+Accordion: consumer FAQs + restaurant FAQs + trust/safety FAQs.
+/contact
+Contact
+Simple form: name, email, subject, message. Sends via Resend.
+/privacy-policy
+Privacy Policy
+DPDP 2023 compliant. Full legal text.
+/terms-of-service
+Terms of Service
+Full legal text for platform usage.
+/food-safety
+Food Safety Policy
+FSSAI 2024 e-commerce compliance statement.
+/refund-policy
+Refund Policy
+Cancellation / refund rules for BAM Bags.
+/grievance
+Grievance Redressal
+DPDP-required GRO contact details + process.
+RoutePage NamePurpose
+/HomepageHero + How It Works + Value Props + Waitlist CTA. Primary landing for all audiences.
+/how-it-worksHow It WorksConsumer journey: browse → buy → pickup → discover. Animated step-by-step.
+/for-restaurantsFor RestaurantsPartner pitch: revenue, brand, zero delivery. Commission table. Interest form.
+/aboutAboutMission, problem statement, founder story placeholder, values.
+/faqFAQAccordion: consumer FAQs + restaurant FAQs + trust/safety FAQs.
+/contactContactSimple form: name, email, subject, message. Sends via Resend.
+/privacy-policyPrivacy PolicyDPDP 2023 compliant. Full legal text.
+/terms-of-serviceTerms of ServiceFull legal text for platform usage.
+/food-safetyFood Safety PolicyFSSAI 2024 e-commerce compliance statement.
+/refund-policyRefund PolicyCancellation / refund rules for BAM Bags.
+/grievanceGrievance RedressalDPDP-required GRO contact details + process.
+4.2  Navigation Structure
+Primary nav (sticky header):
+goZaika logo (links to /)
+How It Works
+For Restaurants
+About
+FAQ
+Get Early Access  [CTA button — orange]  → scrolls to waitlist form on homepage
+Footer nav columns:
+Discover: How It Works, FAQ, Cities (placeholder)
+Partners: For Restaurants, Partner Portal (placeholder)
+Company: About, Contact, Blog (placeholder)
+Legal: Privacy Policy, Terms of Service, Refund Policy, Food Safety, Grievance
+Section V — Component Library
+5.1  Layout Components
+Header
+Sticky top nav with Forest Green (#1A5C38) background
+goZaika white wordmark SVG (left-aligned)
+Nav links in white, Poppins 500
+Saffron CTA button: “Get Early Access”
+Mobile: hamburger menu, slide-down drawer
+💡 Nav items fade/translate in on page load using Framer Motion. CTA button pulses subtly to draw attention.
+Footer
+Forest Green background (#1A5C38), white text
+4-column grid: Discover | Partners | Company | Legal
+Bottom bar: © 2025 GoZaika Technologies Pvt. Ltd. · Made with love in Hyderabad
+Social icons: Instagram, LinkedIn, WhatsApp (link to waitlist WA group)
+5.2  Homepage Sections (in order)
+HeroSection
+Full-width, cream (#FFF8F0) background
+Large Playfair Display headline (see content package below)
+Sub-headline in Poppins, forest green
+Email capture input + “Join Waitlist” orange button
+Floating BAM Bag icon animation (slight float loop)
+Mobile: stacked layout, full-width CTA
+TrustBadges
+3 badges in a row: Chef-Curated | Allergen-Disclosed | Pickup-Ready
+Saffron border, cream background, small icon + text
+HowItWorks
+3-step horizontal flow (desktop), vertical on mobile
+Step icons: Browse → Buy → Enjoy
+Forest green step numbers, orange connector line
+WhatIsABAMBag
+Two-column: left = copy, right = bag illustration (SVG)
+Callout box: “Not a discount app. A discovery platform.”
+Allergen-safe badges: Veg | Non-Veg | Vegan | Gluten-Free
+RestaurantHighlights (Phase 1: Placeholder)
+Heading: “Launching in Hyderabad” with sub: “Banjara Hills · Jubilee Hills · Kondapur”
+3 placeholder restaurant cards (City Kitchen, Spice Route, The Green Table)
+Each card: cuisine tag, pickup window, bag value (₹600 value, ours ₹249)
+💡 Phase 2: these cards pull live from the Node API / PostgreSQL. In Phase 1 they are hardcoded.
+ForRestaurantsTeaser
+Dark forest green background section
+Headline: “Restaurant partners: recover cost, not reputation.”
+3 stats: 12% commission | Zero delivery | Your brand, your story
+CTA: “Become a Partner” → /for-restaurants
+Testimonials (Phase 1: Placeholder)
+3 testimonial cards with placeholder names and photos
+Will be replaced with real quotes once pilot launches
+WaitlistSection
+id=“waitlist” (scroll target from CTA buttons)
+Email + Name + City (dropdown: Hyderabad | Other) form
+On submit: POST to /api/waitlist → save to DB (Phase 2) or email via Resend (Phase 1)
+Success state: “You’re on the list! We’ll notify you when BAM Bags drop near you.”
+Section VI — Content Package
+All copy is ready to paste into lib/content.ts as TypeScript constants. Replace placeholder names in Phase 2.
+6.1  Homepage Copy
+HERO SECTION
+Headline (Playfair Display, large):
+India’s first premium mystery meal drop. Discover. Pickup. Devour.
+Sub-headline:
+BAM Bags from top restaurants near you — chef-curated, allergen-disclosed, always a surprise.
+CTA label:  Get Early Access
+Input placeholder:  Enter your email
+Below CTA:  Already 340 food lovers waiting in Hyderabad
+HOW IT WORKS
+Section heading:  How a BAM Bag works
+Step 1 — Browse:  Open goZaika, browse drops near you. Each listing shows cuisine, allergens, pickup window, and the “market value” — never the contents. That’s the game.
+Step 2 — Buy:  Pay ₹149–₹499 for a curated bag worth 2–3× more. Chef picks the contents. You get the surprise.
+Step 3 — Pickup:  Walk in during the pickup window, show your QR code, walk out with your BAM Bag. No delivery. No delay. Pure discovery.
+WHAT IS A BAM BAG
+Section heading:  Not leftovers. Not a deal. A BAM Bag.
+Body:  Every BAM Bag — Big Aayega Maza — is a chef-curated to-go selection from a restaurant that has decided to release it. The contents are always mystery. The allergens are always disclosed. The quality is always restaurant standard.
+Callout:  goZaika is not a discount app, a rescue app, or a leftover platform. It is a controlled-access, off-menu discovery layer for India’s best restaurants.
+RESTAURANT TEASER
+Heading:  Restaurant partners: recover cost, not reputation.
+Body:  goZaika gives your team a zero-friction channel to release intentional surplus — bags you design, price, and brand yourself. We handle discovery and payment. You handle the magic.
+Stat 1:  12% commission — lowest in the category
+Stat 2:  Zero delivery ops — customer walks in
+Stat 3:  Your story, your brand — never “cheap”
+WAITLIST SECTION
+Heading:  Launching soon in Hyderabad
+Sub:  Banjara Hills · Jubilee Hills · Kondapur. Be the first to know when BAM Bags drop near you.
+Success message:  You’re on the list! We’ll text you the moment BAM Bags are live in your area.
+6.2  How It Works Page
+Hero: How a BAM Bag works
+Sub: A mystery meal drop. Curated by chefs. Claimed by you.
+Section 1 — Browse  |  Find drops near you, sorted by cuisine, distance, and pickup time. Every listing shows what you need — allergens, spice level, serves count — but never what’s inside. That’s the point.
+Section 2 — Buy  |  Pay once. Instantly confirmed. The bag is yours. Your order confirmation is your QR code.
+Section 3 — Pickup  |  Walk to the restaurant during the pickup window. Show your QR at the counter. No app handshake, no delivery rider, no waiting. Just great food.
+Section 4 — Discover  |  Share your haul. Rate your experience. Earn Swaad Club points for your next drop.
+Allergen callout:  Every listing declares all 14 major allergens (FSSAI standard) before you buy. Always.
+6.3  For Restaurants Page
+Hero heading:  The lowest-friction revenue channel you’ve never had.
+Sub:  goZaika is not a delivery app. It’s a controlled-access discovery platform for restaurants that don’t need to discount their brand to serve a smarter kind of customer.
+Section: Why goZaika is different
+You decide what goes in each bag — not us
+You set the pickup window — we surface it
+We charge 12% commission, not 30%
+Your restaurant name is front and centre — always
+Zero delivery, zero rider, zero packaging headache
+Commission table heading:  Simple, transparent pricing
+Row 1: First 30 days — 0% commission | Your onboarding window. We earn when you earn.
+Row 2: Pilot phase — 12% | After free period. Includes platform + payment processing.
+Row 3: Standard — 15% | Post-pilot standard rate.
+Row 4: Volume tier — 12% at 200+ bags/month | High-volume partners rewarded.
+Row 5: Zayka Pro SaaS — ₹2,499/month | Optional analytics + CRM dashboard.
+Interest form heading:  Ready to become a goZaika partner?
+Form fields: Restaurant name | Owner/Manager name | Email | Phone | City | Cuisine type | Estimated daily covers | Message
+CTA: Express Interest
+Below form:  Our team will reach out within 48 hours to walk you through onboarding.
+6.4  About Page
+Heading:  We built goZaika because India’s best restaurants deserve a smarter exit for great food.
+Body 1:  Every evening, kitchens across India produce more than they sell. That surplus — carefully prepared, fully safe, restaurant-quality — has nowhere to go. It doesn’t belong in the discount bin. It doesn’t belong in a charity bag. It belongs in your hands, at a fair price, with the full story of where it came from.
+Body 2:  goZaika is the platform that makes that possible. We call our drops BAM Bags — Big Aayega Maza. Chef-curated, allergen-disclosed, mystery to-go selections from restaurants that have chosen to release them on their terms.
+Body 3:  We are a small team of food lovers, technologists, and restaurant industry veterans. We believe that discovery and dignity can coexist in the same brown bag.
+Mission statement box:  To build a world where great food finds great people, every single evening.
+Values heading:  What we believe
+Premium without pretence — great food should be accessible
+Restaurant dignity first — never a discount, always a decision
+Radical transparency — allergens disclosed, always
+City by city, slow and intentional — we will not scale faster than trust
+6.5  FAQ Copy
+Consumer FAQs:
+What exactly is a BAM Bag?  —  A BAM Bag (Big Aayega Maza) is a chef-curated to-go selection from a partner restaurant. The contents are a surprise, but all allergens are always disclosed before you buy.
+How do I know if the food is safe?  —  Every partner restaurant is FSSAI-licensed. Every listing declares all 14 major allergens (FSSAI standard). You know what’s in it — just not the exact dish.
+Is this leftover food?  —  No. Partner restaurants decide exactly what goes into each BAM Bag, including freshly prepared items they choose to release on their terms. We never describe any bag as “leftover” and do not accept bags that are not kitchen-safe.
+What is the pickup process?  —  You receive a QR code on purchase. Show it at the restaurant counter during the stated pickup window. No delivery, no waiting.
+Can I cancel or get a refund?  —  BAM Bags are non-cancellable once the kitchen has been notified (typically at purchase). See our Refund Policy for exceptions.
+What is Swaad Club?  —  Our loyalty programme. Earn points on every bag. Redeem for early access, exclusive drops, and partner offers. Launching with the app.
+Restaurant FAQs:
+Who decides what goes in the bag?  —  You do. goZaika gives you a simple dashboard to create a bag listing: cuisine type, allergens, pickup window, serves count, minimum menu value, and price. The contents are entirely your decision.
+What’s the commission structure?  —  0% for your first 30 days. 12% during pilot. 15% standard. Volume pricing at 200+ bags/month. No hidden fees.
+Do I need a separate FSSAI licence?  —  goZaika holds a Central FSSAI e-commerce FBO licence. You need a valid State or Central FSSAI licence for your own kitchen (which you already have as a licensed restaurant).
+What if a bag goes unsold?  —  You are never charged for unsold bags. You pay commission only on bags that are claimed and picked up.
+6.6  Contact Page
+Heading:  We’re a small team. We respond to every message.
+Sub:  Whether you’re a food lover, a restaurant owner, a potential investor, or someone who just wants to collaborate — we’d love to hear from you.
+Form fields: Name | Email | Subject (dropdown: General / Restaurant Partnership / Investor / Press / Careers) | Message
+CTA: Send Message
+Below form:  Or reach us at  hello@gozaika.in
+Response time:  We aim to respond within 24 hours.
+Section VII — AI Build Guide
+This guide walks you step-by-step through building and deploying the goZaika website using Cursor IDE with Claude as your AI pair programmer. No prior Next.js experience needed.
+7.1  Required Accounts (all free)
+github.com — create account, create repo “gozaika-web” (public or private)
+vercel.com — sign up with GitHub account
+cursor.com — download Cursor IDE (free 2-week trial, then $20/month or use VSCode with Copilot)
+resend.com — create account for email form (100 emails/day free)
+💡 Cursor is an AI-native fork of VSCode with Claude integration built in. It is the single most productive tool for this project. The free trial is enough to build and launch Phase 1.
+7.2  Phase 1: Project Scaffold (Day 1)
+Step 1 — Create Next.js project
+Open Terminal (or the terminal inside Cursor). Run:
+npx create-next-app@latest gozaika-web \
+--typescript --tailwind --eslint \
+--app --no-src-dir --import-alias "@/*"
+cd gozaika-web
+code .   # or open in Cursor
+Step 2 — Install dependencies
+npm install framer-motion lucide-react clsx tailwind-merge
+npm install @radix-ui/react-accordion @radix-ui/react-dialog
+npx shadcn@latest init
+When shadcn asks: choose “Default” style, Zinc base colour, CSS variables Yes.
+Step 3 — Add brand tokens to tailwind.config.ts
+Open tailwind.config.ts. Use Cursor AI (Cmd+K) and type:
+Add these brand colours and font families to the extend block:
+saffron #FF6B35, forest #1A5C38, gold #D4A017, cream #FFF8F0
+Display font: Playfair Display. Sans: Poppins
+Cursor will generate the correct config. Review and save.
+Step 4 — Add fonts in app/layout.tsx
+Open app/layout.tsx. Ask Cursor:
+Import Poppins (weights 400, 500, 600) and Playfair Display (400, 700)
+from next/font/google. Apply them as CSS variables --font-sans and --font-display
+in the html className. Set metadata title and description for goZaika.
+Review the generated code. Verify the font class names match tailwind.config.ts.
+Step 5 — Copy logo SVGs
+Create folder public/logos/. Copy these files into it:
+gozaika-logo-color.svg
+gozaika-logo-white.svg
+gozaika-app-icon.svg
+7.3  Phase 2: Component Library (Day 2)
+Step 6 — Create Header component
+Create components/layout/Header.tsx. In Cursor, type:
+Create a sticky Next.js Header component with:
+- Forest green (#1A5C38) background
+- goZaika white SVG logo on the left using next/image
+- Desktop nav: How It Works, For Restaurants, About, FAQ
+- Orange CTA button: Get Early Access (scrolls to #waitlist)
+- Mobile: hamburger icon that opens a slide-down menu
+- Uses Tailwind CSS, no external CSS files
+Step 7 — Create Footer component
+Create components/layout/Footer.tsx. Ask Cursor:
+Create a 4-column footer with forest green (#1A5C38) background.
+Columns: Discover | Partners | Company | Legal.
+Content from lib/navigation.ts (to be created).
+Bottom bar with copyright and Made in Hyderabad.
+Step 8 — Create the content file
+Create lib/content.ts. Paste all copy from Section 6 of this document as typed constants. Example:
+export const HOMEPAGE = {
+hero: {
+headline: 'India’s first premium mystery meal drop.',
+subline:  'Discover. Pickup. Devour.',
+cta:      'Get Early Access',
+},
+...
+};
+Step 9 — Build HeroSection
+Create components/sections/HeroSection.tsx. Ask Cursor:
+Build a full-width hero section for goZaika with:
+- Cream (#FFF8F0) background
+- Large Playfair Display headline from HOMEPAGE.hero.headline
+- Poppins subline in forest green
+- Email input + orange CTA button side-by-side (stacked on mobile)
+- Framer Motion fade-up animation on text elements
+- BAM Bag SVG icon floating on the right with subtle float animation
+7.4  Phase 3: Pages (Days 3–6)
+Step 10 — Homepage
+Open app/page.tsx. Ask Cursor:
+Build the goZaika homepage using these sections in order:
+HeroSection, TrustBadges, HowItWorks, WhatIsABAMBag,
+RestaurantHighlights (placeholder data), ForRestaurantsTeaser,
+WaitlistSection
+Import sections from components/sections/
+Export default as async server component.
+Step 11 — How It Works page
+Create app/how-it-works/page.tsx
+Build a step-by-step page using the content from HOWIT_WORKS in lib/content.ts
+Each step: large numbered circle, icon, heading, body copy
+Add the allergen callout box at the bottom.
+Step 12 — For Restaurants page
+Create app/for-restaurants/page.tsx
+Include: hero section, value props grid (3 columns),
+commission comparison table (using the data from this spec),
+interest form that POSTs to /api/contact
+Step 13 — FAQ page
+Install shadcn accordion component:
+npx shadcn@latest add accordion
+Then ask Cursor:
+Create app/faq/page.tsx
+Two sections: Consumer FAQs and Restaurant FAQs
+Use shadcn Accordion for each item
+Data from lib/faqs.ts (create this file with the FAQ data from Section 6.5)
+Step 14 — About and Contact pages
+Follow the same pattern: ask Cursor to build each page using content from lib/content.ts.
+Step 15 — Legal pages
+Create app/privacy-policy/page.tsx, app/terms-of-service/page.tsx, app/food-safety/page.tsx, app/refund-policy/page.tsx, app/grievance/page.tsx.
+For each, ask Cursor:
+Create a legal page for goZaika [policy name].
+Prose layout, simple typography, max-width container.
+Content: [paste relevant legal text from the goZaika legal documents]
+💡 The full legal texts were generated in the goZaika Content Package document. Upload that document to Cursor to paste into these pages.
+7.5  Phase 4: Contact Form (Day 7)
+Step 16 — Resend setup
+Go to resend.com → create API key
+Add to .env.local:  RESEND_API_KEY=re_xxxxxxxxxxxx
+Add to Vercel environment variables (Settings > Environment Variables)
+Step 17 — Create API route
+Create app/api/contact/route.ts
+Ask Cursor:
+Create a Next.js App Router POST route at /api/contact
+That accepts { name, email, subject, message }
+Sends an email via Resend to hello@gozaika.in
+Returns { success: true } or { error: string }
+Include rate limiting: max 5 requests per IP per hour
+7.6  Phase 5: Deploy (Day 7–8)
+Step 18 — Push to GitHub
+git init
+git add .
+git commit -m 'feat: initial goZaika website'
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/gozaika-web.git
+git push -u origin main
+Step 19 — Connect Vercel
+Go to vercel.com → New Project
+Import from GitHub → select gozaika-web
+Framework: Next.js (auto-detected)
+Add environment variable: RESEND_API_KEY
+Click Deploy
+Vercel gives you:  gozaika-web.vercel.app  (or rename to gozaika.vercel.app)
+Step 20 — Rename Vercel domain (optional)
+In Vercel project settings > Domains, add gozaika.vercel.app as a custom alias (free). This is cleaner to share than the auto-generated URL.
+💡 When you’re ready for a real domain: buy gozaika.in from GoDaddy/BigRock (₹599/year), add it in Vercel Domains, and Vercel handles SSL automatically.
+7.7  AI Prompt Cheatsheet
+Use these patterns in Cursor (Cmd+K or Cmd+L) to build fast:
+Cursor AI Prompt Patterns
+SCAFFOLD: 'Create a React Server Component for [section] using Tailwind CSS and the goZaika brand colours (#FF6B35 orange, #1A5C38 green, #FFF8F0 cream). Content from lib/content.ts.'
+RESPONSIVE: 'Make this component fully responsive. Mobile-first: single column. Tablet: 2 columns. Desktop: 3 columns.'
+ANIMATION: 'Add Framer Motion scroll-triggered fade-up animations to each card with 0.1s stagger between items.'
+FIX: 'This component has a TypeScript error on line X. Fix it without changing the visual output.'
+REVIEW: 'Review this component for: accessibility (aria labels), performance (no unnecessary re-renders), and mobile layout issues.'
+Section VIII — 10-Day Launch Timeline
+Day
+Focus
+Deliverables
+1
+Setup + Scaffold
+Cursor installed, Next.js project created, Tailwind + brand tokens configured, fonts loaded, GitHub repo pushed, Vercel connected (preview URL live)
+2
+Layout + Design System
+Header + Footer components, brand colours/fonts working, SVG logos rendering, global layout wrappers
+3
+Homepage Sections 1-3
+HeroSection, TrustBadges, HowItWorks components built and styled
+4
+Homepage Sections 4-7
+WhatIsABAMBag, RestaurantHighlights (placeholder), ForRestaurantsTeaser, WaitlistSection
+5
+How It Works + About
+Both inner pages built with content from lib/content.ts
+6
+For Restaurants + FAQ
+Partner page with commission table, FAQ page with Accordion
+7
+Contact Form + API
+Contact page, Resend API route, form validation, success/error states
+8
+Legal Pages
+5 legal pages: Privacy, Terms, Refund, Food Safety, Grievance
+9
+Polish + QA
+Mobile responsive QA, accessibility pass, performance check (Lighthouse), animations tuned
+10
+Launch
+Final Vercel deploy, share gozaika.vercel.app with first contacts: restaurants, investors, collaborators
+DayFocusDeliverables
+1Setup + ScaffoldCursor installed, Next.js project created, Tailwind + brand tokens configured, fonts loaded, GitHub repo pushed, Vercel connected (preview URL live)
+2Layout + Design SystemHeader + Footer components, brand colours/fonts working, SVG logos rendering, global layout wrappers
+3Homepage Sections 1-3HeroSection, TrustBadges, HowItWorks components built and styled
+4Homepage Sections 4-7WhatIsABAMBag, RestaurantHighlights (placeholder), ForRestaurantsTeaser, WaitlistSection
+5How It Works + AboutBoth inner pages built with content from lib/content.ts
+6For Restaurants + FAQPartner page with commission table, FAQ page with Accordion
+7Contact Form + APIContact page, Resend API route, form validation, success/error states
+8Legal Pages5 legal pages: Privacy, Terms, Refund, Food Safety, Grievance
+9Polish + QAMobile responsive QA, accessibility pass, performance check (Lighthouse), animations tuned
+10LaunchFinal Vercel deploy, share gozaika.vercel.app with first contacts: restaurants, investors, collaborators
+8.1  Socialisation Strategy
+Once the site is live at gozaika.vercel.app, share it strategically:
+Audience
+Potential restaurant partners (Hyderabad)
+Potential investors (angel networks, SIDBI)
+Potential team / collaborators
+Food bloggers and influencers
+What to share
+For Restaurants page — partner pitch
+Homepage — vision + waitlist numbers
+About + For Restaurants — mission
+Homepage — mystery meal concept hook
+Audience
+Potential restaurant partners (Hyderabad)
+Potential investors (angel networks, SIDBI)
+Potential team / collaborators
+Food bloggers and influencersWhat to share
+For Restaurants page — partner pitch
+Homepage — vision + waitlist numbers
+About + For Restaurants — mission
+Homepage — mystery meal concept hook
+Do not buy a custom domain until:
+You have had 3+ positive restaurant conversations (they want to partner)
+You are actively sharing with investors and the .vercel.app URL feels like a credibility issue
+App development is underway
+💡 gozaika.in costs approximately ₹599–₹999/year. Wait until the timing adds real value before spending it.
+Section IX — Phase 2: Adding Dynamic Content
+When the Node.js API is ready (per goZaika Technology Specification v1.0), swapping static content for live data requires minimal code changes.
+9.1  Dynamic Migration Pattern
+Every hardcoded data array in Phase 1 has a direct API endpoint in the tech spec. The migration is a straight swap:
+Static → Dynamic Swap Table
+Hardcoded restaurant cards  →  GET /api/restaurants?city=hyderabad
+Hardcoded FAQ array          →  GET /api/faqs
+Hardcoded city list          →  GET /api/cities
+Form POST to Resend          →  POST /api/waitlist (saves to PostgreSQL)
+Static testimonials          →  GET /api/testimonials?approved=true
+The Next.js App Router's fetch caching means you can call the API at build time (SSG) or at request time (SSR). For the restaurant list, SSR with a 60-second cache is appropriate for Phase 2.
+9.2  When to Add the Custom Domain
+Purchase gozaika.in from BigRock / GoDaddy (₹599–₹999/year)
+In Vercel: Project > Domains > Add Domain > gozaika.in
+Update DNS at your registrar (Vercel provides A record values)
+Vercel auto-provisions SSL certificate — no manual setup
+Timeline: 5–30 minutes after DNS propagation
+Appendix A — Quick Reference
+A.1  Brand Colour Reference
+goZaika Brand Palette
+#FF6B35  Saffron Flame   —  Primary CTA, 'go' in wordmark, bag colour
+#1A5C38  Forest Deep     —  Header, footer, 'Zaika' in wordmark, handles
+#D4A017  Heritage Gold   —  Accent, highlights, star ratings
+#FFF8F0  Warm Cream      —  Page background, hero section
+#FFFFFF  White           —  Text on dark, logo on dark background
+A.2  Typography Reference
+goZaika Type System
+Playfair Display 700  —  Hero headlines, page headings (display font)
+Poppins 600           —  Section headings, nav labels, CTA buttons
+Poppins 400           —  Body copy, form labels
+Inter 400             —  Small print, captions, legal text
+Hind 400              —  Hindi/Devanagari text (future use)
+A.3  Key goZaika Vocabulary (Never deviate from these)
+Brand-Mandated Terms
+BAM Bag         —  Big Aayega Maza. Always capitalised. Never 'lucky bag', 'grab bag', 'surplus bag'
+goZaika         —  Always lowercase 'go', uppercase 'Z'. Never GoZaika or GOZAIKA
+Swaad Club      —  Loyalty programme brand. Always capitalised both words
+Zayka Pro       —  Restaurant SaaS. Always capitalised
+Partner         —  Restaurants on the platform. Never 'vendor', 'merchant', 'supplier'
+Pickup          —  One word. Never 'pick-up' or 'pick up' in UI copy
+Discovery       —  Core brand word. Appear in every major section
+BANNED words    —  leftover, stale, cheap, bargain, clearance, discount, rescue app, liquidation
+A.4  Launch Checklist
+SVG colour corrections applied (#EF8400 → #FF6B35, #37674E → #1A5C38)
+gozaika-logo-white.svg created for dark backgrounds
+Vercel project created and connected to GitHub
+Resend API key added to Vercel environment variables
+All 11 pages built and rendering on mobile
+Contact form tested (sends email to hello@gozaika.in)
+Lighthouse score > 85 on Performance, > 90 on Accessibility
+og:image and meta description set for every page
+favicon.ico added to app directory
+URL shared with at least 3 pilot restaurant contacts
+goZaika Website Specification v1.0  ·  Confidential  ·  Pre-Launch

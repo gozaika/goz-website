@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500" role="img" aria-label="WhatsApp group icon v2">
+  <rect width="500" height="500" rx="72" fill="#1A5C38"/>
+  <rect x="132" y="118" width="236" height="274" rx="28" fill="#FF6B35"/>
+  <path d="M168 118 C168 64, 332 64, 332 118" fill="none" stroke="#FFF8F0" stroke-width="14" stroke-linecap="round"/>
+  <rect x="202" y="194" width="96" height="96" rx="16" fill="#FFF8F0"/>
+  <path d="M250 208 C266 192, 286 199, 292 219 C298 234, 287 252, 269 260 C264 248, 251 241, 237 244 C229 228, 234 212, 250 208Z" fill="#1A5C38"/>
+</svg>

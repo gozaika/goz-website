@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="goZaika logo stacked">
+  <defs>
+    <mask id="gozaika-stack-flame-mask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <rect width="512" height="512" fill="white" />
+      <g transform="translate(4, 14.5) scale(0.06)" fill="none" stroke="black" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+        <g transform="translate(10, 25)">
+          <path d="M 10 5 Q 70 5 70 25 Q 70 40 10 40 Q 70 40 70 55 Q 70 75 10 75" />
+        </g>
+        <g transform="translate(88, 35)">
+          <path d="M 11.75 75 Q 11.75 5 40 5 Q 68.25 5 68.25 75" />
+          <rect x="11.75" y="40" width="56.5" height="10" fill="black" stroke="none" />
+        </g>
+        <g transform="translate(170, 30)">
+          <path d="M 10 75 Q 10 5 25 5 Q 40 5 40 75 Q 40 5 55 5 Q 70 5 70 75" />
+        </g>
+      </g>
+    </mask>
+    <mask id="gozaika-stack-lockup-flame-mask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <rect width="512" height="512" fill="white" />
+      <g transform="translate(4, 14.5) scale(0.06)" fill="none" stroke="black" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+        <g transform="translate(10, 25)">
+          <path d="M 10 5 Q 70 5 70 25 Q 70 40 10 40 Q 70 40 70 55 Q 70 75 10 75" />
+        </g>
+        <g transform="translate(88, 35)">
+          <path d="M 11.75 75 Q 11.75 5 40 5 Q 68.25 5 68.25 75" />
+          <rect x="11.75" y="40" width="56.5" height="10" fill="black" stroke="none" />
+        </g>
+        <g transform="translate(170, 30)">
+          <path d="M 10 75 Q 10 5 25 5 Q 40 5 40 75 Q 40 5 55 5 Q 70 5 70 75" />
+        </g>
+      </g>
+    </mask>
+  </defs>
+
+  <svg x="140" y="18" width="232" height="232" viewBox="88 64 320 320" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <g transform="translate(56, 40) scale(16)">
+      <path fill="#FF6B35" mask="url(#gozaika-stack-flame-mask)" d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235" />
+    </g>
+  </svg>
+
+  <svg x="26" y="286" width="460" height="117.35" viewBox="0 0 600 153.06" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <g transform="translate(-2.61 -6.98)">
+      <path d="M488 471V551H603V-9Q603 -85 571.0 -144.5Q539 -204 478.5 -238.0Q418 -272 334 -272Q222 -272 148.0 -219.5Q74 -167 64 -77H177Q190 -120 232.5 -146.5Q275 -173 334 -173Q403 -173 445.5 -131.0Q488 -89 488 -9V83Q459 44 409.5 17.5Q360 -9 297 -9Q225 -9 165.5 27.5Q106 64 71.5 129.5Q37 195 37 278Q37 361 71.5 425.0Q106 489 165.5 524.5Q225 560 297 560Q361 560 410.5 534.5Q460 509 488 471ZM321 461Q277 461 239.0 439.5Q201 418 177.5 376.5Q154 335 154 278Q154 221 177.5 178.0Q201 135 239.5 112.5Q278 90 321 90Q365 90 403.0 112.0Q441 134 464.5 176.5Q488 219 488 276Q488 333 464.5 375.0Q441 417 403.0 439.0Q365 461 321 461Z" fill="#FF6B35" transform="translate(0.00 120.00) scale(0.138000 -0.138000)" />
+      <g transform="translate(37.30125, -2.61) scale(0.41703125)">
+        <g transform="translate(56, 40) scale(16)">
+          <path fill="#FF6B35" mask="url(#gozaika-stack-lockup-flame-mask)" d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235" />
+        </g>
+      </g>
+      <path d="M185 99H508V0H50V89L372 596H50V695H508V606Z" fill="#1A5C38" transform="translate(215.61 120.00) scale(0.138000 -0.138000)" />
+      <path d="M297 560Q362 560 410.5 534.5Q459 509 488 471V551H603V0H488V82Q459 43 409.0 17.0Q359 -9 295 -9Q224 -9 165.0 27.5Q106 64 71.5 129.5Q37 195 37 278Q37 361 71.5 425.0Q106 489 165.5 524.5Q225 560 297 560ZM321 461Q277 461 239.0 439.5Q201 418 177.5 376.5Q154 335 154 278Q154 221 177.5 178.0Q201 135 239.5 112.5Q278 90 321 90Q365 90 403.0 112.0Q441 134 464.5 176.5Q488 219 488 276Q488 333 464.5 375.0Q441 417 403.0 439.0Q365 461 321 461Z" fill="#1A5C38" transform="translate(294.61 120.00) scale(0.138000 -0.138000)" />
+      <path d="M60 697Q60 728 81.0 749.0Q102 770 133 770Q163 770 184.0 749.0Q205 728 205 697Q205 666 184.0 645.0Q163 624 133 624Q102 624 81.0 645.0Q60 666 60 697ZM189 551V0H75V551Z" fill="#1A5C38" transform="translate(386.18 120.00) scale(0.138000 -0.138000)" />
+      <path d="M293 275 547 0H393L189 237V0H75V740H189V310L389 551H547Z" fill="#1A5C38" transform="translate(424.61 120.00) scale(0.138000 -0.138000)" />
+      <path d="M297 560Q362 560 410.5 534.5Q459 509 488 471V551H603V0H488V82Q459 43 409.0 17.0Q359 -9 295 -9Q224 -9 165.0 27.5Q106 64 71.5 129.5Q37 195 37 278Q37 361 71.5 425.0Q106 489 165.5 524.5Q225 560 297 560ZM321 461Q277 461 239.0 439.5Q201 418 177.5 376.5Q154 335 154 278Q154 221 177.5 178.0Q201 135 239.5 112.5Q278 90 321 90Q365 90 403.0 112.0Q441 134 464.5 176.5Q488 219 488 276Q488 333 464.5 375.0Q441 417 403.0 439.0Q365 461 321 461Z" fill="#1A5C38" transform="translate(499.06 120.00) scale(0.138000 -0.138000)" />
+    </g>
+  </svg>
+</svg>

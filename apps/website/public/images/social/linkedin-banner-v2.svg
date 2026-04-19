@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1584" height="396" viewBox="0 0 1584 396" role="img" aria-label="LinkedIn banner v2">
+  <rect width="1584" height="396" fill="#FFF8F0"/>
+  <rect x="28" y="28" width="1528" height="340" rx="24" fill="#1A5C38"/>
+  <path d="M1020 28 L1540 28 L1540 368 L920 368 Z" fill="#D4A017"/>
+  <text x="84" y="176" fill="#FF6B35" font-size="116" font-family="Poppins, Arial, sans-serif" font-weight="700">goZaika</text>
+  <text x="88" y="246" fill="#FFF8F0" font-size="44" font-family="Poppins, Arial, sans-serif" font-weight="500">Restaurant discovery with trust-first pickup</text>
+  <text x="980" y="200" fill="#1A5C38" font-size="48" font-family="Poppins, Arial, sans-serif" font-weight="700">Launching in</text>
+  <text x="980" y="258" fill="#1A5C38" font-size="48" font-family="Poppins, Arial, sans-serif" font-weight="700">Hyderabad</text>
+</svg>

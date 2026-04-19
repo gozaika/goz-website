@@ -1,0 +1,355 @@
+---
+alwaysApply: true
+---
+---
+description: Generate Supabase PostgreSQL schema in the project's house style
+alwaysApply: true
+---
+
+You are generating and modifying database schema for a Supabase PostgreSQL project.
+
+Generate raw PostgreSQL SQL and migration-friendly DDL only.
+Do not generate MySQL syntax.
+Do not generate ORM schema unless explicitly requested.
+
+Follow these rules exactly unless the user explicitly overrides them.
+
+# 1) PLATFORM + DEFAULT POSTURE
+- Target platform is Supabase on PostgreSQL.
+- Assume application tables in the public schema are exposed through Supabase APIs unless told otherwise.
+- Enable Row Level Security (RLS) on application tables by default.
+- Generate least-privilege RLS policies when a table is user-scoped or tenant-scoped.
+- Prefer practical, production-usable SQL over abstract examples.
+- Default output should be paste-ready SQL.
+
+# 2) GENERAL STYLE
+- Use snake_case for:
+  - table names
+  - column names
+  - constraints
+  - indexes
+  - policies
+  - functions
+  - triggers
+- Prefer singular table names.
+- Use explicit, operational names. Avoid vague names like data, info, mapping, misc, temp.
+- Favor consistency over cleverness.
+
+# 3) PRIMARY KEY RULES
+- Default primary key column naming pattern:
+  - <table_name>_pk
+- Default PK type:
+  - bigint generated always as identity primary key
+- Example:
+  - app_user_pk bigint generated always as identity primary key
+  - tenant_pk bigint generated always as identity primary key
+- Do not switch to uuid PKs unless explicitly requested.
+- Do not use generic id if the project convention is *_pk.
+
+# 4) FOREIGN KEY RULES
+- All foreign key columns must end in _fk.
+- FK column names must reflect the referenced entity.
+- Examples:
+  - app_user_fk
+  - tenant_fk
+  - product_fk
+  - master_role_fk
+  - master_user_status_fk
+- Foreign keys should reference the parent table’s *_pk column.
+- Name foreign key constraints explicitly:
+  - fk_<table>_<purpose>
+  - or fk_<purpose> when short and clear
+
+# 5) MASTER TABLE NAMING RULES
+Use master tables for controlled reference data that behaves like application-managed enumerations.
+
+Master table naming rules:
+- Prefix all reference/master tables with master_
+- Use singular names
+- Examples:
+  - master_role
+  - master_user_status
+  - master_chat_session_status
+  - master_chat_session_type
+  - master_chat_session_closed_reason
+  - master_product_status
+
+Primary key naming for master tables:
+- <table_name>_pk
+- Examples:
+  - master_role_pk
+  - master_user_status_pk
+  - master_product_status_pk
+
+Foreign key naming to master tables:
+- <master_table_name>_fk
+- Examples:
+  - master_role_fk
+  - master_user_status_fk
+  - master_product_status_fk
+
+Master table content rules:
+- Include a stable code field where useful, usually:
+  - status_code
+  - role_code
+  - type_code
+  - reason_code
+- Include a display name field where useful, usually:
+  - status_name
+  - role_name
+  - type_name
+  - reason_name
+- Optionally include:
+  - description
+  - sort_order
+  - is_active
+  - created_on
+  - updated_on
+- Add unique constraints on the business code.
+- Treat master tables as controlled reference data, not user-generated content.
+- Deletes from master tables should usually be restricted.
+
+Default master table pattern:
+- surrogate bigint identity PK
+- unique business code
+- display name
+- optional description
+- active flag
+- audit timestamps
+
+# 6) BOOLEAN / FLAG RULES
+- Use boolean, not tinyint.
+- Preferred flag names:
+  - is_active
+  - is_default
+  - resolved_flag
+  - active_flag
+  - email_verified
+- Always set explicit defaults when appropriate:
+  - default true
+  - default false
+- Use comments when business meaning is not obvious.
+
+# 7) TIMESTAMP RULES
+- Use timestamptz for operational timestamps unless there is a strong reason not to.
+- Preferred timestamp naming:
+  - created_on
+  - updated_on
+  - started_on
+  - ended_on
+  - expires_on
+  - resolved_on
+  - closed_on
+  - last_login_on
+  - last_seen_on
+  - last_turn_on
+- Default patterns:
+  - created_on timestamptz not null default now()
+  - updated_on timestamptz not null default now()
+- If updated_on must auto-refresh on update, use a trigger function.
+- Do not rely on application code alone to keep updated_on correct when a reusable trigger is appropriate.
+
+# 8) UPDATED_ON TRIGGER RULE
+If a table has updated_on and rows are mutable, prefer a reusable trigger pattern.
+
+Preferred reusable pattern:
+- create function set_updated_on()
+- return trigger
+- set NEW.updated_on = now()
+- create trigger <table>_set_updated_on before update on <table> for each row execute function set_updated_on()
+
+Do not create a new one-off trigger function for every table unless specifically requested.
+Prefer one reusable shared function.
+
+# 9) USER / AUDIT FIELD RULES
+Use these fields when applicable:
+- created_by varchar(120)
+- created_on timestamptz not null default now()
+- updated_by varchar(120)
+- updated_on timestamptz not null default now()
+
+Guidance:
+- Include created_on on almost all mutable business tables.
+- Include updated_on on mutable tables.
+- Include created_by / updated_by only when the application will actually populate and use them.
+- For append-only history tables, usually use created_on only.
+
+# 10) STRING / TEXT RULES
+- Prefer text unless there is a real enforced max length requirement.
+- Use varchar(n) only when a bound is truly meaningful.
+- Good candidates for varchar(n):
+  - short codes
+  - usernames
+  - compact external ids
+  - short labels with hard business limits
+- Use text for:
+  - URLs
+  - provider subjects
+  - email-like identifiers unless bounded intentionally
+  - descriptions
+  - notes
+  - error messages
+  - paths
+  - S3/storage keys
+- Do not add arbitrary varchar lengths without reason.
+
+# 11) JSON RULES
+- Use jsonb, not json, unless explicitly requested otherwise.
+- Use jsonb only when the shape is legitimately variable or semi-structured.
+- If fields inside a jsonb object are queried often, also materialize them as first-class columns.
+- Example pattern:
+  - browser_metadata jsonb
+  - browser_metadata_locale_language text
+  - browser_metadata_device_type text
+  - browser_metadata_vendor text
+  - browser_metadata_locale_timezone text
+  - browser_metadata_os text
+
+# 12) SECURITY / TOKEN / AUTH TABLE RULES
+For auth/security-related tables:
+- Store hashes, not raw secrets, whenever possible.
+- Prefer column names like:
+  - token_hash
+  - expires_on
+  - is_used
+  - challenge
+  - nonce
+  - code_verifier
+  - provider_subject
+- Use bytea for raw binary content when appropriate.
+- Add uniqueness where lookup requires it.
+- Add indexes for token/state/hash lookup paths.
+- Add concise comments to explain purpose and lifecycle.
+
+# 13) TABLE COMMENTS + COLUMN COMMENTS
+- Add COMMENT ON TABLE for non-obvious business tables.
+- Add COMMENT ON COLUMN for fields whose meaning affects business logic, security, billing, archival, lifecycle, or integrations.
+- Keep comments concise and operational.
+- Avoid fluff.
+
+# 14) INDEX RULES
+Always consider indexes for:
+- all foreign keys
+- unique business codes
+- token/state/hash lookups
+- tenant-scoped filtering
+- status + timestamp worker scans
+- archival queue processing
+- frequent joins
+- uniqueness constraints on natural relationship pairs
+
+Naming patterns:
+- uq_<purpose> for unique constraints
+- ix_<purpose> or idx_<purpose> for indexes
+- fk_<purpose> for foreign keys
+- ck_<purpose> for check constraints
+
+Composite indexes must reflect real query patterns, not hypothetical purity.
+
+# 15) FOREIGN KEY DELETE RULES
+Use delete actions deliberately:
+- on delete cascade
+  - dependent child rows that should never outlive parent
+  - examples: tokens, sessions, membership rows, passkeys, challenge rows
+- on delete set null
+  - optional references where the child row should survive
+  - examples: optional changed-by user reference, optional prior status reference
+- on delete restrict or no action
+  - master/reference data and other rows that should not be casually deleted
+
+Do not add ON UPDATE actions unless truly needed.
+
+# 16) JOIN / MEMBERSHIP TABLE RULES
+For bridge or membership tables:
+- Still use a surrogate PK:
+  - <table_name>_pk bigint generated always as identity primary key
+- Also add a unique constraint across the natural relationship pair.
+- Examples:
+  - uq_user_tenant on (app_user_fk, tenant_fk)
+  - uq_app_user_platform_role on (app_user_fk, platform_role_fk)
+
+Typical membership fields when relevant:
+- is_active boolean not null default true
+- is_default boolean not null default false
+- created_on timestamptz not null default now()
+- updated_on timestamptz not null default now()
+
+# 17) HISTORY / STATUS TABLE RULES
+For append-only history tables:
+- Use a dedicated surrogate PK.
+- Include created_on.
+- Prefer append-only structure.
+- Usually omit updated_on unless rows really change.
+- Use from_*_fk and to_*_fk fields when tracking transitions.
+- Include concise status description fields only when operationally useful.
+
+# 18) MULTI-TENANT RULES
+For tenant-scoped application data:
+- Include tenant_fk when rows belong to a tenant/workspace/account.
+- Add supporting indexes for tenant_fk and common tenant query patterns.
+- Generate tenant-aware RLS policies by default.
+- Make tenant ownership explicit rather than implicit.
+
+# 19) RLS RULES
+Unless explicitly told otherwise:
+- enable row level security on application tables
+- do not leave application tables exposed without RLS
+- generate least-privilege policies
+- distinguish between:
+  - user-owned tables
+  - tenant-scoped tables
+  - internal system tables
+- use auth.uid() where the table is directly user-owned
+- if ownership is indirect through membership tables, state that explicitly and generate policy SQL accordingly
+- do not generate broad "true" policies unless explicitly requested
+
+# 20) SUPABASE STORAGE RULE
+For file/image handling:
+- binaries belong in Supabase Storage
+- metadata belongs in Postgres tables
+- store paths/keys/metadata in SQL tables, not the binary itself unless explicitly requested
+- use clear columns such as:
+  - storage_bucket
+  - storage_path
+  - mime_type
+  - file_size_bytes
+  - created_on
+
+# 21) OUTPUT FORMAT RULES
+When generating schema:
+- Prefer complete, paste-ready SQL.
+- If creating a table, separate output in this order when helpful:
+  1. create table
+  2. foreign keys / constraints
+  3. indexes
+  4. comments
+  5. RLS enablement
+  6. policies
+  7. trigger/function for updated_on if needed
+- If modifying existing schema, use surgical ALTER TABLE / CREATE INDEX / CREATE POLICY statements only.
+- Do not rewrite unrelated objects.
+- Do not mix explanation into the SQL block.
+
+# 22) CONSISTENCY RULE
+Retain the project’s general schema theme:
+- explicit *_pk primary keys
+- explicit *_fk foreign keys
+- explicit named constraints and indexes
+- strong audit timestamp discipline
+- operational comments
+- practical indexes
+- append-only history tables where appropriate
+- clearly named master/reference tables
+
+But implement all of it as idiomatic PostgreSQL for Supabase.
+
+# 23) DO NOT
+- Do not generate MySQL syntax.
+- Do not use backticks.
+- Do not use tinyint for booleans.
+- Do not use json when jsonb is the better default.
+- Do not omit RLS on application tables.
+- Do not invent unnecessary tables.
+- Do not over-normalize without a real operational reason.
+- Do not introduce Prisma or ORM syntax unless explicitly requested.
+- Do not switch naming style away from *_pk / *_fk unless explicitly requested.

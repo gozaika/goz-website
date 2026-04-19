@@ -1,0 +1,1049 @@
+goZaika
+Build Readiness Pack
+v1.0  ·  Pre-Build Authority Document
+Brand  ·  Architecture  ·  Content  ·  Legal  ·  Measurement  ·  Release Gates
+PURPOSE OF THIS DOCUMENT
+This is the single source of truth you freeze before writing one line of code.
+Every decision in here should be signed-off. If it is not resolved here, it will cost
+you 3× more to resolve it mid-build. Read every section. Resolve every open item.
+Then build.
+PURPOSE OF THIS DOCUMENT
+This is the single source of truth you freeze before writing one line of code.
+Every decision in here should be signed-off. If it is not resolved here, it will cost
+you 3× more to resolve it mid-build. Read every section. Resolve every open item.
+Then build.
+Part 0 — AI Build Workflow
+AGREED — with these specific refinements
+Your proposed workflow is correct. The refinements below make it world-class, not just good.
+0.1  Model Strategy (Revised)
+Your model split is right in principle. Here is the precise allocation:
+Task Category
+Best Model
+Why
+Route architecture, component API design, data contracts
+Claude Sonnet 4.6 (this session)
+Strong at system design + TypeScript + React patterns
+Complex UI components: forms, accordions, nav
+Claude Sonnet 4.6 or GPT-4o
+Both are comparable for React component generation
+Repetitive page scaffolding, legal text layout
+Claude Haiku or GPT-4o mini
+Fast, cheap, sufficient for low-variance work
+Performance audits, a11y remediation, refactors
+Claude Sonnet 4.6 (long context)
+Needs to see full codebase context
+Copy editing and final microcopy polish
+Claude Sonnet 4.6
+Understands goZaika brand voice
+CI/CD config, Vercel/GitHub Actions setup
+Either model — it's well-documented
+Low creativity needed; either works fine
+Task CategoryBest ModelWhy
+Route architecture, component API design, data contractsClaude Sonnet 4.6 (this session)Strong at system design + TypeScript + React patterns
+Complex UI components: forms, accordions, navClaude Sonnet 4.6 or GPT-4oBoth are comparable for React component generation
+Repetitive page scaffolding, legal text layoutClaude Haiku or GPT-4o miniFast, cheap, sufficient for low-variance work
+Performance audits, a11y remediation, refactorsClaude Sonnet 4.6 (long context)Needs to see full codebase context
+Copy editing and final microcopy polishClaude Sonnet 4.6Understands goZaika brand voice
+CI/CD config, Vercel/GitHub Actions setupEither model — it's well-documentedLow creativity needed; either works fine
+⚠  Do not use multiple models in the same component session — context bleed causes inconsistent patterns. Pick one model per feature and finish it.
+0.2  Cursor Workflow (Confirmed Build Order)
+Phase
+What You Build
+1. Readiness
+THIS DOCUMENT. Freeze everything. Zero open items before coding.
+2. Primitives
+tailwind.config.ts tokens, fonts, global CSS. Zero page work.
+3. Design system
+Button, Card, Badge, Input, Select, Textarea, Accordion, Modal.
+4. Layout shell
+Header + Footer + layout.tsx. Viewport on all breakpoints.
+5. Page shells
+All 11 routes exist, render layout, have correct metadata. No content.
+6. Content integration
+Paste locked copy from Part C into shells. No styling yet.
+7. Section components
+HeroSection, HowItWorks, etc. One component at a time.
+8. Forms + API
+Contact form, waitlist form, Resend API route.
+9. QA gate
+Mobile, a11y, Lighthouse — BEFORE any motion/polish.
+10. Motion + polish
+Animations ONLY after QA passes. No exceptions.
+11. Launch
+Merge to main → Vercel auto-deploys.
+PhaseWhat You Build
+1. ReadinessTHIS DOCUMENT. Freeze everything. Zero open items before coding.
+2. Primitivestailwind.config.ts tokens, fonts, global CSS. Zero page work.
+3. Design systemButton, Card, Badge, Input, Select, Textarea, Accordion, Modal.
+4. Layout shellHeader + Footer + layout.tsx. Viewport on all breakpoints.
+5. Page shellsAll 11 routes exist, render layout, have correct metadata. No content.
+6. Content integrationPaste locked copy from Part C into shells. No styling yet.
+7. Section componentsHeroSection, HowItWorks, etc. One component at a time.
+8. Forms + APIContact form, waitlist form, Resend API route.
+9. QA gateMobile, a11y, Lighthouse — BEFORE any motion/polish.
+10. Motion + polishAnimations ONLY after QA passes. No exceptions.
+11. LaunchMerge to main → Vercel auto-deploys.
+ℹ  Rule: phases are not concurrent. Do not start Phase 7 until Phase 6 is complete and committed to git.
+0.3  Cursor Prompt Engineering Rules
+Always include brand constraints in every prompt: 'Use Tailwind. Colors: saffron=#FF6B35, forest=#1A5C38. Font: Poppins. No inline styles.'
+Always specify variants explicitly: 'Build hover, focus, disabled, and loading states.'
+Always specify breakpoints: 'Mobile-first. Single column < 768px. Two column 768–1024px. Three column > 1024px.'
+Never ask Cursor to 'make it look nice' — give specific visual constraints from this document.
+After each component: 'Add aria-label, role, and keyboard navigation. Verify against WCAG 2.1 AA.'
+After page completion: 'Audit this page for: unused imports, console.logs, hardcoded colours, missing alt text.'
+Part A — Brand System Lock
+Everything in this section is FROZEN. Do not revisit during the build. If you want to change a token, update this document first, then update code.
+A.1  Logo Usage Matrix — LOCKED
+Variant
+File
+Use Context
+Minimum Width
+Never Use For
+Horizontal (colour)
+gozaika-logo-color.svg
+Desktop nav header, email headers, pitch decks
+140px
+App icon, favicon, < 100px contexts
+Horizontal (white)
+gozaika-logo-white.svg
+Dark nav bar, dark footer, dark backgrounds, dark OG images
+140px
+Light backgrounds — invisible
+Symbol only (flame/BAM)
+gozaika-app-icon.svg
+App icon, favicon 32px, OG image corner, social avatar, loading spinner
+32px
+Contexts where 'goZaika' name needs to be visible
+Horizontal (colour)
+gozaika-logo-color.svg
+Light mode OG images, press kit, letterhead
+200px
+Do not stretch. Maintain 600:153 aspect ratio.
+VariantFileUse ContextMinimum WidthNever Use For
+Horizontal (colour)gozaika-logo-color.svgDesktop nav header, email headers, pitch decks140pxApp icon, favicon, < 100px contexts
+Horizontal (white)gozaika-logo-white.svgDark nav bar, dark footer, dark backgrounds, dark OG images140pxLight backgrounds — invisible
+Symbol only (flame/BAM)gozaika-app-icon.svgApp icon, favicon 32px, OG image corner, social avatar, loading spinner32pxContexts where 'goZaika' name needs to be visible
+Horizontal (colour)gozaika-logo-color.svgLight mode OG images, press kit, letterhead200pxDo not stretch. Maintain 600:153 aspect ratio.
+COLOUR CORRECTION — ACTION REQUIRED NOW
+Before building: open both SVG files in VS Code and do find-and-replace:
+#EF8400  →  #FF6B35   (orange — both files)
+#37674E  →  #1A5C38   (green  — gozaika.svg only)
+Save. Verify in browser. Then copy to public/logos/. Do not copy uncorrected files.
+COLOUR CORRECTION — ACTION REQUIRED NOW
+Before building: open both SVG files in VS Code and do find-and-replace:
+#EF8400  →  #FF6B35   (orange — both files)
+#37674E  →  #1A5C38   (green  — gozaika.svg only)
+Save. Verify in browser. Then copy to public/logos/. Do not copy uncorrected files.
+A.2  Design Token File — LOCKED
+Create this file at lib/tokens.ts and import from here throughout the codebase. Never hardcode colour values in components.
+A.2.1  Colour Tokens
+export const colors = {
+// Primary brand
+saffron:        '#FF6B35',   // Saffron Flame — CTAs, 'go' lettermark, icon bg accent
+saffronLight:   '#FFF0E8',   // Saffron tint — card backgrounds, form focus rings
+forest:         '#1A5C38',   // Forest Deep — nav, footer, 'Zaika' lettermark
+forestLight:    '#EAF3DE',   // Forest tint — section backgrounds, badges
+gold:           '#D4A017',   // Heritage Gold — ratings, accent highlights
+goldLight:      '#FEF9E7',   // Gold tint — notification backgrounds
+cream:          '#FFF8F0',   // Warm Cream — page background, hero bg
+// Neutral scale
+gray900:        '#111827',   // Near-black — primary headings
+gray700:        '#374151',   // Body text
+gray500:        '#6B7280',   // Placeholder, secondary text
+gray200:        '#E5E7EB',   // Dividers, borders
+gray50:         '#F9FAFB',   // Subtle bg — alternating table rows
+white:          '#FFFFFF',
+// Semantic
+error:          '#DC2626',
+errorLight:     '#FEF2F2',
+success:        '#16A34A',
+successLight:   '#F0FDF4',
+warning:        '#D97706',
+warningLight:   '#FFFBEB',
+};
+A.2.2  Spacing Tokens
+Based on 4px base unit. All spacing is multiples of 4.
+export const spacing = {
+px: '1px',  0.5: '2px',  1: '4px',  1.5: '6px',
+2: '8px',   2.5: '10px', 3: '12px', 3.5: '14px',
+4: '16px',  5: '20px',   6: '24px', 7: '28px',
+8: '32px',  10: '40px',  12: '48px', 14: '56px',
+16: '64px', 20: '80px',  24: '96px', 32: '128px',
+};
+ℹ  Max content width: 1280px (max-w-screen-xl). Section padding: px-4 (mobile) → px-6 (md) → px-8 (lg). Section vertical padding: py-16 (mobile) → py-24 (lg).
+A.2.3  Border Radius Tokens
+export const radius = {
+none:  '0px',
+sm:    '4px',    // Input borders, small badges
+md:    '8px',    // Cards, buttons, form elements
+lg:    '12px',   // Section cards, feature blocks
+xl:    '16px',   // Modal overlays
+'2xl': '24px',   // Hero card, large feature panels
+full:  '9999px', // Pills, avatar circles, tags
+};
+A.2.4  Shadow Tokens
+export const shadows = {
+sm:     '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+md:     '0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05)',
+lg:     '0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.04)',
+card:   '0 2px 8px 0 rgb(26 92 56 / 0.08)',   // Forest-tinted card shadow
+focus:  '0 0 0 3px rgb(255 107 53 / 0.25)',   // Saffron focus ring
+none:   'none',
+};
+A.2.5  Motion Tokens — HARD CONSTRAINTS
+These are non-negotiable. Any animation outside these bounds fails QA.
+export const motion = {
+// Durations
+instant:  100,   // ms — tooltips, toggles
+fast:     150,   // ms — hover states, button feedback
+normal:   250,   // ms — most UI transitions
+slow:     400,   // ms — page-level entrances, modals
+max:      400,   // ms — HARD CAP. Nothing longer on element level.
+// Easings (as Framer Motion objects)
+standard: [0.2, 0, 0, 1],          // Material You standard curve
+decelerate: [0, 0, 0.2, 1],         // Entrances (things sliding in)
+accelerate: [0.4, 0, 1, 1],         // Exits (things sliding out)
+// Viewport trigger
+scrollTrigger: { once: true, amount: 0.15 },  // fire once at 15% in view
+stagger: 0.08,  // seconds between staggered children
+};
+MOTION RULES — NON-NEGOTIABLE
+NO parallax effects — ever. They cause motion sickness and hurt CLS.
+NO autoplay animations — user must scroll to trigger all entrances.
+NO duration > 400ms on any individual element.
+YES prefers-reduced-motion — wrap all Framer Motion in useReducedMotion hook.
+YES opacity-only on mobile — skip translate animations on < 768px for perf.
+YES test on real Android mid-range device (Samsung A-series) before launch.
+A.3  Typography Scale — LOCKED
+All type is set mobile-first. Desktop overrides are applied via Tailwind responsive prefixes.
+Scale Name
+Mobile
+Desktop
+Line-Height
+Letter-Spacing
+Usage
+xs
+12px / 0.75rem
+12px
+1.4
+0em
+Legal footnotes, captions, badge labels
+sm
+14px / 0.875rem
+14px
+1.5
+0em
+Form helper text, nav items (mobile), metadata
+base
+16px / 1rem
+16px
+1.625
+0em
+Body copy, form labels, list items
+lg
+18px / 1.125rem
+18px
+1.55
+-0.01em
+Lead text, card body, sub-headlines
+xl
+20px / 1.25rem
+20px
+1.4
+-0.015em
+Section intros, testimonial pull-quotes
+2xl
+22px / 1.375rem
+24px
+1.35
+-0.02em
+Card headings, feature titles
+3xl
+26px / 1.625rem
+30px
+1.25
+-0.025em
+Section headings (H2), page titles (inner)
+4xl
+30px / 1.875rem
+36px
+1.2
+-0.03em
+Homepage section headings (H1 inner pages)
+5xl
+36px / 2.25rem
+48px
+1.1
+-0.04em
+Hero sub-headline, For Restaurants H1
+6xl
+42px / 2.625rem
+60px
+1.05
+-0.05em
+Homepage hero headline ONLY
+7xl
+—
+72px
+1.0
+-0.06em
+Reserved — do not use in V1
+Scale NameMobileDesktopLine-HeightLetter-SpacingUsage
+xs12px / 0.75rem12px1.40emLegal footnotes, captions, badge labels
+sm14px / 0.875rem14px1.50emForm helper text, nav items (mobile), metadata
+base16px / 1rem16px1.6250emBody copy, form labels, list items
+lg18px / 1.125rem18px1.55-0.01emLead text, card body, sub-headlines
+xl20px / 1.25rem20px1.4-0.015emSection intros, testimonial pull-quotes
+2xl22px / 1.375rem24px1.35-0.02emCard headings, feature titles
+3xl26px / 1.625rem30px1.25-0.025emSection headings (H2), page titles (inner)
+4xl30px / 1.875rem36px1.2-0.03emHomepage section headings (H1 inner pages)
+5xl36px / 2.25rem48px1.1-0.04emHero sub-headline, For Restaurants H1
+6xl42px / 2.625rem60px1.05-0.05emHomepage hero headline ONLY
+7xl—72px1.0-0.06emReserved — do not use in V1
+A.3.1  Font Loading Strategy
+// app/layout.tsx
+import { Poppins, Playfair_Display } from 'next/font/google'
+const poppins = Poppins({
+subsets: ['latin'],
+weight: ['400', '500', '600'],
+variable: '--font-sans',
+display: 'swap',
+})
+const playfair = Playfair_Display({
+subsets: ['latin'],
+weight: ['400', '700'],
+variable: '--font-display',
+display: 'swap',
+})
+⚠  Two font families maximum. Do not add Inter, Hind, or any third family to Phase 1. Every additional font is an LCP penalty.
+A.3.2  Typography Usage Rules
+Element
+Font + Weight + Scale
+Hero headline
+Playfair Display 700, 6xl (mobile: 5xl)
+Hero sub-headline
+Poppins 400, xl, forest green
+Page H1 (inner pages)
+Playfair Display 700, 4xl (mobile: 3xl)
+Section headings H2
+Poppins 600, 3xl (mobile: 2xl)
+Card headings H3
+Poppins 600, 2xl
+Body text
+Poppins 400, base, gray700
+Nav items
+Poppins 500, sm
+CTA buttons (primary)
+Poppins 600, base, uppercase tracking-wide
+CTA buttons (secondary)
+Poppins 500, sm
+Form labels
+Poppins 500, sm, gray700
+Badge/tag text
+Poppins 600, xs, uppercase tracking-widest
+Legal text
+Poppins 400, sm, gray500
+ElementFont + Weight + Scale
+Hero headlinePlayfair Display 700, 6xl (mobile: 5xl)
+Hero sub-headlinePoppins 400, xl, forest green
+Page H1 (inner pages)Playfair Display 700, 4xl (mobile: 3xl)
+Section headings H2Poppins 600, 3xl (mobile: 2xl)
+Card headings H3Poppins 600, 2xl
+Body textPoppins 400, base, gray700
+Nav itemsPoppins 500, sm
+CTA buttons (primary)Poppins 600, base, uppercase tracking-wide
+CTA buttons (secondary)Poppins 500, sm
+Form labelsPoppins 500, sm, gray700
+Badge/tag textPoppins 600, xs, uppercase tracking-widest
+Legal textPoppins 400, sm, gray500
+Part B — Engineering Architecture Lock
+B.1  Canonical Route Map — FROZEN
+All route inconsistencies from the previous spec are resolved here. These are the canonical URLs. Use exactly these strings everywhere.
+Route (canonical)
+Page Title
+Dynamic?
+Notes
+/
+goZaika — Discover. Pickup. Devour.
+No
+Homepage. All V1 sections.
+/how-it-works
+How a BAM Bag Works | goZaika
+No
+Consumer journey page.
+/for-restaurants
+Partner With goZaika | For Restaurants
+No
+Partner pitch + interest form.
+/about
+About goZaika
+No
+Mission, values, team placeholder.
+/faq
+Frequently Asked Questions | goZaika
+No
+Consumer + restaurant FAQs.
+/contact
+Contact goZaika
+No
+General contact form.
+/privacy-policy
+Privacy Policy | goZaika
+No
+DPDP 2023 compliant.
+/terms-of-service
+Terms of Service | goZaika
+No
+Platform usage terms.
+/refund-policy
+Cancellation & Refund Policy | goZaika
+No
+BAM Bag refund rules.
+/food-safety-policy
+Food Safety Policy | goZaika
+No
+FSSAI 2024 e-commerce.
+/grievance-redressal
+Grievance Redressal | goZaika
+No
+DPDP GRO contact.
+Route (canonical)Page TitleDynamic?Notes
+/goZaika — Discover. Pickup. Devour.NoHomepage. All V1 sections.
+/how-it-worksHow a BAM Bag Works | goZaikaNoConsumer journey page.
+/for-restaurantsPartner With goZaika | For RestaurantsNoPartner pitch + interest form.
+/aboutAbout goZaikaNoMission, values, team placeholder.
+/faqFrequently Asked Questions | goZaikaNoConsumer + restaurant FAQs.
+/contactContact goZaikaNoGeneral contact form.
+/privacy-policyPrivacy Policy | goZaikaNoDPDP 2023 compliant.
+/terms-of-serviceTerms of Service | goZaikaNoPlatform usage terms.
+/refund-policyCancellation & Refund Policy | goZaikaNoBAM Bag refund rules.
+/food-safety-policyFood Safety Policy | goZaikaNoFSSAI 2024 e-commerce.
+/grievance-redressalGrievance Redressal | goZaikaNoDPDP GRO contact.
+301 REDIRECT RULES — implement in next.config.ts
+/privacy           → /privacy-policy          (permanent)
+/terms             → /terms-of-service         (permanent)
+/refund            → /refund-policy             (permanent)
+/food-safety       → /food-safety-policy        (permanent)
+/grievance         → /grievance-redressal        (permanent)
+/restaurants       → /for-restaurants           (permanent)
+301 REDIRECT RULES — implement in next.config.ts
+/privacy           → /privacy-policy          (permanent)
+/terms             → /terms-of-service         (permanent)
+/refund            → /refund-policy             (permanent)
+/food-safety       → /food-safety-policy        (permanent)
+/grievance         → /grievance-redressal        (permanent)
+/restaurants       → /for-restaurants           (permanent)
+// next.config.ts
+async redirects() {
+return [
+{ source: '/privacy',     destination: '/privacy-policy',     permanent: true },
+{ source: '/terms',       destination: '/terms-of-service',    permanent: true },
+{ source: '/refund',      destination: '/refund-policy',       permanent: true },
+{ source: '/food-safety', destination: '/food-safety-policy',  permanent: true },
+{ source: '/grievance',   destination: '/grievance-redressal', permanent: true },
+]
+},
+B.2  Component Contract List
+These are the props, states, and variants every component must implement. Cursor prompt: 'Build this component to the exact contract in the goZaika Build Readiness Pack.'
+B.2.1  Button
+interface ButtonProps {
+variant:  'primary' | 'secondary' | 'ghost' | 'danger'
+size:     'sm' | 'md' | 'lg'
+loading?: boolean     // shows spinner, disables click
+disabled?: boolean
+fullWidth?: boolean   // width: 100%
+leftIcon?: React.ReactNode
+rightIcon?: React.ReactNode
+onClick?: () => void
+type?: 'button' | 'submit' | 'reset'
+children: React.ReactNode
+}
+Primary = saffron bg, white text, hover darken 8%. Secondary = forest border + text, transparent bg, hover forest bg + white text. Ghost = no border, hover saffron-light bg. Danger = red bg.
+B.2.2  Card
+interface CardProps {
+variant?: 'default' | 'featured' | 'minimal'
+padding?: 'sm' | 'md' | 'lg'
+hover?: boolean  // applies shadow lift on hover
+as?: 'div' | 'article' | 'section'
+className?: string
+children: React.ReactNode
+}
+B.2.3  Input / Textarea
+interface InputProps {
+label: string          // always present (not placeholder-only)
+error?: string         // shows below input in red
+helper?: string        // shows below input in gray
+required?: boolean     // shows asterisk in label
+disabled?: boolean
+// + all standard HTML input attributes
+}
+ℹ  Accessibility rule: every input MUST have a visible label. placeholder text alone fails WCAG 2.1 AA 1.3.1.
+B.2.4  Accordion (FAQ)
+interface AccordionItem {
+id: string
+question: string
+answer: string
+category?: 'consumer' | 'restaurant' | 'safety'
+}
+interface AccordionProps {
+items: AccordionItem[]
+defaultOpen?: string   // id of initially open item
+allowMultiple?: boolean
+}
+B.2.5  Navigation
+interface NavItem { label: string; href: string; external?: boolean }
+interface HeaderProps {
+transparent?: boolean  // for hero overlay — not used in V1
+}
+Header states: default (forest green), scroll-active (same + shadow), mobile-open (full-height drawer). Must close drawer on route change.
+B.3  Form Strategy Decision — LOCKED
+DECISION: Resend-only for V1. No DB writes from website.
+Rationale: DB is not ready. Resend is operational today. Lead data arrives in email inbox.
+Action: Create a Notion or Airtable table. Manually log leads from Resend notifications.
+Phase 2: Swap /api/waitlist and /api/contact to write to PostgreSQL leads table.
+This swap is < 30 lines of code. Do not let this block launch.
+DECISION: Resend-only for V1. No DB writes from website.
+Rationale: DB is not ready. Resend is operational today. Lead data arrives in email inbox.
+Action: Create a Notion or Airtable table. Manually log leads from Resend notifications.
+Phase 2: Swap /api/waitlist and /api/contact to write to PostgreSQL leads table.
+This swap is < 30 lines of code. Do not let this block launch.
+B.3.1  Waitlist Form
+POST /api/waitlist
+Body: { name: string; email: string; city: string; role: 'consumer' | 'restaurant' }
+Success: { ok: true; message: 'Added to waitlist' }
+Error:   { ok: false; error: string }
+Sends email to: waitlist@gozaika.in (create this alias on Google Workspace free)
+B.3.2  Contact Form
+POST /api/contact
+Body: { name: string; email: string; subject: ContactSubject; message: string }
+type ContactSubject = 'general' | 'restaurant' | 'investor' | 'press' | 'careers'
+Sends email to: hello@gozaika.in
+B.3.3  Restaurant Interest Form
+POST /api/partner-interest
+Body: { restaurantName: string; ownerName: string; email: string;
+phone: string; city: string; cuisine: string;
+dailyCovers: string; message?: string }
+Sends email to: partners@gozaika.in
+B.3.4  Rate Limiting
+All API routes: max 5 requests per IP per 15 minutes
+Use upstash/ratelimit (free tier: 10K requests/day) OR simple in-memory Map for V1
+On limit exceeded: return 429 with { error: 'Too many requests. Try again later.' }
+B.4  Metadata Strategy
+Every page must export a generateMetadata function or static metadata object.
+Page
+OG Title
+Description (< 160 chars)
+/
+goZaika — India's First Mystery Meal Drop
+Discover chef-curated BAM Bags from top restaurants near you. Buy, pickup, and devour. Launching in Hyderabad.
+/how-it-works
+How a BAM Bag Works | goZaika
+Browse mystery drops, pay once, pickup at the restaurant. Chef-curated, allergen-disclosed, always a surprise.
+/for-restaurants
+Partner With goZaika | Recover Revenue, Not Reputation
+The lowest-commission meal-drop platform in India. 12% fee, zero delivery ops, your brand always first.
+/about
+About goZaika | Our Mission
+We built goZaika because India's best restaurants deserve a smarter exit for great food.
+/faq
+FAQ | goZaika
+Everything you need to know about BAM Bags, pickup, allergens, refunds, and restaurant partnerships.
+/contact
+Contact goZaika
+Get in touch with the goZaika team. Restaurants, investors, press, and collaborators welcome.
+PageOG TitleDescription (< 160 chars)
+/goZaika — India's First Mystery Meal DropDiscover chef-curated BAM Bags from top restaurants near you. Buy, pickup, and devour. Launching in Hyderabad.
+/how-it-worksHow a BAM Bag Works | goZaikaBrowse mystery drops, pay once, pickup at the restaurant. Chef-curated, allergen-disclosed, always a surprise.
+/for-restaurantsPartner With goZaika | Recover Revenue, Not ReputationThe lowest-commission meal-drop platform in India. 12% fee, zero delivery ops, your brand always first.
+/aboutAbout goZaika | Our MissionWe built goZaika because India's best restaurants deserve a smarter exit for great food.
+/faqFAQ | goZaikaEverything you need to know about BAM Bags, pickup, allergens, refunds, and restaurant partnerships.
+/contactContact goZaikaGet in touch with the goZaika team. Restaurants, investors, press, and collaborators welcome.
+Part C — Content Lock
+C.1  Claims Validation — Resolved
+ISSUE: '340 food lovers waiting' — REMOVED
+This was a placeholder claim. It is not evidence-backed. Fabricated social proof is a
+credibility risk with sophisticated audiences (investors, restaurant owners).
+REPLACEMENT: 'Be among the first to know when BAM Bags drop near you.'
+OR (once waitlist has real signups): 'Join [N] food lovers on the waitlist.'
+Populate dynamically from Resend/DB only when the number is real.
+RULE: No vanity metrics in Phase 1 copy
+Do not use: 'X restaurants ready to partner', 'Y cities launching', 'Z% satisfaction'
+Use instead: 'Launching in Hyderabad', 'Founding partners selected', 'Pilot Q3 2025'
+Exception: stats sourced from verifiable third parties (FSSAI data, NRAI reports) are fine.
+C.2  Commission Messaging Hierarchy — LOCKED
+There is exactly one way to talk about commission at each audience layer. Stick to this.
+Context
+Headline Number
+Full Disclosure
+Nav/Header CTA
+Not mentioned
+N/A
+Homepage teaser section
+'12% — lowest in category'
+No table needed
+For Restaurants hero
+'12% commission'
+Mention 0% onboarding period
+For Restaurants full page
+Complete table: 0% → 12% → 15% → volume → SaaS
+Full table with footnotes
+FAQ answer
+'0% for first 30 days, then 12% pilot'
+Link to full page for more
+ContextHeadline NumberFull Disclosure
+Nav/Header CTANot mentionedN/A
+Homepage teaser section'12% — lowest in category'No table needed
+For Restaurants hero'12% commission'Mention 0% onboarding period
+For Restaurants full pageComplete table: 0% → 12% → 15% → volume → SaaSFull table with footnotes
+FAQ answer'0% for first 30 days, then 12% pilot'Link to full page for more
+⚠  Do not quote '15%' as the headline number anywhere. 12% is the primary partner message. 15% is the post-pilot standard — mention it in fine print, not headlines.
+C.3  'Do Not Say' List — FROZEN
+BANNED WORDS AND PHRASES
+leftover — implies food was destined for disposal
+stale — obvious
+cheap — undermines premium positioning
+bargain / bargain meal — discount framing
+clearance — retail waste framing
+discount / discounted food — never
+rescue app / food rescue — charity framing, wrong positioning
+liquidation — sounds like insolvency
+surprise bag / surprise box — too generic (Olio, Too Good to Go territory)
+mystery box — Amazon/Loot Crate connotation, wrong category
+surplus food — acceptable in regulatory/legal context ONLY, not in marketing
+grab bag — carnival connotation
+last-minute deals — implies desperation
+food waste — fine in impact reports; never on main marketing pages
+C.4  Approved Replacement Language
+Instead of...
+Say...
+leftover food
+chef-released drops / intentional surplus bags
+discount meal
+premium-access mystery bag / curated drop
+rescue app
+controlled-access discovery platform
+cheap food
+restaurant-quality at an honest price
+surprise box
+BAM Bag / Big Aayega Maza
+food waste reduction
+turning kitchen craft into discovery moments
+unsold food
+chef-curated selection / restaurant-released bags
+grab and go
+pickup-ready / walk-in pickup
+Instead of...Say...
+leftover foodchef-released drops / intentional surplus bags
+discount mealpremium-access mystery bag / curated drop
+rescue appcontrolled-access discovery platform
+cheap foodrestaurant-quality at an honest price
+surprise boxBAM Bag / Big Aayega Maza
+food waste reductionturning kitchen craft into discovery moments
+unsold foodchef-curated selection / restaurant-released bags
+grab and gopickup-ready / walk-in pickup
+C.5  CTA Priority Per Page — LOCKED
+Each page has one primary conversion goal. Every CTA hierarchy flows from this.
+Page
+Primary CTA
+Secondary CTA
+Tertiary
+/
+Join Waitlist (email capture)
+Learn How It Works
+Become a Partner
+/how-it-works
+Join Waitlist
+—
+—
+/for-restaurants
+Express Partner Interest
+See Commission Table
+Contact Us
+/about
+Join Waitlist
+For Restaurants
+Contact
+/faq
+Join Waitlist
+Contact Us
+—
+/contact
+Send Message
+—
+—
+PagePrimary CTASecondary CTATertiary
+/Join Waitlist (email capture)Learn How It WorksBecome a Partner
+/how-it-worksJoin Waitlist——
+/for-restaurantsExpress Partner InterestSee Commission TableContact Us
+/aboutJoin WaitlistFor RestaurantsContact
+/faqJoin WaitlistContact Us—
+/contactSend Message——
+ℹ  There should be exactly one orange primary CTA button per page. Secondary CTAs use the ghost or secondary variant. Tertiary CTAs are text links only.
+C.6  Placeholder Content Rules — LOCKED
+V1 PROTOTYPE CONTENT POLICY
+Restaurant Cards: 3 cards labelled 'Partner Preview — Illustrative Only' in small grey text
+Testimonials: Remove entirely from V1. Do not ship placeholder testimonials.
+Team Section: One entry: 'Founding Team — Building in Hyderabad'. No photos, no names.
+Blog: Link in nav footer labelled 'Coming Soon' with no destination page (use #).
+Cities: 'Hyderabad — Launch City' only. No Mumbai/Bengaluru mentions in V1.
+App Store badges: Show greyed-out badges with 'Coming Soon' badge overlay.
+C.7  Consent Copy — Locked
+All forms that collect personal data must include this exact consent language below the submit button:
+Waitlist Form Consent
+"By joining the waitlist, you consent to receive product updates and launch notifications
+from goZaika. We will never share your data. Unsubscribe anytime.
+View our Privacy Policy."
+Contact + Partner Forms Consent
+"By submitting this form, you consent to GoZaika Technologies Pvt. Ltd. storing and
+processing your information to respond to your enquiry.
+View our Privacy Policy."
+Part D — Visual Asset Lock
+D.1  Style Direction Decision — LOCKED
+DECISION: Illustrated + abstract brand graphics for V1. No photography.
+Rationale: Phase 1 ships before pilot restaurants are onboarded. There is no real
+food photography to use. Stock food photography will undermine the premium positioning
+and signal 'another food delivery startup'. Illustrations are intentional, ownable, scalable.
+Phase 2: Replace illustrated restaurant cards with real photography from partner restaurants.
+Phase 2: Add hero photo strip after first 5 pilot bags are documented.
+D.1.1  V1 Illustration Approach
+Style: Flat, geometric, bold colour fills. No gradients. Consistent with brand palette.
+Elements: BAM Bag (SVG already exists), flame icon, map pin for Hyderabad, spice/food icons
+Generate with: Midjourney (--style raw, flat illustration), or create in Figma using shapes
+Minimum: 4 illustrations — BAM Bag hero, 3 How-It-Works step icons
+All illustrations must be exportable as SVG or high-res PNG with transparent background
+⚠  Do not use Unsplash/Pexels food photography. It signals 'lorem ipsum' website, not a real product.
+D.2  OG Image Specification
+All OG images: 1200×630px PNG. No SVG (social platforms don't support SVG OG images).
+Page
+OG Template
+Background
+Text
+/
+Hero OG
+Forest Green (#1A5C38)
+goZaika — white wordmark. 'India's first mystery meal drop.' — white Poppins.
+/for-restaurants
+Partner OG
+Saffron (#FF6B35)
+goZaika — white wordmark. 'The lowest-commission meal drop platform in India.'
+/how-it-works
+How-It OG
+Cream (#FFF8F0)
+goZaika — colour wordmark. 'Browse. Buy. Pickup. Devour.'
+All other pages
+Default OG
+Forest Green
+goZaika — white wordmark. Page title in Playfair Display.
+PageOG TemplateBackgroundText
+/Hero OGForest Green (#1A5C38)goZaika — white wordmark. 'India's first mystery meal drop.' — white Poppins.
+/for-restaurantsPartner OGSaffron (#FF6B35)goZaika — white wordmark. 'The lowest-commission meal drop platform in India.'
+/how-it-worksHow-It OGCream (#FFF8F0)goZaika — colour wordmark. 'Browse. Buy. Pickup. Devour.'
+All other pagesDefault OGForest GreengoZaika — white wordmark. Page title in Playfair Display.
+OG images can be generated with Vercel's @vercel/og library (free, automatic). Add to each page's generateMetadata.
+// app/opengraph-image.tsx — auto-generated by Next.js
+import { ImageResponse } from 'next/og'
+export const runtime = 'edge'
+export const size = { width: 1200, height: 630 }
+ℹ  OG image generation via @vercel/og runs at edge, no cold starts, free on Hobby plan. All fonts and colours are inline — no external dependencies.
+D.3  Social Graphics Pack (Phase 1 — minimal)
+Profile avatar: gozaika-app-icon.svg on Forest Green square, 400×400px PNG
+Instagram bio link cover: 1080×1080 with wordmark + 'Coming to Hyderabad soon'
+LinkedIn banner: 1584×396 with wordmark + tagline on Forest Green
+WhatsApp group icon: BAM Bag symbol, 500×500px, Forest Green bg
+ℹ  All social graphics can be created in Canva Free using the SVG logos you already have. This is a 30-minute task, not a blocker.
+Part E — Legal & Compliance Lock
+E.1  Legal Document Status
+Document
+Status
+Privacy Policy (DPDP 2023)
+✓ Drafted in goZaika Content Package. Requires legal review before publishing.
+Terms of Service
+✓ Drafted in goZaika Content Package. Requires legal review.
+Refund & Cancellation Policy
+✓ Drafted in goZaika Content Package. Requires legal review.
+Food Safety Policy
+✓ Drafted in goZaika Content Package. FSSAI e-commerce compliance.
+Grievance Redressal Policy
+✓ Drafted in goZaika Content Package. DPDP GRO requirement.
+DocumentStatus
+Privacy Policy (DPDP 2023)✓ Drafted in goZaika Content Package. Requires legal review before publishing.
+Terms of Service✓ Drafted in goZaika Content Package. Requires legal review.
+Refund & Cancellation Policy✓ Drafted in goZaika Content Package. Requires legal review.
+Food Safety Policy✓ Drafted in goZaika Content Package. FSSAI e-commerce compliance.
+Grievance Redressal Policy✓ Drafted in goZaika Content Package. DPDP GRO requirement.
+LEGAL REVIEW ACTION
+Before launch: share the 5 legal documents with a startup lawyer for a single review pass.
+Cost: approximately ₹3,000–₹8,000 for a document review retainer.
+Minimum acceptable: have a lawyer confirm Privacy Policy + Terms before collecting emails.
+You cannot collect personal data (even just email addresses for a waitlist) without a
+published, legally adequate Privacy Policy. This is a DPDP 2023 requirement.
+E.2  Required Legal Elements Checklist
+✓  Privacy Policy: linked in footer, linked from all forms
+✓  Cookie notice: simple banner if using GA4 (analytics cookies)
+✓  Consent checkbox on waitlist form (pre-checked is NOT allowed under DPDP 2023)
+✓  GRO (Grievance Redressal Officer) name and contact in grievance page
+✓  Company legal name 'GoZaika Technologies Pvt. Ltd.' in footer
+✗  CIN number: Not available until India Pvt. Ltd. is incorporated. Use placeholder.
+✗  FSSAI Central Licence number: Not available until applied. Add placeholder.
+⚠  Footnote all placeholders with '[Pending incorporation]' or '[Pending licence approval]' so you and reviewers know what's real.
+Part F — Measurement Lock
+F.1  Analytics Setup
+Install GA4 via next/third-parties (Next.js built-in, zero performance cost vs manual script tag).
+// app/layout.tsx
+import { GoogleAnalytics } from '@next/third-parties/google'
+// In <body>: <GoogleAnalytics gaId='G-XXXXXXXXXX' />
+Create a free GA4 property at analytics.google.com. Add the measurement ID to .env.local:
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+F.2  Event Taxonomy — FROZEN
+These are the only custom events for Phase 1. Do not add more without updating this document.
+Event Name
+Trigger
+Parameters
+page_view
+Every route change (automatic via GA4)
+page_title, page_location
+cta_click
+Any CTA button clicked
+cta_text, cta_location, page_path
+waitlist_form_start
+User focuses first field of waitlist form
+page_path
+waitlist_form_submit
+User clicks submit on waitlist form
+city, role
+waitlist_form_success
+API returns 200 for waitlist
+city, role
+waitlist_form_error
+API returns error for waitlist
+error_type
+contact_form_submit
+User clicks submit on contact form
+subject
+contact_form_success
+API returns 200 for contact
+subject
+partner_interest_submit
+User submits restaurant interest form
+city, cuisine
+partner_interest_success
+API returns 200 for partner form
+city
+nav_click
+Any nav link clicked
+nav_item, nav_location
+faq_expand
+User opens an accordion item
+faq_id, faq_category
+Event NameTriggerParameters
+page_viewEvery route change (automatic via GA4)page_title, page_location
+cta_clickAny CTA button clickedcta_text, cta_location, page_path
+waitlist_form_startUser focuses first field of waitlist formpage_path
+waitlist_form_submitUser clicks submit on waitlist formcity, role
+waitlist_form_successAPI returns 200 for waitlistcity, role
+waitlist_form_errorAPI returns error for waitlisterror_type
+contact_form_submitUser clicks submit on contact formsubject
+contact_form_successAPI returns 200 for contactsubject
+partner_interest_submitUser submits restaurant interest formcity, cuisine
+partner_interest_successAPI returns 200 for partner formcity
+nav_clickAny nav link clickednav_item, nav_location
+faq_expandUser opens an accordion itemfaq_id, faq_category
+F.3  Key Funnel Definitions
+Funnel Name
+Steps
+Waitlist Conversion
+page_view (/) → cta_click (Get Early Access) → waitlist_form_start → waitlist_form_success
+Restaurant Lead
+page_view (/for-restaurants) → cta_click (Express Interest) → partner_interest_success
+FAQ Engagement
+page_view (/faq) → faq_expand (3+ items) — indicates high-intent reader
+Funnel NameSteps
+Waitlist Conversionpage_view (/) → cta_click (Get Early Access) → waitlist_form_start → waitlist_form_success
+Restaurant Leadpage_view (/for-restaurants) → cta_click (Express Interest) → partner_interest_success
+FAQ Engagementpage_view (/faq) → faq_expand (3+ items) — indicates high-intent reader
+F.3.1  Search Console Setup
+Go to search.google.com/search-console
+Add property: URL prefix → https://gozaika.vercel.app
+Verify via HTML meta tag in app/layout.tsx
+Submit sitemap: https://gozaika.vercel.app/sitemap.xml
+Next.js generates sitemap automatically via app/sitemap.ts (add this file)
+Part G — Release & Ops Lock
+G.1  Performance Budget — HARD LIMITS
+These numbers are PASS/FAIL. The build does not ship if any fail.
+Total JavaScript (compressed):  < 200 KB   (Next.js default ~100 KB with tree-shaking)
+Total page weight:              < 1 MB     (most pages should be < 300 KB in V1)
+Largest Contentful Paint (LCP): < 2.5s     on simulated 4G mobile in Chrome DevTools
+Cumulative Layout Shift (CLS):  < 0.1      — no shifting as fonts/images load
+Interaction to Next Paint:      < 200ms    — no slow click handlers
+Font FOUT:                       None       — use font-display: swap + size-adjust trick
+Images:                          WebP only  — use next/image for all images
+Third-party scripts:             Maximum 2  (GA4 + Resend webhook). No chat widgets.
+These numbers are PASS/FAIL. The build does not ship if any fail.
+Total JavaScript (compressed):  < 200 KB   (Next.js default ~100 KB with tree-shaking)
+Total page weight:              < 1 MB     (most pages should be < 300 KB in V1)
+Largest Contentful Paint (LCP): < 2.5s     on simulated 4G mobile in Chrome DevTools
+Cumulative Layout Shift (CLS):  < 0.1      — no shifting as fonts/images load
+Interaction to Next Paint:      < 200ms    — no slow click handlers
+Font FOUT:                       None       — use font-display: swap + size-adjust trick
+Images:                          WebP only  — use next/image for all images
+Third-party scripts:             Maximum 2  (GA4 + Resend webhook). No chat widgets.
+G.2  Accessibility Requirements — WCAG 2.1 AA
+Non-negotiable accessibility gates
+Colour contrast: minimum 4.5:1 for body text, 3:1 for large text (check at webaim.org/contrast)
+Forest Green #1A5C38 on white: 8.9:1 ✓   Saffron #FF6B35 on white: 3.0:1 — use for large text only
+All images: alt text. Decorative images: alt='' with role='presentation'
+All form inputs: <label> with htmlFor matching input id
+All interactive elements: keyboard accessible (Tab, Enter, Space, Escape where applicable)
+Skip-to-content link: hidden, shown on focus, at top of every page
+No colour-only information: icons + colour, not colour alone
+Screen reader test: run VoiceOver (Mac) or NVDA (Windows) on every page before launch
+G.3  CI Checks (GitHub Actions)
+Create .github/workflows/ci.yml with these checks on every push to main:
+name: CI
+on: [push, pull_request]
+jobs:
+check:
+runs-on: ubuntu-latest
+steps:
+- uses: actions/checkout@v4
+- uses: actions/setup-node@v4
+with: { node-version: '20' }
+- run: npm ci
+- run: npm run lint          # zero ESLint errors
+- run: npm run typecheck     # zero TypeScript errors (strict)
+- run: npm run build         # next build must succeed
+Add to package.json:
+"typecheck": "tsc --noEmit"
+"lint": "next lint"
+G.4  Launch Acceptance Checklist
+Run through this list on the day before Vercel deploy to main.
+Brand
+✓  Logo SVGs colour-corrected (#FF6B35, #1A5C38)
+✓  White logo renders on dark header
+✓  Favicon shows in browser tab
+✓  OG images generated and visible when URL is shared in WhatsApp
+Content
+✓  No placeholder '340 food lovers' claim
+✓  No fabricated testimonials
+✓  Restaurant cards labelled 'Partner Preview — Illustrative Only'
+✓  All 'Do Not Say' words absent from entire codebase (grep check)
+✓  Privacy Policy, Terms, Refund, Food Safety, Grievance all published
+✓  Consent copy present below all data collection forms
+Engineering
+✓  All 11 routes render without error
+✓  301 redirects in next.config.ts working
+✓  Contact form sends email (test with real Resend key)
+✓  Waitlist form sends email (test with real Resend key)
+✓  Environment variables confirmed in Vercel dashboard
+✓  next build passes with zero errors and zero warnings
+✓  TypeScript strict mode: zero errors
+Performance
+✓  Lighthouse Performance > 85 on mobile
+✓  Lighthouse Accessibility > 95
+✓  Lighthouse SEO > 95
+✓  CLS < 0.1 (no layout shift on load)
+✓  LCP < 2.5s on 4G mobile simulation
+Mobile QA
+✓  Tested on real iOS device (Safari)
+✓  Tested on real Android device (Chrome)
+✓  No horizontal scroll at any breakpoint
+✓  Tap targets minimum 44×44px
+✓  Form usable on mobile keyboard (no input hidden behind keyboard)
+Analytics
+✓  GA4 property connected, test event showing in DebugView
+✓  Search Console property verified
+✓  Sitemap submitted to Search Console
+G.5  Rollback Policy
+Vercel preserves all previous deployments. If a post-launch issue is found:
+Go to Vercel dashboard → Deployments
+Click the last known-good deployment
+Click 'Promote to Production'
+Post-mortem: identify root cause in a GitHub issue before re-deploying fix
+Primary incident contact (V1 — pre-team): Founder reviews Vercel build logs and Resend delivery logs. No on-call rotation needed for Phase 1 static site.
+Appendix — Quick Reference Card
+Colour Quick Reference
+Token
+Hex
+Usage
+saffron
+#FF6B35
+CTAs, 'go' in wordmark, BAM Bag, icon accents
+forest
+#1A5C38
+Header, footer, headings, 'Zaika' in wordmark
+gold
+#D4A017
+Ratings, accent elements, Heritage Gold
+cream
+#FFF8F0
+Page background, hero bg
+saffronLight
+#FFF0E8
+Card bg, hover states, saffron tints
+forestLight
+#EAF3DE
+Section bg, badges, forest tints
+gray700
+#374151
+Body text
+gray500
+#6B7280
+Secondary text, placeholders
+gray200
+#E5E7EB
+Dividers, borders
+white
+#FFFFFF
+Logo on dark, text on coloured bg
+TokenHexUsage
+saffron#FF6B35CTAs, 'go' in wordmark, BAM Bag, icon accents
+forest#1A5C38Header, footer, headings, 'Zaika' in wordmark
+gold#D4A017Ratings, accent elements, Heritage Gold
+cream#FFF8F0Page background, hero bg
+saffronLight#FFF0E8Card bg, hover states, saffron tints
+forestLight#EAF3DESection bg, badges, forest tints
+gray700#374151Body text
+gray500#6B7280Secondary text, placeholders
+gray200#E5E7EBDividers, borders
+white#FFFFFFLogo on dark, text on coloured bg
+Decision Log (all open items resolved)
+Decision
+Resolution
+Route naming: /privacy vs /privacy-policy
+Use /privacy-policy everywhere. 301 from /privacy.
+Commission headline: 12% or 15%?
+12% is the partner headline. 15% is fine print.
+'340 food lovers' claim
+Removed. Replace with dynamic count when real.
+Testimonials in V1
+Removed entirely. Do not ship placeholder testimonials.
+Form backend: DB or Resend?
+Resend-only for Phase 1. DB swap in Phase 2.
+Photography vs illustrations
+Illustrations only for V1. Real photos in Phase 2.
+Framer vs Next.js
+Next.js confirmed. No Framer.
+Domain purchase timing
+After 3+ positive restaurant conversations.
+Font count
+Two fonts maximum: Poppins + Playfair Display.
+Motion: parallax allowed?
+No. Absolutely not. Scroll-triggered fade-ups only.
+Testimonials: ship in V1?
+No. Remove. Real quotes only.
+GA4: include in V1?
+Yes. Zero performance cost via @next/third-parties.
+DecisionResolution
+Route naming: /privacy vs /privacy-policyUse /privacy-policy everywhere. 301 from /privacy.
+Commission headline: 12% or 15%?12% is the partner headline. 15% is fine print.
+'340 food lovers' claimRemoved. Replace with dynamic count when real.
+Testimonials in V1Removed entirely. Do not ship placeholder testimonials.
+Form backend: DB or Resend?Resend-only for Phase 1. DB swap in Phase 2.
+Photography vs illustrationsIllustrations only for V1. Real photos in Phase 2.
+Framer vs Next.jsNext.js confirmed. No Framer.
+Domain purchase timingAfter 3+ positive restaurant conversations.
+Font countTwo fonts maximum: Poppins + Playfair Display.
+Motion: parallax allowed?No. Absolutely not. Scroll-triggered fade-ups only.
+Testimonials: ship in V1?No. Remove. Real quotes only.
+GA4: include in V1?Yes. Zero performance cost via @next/third-parties.
+goZaika Build Readiness Pack v1.0  ·  Confidential  ·  Freeze before building

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Restaurant hero illustration v2">
+  <rect width="800" height="600" fill="#FFF8F0"/>
+  <rect x="0" y="350" width="800" height="250" fill="#1A5C38"/>
+  <rect x="70" y="150" width="660" height="230" rx="26" fill="#EAF3DE"/>
+  <rect x="110" y="188" width="330" height="155" rx="16" fill="#FFF8F0"/>
+  <rect x="470" y="188" width="220" height="155" rx="16" fill="#FFF8F0"/>
+  <rect x="145" y="216" width="38" height="106" rx="8" fill="#D4A017"/>
+  <rect x="198" y="246" width="38" height="76" rx="8" fill="#D4A017"/>
+  <rect x="251" y="196" width="38" height="126" rx="8" fill="#D4A017"/>
+  <rect x="304" y="226" width="38" height="96" rx="8" fill="#D4A017"/>
+  <path d="M145 186 C208 128, 265 130, 342 178" fill="none" stroke="#FF6B35" stroke-width="10" stroke-linecap="round"/>
+  <polygon points="335,160 364,183 329,193" fill="#FF6B35"/>
+  <rect x="536" y="234" width="88" height="74" rx="12" fill="#FF6B35"/>
+  <path d="M548 234 C548 216, 612 216, 612 234" fill="none" stroke="#1A5C38" stroke-width="6" stroke-linecap="round"/>
+</svg>

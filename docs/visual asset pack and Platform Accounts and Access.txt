@@ -1,0 +1,101 @@
+
+5) Visual Asset Pack
+
+ Asset policy finalized (stock allowed in V1 or not): Stock allowed as placeholder. Ensure you follow the size, style and other specified guidelines. If you are ale to create high quality illustration with an AI prompt, that is acceptable. create world class high quality artifacts.
+
+ Required V1 assets delivered (or placeholders explicitly approved): Placeholders are approved.. create world class high quality artifacts.
+
+ Hero BAM Bag visual: Create a placeholder. Use gozaika colors. Look at comparable services for grubhub or doordash or any other global/Indian successful related brand website for inspiration. create world class high quality artifacts.
+
+ How-it-works icons (3): Create a placeholder. Use gozaika colors. Look at comparable services like  grubhub or doordash or any other global/Indian successful related brand website for inspiration. create world class high quality artifacts.
+
+
+ About visual: Create a placeholder. Use gozaika colors. Look at  global/Indian successful related brand website for inspiration. create world class high quality artifacts.
+
+
+ For-restaurants visual: Create a placeholder. Use gozaika colors.  Look at  global/Indian successful related brand website for inspiration. create world class high quality artifacts.
+
+
+
+ OG templates: Create a placeholder. Use gozaika colors.  Look at  global/Indian successful related brand website for inspiration . create world class high quality artifacts.
+
+
+ Social profile/banner pack: create world class high quality artifacts.
+
+
+6) Platform Accounts + Access
+GITHUB:
+GitHub Repo: https://github.com/gozaika/goz-website.git 
+Branch strategy confirmed: I am just starting off. So, let's Keep things very simple. If you feel like two ranches dev + main are still a good idea, do so. Else just main. decide on Branch protection enabled for main accodingly.
+Required checks configured (CI gates)
+
+VERCEL: 
+projectid: prj_pc399aPXe8ATjZ5h0DvCU9nwiFFA  userid=iwCo8bjV4or0zRtKwL1S797l	teamid=team_NAkhZyT8h7dhd1PVj6teXKVd 
+The vercel project gozaika-website is linked to https://github.com/gozaika/goz-website.git. Currenlty it has boiler plate nextjs project created by vercel
+public url for deployed project: https://goz-website-one.vercel.app/
+
+I am just starting off. So, let's Keep only one environment currently instead of maintaining a production and preview. 
+
+Cursor is configured with my GitHub account:
+
+GA4:
+Stream Name: goz-website
+Stream URL: https://goz-website-one.vercel.app/
+Stream ID: 14394436839
+Measurement Id: G-4DTVBZ9RM6
+Conversion events : Not defined. help me defined Conversion events
+google tag code:
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4DTVBZ9RM6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4DTVBZ9RM6');
+</script>
+
+
+
+Supabase:
+project url: https://nxvthewcwimrpjbzbcvx.supabase.co
+publishable key:sb_publishable_UdIo3YZt5UG7dlrLAcfwsQ_DPQuyWuc
+Connection string - postgresql://postgres:Iloveportugalgozaika@db.nxvthewcwimrpjbzbcvx.supabase.co:5432/postgres
+project-ref nxvthewcwimrpjbzbcvx
+RLS enabled
+database rules: .cursor\rules\supabase-postgres-schema-style.mdc
+
+
+Resend
+API key:re_9D6aVthK_FjtmXZmx44Vv2sm6mKEgdbna
+Send email code:
+import { Resend } from 'resend';
+const resend = new Resend('re_9D6aVthK_FjtmXZmx44Vv2sm6mKEgdbna');
+resend.emails.send({
+  from: 'onboarding@resend.dev',
+  to: 'venkat.one.reddy@gmail.com',
+  subject: 'Hello World',
+  html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
+});
+
+
+Sender identity strategy: Currently i would like to use venkat.one.reddy@gmail.com. When i purchase domain, I will change this appriately.
+
+
+Upstash (Rate Limit)
+Redis/goZaika
+UPSTASH_REDIS_REST_URL="https://smooth-ladybird-101867.upstash.io"
+UPSTASH_REDIS_REST_TOKEN="gQAAAAAAAY3rAAIocDFhMGI5ODFjODViYjg0ZThkODA0NDhmYWQ2ZTdmODYyY3AxMTAxODY3"
+REDIS_URL="rediss://default:gQAAAAAAAY3rAAIocDFhMGI5ODFjODViYjg0ZThkODA0NDhmYWQ2ZTdmODYyY3AxMTAxODY3@smooth-ladybird-101867.upstash.io:6379"
+
+Cloudflare Turnstile:
+Site key: 0x4AAAAAAC_erZjtxAvpkr18   Secret key:0x4AAAAAAC_erQ80Rwvo686xC0Tl87OYmlU
+Allowed domains: goz-website-one.vercel.app
+
+
+Mailbox Provider: 
+I will switch to zoho once i purchase my own domain.  Until the, lets use venkat_1_reddy@yahoo.com and venkat.one.reddy@gmail.com. Setup code base such that it uses a variable exposed in config file for each of these email aliases. Currently set either of above two emails to these variables. I will set  up zoho and change variables once i purchase domains.
+aliases: hello@, waitlist@,  partners@,  privacy@,  refund@,  safety@,  grievance@, 
+
+
+SPF/DKIM/DMARC: these will be configured when i purchase domain

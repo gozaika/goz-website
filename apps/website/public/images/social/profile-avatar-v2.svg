@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" role="img" aria-label="goZaika profile avatar v2">
+  <rect width="400" height="400" rx="64" fill="#1A5C38"/>
+  <circle cx="200" cy="200" r="120" fill="#EAF3DE"/>
+  <rect x="146" y="118" width="108" height="142" rx="14" fill="#FF6B35"/>
+  <path d="M160 118 C160 88, 240 88, 240 118" fill="none" stroke="#1A5C38" stroke-width="10" stroke-linecap="round"/>
+  <path d="M200 154 C213 142, 229 148, 233 164 C237 177, 227 191, 214 197 C210 186, 200 179, 190 182 C184 170, 188 157, 200 154Z" fill="#FFF8F0"/>
+</svg>

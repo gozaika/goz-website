@@ -1,0 +1,943 @@
+goZaika
+Execution Briefing  v1.0
+Resolves all open actions · Single source of truth · Freeze before building
+Locked Sections  ·  Routes  ·  Legal Copy  ·  Assets  ·  Database  ·  Analytics  ·  Perf  ·  A11y  ·  Ops
+THIS DOCUMENT RESOLVES
+All heading-only sections from Build Readiness Pack (A.1, A.3.2, C.3–C.7, F.2, G.1, G.2)
+Canonical route matrix — one source, frozen
+Full legal copy — 5 documents, DPDP 2023 compliant
+Asset production pack — exact Midjourney prompts + stock alternatives
+Database architecture change — Supabase (PostgreSQL) from Day 1, zero cost
+Email/mailbox setup without Google Workspace
+Analytics — copyable TypeScript event tracker
+Performance budget — concrete numbers, world-class bar
+Accessibility protocol — explicit checklist with tooling
+Deployment governance
+THIS DOCUMENT RESOLVES
+All heading-only sections from Build Readiness Pack (A.1, A.3.2, C.3–C.7, F.2, G.1, G.2)
+Canonical route matrix — one source, frozen
+Full legal copy — 5 documents, DPDP 2023 compliant
+Asset production pack — exact Midjourney prompts + stock alternatives
+Database architecture change — Supabase (PostgreSQL) from Day 1, zero cost
+Email/mailbox setup without Google Workspace
+Analytics — copyable TypeScript event tracker
+Performance budget — concrete numbers, world-class bar
+Accessibility protocol — explicit checklist with tooling
+Deployment governance
+Part I — Locked Section Content Fills
+Sections A.1, A.3.2, C.3, C.4, C.5, C.6, C.7, F.2, G.1, G.2 from the Build Readiness Pack are fully expanded here as copyable plain text.
+I.1  A.1 — Logo Usage Matrix (Plain Text)
+Horizontal Colour (gozaika-logo-color.svg): Desktop nav header. Email headers. Pitch decks. Press kit. Letterhead. Minimum width 140px. Aspect ratio 600:153 — never distort. Do not use below 100px or as an app icon.
+Horizontal White (gozaika-logo-white.svg): Any dark background. Dark nav bar. Dark footer. Dark-mode OG images. Email footer on dark bg. Minimum width 140px. Do not use on light backgrounds — it will be invisible.
+Symbol Only (gozaika-app-icon.svg): App icon (iOS, Android). Favicon 32px+. Social media avatar. OG image corner mark. Loading spinner. WhatsApp group icon. Minimum 32px. This is the only variant that works below 100px.
+Colour on Dark: No separate file needed. Use the white wordmark on the Forest Green (#1A5C38) background — this is the header state.
+Prohibited in all variants: Stretching or squashing the aspect ratio. Adding drop shadows. Placing on busy photo backgrounds without a solid colour panel behind it. Rotating. Changing any colour value. Adding taglines or additional text inside the logo lockup.
+I.2  A.3.2 — Typography Usage Rules (Plain Text)
+Hero headline: Playfair Display weight 700. Scale 6xl (60px desktop, 42px mobile). Line-height 1.05. Letter-spacing -0.05em. Colour: gray900 (#111827). Maximum 2 lines. Used only on the homepage hero.
+Hero sub-headline: Poppins weight 400. Scale xl (20px). Line-height 1.4. Letter-spacing -0.015em. Colour: forest (#1A5C38). Used only on homepage hero below the main headline.
+Inner page H1: Playfair Display weight 700. Scale 4xl (36px desktop, 30px mobile). Line-height 1.2. Letter-spacing -0.03em. Colour: gray900. One per page. Never bold Poppins for H1.
+Section headings H2: Poppins weight 600. Scale 3xl (30px desktop, 26px mobile). Line-height 1.25. Letter-spacing -0.025em. Colour: gray900 or forest green on light backgrounds.
+Card headings H3: Poppins weight 600. Scale 2xl (24px). Line-height 1.35. Letter-spacing -0.02em. Colour: gray900.
+Body text: Poppins weight 400. Scale base (16px). Line-height 1.625. Letter-spacing 0em. Colour: gray700 (#374151). Maximum line length: 680px (72ch) for optimal readability.
+Navigation items: Poppins weight 500. Scale sm (14px). Line-height 1.5. Colour: white on dark header. No uppercase.
+Primary CTA buttons: Poppins weight 600. Scale base (16px). Letter-spacing 0.025em. Uppercase: YES for primary buttons only. Colour: white on saffron background.
+Badge and tag text: Poppins weight 600. Scale xs (12px). Letter-spacing 0.08em. Uppercase: YES. Used for cuisine tags, allergen badges, status labels.
+Form labels: Poppins weight 500. Scale sm (14px). Colour: gray700. Always visible above the input — never inside as placeholder-only.
+Legal body text: Poppins weight 400. Scale sm (14px). Line-height 1.7. Colour: gray500. Used only on /privacy-policy, /terms-of-service, /refund-policy, /food-safety-policy, /grievance-redressal.
+Font weight restriction: Use ONLY weights 400, 500, 600. Weight 700 only in Playfair Display. Never bold (700) Poppins in UI — it reads as shouting. Weight 300 (light) is never used.
+I.3  C.3 — Do Not Say List (Plain Text — for grep check)
+The following strings must produce zero results when grepped across the entire codebase src/ directory before launch. Grep command: grep -ri --include='*.tsx' --include='*.ts' --include='*.mdx' 'TERM' src/
+Banned terms: leftover, left-over, stale, stale food, cheap, cheaply, bargain, clearance, discount meal, discount food, food rescue, rescue app, liquidation, surplus food [marketing only — allowed in legal/regulatory text], surprise box, mystery box, grab bag, last-minute deal, last minute deal, food waste [marketing only], unsold food, unwanted food, excess food.
+Allowed in legal/regulatory context only (not in marketing copy): surplus, surplus food [FSSAI compliance pages only].
+I.4  C.4 — Replacement Language (Plain Text)
+Instead of 'leftover food' say: chef-released drops | chef-curated selection | intentional release bag.
+Instead of 'discount meal' say: premium-access mystery bag | curated drop | BAM Bag.
+Instead of 'rescue app' say: controlled-access discovery platform | mystery meal drop platform.
+Instead of 'cheap food' say: restaurant-quality food at an honest price | chef-value pricing.
+Instead of 'surprise box' or 'mystery box' say: BAM Bag | Big Aayega Maza drop.
+Instead of 'food waste reduction' say: turning kitchen craft into discovery moments | giving great food a great exit.
+Instead of 'unsold food' say: chef-curated selection | restaurant-released bag | intentional surplus drop.
+Instead of 'grab and go' say: pickup-ready | walk-in pickup | walkout-ready bag.
+Instead of 'deal' or 'deal seeker' say: discovery | discovery-first consumer | food explorer.
+I.5  C.5 — CTA Priority (Plain Text)
+Homepage (/): PRIMARY = 'Join Waitlist' (email capture, scrolls to #waitlist, saffron button). SECONDARY = 'See How It Works' (ghost button, links to /how-it-works). TERTIARY = 'Become a Partner' (text link in restaurant teaser section, links to /for-restaurants).
+How It Works (/how-it-works): PRIMARY = 'Join Waitlist' (saffron button at page bottom). No secondary CTA.
+For Restaurants (/for-restaurants): PRIMARY = 'Express Partner Interest' (scrolls to #partner-form, saffron button). SECONDARY = 'View Commission Table' (anchor scroll, secondary button). TERTIARY = 'Contact Us' (text link).
+About (/about): PRIMARY = 'Join Waitlist' (saffron button at page bottom). SECONDARY = 'For Restaurants' (ghost button, links to /for-restaurants).
+FAQ (/faq): PRIMARY = 'Join Waitlist' (saffron button at page bottom). SECONDARY = 'Contact Us' (text link for unanswered questions).
+Contact (/contact): PRIMARY = 'Send Message' (form submit, saffron button). No secondary.
+Legal pages: No CTA. Footer navigation only.
+I.6  C.6 — Placeholder Content Rules (Plain Text)
+Restaurant Cards (3 cards on homepage): Render with a discrete label in the top-right corner of each card: 'Preview' in a gray badge. Card data should be: 'The Spice Lab — Contemporary Indian · Banjara Hills · Pickup 7–9 PM · Bag value ₹600+', 'Garden Terrace — Modern Vegetarian · Jubilee Hills · Pickup 6–8 PM · Bag value ₹450+', 'The Coastal Kitchen — Seafood & Coastal · Kondapur · Pickup 7–9 PM · Bag value ₹700+'. None of these are real restaurants. Mark with a footnote: '*Preview partners. Final restaurant list announced at launch.'
+Testimonials: Do not render the testimonials section at all in V1. Remove from homepage. Add a comment in the code: // PHASE 2: restore TestimonialsSection when real testimonials are collected.
+Team section on About: Single row. No photo (use the BAM Bag icon as placeholder avatar). Text: 'Founding Team · Building in Hyderabad · [Hiring — see /contact]'. Do not name individuals until they consent to being named publicly.
+App Store badges: Render both Apple App Store and Google Play badges as greyed-out (opacity: 0.4) with a 'Coming Soon' overlay. Link href='#' (no destination). Tooltip on hover: 'App launching with the Hyderabad pilot.'
+Blog / Press links: Render 'Blog' in the footer with no href (use href='#'). Add aria-label='Coming soon'. Do not create a /blog route in V1.
+I.7  C.7 — Consent Copy (Plain Text — exact strings for code)
+Waitlist form consent (render as small text below submit button, grey, 13px):
+"By joining the waitlist, you agree to receive product launch updates and notifications from goZaika. We will never sell or share your data with third parties. You can unsubscribe at any time. Read our Privacy Policy."
+Contact form consent:
+"By submitting this form, you consent to GoZaika Technologies Pvt. Ltd. storing and processing your information solely to respond to your enquiry. Read our Privacy Policy."
+Partner Interest form consent:
+"By submitting this form, GoZaika Technologies Pvt. Ltd. will contact you regarding a potential partnership. Your information will not be shared with third parties. Read our Privacy Policy."
+DPDP 2023 compliance note: Consent checkboxes must NOT be pre-checked. The checkbox renders unchecked by default. The form submit button is disabled until the checkbox is checked. This is a hard requirement under India's Digital Personal Data Protection Act 2023.
+I.8  F.2 — Event Taxonomy (Copyable TypeScript)
+Create file lib/analytics.ts and paste this entire block:
+// lib/analytics.ts
+// goZaika GA4 Event Taxonomy — v1.0 — FROZEN
+// Do not add events without updating this file AND the Execution Briefing.
+declare global {
+interface Window { gtag: (...args: unknown[]) => void }
+}
+type CtaLocation =
+| 'hero' | 'nav' | 'section_restaurant_teaser'
+| 'section_waitlist' | 'page_bottom' | 'for_restaurants_page'
+type ContactSubject =
+| 'general' | 'restaurant' | 'investor' | 'press' | 'careers'
+type FaqCategory = 'consumer' | 'restaurant' | 'safety'
+export function trackEvent(
+name: string,
+params?: Record<string, string | number | boolean>
+) {
+if (typeof window === 'undefined') return
+if (!window.gtag) return
+window.gtag('event', name, params)
+}
+// — Specific typed helpers —
+export const track = {
+ctaClick: (text: string, location: CtaLocation) =>
+trackEvent('cta_click', { cta_text: text, cta_location: location }),
+waitlistStart: () =>
+trackEvent('waitlist_form_start'),
+waitlistSubmit: (city: string, role: 'consumer' | 'restaurant') =>
+trackEvent('waitlist_form_submit', { city, role }),
+waitlistSuccess: (city: string, role: 'consumer' | 'restaurant') =>
+trackEvent('waitlist_form_success', { city, role }),
+waitlistError: (errorType: string) =>
+trackEvent('waitlist_form_error', { error_type: errorType }),
+contactSubmit: (subject: ContactSubject) =>
+trackEvent('contact_form_submit', { subject }),
+contactSuccess: (subject: ContactSubject) =>
+trackEvent('contact_form_success', { subject }),
+partnerSubmit: (city: string, cuisine: string) =>
+trackEvent('partner_interest_submit', { city, cuisine }),
+partnerSuccess: (city: string) =>
+trackEvent('partner_interest_success', { city }),
+navClick: (item: string, location: 'header' | 'footer' | 'mobile_drawer') =>
+trackEvent('nav_click', { nav_item: item, nav_location: location }),
+faqExpand: (id: string, category: FaqCategory) =>
+trackEvent('faq_expand', { faq_id: id, faq_category: category }),
+}
+I.9  G.1 — Performance Budget (Exact Numbers)
+These are PASS/FAIL gates. Build does not ship if any metric fails.
+Metric
+World-Class Target
+Tool to Measure
+How to Check
+JavaScript (compressed, entire page)
+< 150 KB
+Next.js bundle analyzer
+ANALYZE=true npm run build → check output
+First-party JS (your code only)
+< 50 KB
+Bundle analyzer
+Exclude next framework, react, framer-motion
+Total page weight (HTML+CSS+JS+fonts)
+< 500 KB
+Chrome DevTools Network tab
+Throttle to Fast 4G, hard reload, check Transferred row
+Images per page
+< 200 KB total
+Chrome DevTools
+Throttle to Fast 4G, filter by Img type
+Web fonts
+Max 2 families, 3 weights each
+next/font
+Confirm only Poppins 400/500/600 and Playfair 400/700 load
+Third-party scripts
+Maximum 2
+Chrome DevTools Blocking
+GA4 (@next/third-parties) + Resend webhook only
+Largest Contentful Paint (LCP)
+< 2.0s
+Lighthouse, PageSpeed Insights
+Run from PageSpeed Insights (not local — too fast locally)
+Cumulative Layout Shift (CLS)
+< 0.05
+Lighthouse
+Ensure all images have explicit width+height attributes
+First Input Delay / INP
+< 150ms
+Lighthouse
+No heavy onClick handlers. Framer Motion deferred to idle.
+Time to First Byte (TTFB)
+< 200ms
+Vercel Analytics (free)
+All pages are static — TTFB should be ~50ms on Vercel Edge
+Lighthouse Performance (mobile)
+≥ 90
+Lighthouse in Chrome DevTools
+Mobile preset, throttled CPU 4x, throttled network 4G
+Lighthouse Accessibility
+≥ 95
+Lighthouse
+Automated checks only — still do manual below
+Lighthouse SEO
+≥ 95
+Lighthouse
+Confirm meta description, canonical, og:image on all pages
+Lighthouse Best Practices
+≥ 95
+Lighthouse
+No console errors, HTTPS, no deprecated APIs
+MetricWorld-Class TargetTool to MeasureHow to Check
+JavaScript (compressed, entire page)< 150 KBNext.js bundle analyzerANALYZE=true npm run build → check output
+First-party JS (your code only)< 50 KBBundle analyzerExclude next framework, react, framer-motion
+Total page weight (HTML+CSS+JS+fonts)< 500 KBChrome DevTools Network tabThrottle to Fast 4G, hard reload, check Transferred row
+Images per page< 200 KB totalChrome DevToolsThrottle to Fast 4G, filter by Img type
+Web fontsMax 2 families, 3 weights eachnext/fontConfirm only Poppins 400/500/600 and Playfair 400/700 load
+Third-party scriptsMaximum 2Chrome DevTools BlockingGA4 (@next/third-parties) + Resend webhook only
+Largest Contentful Paint (LCP)< 2.0sLighthouse, PageSpeed InsightsRun from PageSpeed Insights (not local — too fast locally)
+Cumulative Layout Shift (CLS)< 0.05LighthouseEnsure all images have explicit width+height attributes
+First Input Delay / INP< 150msLighthouseNo heavy onClick handlers. Framer Motion deferred to idle.
+Time to First Byte (TTFB)< 200msVercel Analytics (free)All pages are static — TTFB should be ~50ms on Vercel Edge
+Lighthouse Performance (mobile)≥ 90Lighthouse in Chrome DevToolsMobile preset, throttled CPU 4x, throttled network 4G
+Lighthouse Accessibility≥ 95LighthouseAutomated checks only — still do manual below
+Lighthouse SEO≥ 95LighthouseConfirm meta description, canonical, og:image on all pages
+Lighthouse Best Practices≥ 95LighthouseNo console errors, HTTPS, no deprecated APIs
+I.10  G.2 — Accessibility Protocol (Explicit Checklist)
+Run in this order: automated first, then keyboard, then screen reader. All must pass before launch.
+STEP 1: Automated (axe DevTools browser extension)
+Install axe DevTools (free) from Chrome Web Store
+Run on every page. Zero critical violations. Zero serious violations.
+Known false positives: ignore 'region' landmark warnings if your page structure is correct
+STEP 2: Colour Contrast Manual Check
+White text on Forest Green (#1A5C38): ratio 8.9:1 — PASS
+White text on Saffron (#FF6B35): ratio 3.0:1 — FAIL for body text. Use only for large text (>18px) or bold large text (>14px bold). Never use white on saffron for body copy or form labels.
+Gray700 (#374151) on White: ratio 10.1:1 — PASS
+Gray500 (#6B7280) on White: ratio 4.6:1 — PASS (just above 4.5:1 minimum)
+Saffron (#FF6B35) on Cream (#FFF8F0): ratio 2.9:1 — FAIL. Never use orange text on cream background.
+Forest Green (#1A5C38) on Cream (#FFF8F0): ratio 8.4:1 — PASS
+STEP 3: Keyboard Navigation Test
+Press Tab from the browser address bar. Every interactive element (links, buttons, inputs) must receive a visible focus ring in sequence.
+Focus order must match visual reading order (left-to-right, top-to-bottom).
+Mobile hamburger menu: Tab opens it. Escape closes it. Focus returns to hamburger button.
+Accordion items (FAQ): Enter or Space opens/closes. Arrow keys navigate between items.
+Forms: Tab moves through all fields. Enter submits. Escape does not clear filled form.
+Modals (if any): Focus must be trapped inside. Escape closes. Focus returns to trigger element.
+STEP 4: Screen Reader Test
+Mac (VoiceOver): Cmd+F5 to enable. Navigate with VO+Arrow keys. Every section must have a logical heading hierarchy (H1 → H2 → H3, no skips).
+Test: hero section reads headline, sub-headline, CTA label in logical order.
+Test: nav reads 'goZaika logo, link' then each nav item label.
+Test: form reads each label before its input. Required fields read 'required'.
+Test: error messages are announced immediately when validation fails (use aria-live='polite').
+Test: accordion reads 'Question text, button, expanded/collapsed'.
+STEP 5: Skip-to-Content Link
+A hidden <a href='#main-content'>Skip to main content</a> must be the very first element in <body>.
+It becomes visible only on Tab focus (use className='sr-only focus:not-sr-only focus:absolute ...')
+The main content area must have id='main-content' and tabIndex={-1}.
+Part II — Canonical Route Matrix
+This is the single, frozen source of truth for all routes. Use these exact strings everywhere — in next.config.ts, sitemaps, metadata, navigation arrays, and footer links.
+Route
+Title Tag
+Nav Label
+In Main Nav?
+In Footer?
+Indexable?
+Redirect Sources
+/
+goZaika — Discover. Pickup. Devour.
+—
+No (it's home)
+No (logo = home)
+Yes
+none
+/how-it-works
+How a BAM Bag Works | goZaika
+How It Works
+Yes
+Yes (Discover col)
+Yes
+none
+/for-restaurants
+Partner With goZaika
+For Restaurants
+Yes
+Yes (Partners col)
+Yes
+none
+/about
+About goZaika
+About
+Yes
+Yes (Company col)
+Yes
+none
+/faq
+FAQ | goZaika
+FAQ
+Yes
+Yes (Discover col)
+Yes
+none
+/contact
+Contact goZaika
+Contact
+No (footer only)
+Yes (Company col)
+Yes
+none
+/privacy-policy
+Privacy Policy | goZaika
+Privacy Policy
+No
+Yes (Legal col)
+Yes
+/privacy
+/terms-of-service
+Terms of Service | goZaika
+Terms of Service
+No
+Yes (Legal col)
+Yes
+/terms
+/refund-policy
+Cancellation & Refund Policy | goZaika
+Refund Policy
+No
+Yes (Legal col)
+Yes
+/refund, /cancellation-policy
+/food-safety-policy
+Food Safety Policy | goZaika
+Food Safety
+No
+Yes (Legal col)
+Yes
+/food-safety
+/grievance-redressal
+Grievance Redressal | goZaika
+Grievance
+No
+Yes (Legal col)
+Yes
+/grievance
+/api/waitlist
+—
+—
+No
+No
+No (noindex)
+none
+/api/contact
+—
+—
+No
+No
+No (noindex)
+none
+/api/partner-interest
+—
+—
+No
+No
+No (noindex)
+none
+RouteTitle TagNav LabelIn Main Nav?In Footer?Indexable?Redirect Sources
+/goZaika — Discover. Pickup. Devour.—No (it's home)No (logo = home)Yesnone
+/how-it-worksHow a BAM Bag Works | goZaikaHow It WorksYesYes (Discover col)Yesnone
+/for-restaurantsPartner With goZaikaFor RestaurantsYesYes (Partners col)Yesnone
+/aboutAbout goZaikaAboutYesYes (Company col)Yesnone
+/faqFAQ | goZaikaFAQYesYes (Discover col)Yesnone
+/contactContact goZaikaContactNo (footer only)Yes (Company col)Yesnone
+/privacy-policyPrivacy Policy | goZaikaPrivacy PolicyNoYes (Legal col)Yes/privacy
+/terms-of-serviceTerms of Service | goZaikaTerms of ServiceNoYes (Legal col)Yes/terms
+/refund-policyCancellation & Refund Policy | goZaikaRefund PolicyNoYes (Legal col)Yes/refund, /cancellation-policy
+/food-safety-policyFood Safety Policy | goZaikaFood SafetyNoYes (Legal col)Yes/food-safety
+/grievance-redressalGrievance Redressal | goZaikaGrievanceNoYes (Legal col)Yes/grievance
+/api/waitlist——NoNoNo (noindex)none
+/api/contact——NoNoNo (noindex)none
+/api/partner-interest——NoNoNo (noindex)none
+FOOTER COLUMN STRUCTURE — FROZEN
+Column 1 (Discover):  How It Works  |  FAQ  |  Cities (href='#', Coming Soon)
+Column 2 (Partners):  For Restaurants  |  Partner Portal (href='#', Coming Soon)
+Column 3 (Company):   About  |  Contact  |  Blog (href='#', Coming Soon)
+Column 4 (Legal):     Privacy Policy  |  Terms of Service  |  Refund Policy  |  Food Safety  |  Grievance
+Bottom bar:  © 2025 GoZaika Technologies Pvt. Ltd.  ·  Made with ❤ in Hyderabad
+FOOTER COLUMN STRUCTURE — FROZEN
+Column 1 (Discover):  How It Works  |  FAQ  |  Cities (href='#', Coming Soon)
+Column 2 (Partners):  For Restaurants  |  Partner Portal (href='#', Coming Soon)
+Column 3 (Company):   About  |  Contact  |  Blog (href='#', Coming Soon)
+Column 4 (Legal):     Privacy Policy  |  Terms of Service  |  Refund Policy  |  Food Safety  |  Grievance
+Bottom bar:  © 2025 GoZaika Technologies Pvt. Ltd.  ·  Made with ❤ in Hyderabad
+next.config.ts redirects — paste exactly:
+async redirects() {
+return [
+{ source: '/privacy',              destination: '/privacy-policy',      permanent: true },
+{ source: '/terms',                destination: '/terms-of-service',     permanent: true },
+{ source: '/refund',               destination: '/refund-policy',        permanent: true },
+{ source: '/cancellation-policy',  destination: '/refund-policy',        permanent: true },
+{ source: '/food-safety',          destination: '/food-safety-policy',   permanent: true },
+{ source: '/grievance',            destination: '/grievance-redressal',  permanent: true },
+{ source: '/restaurants',          destination: '/for-restaurants',      permanent: true },
+]
+},
+Part III — Legal Copy
+IMPORTANT NOTICE
+The following legal documents are drafted based on DPDP 2023, FSSAI 2024 e-commerce rules,
+and standard Indian startup practice. They are suitable as a strong working draft.
+YOU MUST: have a startup lawyer review Privacy Policy and Terms BEFORE collecting any
+personal data (including email addresses). Budget ₹3,000–₹8,000 for this review.
+Placeholder text in [SQUARE BRACKETS] must be filled in before publishing.
+IMPORTANT NOTICE
+The following legal documents are drafted based on DPDP 2023, FSSAI 2024 e-commerce rules,
+and standard Indian startup practice. They are suitable as a strong working draft.
+YOU MUST: have a startup lawyer review Privacy Policy and Terms BEFORE collecting any
+personal data (including email addresses). Budget ₹3,000–₹8,000 for this review.
+Placeholder text in [SQUARE BRACKETS] must be filled in before publishing.
+III.1  Privacy Policy
+Page route: /privacy-policy
+Last updated: [DATE]. Effective: [DATE].
+PRIVACY POLICY
+GoZaika Technologies Pvt. Ltd. ("goZaika", "we", "us", "our"), a company incorporated in India under the Companies Act 2013 [CIN: PENDING], operates the website gozaika.in (and its subdomains) and the goZaika mobile application (collectively, the "Platform").
+This Privacy Policy describes how we collect, use, store, and protect your personal data, in compliance with India's Digital Personal Data Protection Act, 2023 ("DPDP Act") and applicable FSSAI regulations.
+1. DATA WE COLLECT
+1.1 Data you provide directly: Full name. Email address. Mobile number (for restaurant partners and verification). City and neighbourhood preferences. Restaurant name, cuisine type, and business details (restaurant partner enquiries). Any message or communication you send us via forms.
+1.2 Data we collect automatically: Device type and operating system. Browser type and version. IP address (used for rate limiting and fraud prevention, not for user profiling). Pages visited and time spent on the Platform. Referring URL.
+1.3 Data we do not collect: Financial data (payments are processed by third-party payment gateways — we receive a transaction reference only, not card or bank details). Biometric data. Sensitive personal data as defined under the DPDP Act.
+2. HOW WE USE YOUR DATA
+We use your data for: Operating and improving the Platform. Sending product launch notifications and updates (waitlist only — with your explicit consent). Responding to your enquiries. Processing restaurant partner applications. Complying with legal obligations under FSSAI, DPDP Act, and other applicable Indian law.
+We do not: Sell, rent, or trade your personal data to any third party. Use your data for automated profiling or behavioural advertising. Transfer your data outside India without your consent.
+3. CONSENT
+Under the DPDP Act 2023, we are required to obtain your free, informed, specific, and unambiguous consent before processing your personal data. By submitting the waitlist form, contact form, or restaurant interest form on our Platform, you provide consent for the specific purposes stated on each form. You may withdraw your consent at any time by emailing privacy@gozaika.in. Withdrawal of consent does not affect the lawfulness of processing carried out before withdrawal.
+4. DATA RETENTION
+Waitlist data: retained until you unsubscribe or 24 months after collection, whichever is earlier. Contact and partner enquiry data: 12 months from last communication. Transaction data: 7 years (statutory requirement). Server logs: 90 days.
+5. DATA SECURITY
+We implement technical and organisational measures including: HTTPS-only transmission. Database encryption at rest. Role-based access controls. Regular security reviews. We cannot guarantee absolute security. In the event of a data breach that is likely to result in risk to your rights and freedoms, we will notify you within 72 hours as required by the DPDP Act.
+6. YOUR RIGHTS UNDER DPDP ACT 2023
+You have the right to: Access your personal data held by us. Correct inaccurate personal data. Erase your personal data (with limitations under statutory retention). Nominate another individual to exercise these rights on your behalf in the event of your death or incapacity. Withdraw consent. File a grievance (see Section 9).
+To exercise any right: email privacy@gozaika.in with subject 'DPDP Data Request'. We will respond within 30 days.
+7. COOKIES
+We use: Essential cookies (session management — no consent required). Analytics cookies (Google Analytics 4 — requires your consent via the cookie banner). We do not use advertising cookies or third-party tracking cookies.
+8. THIRD-PARTY SERVICES
+We use: Vercel Inc. (hosting, edge network — servers in Singapore and India regions). Resend Inc. (transactional email delivery). Google LLC (Google Analytics 4 — anonymised usage data). Supabase Inc. (database hosting — servers in Singapore). All third parties are bound by their own privacy policies and data processing agreements.
+9. GRIEVANCE OFFICER
+In accordance with DPDP Act 2023 and Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules 2021, we have appointed a Grievance Officer: Name: [GRO NAME — required before launch]. Email: grievance@gozaika.in. Address: GoZaika Technologies Pvt. Ltd., [REGISTERED ADDRESS — pending incorporation]. We will acknowledge grievances within 48 hours and resolve within 30 days.
+10. CHANGES TO THIS POLICY
+We will notify you of material changes to this Privacy Policy via email (if you are on our waitlist) or by posting a notice on the Platform. Continued use of the Platform after changes constitutes acceptance.
+11. CONTACT
+For all privacy-related enquiries: privacy@gozaika.in
+III.2  Terms of Service
+Page route: /terms-of-service
+Last updated: [DATE]. Effective: [DATE].
+TERMS OF SERVICE
+These Terms of Service ("Terms") govern your use of the goZaika Platform operated by GoZaika Technologies Pvt. Ltd. [CIN: PENDING] ("we", "us", "goZaika"). By accessing or using the Platform, you agree to these Terms.
+1. ELIGIBILITY: You must be 18 years or older to use the Platform. By using the Platform, you represent that you are 18+.
+2. THE PLATFORM: goZaika is a discovery platform that connects consumers with mystery to-go meal bags ("BAM Bags") from partner restaurants. We are an intermediary marketplace. We are not a restaurant, food manufacturer, or caterer. We do not prepare, handle, or deliver food. All food items are prepared by, and picked up directly from, partner restaurants.
+3. BAM BAGS: Each BAM Bag listing on the Platform specifies: the restaurant name, cuisine type, approximate bag value, pickup window, number of servings, spice level, and all 14 major allergens as required under FSSAI regulations. The specific dishes and contents are not disclosed in advance — this is by design. By purchasing a BAM Bag, you acknowledge and accept this mystery element.
+4. FOOD SAFETY AND ALLERGENS: All partner restaurants are FSSAI-licensed food businesses. goZaika holds a Central FSSAI e-commerce FBO licence [Licence No: PENDING]. Allergen information is provided by the restaurant partner. goZaika makes reasonable efforts to ensure accuracy but cannot guarantee complete accuracy of allergen data. If you have a severe food allergy, we recommend contacting the restaurant directly before purchase.
+5. PURCHASES: All transactions on the Platform are subject to our Refund and Cancellation Policy. BAM Bags are non-cancellable once the restaurant has been notified of your order (typically immediately upon payment). Payment is processed by [PAYMENT PARTNER] — their terms apply.
+6. USER CONDUCT: You agree not to: use the Platform for any unlawful purpose. create false or misleading listings or reviews. attempt to circumvent our security measures. resell BAM Bags purchased on the Platform.
+7. INTELLECTUAL PROPERTY: All content on the Platform — including the goZaika logo, BAM Bag brand, illustrations, and copy — is owned by GoZaika Technologies Pvt. Ltd. You may not reproduce, distribute, or use this content without our written permission.
+8. LIMITATION OF LIABILITY: To the maximum extent permitted by law, goZaika shall not be liable for: the quality, safety, or accuracy of food prepared by restaurant partners; any illness, injury, or allergic reaction caused by food purchased through the Platform (though we take all reasonable steps to prevent this); any loss of profits or data arising from use of the Platform.
+9. GOVERNING LAW: These Terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts of Hyderabad, Telangana.
+10. CHANGES: We may update these Terms. We will notify registered users via email. Continued use after changes constitutes acceptance.
+CONTACT: legal@gozaika.in
+III.3  Cancellation & Refund Policy
+Page route: /refund-policy
+Last updated: [DATE].
+CANCELLATION AND REFUND POLICY
+1. CANCELLATION: BAM Bags are mystery meal drops that are curated on demand. Once you complete payment, your order is communicated to the restaurant immediately. Cancellations are not accepted once an order is placed. This policy exists because the restaurant has already begun preparing your bag.
+2. REFUNDS — ELIGIBLE CASES: We will issue a full refund in the following cases only: (a) You arrived at the restaurant within the stated pickup window and the restaurant was unable to fulfil your order. (b) The restaurant was closed or unavailable during the stated pickup window. (c) You had a documented severe allergic reaction and the allergen was not disclosed in the listing. (d) A technical error resulted in a duplicate charge.
+3. REFUNDS — INELIGIBLE CASES: We will not issue refunds for: disliking the contents of the bag (the mystery element is by design and disclosed at purchase). missing the pickup window. changing your mind after purchase.
+4. HOW TO REQUEST A REFUND: Email refund@gozaika.in within 24 hours of the incident. Include your order reference number and a brief description. We will review and respond within 3 business days. Eligible refunds are processed within 7 business days to the original payment method.
+5. CONTACT: For all refund and cancellation enquiries: refund@gozaika.in
+III.4  Food Safety Policy
+Page route: /food-safety-policy
+Last updated: [DATE].
+FOOD SAFETY POLICY
+goZaika is committed to the highest standards of food safety in compliance with the Food Safety and Standards Act, 2006 and the Food Safety and Standards (e-Commerce) Regulations, 2024.
+OUR FSSAI LICENCE: GoZaika Technologies Pvt. Ltd. holds a Central FSSAI licence as an e-commerce Food Business Operator (FBO) [Licence No: PENDING — applying under FoSCoS portal]. Our licence number will be published on this page once issued.
+PARTNER RESTAURANT STANDARDS: We onboard only FSSAI-licensed restaurants as partner FBOs. Before activation on the Platform, each restaurant must: provide a valid FSSAI licence. confirm food safety officer designation. complete our Bag Composition Matrix (cuisine type, allergens, spice level, max holding time, pickup window). agree to our Partner Food Safety Agreement.
+ALLERGEN DISCLOSURE: Every BAM Bag listing on the Platform discloses all 14 major allergens specified by FSSAI: gluten-containing cereals, crustaceans, eggs, fish, peanuts, soybeans, milk, tree nuts, celery, mustard, sesame seeds, sulphur dioxide and sulphites, lupin, and molluscs. Allergen data is provided by the restaurant partner. Consumers with severe allergies should contact the restaurant directly before purchase.
+PICKUP-ONLY MODEL: goZaika does not handle, transport, or deliver food. All BAM Bags are prepared at and picked up directly from the partner restaurant's licensed kitchen. This eliminates delivery-related food safety risks entirely.
+REPORTING FOOD SAFETY CONCERNS: If you experience a food safety issue with a BAM Bag, contact: safety@gozaika.in. We will investigate and, where appropriate, temporarily suspend the relevant restaurant pending review. Serious food safety incidents will be reported to the relevant FSSAI State/Central authority.
+III.5  Grievance Redressal Policy
+Page route: /grievance-redressal
+Last updated: [DATE].
+GRIEVANCE REDRESSAL POLICY
+In accordance with the Digital Personal Data Protection Act, 2023 and the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, GoZaika Technologies Pvt. Ltd. has designated a Grievance Officer.
+GRIEVANCE OFFICER DETAILS:
+Name: [GRO FULL NAME — must be an individual, not a company]
+Designation: Grievance Officer, GoZaika Technologies Pvt. Ltd.
+Email: grievance@gozaika.in
+Address: GoZaika Technologies Pvt. Ltd., [REGISTERED ADDRESS — pending incorporation], Hyderabad, Telangana, India
+Working hours: Monday to Friday, 9:00 AM to 6:00 PM IST (excluding public holidays)
+HOW TO FILE A GRIEVANCE: Email grievance@gozaika.in with subject 'Grievance — [Your Name]'. Include: your name, contact details, description of the issue, and any relevant order reference numbers.
+RESPONSE TIMELINE: Acknowledgement: within 48 hours of receipt. Resolution: within 30 days of acknowledgement. For data-related grievances under DPDP Act 2023: within 15 business days.
+ESCALATION: If your grievance is not resolved to your satisfaction, you may approach the Data Protection Board of India (once constituted under DPDP Act 2023) or the appropriate consumer forum under the Consumer Protection Act, 2019.
+Part IV — Asset Production Pack
+8 required visual assets for V1 launch. Each entry includes: Midjourney prompt, dimensions, format, alt text, and a stock image placeholder with search query.
+IV.1  Asset 01 — Hero BAM Bag Illustration
+File: /public/images/hero-bam-bag.svg  (or .png at 2×)
+Dimensions: 600×600px (renders at 400×400px on desktop, 300×300px on mobile)
+Format: SVG preferred (scales perfectly). PNG 1200×1200px at 2× if SVG not achievable.
+Alt text: "A goZaika BAM Bag — an orange paper bag with forest green handles and the flame mark, ready for pickup"
+Usage: Homepage hero section, right-side float on desktop, below headline on mobile
+MIDJOURNEY PROMPT:
+/imagine prompt: flat vector illustration of a premium takeaway paper bag, saffron orange color #FF6B35,
+forest green handles #1A5C38, clean geometric style, small flame symbol on bag face in cream white,
+simple bold shapes, no gradients, no shadows, no textures, isolated on transparent background,
+top-down 3/4 angle, minimal and premium feel, Indian design aesthetic, brand illustration style --ar 1:1
+--style raw --q 2 --no photography, no realistic textures, no gradients, no background
+Stock placeholder search: Unsplash — 'paper bag minimal orange' or 'takeaway bag flat lay'. Use as a structural reference only. Replace before launch.
+IV.2  Asset 02 — How It Works Step 1: Browse Icon
+File: /public/images/step-browse.svg
+Dimensions: 120×120px (renders at 80×80px in step cards)
+Format: SVG
+Alt text: "A phone screen showing a restaurant listing with cuisine and pickup time"
+Usage: How It Works page, Step 1 card icon. Also homepage HowItWorks section.
+MIDJOURNEY PROMPT:
+/imagine prompt: flat vector icon illustration of a smartphone showing a restaurant listing card,
+saffron orange accents #FF6B35 on forest green background #1A5C38, bold geometric shapes,
+no gradients, no shadows, clean lines, 2-color flat design, app-style screen UI,
+location pin icon, clock icon visible, 120x120 icon format --ar 1:1 --style raw --q 2
+--no photography, no realistic textures, no 3D, no gradients
+Stock placeholder: Lucide React icon 'smartphone' in saffron — use as placeholder in code, replace with illustration at launch.
+IV.3  Asset 03 — How It Works Step 2: Buy Icon
+File: /public/images/step-buy.svg
+Dimensions: 120×120px
+Format: SVG
+Alt text: "A QR code confirmation on a phone screen with a payment success indicator"
+Usage: How It Works page, Step 2 card icon.
+MIDJOURNEY PROMPT:
+/imagine prompt: flat vector icon illustration of a phone displaying a QR code confirmation,
+checkmark in saffron orange #FF6B35, forest green accents #1A5C38, bold flat geometric style,
+no gradients, no shadows, minimal shapes, 2-color illustration, 120x120 icon --ar 1:1
+--style raw --q 2 --no photography, no realistic UI, no 3D
+Stock placeholder: Lucide React icon 'qr-code' + 'check-circle'. Use in code until illustration ready.
+IV.4  Asset 04 — How It Works Step 3: Pickup Icon
+File: /public/images/step-pickup.svg
+Dimensions: 120×120px
+Format: SVG
+Alt text: "Two hands — one holding a QR code phone, one handing over an orange BAM Bag"
+Usage: How It Works page, Step 3 card icon.
+MIDJOURNEY PROMPT:
+/imagine prompt: flat vector icon illustration of a hand holding an orange paper bag,
+saffron orange #FF6B35 bag, forest green handles #1A5C38, bold flat geometric illustration,
+minimal hands, clean simple shapes, no face, no realistic anatomy,
+2-color design, icon style --ar 1:1 --style raw --q 2 --no photography, no gradients, no shadows
+Stock placeholder: Lucide React icon 'package' in saffron. Use in code until illustration ready.
+IV.5  Asset 05 — About Page Illustration
+File: /public/images/about-illustration.png
+Dimensions: 800×600px (renders at max 560×420px)
+Format: PNG with transparent background
+Alt text: "A chef's hands placing a curated meal bag on a counter, with a warm kitchen background — abstract illustration"
+Usage: About page, mission section visual (right side)
+MIDJOURNEY PROMPT:
+/imagine prompt: flat illustration of a stylised kitchen counter scene, an orange paper bag
+centre-frame, warm cream background #FFF8F0, bold saffron orange and forest green accents,
+abstract chef figure placing bag on counter, geometric shapes, no realistic details,
+warm inviting colour palette, Indian food culture aesthetic, editorial illustration style,
+horizontal composition --ar 4:3 --style raw --q 2
+--no photography, no gradients, no realistic faces, no text
+Stock placeholder: Unsplash query 'chef kitchen warm minimal' — download 800×600, apply CSS filter: sepia(0.2) brightness(1.1) to give warm cream tone. Add saffron colour overlay at 10% opacity.
+IV.6  Asset 06 — For Restaurants Hero Illustration
+File: /public/images/restaurant-hero.png
+Dimensions: 800×600px
+Format: PNG with transparent background
+Alt text: "An abstract illustration of a restaurant kitchen with a revenue graph rising — representing partner opportunity"
+Usage: For Restaurants page hero, right side
+MIDJOURNEY PROMPT:
+/imagine prompt: flat vector illustration of a restaurant scene from behind the counter,
+forest green #1A5C38 background elements, saffron orange accents #FF6B35, bold geometric shapes,
+rising bar chart element visible, menu board style, premium kitchen aesthetic,
+no faces or people, object-focused, Indian premium restaurant visual language,
+editorial flat illustration --ar 4:3 --style raw --q 2
+--no photography, no realistic textures, no gradients, no shadows
+Stock placeholder: Unsplash query 'restaurant kitchen abstract minimal' — apply CSS filter to match brand colours.
+IV.7  Asset 07 — OG Image Template (Homepage)
+File: Generate via app/opengraph-image.tsx (Vercel @vercel/og)
+Dimensions: 1200×630px (hard requirement for all social platforms)
+Format: PNG (generated automatically by Vercel)
+Alt text: Not applicable for OG images (they are meta tags, not page content)
+Usage: Homepage og:image, shared on WhatsApp/LinkedIn/Twitter when URL is pasted
+IMPLEMENTATION (app/opengraph-image.tsx):
+import { ImageResponse } from 'next/og'
+export const runtime = 'edge'
+export const size = { width: 1200, height: 630 }
+export const contentType = 'image/png'
+export default function OGImage() {
+return new ImageResponse(
+<div style={{
+width: '100%', height: '100%',
+backgroundColor: '#1A5C38',
+display: 'flex', flexDirection: 'column',
+justifyContent: 'center', padding: '80px'
+}}>
+<div style={{ color: '#FF6B35', fontSize: 96, fontWeight: 700 }}>goZaika</div>
+<div style={{ color: '#FFF8F0', fontSize: 36, marginTop: 24 }}>
+India’s first mystery meal drop.
+</div>
+<div style={{ color: '#EAF3DE', fontSize: 28, marginTop: 16 }}>
+Discover. Pickup. Devour.
+</div>
+</div>
+)
+}
+ℹ  Each page should have its own opengraph-image.tsx in its directory for page-specific OG images.
+IV.8  Asset 08 — Favicon + App Icon
+File: /app/favicon.ico  +  /app/icon.svg
+Dimensions: favicon.ico = 32×32px (embed 16px and 32px). icon.svg = square, any size.
+Format: favicon.ico (multi-size ICO), icon.png 512×512px for Android PWA
+Alt text: Not applicable
+Usage: Browser tab, bookmark icon, PWA splash screen
+Source: gozaika-app-icon.svg (flame/BAM symbol on Forest Green). Export as:
+favicon.ico: 16px, 32px embedded
+apple-touch-icon.png: 180×180px
+icon-192.png: 192×192px (Android PWA)
+icon-512.png: 512×512px (Android PWA)
+Tool: Use realfavicongenerator.net — free, upload the SVG, download the pack.
+Part V — Database Architecture: Supabase from Day 1
+ARCHITECTURE CHANGE: Database from Day 1, Zero Cost
+You are correct to push for this. Email-only lead capture is a liability.
+The solution: Supabase free tier. PostgreSQL hosted, REST API auto-generated,
+500 MB storage, 2 projects, unlimited API calls — free forever for small projects.
+This is fully consistent with the existing tech spec (PostgreSQL + Prisma) and
+means zero rework in Phase 2. We just add Prisma migrations to the already-live DB.
+Cost: ₹0/month until you exceed 500 MB or 50,000 monthly active users.
+ARCHITECTURE CHANGE: Database from Day 1, Zero Cost
+You are correct to push for this. Email-only lead capture is a liability.
+The solution: Supabase free tier. PostgreSQL hosted, REST API auto-generated,
+500 MB storage, 2 projects, unlimited API calls — free forever for small projects.
+This is fully consistent with the existing tech spec (PostgreSQL + Prisma) and
+means zero rework in Phase 2. We just add Prisma migrations to the already-live DB.
+Cost: ₹0/month until you exceed 500 MB or 50,000 monthly active users.
+V.1  Supabase Setup (15 minutes)
+Go to supabase.com → New Project → free plan
+Project name: gozaika-web. Region: Southeast Asia (Singapore) — closest to India.
+Save the generated database password securely.
+Go to Settings → API → copy 'Project URL' and 'anon public' key.
+Add to .env.local:
+NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxxxxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR...
+Add both to Vercel environment variables (Settings → Environment Variables).
+Install Supabase client: npm install @supabase/supabase-js
+V.2  Lead Capture Schema
+Create tables in Supabase Table Editor (UI, no SQL needed for these simple tables):
+Table: waitlist_leads
+id           uuid PRIMARY KEY DEFAULT gen_random_uuid()
+created_at   timestamptz DEFAULT now()
+name         text NOT NULL
+email        text NOT NULL UNIQUE
+city         text NOT NULL DEFAULT 'Hyderabad'
+role         text NOT NULL CHECK (role IN ('consumer','restaurant'))
+source       text DEFAULT 'website_waitlist'
+metadata     jsonb DEFAULT '{}'
+Table: contact_submissions
+id           uuid PRIMARY KEY DEFAULT gen_random_uuid()
+created_at   timestamptz DEFAULT now()
+name         text NOT NULL
+email        text NOT NULL
+subject      text NOT NULL
+message      text NOT NULL
+responded    boolean DEFAULT false
+Table: partner_interests
+id              uuid PRIMARY KEY DEFAULT gen_random_uuid()
+created_at      timestamptz DEFAULT now()
+restaurant_name text NOT NULL
+owner_name      text NOT NULL
+email           text NOT NULL
+phone           text
+city            text NOT NULL
+cuisine         text
+daily_covers    text
+message         text
+status          text DEFAULT 'new' CHECK (status IN ('new','contacted','qualified','rejected'))
+V.3  Row Level Security (RLS)
+Enable RLS on all three tables. The website only inserts, never reads. Only you (authenticated admin) can read.
+-- In Supabase SQL Editor:
+ALTER TABLE waitlist_leads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contact_submissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE partner_interests ENABLE ROW LEVEL SECURITY;
+-- Allow anonymous inserts (website)
+CREATE POLICY 'anon_insert_waitlist' ON waitlist_leads
+FOR INSERT TO anon WITH CHECK (true);
+CREATE POLICY 'anon_insert_contact' ON contact_submissions
+FOR INSERT TO anon WITH CHECK (true);
+CREATE POLICY 'anon_insert_partner' ON partner_interests
+FOR INSERT TO anon WITH CHECK (true);
+-- Only authenticated users can SELECT (your admin sessions)
+CREATE POLICY 'auth_select_waitlist' ON waitlist_leads
+FOR SELECT TO authenticated USING (true);
+ℹ  With these policies: the website can INSERT using the anon key. Nobody can SELECT without logging into Supabase. Your leads are safe.
+V.4  Updated API Routes (with Supabase + Resend)
+Create lib/supabase.ts:
+import { createClient } from '@supabase/supabase-js'
+export const supabase = createClient(
+process.env.NEXT_PUBLIC_SUPABASE_URL!,
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+Updated app/api/waitlist/route.ts:
+import { supabase } from '@/lib/supabase'
+import { Resend } from 'resend'
+const resend = new Resend(process.env.RESEND_API_KEY)
+export async function POST(req: Request) {
+const { name, email, city, role } = await req.json()
+// 1. Save to Supabase
+const { error } = await supabase.from('waitlist_leads')
+.insert({ name, email, city, role })
+if (error && error.code !== '23505') {  // 23505 = duplicate email
+return Response.json({ ok: false, error: 'Database error' }, { status: 500 })
+}
+// 2. Send notification email (non-blocking)
+await resend.emails.send({
+from: 'goZaika <noreply@resend.dev>',  // update after domain
+to: 'waitlist@gozaika.in',
+subject: `New waitlist signup: ${name} (${city})`,
+text: `Name: ${name}\nEmail: ${email}\nCity: ${city}\nRole: ${role}`,
+})
+return Response.json({ ok: true })
+}
+V.5  Email/Mailbox Setup (Without Google Workspace)
+SOLUTION: Zoho Mail Free + Resend
+Zoho Mail Free: 5 users, custom domain email, 5 GB/user — free forever.
+Available as soon as you have a domain. Until then, use personal Gmail as fallback.
+Setup: zoho.com/mail → Free Plan → Add domain → verify → create mailboxes.
+Required mailboxes for V1:
+hello@gozaika.in        — general contact, public-facing
+waitlist@gozaika.in     — waitlist notification receiver
+partners@gozaika.in     — restaurant partner enquiries
+privacy@gozaika.in      — DPDP data requests
+grievance@gozaika.in    — DPDP GRO inbox (legally required)
+safety@gozaika.in       — food safety incident reports
+refund@gozaika.in       — refund requests
+Until domain is purchased: all 7 addresses forward to your personal Gmail.
+Resend 'From' address until domain verified: 'goZaika <onboarding@resend.dev>'.
+SOLUTION: Zoho Mail Free + Resend
+Zoho Mail Free: 5 users, custom domain email, 5 GB/user — free forever.
+Available as soon as you have a domain. Until then, use personal Gmail as fallback.
+Setup: zoho.com/mail → Free Plan → Add domain → verify → create mailboxes.
+Required mailboxes for V1:
+hello@gozaika.in        — general contact, public-facing
+waitlist@gozaika.in     — waitlist notification receiver
+partners@gozaika.in     — restaurant partner enquiries
+privacy@gozaika.in      — DPDP data requests
+grievance@gozaika.in    — DPDP GRO inbox (legally required)
+safety@gozaika.in       — food safety incident reports
+refund@gozaika.in       — refund requests
+Until domain is purchased: all 7 addresses forward to your personal Gmail.
+Resend 'From' address until domain verified: 'goZaika <onboarding@resend.dev>'.
+Part VI — Analytics Setup
+VI.1  GA4 Property Creation (Step by Step)
+Go to analytics.google.com → Admin → Create Property
+Property name: goZaika Website. Reporting time zone: India (IST). Currency: INR.
+Select 'Web' as platform. Enter URL: gozaika.vercel.app (update to gozaika.in when domain ready)
+Select Industry: Food and drink. Business size: Small.
+Copy Measurement ID — format G-XXXXXXXXXX
+Add to .env.local: NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+Add to Vercel environment variables.
+Add to app/layout.tsx:
+import { GoogleAnalytics } from '@next/third-parties/google'
+// Inside <body>:
+<GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
+Verify in GA4: Realtime tab → open your site → should see 1 active user.
+VI.2  Search Console Setup
+Go to search.google.com/search-console
+Add property → URL prefix → https://gozaika.vercel.app
+Choose verification: HTML meta tag.
+Copy the meta tag content value (format: xxxxxxxxxxxxxxxxxxxx).
+Add to app/layout.tsx metadata:
+export const metadata: Metadata = {
+verification: { google: 'YOUR_VERIFICATION_CODE' },
+...
+}
+Deploy. Click Verify in Search Console.
+After verification: Sitemaps → Add sitemap → sitemap.xml → Submit.
+Create app/sitemap.ts:
+import { MetadataRoute } from 'next'
+export default function sitemap(): MetadataRoute.Sitemap {
+const base = 'https://gozaika.vercel.app'
+const routes = ['', '/how-it-works', '/for-restaurants', '/about',
+'/faq', '/contact', '/privacy-policy', '/terms-of-service',
+'/refund-policy', '/food-safety-policy', '/grievance-redressal']
+return routes.map(r => ({
+url: base + r,
+lastModified: new Date(),
+changeFrequency: r === '' ? 'weekly' : 'monthly',
+priority: r === '' ? 1 : 0.8,
+}))
+}
+VI.3  GA4 Custom Events Setup
+The event tracking code in lib/analytics.ts was provided in Part I, Section I.8. Here is the integration pattern for each component:
+// In WaitlistForm.tsx:
+import { track } from '@/lib/analytics'
+// On first field focus:
+onFocus={() => track.waitlistStart()}
+// On form submit:
+const handleSubmit = async () => {
+track.waitlistSubmit(city, role)
+const res = await fetch('/api/waitlist', { ... })
+if (res.ok) track.waitlistSuccess(city, role)
+else track.waitlistError('api_error')
+}
+// In Header.tsx nav links:
+<Link href='/how-it-works'
+onClick={() => track.navClick('How It Works', 'header')}>
+How It Works
+</Link>
+// In FAQ accordion:
+onOpenChange={(open) => {
+if (open) track.faqExpand(item.id, item.category)
+}}
+VI.4  GA4 Conversion Goals Setup
+In GA4 Admin → Events → find waitlist_form_success
+Click the star/toggle to mark as Conversion event.
+Repeat for: partner_interest_success, contact_form_success.
+In GA4 Reports → Engagement → Conversions — you will see conversion counts.
+ℹ  Conversions in GA4 are free to set up and track. No Google Ads account needed.
+Part VII — Deployment Governance
+VII.1  Git Branch Strategy
+Branch Rules — V1 (Solo Founder)
+main         — production branch. Only merge from feature/ branches. Never commit directly.
+dev          — integration branch. Feature branches merge here first for testing.
+feature/xxx  — one branch per feature (e.g. feature/hero-section, feature/contact-form)
+Vercel behaviour:
+main branch → Production deployment (gozaika.vercel.app)
+dev branch  → Preview URL (gozaika-dev.vercel.app) — automatic
+feature/*   → Preview URL per branch — automatic, shareable for review
+Branch Rules — V1 (Solo Founder)
+main         — production branch. Only merge from feature/ branches. Never commit directly.
+dev          — integration branch. Feature branches merge here first for testing.
+feature/xxx  — one branch per feature (e.g. feature/hero-section, feature/contact-form)
+Vercel behaviour:
+main branch → Production deployment (gozaika.vercel.app)
+dev branch  → Preview URL (gozaika-dev.vercel.app) — automatic
+feature/*   → Preview URL per branch — automatic, shareable for review
+VII.2  Commit Convention
+Use conventional commits for clean git history and AI-readable changelogs:
+feat: add HeroSection with email capture form
+fix: correct saffron colour token in tailwind.config
+style: adjust hero headline responsive scale
+refactor: extract WaitlistForm into standalone component
+docs: update route map in ARCHITECTURE.md
+chore: add CI workflow for lint and typecheck
+VII.3  Rollback SLA
+If a production issue is detected after deploy, rollback within 10 minutes:
+Vercel Dashboard → Deployments → click last known-good deploy
+Click 'Promote to Production' → 60 seconds → live
+Open GitHub issue titled 'Incident: [date] — [description]'
+Root cause analysis in issue before re-deploying the fix
+Definition of 'production issue requiring rollback': any page returning 500, any form not sending, any console error visible to users, any broken layout on mobile.
+VII.4  Domain Migration Plan (When Ready)
+Purchase gozaika.in at BigRock or GoDaddy (~₹599/year for first year)
+In Vercel → Project → Settings → Domains → Add Domain → gozaika.in
+Vercel provides two DNS records: A record (IP) and CNAME (www)
+Update DNS at registrar. Propagation: 15 min to 48 hours.
+Vercel auto-provisions SSL certificate via Let's Encrypt. Zero action needed.
+Update GA4 property data stream URL from vercel.app to gozaika.in
+Update Search Console property (add gozaika.in as separate property)
+Update Resend sending domain from resend.dev to gozaika.in
+Update Supabase allowed origins if using CORS: add https://gozaika.in
+⚠  After domain migration: the old vercel.app URL still works and redirects automatically. No old links will break.
+VII.5  Performance Monitoring (Post-Launch)
+Vercel Speed Insights (free): goes in app/layout.tsx:
+import { SpeedInsights } from '@vercel/speed-insights/next'
+// In <body>: <SpeedInsights />
+This gives you: real-user LCP, CLS, FID data from actual visitors. More accurate than Lighthouse.
+Alert threshold: if LCP rises above 2.5s in Speed Insights → investigate and fix before next deploy.
+Appendix — Resolution Summary
+Every open item from the client review is resolved. Status:
+Open Item
+Resolution
+Where Documented
+A.1 Logo matrix content
+Plain text with 4 variant rules, prohibited uses
+Part I, I.1
+A.3.2 Typography usage
+14 usage rules as plain text, exact weights + colours
+Part I, I.2
+C.3 Do not say list
+22 banned terms with grep instruction
+Part I, I.3
+C.4 Replacement language
+9 replacement pairs as copyable table
+Part I, I.4
+C.5 CTA priority
+7 pages, 1-3 CTAs each, button variants specified
+Part I, I.5
+C.6 Placeholder rules
+6 categories: cards, testimonials, team, app badges, blog, cities
+Part I, I.6
+C.7 Consent copy
+3 exact consent strings + DPDP checkbox rule
+Part I, I.7
+F.2 Event taxonomy
+Copyable TypeScript analytics.ts with typed helpers
+Part I, I.8
+G.1 Performance budget
+14-row table with exact numbers and measurement tools
+Part I, I.9
+G.2 Accessibility protocol
+5-step protocol: axe → contrast → keyboard → SR → skip link
+Part I, I.10
+Route map inconsistency
+13-row canonical matrix + 8 redirect rules
+Part II
+Legal copy missing
+5 full legal documents, DPDP-compliant
+Part III
+Asset production pack
+8 assets: prompts, dimensions, format, alt text, stock fallback
+Part IV
+Email-only lead capture risk
+Supabase Day 1 DB with RLS, updated API routes
+Part V
+Google Workspace cost
+Zoho Mail Free (5 users, custom domain, free forever)
+Part V, V.5
+Perf threshold too lenient
+Raised to ≥90 mobile, LCP <2.0s, CLS <0.05, INP <150ms
+Part I, I.9
+MySQL vs PostgreSQL
+PostgreSQL confirmed (existing spec). Supabase as hosted provider.
+Part V
+Auditability + CRM
+Supabase Table Editor = admin CRM view. Phase 2: custom admin.
+Part V
+GA4 setup steps
+8-step setup with exact code
+Part VI
+Search Console
+Step-by-step with sitemap.ts code
+Part VI
+Analytics events copyable
+Full TypeScript analytics.ts + integration examples
+Part VI, I.8
+Deployment governance
+Branch strategy, commit convention, rollback SLA, domain plan
+Part VII
+Open ItemResolutionWhere Documented
+A.1 Logo matrix contentPlain text with 4 variant rules, prohibited usesPart I, I.1
+A.3.2 Typography usage14 usage rules as plain text, exact weights + coloursPart I, I.2
+C.3 Do not say list22 banned terms with grep instructionPart I, I.3
+C.4 Replacement language9 replacement pairs as copyable tablePart I, I.4
+C.5 CTA priority7 pages, 1-3 CTAs each, button variants specifiedPart I, I.5
+C.6 Placeholder rules6 categories: cards, testimonials, team, app badges, blog, citiesPart I, I.6
+C.7 Consent copy3 exact consent strings + DPDP checkbox rulePart I, I.7
+F.2 Event taxonomyCopyable TypeScript analytics.ts with typed helpersPart I, I.8
+G.1 Performance budget14-row table with exact numbers and measurement toolsPart I, I.9
+G.2 Accessibility protocol5-step protocol: axe → contrast → keyboard → SR → skip linkPart I, I.10
+Route map inconsistency13-row canonical matrix + 8 redirect rulesPart II
+Legal copy missing5 full legal documents, DPDP-compliantPart III
+Asset production pack8 assets: prompts, dimensions, format, alt text, stock fallbackPart IV
+Email-only lead capture riskSupabase Day 1 DB with RLS, updated API routesPart V
+Google Workspace costZoho Mail Free (5 users, custom domain, free forever)Part V, V.5
+Perf threshold too lenientRaised to ≥90 mobile, LCP <2.0s, CLS <0.05, INP <150msPart I, I.9
+MySQL vs PostgreSQLPostgreSQL confirmed (existing spec). Supabase as hosted provider.Part V
+Auditability + CRMSupabase Table Editor = admin CRM view. Phase 2: custom admin.Part V
+GA4 setup steps8-step setup with exact codePart VI
+Search ConsoleStep-by-step with sitemap.ts codePart VI
+Analytics events copyableFull TypeScript analytics.ts + integration examplesPart VI, I.8
+Deployment governanceBranch strategy, commit convention, rollback SLA, domain planPart VII
+goZaika Execution Briefing v1.0  ·  All open items resolved  ·  Freeze and build
