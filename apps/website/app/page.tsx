@@ -40,10 +40,11 @@ export default function HomePage(): React.ReactElement {
       />
       <BamBagSection {...homeContent.bamBag} />
       <RestaurantTeaserSection {...homeContent.restaurantTeaser} />
-      {/* PHASE 2: Restore TestimonialsSection with real quotes post-pilot. */}
+      {/* PHASE 2: Restore testimonials with real quotes post-pilot */}
       <HomeWaitlistSection
         heading={homeContent.launch.heading}
         body={homeContent.launch.body}
+        disclaimer={homeContent.launch.disclaimer}
         restaurants={homeContent.partnerPreviews}
       />
     </>

@@ -123,6 +123,11 @@ export function ContactForm(): React.ReactElement {
         Send Message
       </Button>
 
+      <p className="text-center text-xs text-gray500">
+        By submitting this form, you consent to GoZaika Technologies Pvt. Ltd.
+        storing and processing your information to respond to your enquiry.
+      </p>
+
       {status === 'success' ? (
         <p className="text-center text-sm text-success" role="status" aria-live="polite">
           Message sent. We usually respond within 24 hours.

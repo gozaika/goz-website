@@ -8,7 +8,7 @@ import { forRestaurantsContent } from '@/lib/content';
 import { canonical, openGraphFor, twitterFor } from '@/lib/metadata';
 
 export const metadata: Metadata = {
-  title: 'Partner With goZaika',
+  title: 'Partner With goZaika | For Restaurants',
   description:
     'A controlled-access discovery platform for restaurants: 12% pilot commission and zero delivery operations.',
   ...canonical('/for-restaurants'),
@@ -56,15 +56,21 @@ export default function ForRestaurantsPage(): React.ReactElement {
           />
         </div>
 
-        <div className="mx-auto mt-0 grid max-w-screen-xl gap-4 px-4 pb-16 sm:px-6 md:grid-cols-2 lg:px-8">
-          {forRestaurantsContent.valueProps.map((item) => (
-            <div
-              key={item}
-              className="rounded-2xl border border-gray100 bg-white p-6 text-base text-gray700 shadow-sm"
-            >
-              {item}
-            </div>
-          ))}
+        <div className="mx-auto max-w-screen-xl px-4 pb-16 sm:px-6 lg:px-8">
+          <h2 className="heading-section text-gray900">
+            Here&apos;s exactly how it works for your kitchen
+          </h2>
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            {forRestaurantsContent.kitchenFlow.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-2xl border border-gray100 bg-white p-6 shadow-sm"
+              >
+                <h3 className="text-lg font-semibold text-gray900">{item.title}</h3>
+                <p className="mt-3 text-base leading-relaxed text-gray700">{item.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

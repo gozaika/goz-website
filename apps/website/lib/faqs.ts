@@ -36,7 +36,7 @@ export const faqs: ReadonlyArray<FaqItem> = [
     id: 'refund',
     question: 'Can I cancel or get a refund?',
     answer:
-      'BAM Bags are non-cancellable once the kitchen is notified. Refund exceptions are handled via the Refund Policy route.',
+      "BAM Bags are non-cancellable once the restaurant receives your order (immediately on payment). We issue refunds in specific cases: the restaurant couldn't fulfil your bag, you had a documented allergic reaction to an undisclosed allergen, or a technical error caused a duplicate charge. See our full Refund Policy for details.",
     category: 'consumer',
   },
   {
@@ -52,5 +52,33 @@ export const faqs: ReadonlyArray<FaqItem> = [
     answer:
       'The restaurant does. goZaika provides discovery and payment flow, while partners define curation, pickup windows, and brand experience.',
     category: 'restaurant',
+  },
+  {
+    id: 'severe-allergy',
+    question: 'What if I have a severe food allergy?',
+    answer:
+      'Every BAM Bag listing discloses all 14 major allergens specified by FSSAI before purchase. If you have a severe allergy, we strongly recommend contacting the restaurant directly before claiming a bag. Our allergen data is provided by the restaurant partner and we cannot guarantee zero cross-contamination risk.',
+    category: 'safety',
+  },
+  {
+    id: 'missed-pickup-window',
+    question: 'What happens if I miss the pickup window?',
+    answer:
+      'BAM Bags are prepared for your pickup window. If you miss it, the bag cannot be held indefinitely — kitchen safety standards apply. Missing the pickup window does not qualify for a refund. Please check our Refund Policy for the full conditions.',
+    category: 'consumer',
+  },
+  {
+    id: 'outside-hyderabad',
+    question: 'Is this available outside Hyderabad?',
+    answer:
+      "Not yet. We are launching in Hyderabad first — specifically Banjara Hills, Jubilee Hills, and Kondapur. Other cities will follow once we've proven the model with depth, not just coverage. Join the waitlist and select 'Other City' to register interest for your area.",
+    category: 'consumer',
+  },
+  {
+    id: 'swaad-club',
+    question: 'What is Swaad Club?',
+    answer:
+      'Swaad Club is our upcoming loyalty programme. Earn points on every BAM Bag you claim. Redeem for early access to exclusive drops and partner rewards. Launching with the goZaika app.',
+    category: 'consumer',
   },
 ];

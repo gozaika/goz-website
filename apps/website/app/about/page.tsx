@@ -73,6 +73,19 @@ export default function AboutPage(): React.ReactElement {
             ))}
           </div>
 
+          <div className="mt-12 rounded-2xl bg-white p-8 shadow-[0_10px_30px_rgba(26,92,56,0.08)]">
+            <h3 className="text-xl font-semibold text-gray900">{aboutContent.hyderabadHeading}</h3>
+            <p className="mt-3 max-w-3xl text-base leading-relaxed text-gray700">
+              {aboutContent.hyderabadBody}
+            </p>
+            <Link
+              href="/contact"
+              className="mt-6 inline-flex h-12 items-center justify-center rounded-md bg-saffron px-6 text-base font-semibold text-gray900 transition-colors hover:bg-[var(--color-saffron-hover)]"
+            >
+              Contact Us
+            </Link>
+          </div>
+
           <div className="mt-10 flex flex-wrap gap-3">
             <Link
               href="/#waitlist"

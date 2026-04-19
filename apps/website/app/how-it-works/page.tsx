@@ -35,7 +35,7 @@ export default function HowItWorksPage(): React.ReactElement {
 
       <HowItWorksFlow
         className="bg-white"
-        title="The three-step flow"
+        title="The four-step flow"
         steps={howItWorksContent.steps.map((step) => ({
           title: step.heading,
           description: step.body,
@@ -45,9 +45,11 @@ export default function HowItWorksPage(): React.ReactElement {
 
       <section className="bg-cream">
         <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-forest-light bg-forest-light p-6">
-            <h2 className="heading-section text-gray900">Trust before pickup</h2>
-            <p className="mt-3 text-base text-gray700">{howItWorksContent.allergenCallout}</p>
+          <div className="mx-auto my-8 max-w-2xl rounded-r-xl border-l-4 border-forest bg-forest-light p-6">
+            <p className="mb-1 text-lg font-semibold text-forest">
+              {howItWorksContent.allergenCalloutHeading}
+            </p>
+            <p className="text-gray700">{howItWorksContent.allergenCalloutBody}</p>
           </div>
 
           <div className="mt-10">

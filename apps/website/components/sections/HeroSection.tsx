@@ -8,13 +8,17 @@ import { Reveal } from '@/components/ui/Reveal';
 interface HeroSectionProps {
   eyebrow: string;
   headline: string;
+  supportLine: string;
   body: string;
   helper: string;
+  socialProof: string;
 }
 
 export function HeroSection({
   eyebrow,
   headline,
+  socialProof,
+  supportLine,
   body,
   helper,
 }: HeroSectionProps): React.ReactElement {
@@ -55,6 +59,15 @@ export function HeroSection({
 
           <Reveal
             as="p"
+            className="mt-4 text-base font-medium text-forest"
+            amount={0.25}
+            delayClass="reveal-delay-160"
+          >
+            {supportLine}
+          </Reveal>
+
+          <Reveal
+            as="p"
             className="text-lead mt-5 max-w-md text-gray600"
             amount={0.25}
             delayClass="reveal-delay-200"
@@ -86,6 +99,8 @@ export function HeroSection({
           </Reveal>
 
           <p className="mt-4 text-sm text-gray500">{helper}</p>
+          {/* PHASE 2: Replace dynamically with real count from Supabase once ≥50 real signups. */}
+          <p className="mt-2 text-sm text-gray600">{socialProof}</p>
         </div>
 
         <div className="order-2 relative flex items-center justify-center">

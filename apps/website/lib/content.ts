@@ -6,9 +6,11 @@
 export const homeContent = {
   hero: {
     eyebrow: 'LAUNCHING IN HYDERABAD',
-    headline: 'Drop the Wait. Find the Taste.',
-    body: 'Chef-curated mystery meal drops from premium restaurants near you. Pickup-only, trust-led, and built for discovery.',
+    headline: "India's first mystery meal drop.",
+    supportLine: 'BAM! बड़ा ज़ायका, आएगा मज़ा',
+    body: "BAM Bags from Hyderabad's best restaurants — chef-curated, allergen-disclosed, always a surprise.",
     helper: 'Join the waitlist · Free · No spam',
+    socialProof: 'Be among the first in Hyderabad',
   },
   trustBadges: [
     {
@@ -34,7 +36,7 @@ export const homeContent = {
     {
       title: 'Claim',
       description:
-        'Review the trust details that matter before you commit to a bag.',
+        'Pay once. Your pickup window is locked. Your QR code is yours.',
       icon: '/images/step-buy-v2.svg',
     },
     {
@@ -46,10 +48,10 @@ export const homeContent = {
   ],
   bamBag: {
     eyebrow: 'What is a BAM Bag?',
-    heading: 'Premium restaurants should not feel permanently out of reach.',
-    body: 'goZaika helps people discover standout restaurants through limited BAM Bag drops. You may not know exact dishes in advance, but you will know dietary type, allergen categories, pickup window, and why the experience is worth showing up for.',
+    heading: 'Not a deal. A discovery.',
+    body: "Every BAM Bag is a chef-curated to-go selection from a partner restaurant. The dishes are a surprise — but every allergen, dietary category, spice level, and pickup window is disclosed before you buy. You don't know what's inside. You always know it's safe for you.",
     callout:
-      'goZaika is a controlled-access discovery platform built for premium taste with transparent trust details.',
+      "goZaika is not a discount app, a rescue app, or a leftover platform. It is a controlled-access, off-menu discovery layer for people who want great food without the algorithm.",
   },
   restaurantTeaser: {
     eyebrow: 'For Restaurants',
@@ -63,8 +65,10 @@ export const homeContent = {
     cta: 'Become a Partner',
   },
   launch: {
-    heading: 'Get early access to Hyderabad drops',
+    heading: 'Launching in Hyderabad',
     body: 'Join the waitlist to hear about launch windows, first restaurant reveals, and the first premium BAM Bag drops near you.',
+    disclaimer:
+      '*Preview listings are illustrative only. Final restaurant partners will be announced at launch.',
   },
   partnerPreviews: [
     {
@@ -101,8 +105,8 @@ export const howItWorksContent = {
       icon: '/images/step-browse-v2.svg',
     },
     {
-      heading: 'Buy',
-      body: 'Pay once, get instant confirmation, and lock your pickup window.',
+      heading: 'Claim',
+      body: 'Pay once. Your pickup window is locked. Your QR code is yours.',
       icon: '/images/step-buy-v2.svg',
     },
     {
@@ -110,21 +114,34 @@ export const howItWorksContent = {
       body: 'Walk to the restaurant, show your QR confirmation, and collect your bag during the stated time window.',
       icon: '/images/step-pickup-v2.svg',
     },
+    {
+      heading: 'Discover (and return)',
+      body: 'Share what you got. Rate the experience. Earn Swaad Club points for your next drop. Each bag is a new restaurant, a new story, and a reason to come back.',
+      icon: '/images/step-browse-v2.svg',
+    },
   ],
-  allergenCallout:
-    'Every listing declares all 14 major allergens before you buy.',
+  allergenCalloutHeading: 'Your safety is disclosed, always.',
+  allergenCalloutBody:
+    'Every goZaika listing declares all 14 major allergens specified by FSSAI before you buy. Not after. Not at pickup. Before you pay.',
 } as const;
 
 export const forRestaurantsContent = {
   title: "The lowest-friction revenue channel you've never had.",
   subtitle:
-    "goZaika is not a delivery app. It's a controlled-access discovery platform for restaurants that protect brand dignity.",
-  valueProps: [
-    'You decide what goes in each bag.',
-    'You set the pickup window.',
-    'We charge 12% commission during pilot.',
-    'Your restaurant name stays front and center.',
-    'Zero rider and delivery burden.',
+    "12% commission. Zero delivery riders. Your restaurant name always front and centre. The only platform built to protect what you've spent years building.",
+  kitchenFlow: [
+    {
+      title: 'You control the bag',
+      body: 'Set your pickup window, allergens, cuisine type, and bag value. goZaika surfaces it to nearby consumers. You curate. We distribute.',
+    },
+    {
+      title: 'No delivery operations',
+      body: 'Your customer walks in, shows a QR code, picks up the bag. No rider coordination, no packaging SLAs, no delivery radius.',
+    },
+    {
+      title: 'Your brand stays intact',
+      body: "Your restaurant name, cuisine identity, and story are front-and-centre on every listing. goZaika never describes your food as 'surplus' or 'leftover' to consumers. Ever.",
+    },
   ],
   comparisonRows: [
     {
@@ -173,9 +190,9 @@ export const aboutContent = {
   title:
     "We built goZaika because India's best restaurants deserve a smarter exit for great food.",
   paragraphs: [
-    'Every evening, kitchens across India produce more than they sell. That output deserves a trust-first path to discovery.',
-    'goZaika makes that path possible through BAM Bags: chef-curated, allergen-disclosed, and pickup-ready.',
-    'We are building city by city in Hyderabad with discipline, transparency, and long-term partner alignment.',
+    "Every evening, kitchens across India produce more than they sell. That output — carefully prepared, fully safe, restaurant-quality — has nowhere to go that doesn't compromise the brand. It doesn't belong in a discount bin. It doesn't belong in a charity channel. It belongs in the hands of someone who will genuinely love it.",
+    'goZaika creates that path. We call our drops BAM Bags — Big Aayega Maza. Chef-curated, allergen-disclosed, mystery to-go selections from restaurants that have chosen to release them on their own terms. The restaurant designs the experience. We surface it to the right people.',
+    'We are building in Hyderabad first — intentionally, slowly, and with deep alignment with the restaurants we partner with. We believe trust is built city by city, kitchen by kitchen. Not by scale.',
   ],
   mission: 'To build a world where great food finds great people, every single evening.',
   values: [
@@ -184,12 +201,15 @@ export const aboutContent = {
     'Radical transparency',
     'City-by-city intentional growth',
   ],
+  hyderabadHeading: 'Building in Hyderabad',
+  hyderabadBody:
+    'Launching in Banjara Hills, Jubilee Hills, and Kondapur. If you are a restaurant owner, investor, or collaborator in Hyderabad — we would love to hear from you.',
 } as const;
 
 export const contactSubjects = [
   { value: 'general', label: 'General' },
   { value: 'restaurant', label: 'Restaurant Partnership' },
-  { value: 'investor', label: 'Investor' },
+  { value: 'investor', label: 'Investor Enquiry' },
   { value: 'press', label: 'Press' },
   { value: 'careers', label: 'Careers' },
 ] as const;

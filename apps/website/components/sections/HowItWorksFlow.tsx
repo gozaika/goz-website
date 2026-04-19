@@ -29,6 +29,8 @@ export function HowItWorksFlow({
   subtitle,
   title,
 }: HowItWorksFlowProps): React.ReactElement {
+  const isFourStepFlow = steps.length === 4;
+
   return (
     <section id={id} className={cn(className)}>
       <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:px-8">
@@ -37,8 +39,18 @@ export function HowItWorksFlow({
           <p className="text-lead mx-auto mt-4 max-w-3xl text-center text-gray600">{subtitle}</p>
         ) : null}
 
-        <div className="relative mt-12 grid gap-5 lg:grid-cols-3 lg:gap-8">
-          <div className="absolute top-10 left-[16.66%] right-[16.66%] hidden h-px border-t-2 border-dashed border-saffron/40 lg:block" />
+        <div
+          className={cn(
+            'relative mt-12 grid gap-5 lg:gap-8',
+            isFourStepFlow ? 'lg:grid-cols-4' : 'lg:grid-cols-3',
+          )}
+        >
+          <div
+            className={cn(
+              'absolute top-10 hidden h-px border-t-2 border-dashed border-saffron/40 lg:block',
+              isFourStepFlow ? 'left-[12.5%] right-[12.5%]' : 'left-[16.66%] right-[16.66%]',
+            )}
+          />
 
           {steps.map((step, index) => (
             <Reveal

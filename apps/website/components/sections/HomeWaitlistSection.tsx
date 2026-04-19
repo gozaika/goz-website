@@ -14,11 +14,13 @@ interface PreviewRestaurant {
 interface HomeWaitlistSectionProps {
   heading: string;
   body: string;
+  disclaimer: string;
   restaurants: ReadonlyArray<PreviewRestaurant>;
 }
 
 export function HomeWaitlistSection({
   body,
+  disclaimer,
   heading,
   restaurants,
 }: HomeWaitlistSectionProps): React.ReactElement {
@@ -51,6 +53,8 @@ export function HomeWaitlistSection({
             </div>
           ))}
         </div>
+
+        <p className="mt-6 text-center text-xs text-gray500">{disclaimer}</p>
 
         <Reveal
           as="div"

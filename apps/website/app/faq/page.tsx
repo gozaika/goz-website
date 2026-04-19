@@ -6,7 +6,7 @@ import { faqs } from '@/lib/faqs';
 import { canonical, openGraphFor, twitterFor } from '@/lib/metadata';
 
 export const metadata: Metadata = {
-  title: 'FAQ | goZaika',
+  title: 'Frequently Asked Questions | goZaika',
   description:
     'Everything you need to know about BAM Bags, pickup, trust details, and partner onboarding.',
   ...canonical('/faq'),
