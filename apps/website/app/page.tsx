@@ -72,7 +72,7 @@ export default function HomePage(): React.ReactElement {
             priority
           />
           <h2 className="text-2xl font-semibold text-gray900">What goZaika is</h2>
-          <p className="mt-3 text-base text-gray700">{homeContent.bamBag.body}</p>
+          <p className="mt-3 text-sm leading-relaxed text-gray700">{homeContent.bamBag.body}</p>
           <p className="mt-4 rounded-md border border-forest/20 bg-white p-4 text-sm text-gray700">
             {homeContent.bamBag.callout}
           </p>

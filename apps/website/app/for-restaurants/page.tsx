@@ -34,7 +34,9 @@ export default function ForRestaurantsPage(): React.ReactElement {
           <h1 className="text-4xl font-bold text-gray900 md:text-5xl">
             {forRestaurantsContent.title}
           </h1>
-          <p className="mt-4 max-w-3xl text-lg text-gray700">{forRestaurantsContent.subtitle}</p>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-gray700">
+            {forRestaurantsContent.subtitle}
+          </p>
         </div>
         <Image
           src="/images/restaurant-hero-v2.svg"
@@ -42,6 +44,7 @@ export default function ForRestaurantsPage(): React.ReactElement {
           width={800}
           height={600}
           className="h-auto w-full rounded-xl"
+          priority
         />
       </div>
 

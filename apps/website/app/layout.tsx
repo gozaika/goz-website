@@ -12,14 +12,15 @@ const poppins = Poppins({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
   variable: '--font-sans',
-  display: 'swap',
+  display: 'optional',
 });
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
   weight: ['400', '700'],
   variable: '--font-display',
-  display: 'swap',
+  display: 'optional',
+  preload: false,
 });
 
 export const metadata: Metadata = {

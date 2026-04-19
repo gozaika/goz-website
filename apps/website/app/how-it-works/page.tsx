@@ -54,7 +54,7 @@ export default function HowItWorksPage(): React.ReactElement {
               Step {index + 1}
             </p>
             <h2 className="mt-2 text-2xl font-semibold text-gray900">{step.heading}</h2>
-            <p className="mt-2 text-base text-gray700">{step.body}</p>
+            <p className="mt-2 text-sm leading-relaxed text-gray700">{step.body}</p>
           </Card>
         ))}
       </div>
