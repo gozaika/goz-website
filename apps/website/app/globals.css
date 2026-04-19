@@ -42,6 +42,28 @@ body {
   }
 }
 
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .heading-hero {
   font-family: var(--font-display), serif;
   font-size: clamp(2.5rem, 5vw, 3.75rem);
@@ -77,42 +99,38 @@ body {
 }
 
 .reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition-property: opacity, transform;
-  transition-duration: 0.4s;
-  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
-  will-change: opacity, transform;
+  opacity: 1;
+  transform: none;
 }
 
 .reveal-visible {
-  opacity: 1;
-  transform: translateY(0);
+  animation: reveal-up 0.4s cubic-bezier(0.2, 0, 0, 1) both;
+  will-change: opacity, transform;
 }
 
 .reveal-delay-80 {
-  transition-delay: 80ms;
+  animation-delay: 80ms;
 }
 
 .reveal-delay-100 {
-  transition-delay: 100ms;
+  animation-delay: 100ms;
 }
 
 .reveal-delay-160 {
-  transition-delay: 160ms;
+  animation-delay: 160ms;
 }
 
 .reveal-delay-200 {
-  transition-delay: 200ms;
+  animation-delay: 200ms;
 }
 
 .reveal-delay-300 {
-  transition-delay: 300ms;
+  animation-delay: 300ms;
 }
 
 @media (max-width: 767px) {
-  .reveal {
-    transform: none;
+  .reveal-visible {
+    animation-name: reveal-fade;
   }
 }
 
@@ -130,7 +148,8 @@ body {
   .reveal-delay-300 {
     opacity: 1;
     transform: none;
-    transition: none;
+    animation: none;
+    will-change: auto;
   }
 }
 

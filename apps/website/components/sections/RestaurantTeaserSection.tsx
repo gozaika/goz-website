@@ -47,7 +47,7 @@ export function RestaurantTeaserSection({
                   amount={0.2}
                   delayClass={delayClass}
                 >
-                <p className="text-2xl font-bold text-saffron">{stat.value}</p>
+                <p className="text-2xl font-bold text-cream">{stat.value}</p>
                 <p className="text-xs text-forest-light">{stat.label}</p>
                 </Reveal>
               );
