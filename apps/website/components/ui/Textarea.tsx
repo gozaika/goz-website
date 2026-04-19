@@ -23,7 +23,7 @@ export function Textarea({
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-sm font-medium text-gray700">
+      <label htmlFor={id} className="mb-1 block text-sm font-medium text-gray700">
         {label}
         {required ? <span className="ml-1 text-error">*</span> : null}
       </label>
@@ -33,7 +33,7 @@ export function Textarea({
         aria-invalid={Boolean(error)}
         aria-describedby={error || helper ? hintId : undefined}
         className={cn(
-          'min-h-28 rounded-md border border-gray200 px-3 py-2 text-base text-gray900 focus:border-saffron focus:outline-none focus:ring-2 focus:ring-saffron/40',
+          'min-h-28 w-full rounded-md border border-gray200 px-4 py-3 text-base text-gray900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-saffron',
           className,
         )}
         {...props}

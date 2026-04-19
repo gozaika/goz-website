@@ -16,9 +16,41 @@ export function WaitlistForm(): React.ReactElement {
   const [cfToken, setCfToken] = React.useState<string | null>(null);
   const [consent, setConsent] = React.useState<boolean>(false);
   const [name, setName] = React.useState<string>('');
-  const [email, setEmail] = React.useState<string>('');
+  const [email, setEmail] = React.useState<string>(() => {
+    if (typeof window === 'undefined') {
+      return '';
+    }
+
+    const prefetchedEmail = window.sessionStorage.getItem('gozaika_waitlist_prefill_email');
+
+    if (prefetchedEmail) {
+      window.sessionStorage.removeItem('gozaika_waitlist_prefill_email');
+    }
+
+    return prefetchedEmail ?? '';
+  });
   const [city, setCity] = React.useState<string>('Hyderabad');
   const [role, setRole] = React.useState<'consumer' | 'restaurant'>('consumer');
+
+  React.useEffect((): (() => void) => {
+    if (typeof window === 'undefined') {
+      return () => undefined;
+    }
+
+    const handlePrefill = (event: Event): void => {
+      const nextEmail = (event as CustomEvent<string>).detail;
+
+      if (typeof nextEmail === 'string' && nextEmail.length > 0) {
+        setEmail(nextEmail);
+      }
+    };
+
+    window.addEventListener('gozaika:prefill-waitlist-email', handlePrefill as EventListener);
+
+    return (): void => {
+      window.removeEventListener('gozaika:prefill-waitlist-email', handlePrefill as EventListener);
+    };
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
@@ -53,7 +85,7 @@ export function WaitlistForm(): React.ReactElement {
   };
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit} aria-busy={status === 'loading'}>
+    <form className="space-y-5" onSubmit={handleSubmit} aria-busy={status === 'loading'}>
       <Input
         id="waitlist-name"
         label="Name"
@@ -81,12 +113,12 @@ export function WaitlistForm(): React.ReactElement {
         onChange={(event) => setCity(event.target.value)}
       />
       <div className="flex flex-col gap-2">
-        <label htmlFor="waitlist-role" className="text-sm font-medium text-gray700">
+        <label htmlFor="waitlist-role" className="mb-1 block text-sm font-medium text-gray700">
           I am joining as
         </label>
         <select
           id="waitlist-role"
-          className="h-11 rounded-md border border-gray200 px-3 text-base text-gray900 focus:border-saffron focus:outline-none focus:ring-2 focus:ring-saffron/40"
+          className="h-11 w-full rounded-md border border-gray200 px-4 text-base text-gray900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-saffron"
           value={role}
           onChange={(event) => {
             if (event.target.value === 'restaurant') {
@@ -106,9 +138,9 @@ export function WaitlistForm(): React.ReactElement {
           type="checkbox"
           checked={consent}
           onChange={(event) => setConsent(event.target.checked)}
-          className="mt-1"
+          className="mt-1 h-4 w-4 rounded border border-gray200 text-saffron focus:ring-saffron"
         />
-        <label htmlFor="waitlist-consent" className="text-sm text-gray700">
+        <label htmlFor="waitlist-consent" className="text-sm leading-relaxed text-gray700">
           By joining the waitlist, you consent to receive product updates and launch
           notifications from goZaika. View our Privacy Policy.
         </label>
@@ -119,20 +151,25 @@ export function WaitlistForm(): React.ReactElement {
       <Button
         type="submit"
         fullWidth
+        size="lg"
         loading={status === 'loading'}
         disabled={!consent || status === 'loading'}
       >
         Join Waitlist
       </Button>
 
+      <p className="text-center text-xs text-gray400">
+        Consent required. We only use your details for launch updates and product communication.
+      </p>
+
       {status === 'success' ? (
-        <p className="text-sm text-success" role="status" aria-live="polite">
+        <p className="text-center text-sm text-success" role="status" aria-live="polite">
           You&apos;re on the list! We&apos;ll notify you when BAM Bags drop near you.
         </p>
       ) : null}
 
       {errorMessage ? (
-        <p className="text-sm text-error" role="alert" aria-live="polite">
+        <p className="text-center text-sm text-error" role="alert" aria-live="polite">
           {errorMessage}
         </p>
       ) : null}

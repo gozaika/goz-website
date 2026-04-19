@@ -7,21 +7,10 @@ export const contentType = 'image/png';
 export default function OpenGraphImage(): ImageResponse {
   return new ImageResponse(
     (
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          backgroundColor: '#1A5C38',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          padding: '80px',
-          color: '#FFFFFF',
-        }}
-      >
-        <div style={{ color: '#FF6B35', fontSize: 96, fontWeight: 700 }}>goZaika</div>
-        <div style={{ fontSize: 36, marginTop: 24 }}>India&apos;s mystery meal drop platform.</div>
-        <div style={{ color: '#EAF3DE', fontSize: 28, marginTop: 16 }}>
+      <div tw="flex h-full w-full flex-col justify-center bg-[#1A5C38] px-20 text-white">
+        <div tw="text-[96px] font-bold text-[#FF6B35]">goZaika</div>
+        <div tw="mt-6 text-[36px]">India&apos;s mystery meal drop platform.</div>
+        <div tw="mt-4 text-[28px] text-[#EAF3DE]">
           Discover. Pickup. Devour.
         </div>
       </div>

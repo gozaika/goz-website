@@ -8,7 +8,7 @@ interface LegalPageProps {
 export function LegalPage({ sections, title }: LegalPageProps): React.ReactElement {
   return (
     <div className="mx-auto max-w-4xl px-4 py-16 md:px-6 lg:px-8">
-      <h1 className="text-4xl font-bold text-gray900 md:text-5xl">{title}</h1>
+      <h1 className="heading-page text-gray900">{title}</h1>
       <div className="mt-6 space-y-4 text-sm leading-relaxed text-gray700">
         {sections.map((paragraph) => (
           <p key={paragraph}>{paragraph}</p>

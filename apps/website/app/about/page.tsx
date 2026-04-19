@@ -2,8 +2,6 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
 import { aboutContent } from '@/lib/content';
 import { canonical, openGraphFor, twitterFor } from '@/lib/metadata';
 
@@ -25,48 +23,72 @@ export const metadata: Metadata = {
 
 export default function AboutPage(): React.ReactElement {
   return (
-    <div className="mx-auto max-w-screen-xl px-4 py-16 md:px-6 lg:px-8">
-      <h1 className="text-4xl font-bold text-gray900 md:text-5xl">{aboutContent.title}</h1>
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <div className="space-y-4">
-          {aboutContent.paragraphs.map((paragraph) => (
-            <p key={paragraph} className="max-w-4xl text-base leading-relaxed text-gray700">
-              {paragraph}
-            </p>
-          ))}
+    <>
+      <section className="bg-cream">
+        <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <h1 className="heading-page max-w-4xl text-gray900">{aboutContent.title}</h1>
+          <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:items-center">
+            <div className="space-y-4">
+              {aboutContent.paragraphs.map((paragraph) => (
+                <p key={paragraph} className="text-base leading-relaxed text-gray700">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+            <Image
+              src="/images/about-illustration-v1.svg"
+              alt="About goZaika visual showing curated bag on kitchen counter"
+              width={800}
+              height={600}
+              className="h-auto w-full rounded-3xl bg-white p-4 shadow-[0_10px_30px_rgba(26,92,56,0.08)]"
+            />
+          </div>
         </div>
-        <Image
-          src="/images/about-illustration-v1.svg"
-          alt="About goZaika visual showing curated bag on kitchen counter"
-          width={800}
-          height={600}
-          className="h-auto w-full rounded-xl"
-        />
-      </div>
-
-      <Card className="mt-8 border-forest/20 bg-forestLight">
-        <p className="text-lg font-medium text-forest">{aboutContent.mission}</p>
-      </Card>
-
-      <section className="mt-8">
-        <h2 className="text-3xl font-semibold text-gray900">What we believe</h2>
-        <ul className="mt-4 grid gap-4 md:grid-cols-2">
-          {aboutContent.values.map((value) => (
-            <li key={value} className="rounded-md border border-gray200 bg-white p-4 text-sm text-gray700">
-              {value}
-            </li>
-          ))}
-        </ul>
       </section>
 
-      <div className="mt-8 flex gap-3">
-        <Link href="/#waitlist">
-          <Button>Join Waitlist</Button>
-        </Link>
-        <Link href="/for-restaurants">
-          <Button variant="secondary">For Restaurants</Button>
-        </Link>
-      </div>
-    </div>
+      <section className="bg-white">
+        <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="my-12 rounded-2xl bg-forest p-8 text-center text-white">
+            <p className="mb-3 text-xs uppercase tracking-[0.24em] text-forest-light">
+              Our Mission
+            </p>
+            <p className="mx-auto max-w-xl text-2xl font-bold leading-snug [font-family:var(--font-display)]">
+              {aboutContent.mission}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-cream">
+        <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
+          <h2 className="heading-section text-gray900">What we believe</h2>
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {aboutContent.values.map((value) => (
+              <div
+                key={value}
+                className="rounded-r-xl border-l-4 border-saffron bg-saffron-light p-5"
+              >
+                <p className="font-semibold text-gray900">{value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 flex flex-wrap gap-3">
+            <Link
+              href="/#waitlist"
+              className="inline-flex h-12 items-center justify-center rounded-md bg-saffron px-6 text-base font-semibold text-white transition-colors hover:bg-[var(--color-saffron-hover)]"
+            >
+              Join Waitlist
+            </Link>
+            <Link
+              href="/for-restaurants"
+              className="inline-flex h-12 items-center justify-center rounded-md border border-forest px-6 text-base font-semibold text-forest transition-colors hover:bg-forest hover:text-white"
+            >
+              For Restaurants
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

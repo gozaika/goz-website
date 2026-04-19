@@ -22,7 +22,7 @@ export function Input({
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-sm font-medium text-gray700">
+      <label htmlFor={id} className="mb-1 block text-sm font-medium text-gray700">
         {label}
         {required ? <span className="ml-1 text-error">*</span> : null}
       </label>
@@ -32,7 +32,7 @@ export function Input({
         aria-invalid={Boolean(error)}
         aria-describedby={error || helper ? hintId : undefined}
         className={cn(
-          'h-11 rounded-md border border-gray200 px-3 text-base text-gray900 focus:border-saffron focus:outline-none focus:ring-2 focus:ring-saffron/40',
+          'h-11 w-full rounded-md border border-gray200 px-4 text-base text-gray900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-saffron',
           className,
         )}
         {...props}

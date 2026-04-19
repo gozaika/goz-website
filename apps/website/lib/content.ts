@@ -5,83 +5,88 @@
 
 export const homeContent = {
   hero: {
-    eyebrow: "India's mystery meal drop platform",
+    eyebrow: 'LAUNCHING IN HYDERABAD',
     headline: 'Drop the Wait. Find the Taste.',
-    supportLine: 'Bada Zayka, Chhoti Kimat',
-    body: 'Mystery meal drops from premium restaurants near you. Curated for discovery. Pickup-only. Built for trust.',
-    primaryCta: 'Join Waitlist',
-    secondaryCta: 'See How It Works',
-    socialProof: 'Already 340 food lovers waiting in Hyderabad',
+    body: 'Chef-curated mystery meal drops from premium restaurants near you. Pickup-only, trust-led, and built for discovery.',
+    helper: 'Join the waitlist · Free · No spam',
   },
-  trustPills: [
-    'Premium restaurants',
-    'Pickup-only',
-    'Allergens disclosed',
-    'Fresh, same-day food',
-    'FSSAI-aware platform standards',
+  trustBadges: [
+    {
+      title: 'Chef-Curated Drops',
+      subtitle: 'Restaurants decide every bag',
+    },
+    {
+      title: 'Allergens Always Disclosed',
+      subtitle: 'All 14 FSSAI-listed allergens',
+    },
+    {
+      title: 'Pickup Only',
+      subtitle: 'Direct from the kitchen',
+    },
   ],
   howItWorks: [
     {
       title: 'Discover',
       description:
         'Find drops in your area and choose the kind of experience that fits you.',
+      icon: '/images/step-browse-v2.svg',
     },
     {
       title: 'Claim',
       description:
         'Review the trust details that matter before you commit to a bag.',
+      icon: '/images/step-buy-v2.svg',
     },
     {
       title: 'Pickup',
       description:
         'Collect during the pickup window and let the restaurant surprise you.',
+      icon: '/images/step-pickup-v2.svg',
     },
   ],
   bamBag: {
+    eyebrow: 'What is a BAM Bag?',
     heading: 'Premium restaurants should not feel permanently out of reach.',
     body: 'goZaika helps people discover standout restaurants through limited BAM Bag drops. You may not know exact dishes in advance, but you will know dietary type, allergen categories, pickup window, and why the experience is worth showing up for.',
     callout:
       'goZaika is a controlled-access discovery platform built for premium taste with transparent trust details.',
   },
   restaurantTeaser: {
-    heading: 'Restaurant partners: recover cost, not reputation.',
-    body: 'goZaika gives your team a zero-friction channel to release intentional surplus bags you design, price, and brand yourself.',
+    eyebrow: 'For Restaurants',
+    heading: 'Recover cost, not reputation.',
+    body: "A zero-friction channel for your kitchen's intentional releases. You design the bag. We surface it to the right people.",
     stats: [
-      '12% commission - lowest in category',
-      'Zero delivery ops',
-      'Your story, your brand',
+      { value: '12%', label: 'Commission — lowest in category' },
+      { value: '0%', label: 'First 30 days free' },
+      { value: '0', label: 'Delivery ops — pickup only' },
     ],
     cta: 'Become a Partner',
   },
   launch: {
-    heading: 'Launching soon in Hyderabad',
-    body: 'Banjara Hills · Jubilee Hills · Kondapur. Be among the first to know when BAM Bags drop near you.',
-    successMessage:
-      "You're on the list! We'll notify you when BAM Bags are live in your area.",
+    heading: 'Get early access to Hyderabad drops',
+    body: 'Join the waitlist to hear about launch windows, first restaurant reveals, and the first premium BAM Bag drops near you.',
   },
   partnerPreviews: [
-    'The Spice Lab - Contemporary Indian · Banjara Hills · Pickup 7-9 PM · Bag value INR600+',
-    'Garden Terrace - Modern Vegetarian · Jubilee Hills · Pickup 6-8 PM · Bag value INR450+',
-    'The Coastal Kitchen - Seafood & Coastal · Kondapur · Pickup 7-9 PM · Bag value INR700+',
-  ],
-  testimonials: [
     {
-      quote:
-        'The pickup flow felt premium and seamless. I discovered a place I would not have tried otherwise.',
-      name: 'Priya R.',
-      title: 'Early Waitlist Member',
+      name: 'The Spice Lab',
+      cuisine: 'Contemporary Indian',
+      area: 'Banjara Hills',
+      pickup: 'Pickup 7-9 PM',
+      value: 'Value INR600+',
     },
     {
-      quote:
-        'The experience balances trust and surprise perfectly. The details shown before pickup are very useful.',
-      name: 'Arjun K.',
-      title: 'Food Explorer',
+      name: 'Garden Terrace',
+      cuisine: 'Modern Vegetarian',
+      area: 'Jubilee Hills',
+      pickup: 'Pickup 6-8 PM',
+      value: 'Value INR450+',
     },
     {
-      quote:
-        'As a concept, this is exactly the kind of thoughtful food discovery Hyderabad needs.',
-      name: 'Nisha M.',
-      title: 'Pilot Community User',
+      name: 'The Coastal Kitchen',
+      cuisine: 'Seafood & Coastal',
+      area: 'Kondapur',
+      pickup: 'Pickup 7-9 PM',
+      value: 'Value INR700+',
     },
   ],
 } as const;
@@ -93,18 +98,17 @@ export const howItWorksContent = {
     {
       heading: 'Browse',
       body: 'Find drops near you sorted by cuisine, distance, and pickup time. Every listing shows what you need without revealing exact dishes.',
+      icon: '/images/step-browse-v2.svg',
     },
     {
       heading: 'Buy',
       body: 'Pay once, get instant confirmation, and lock your pickup window.',
+      icon: '/images/step-buy-v2.svg',
     },
     {
       heading: 'Pickup',
       body: 'Walk to the restaurant, show your QR confirmation, and collect your bag during the stated time window.',
-    },
-    {
-      heading: 'Discover',
-      body: 'Share your haul, rate the experience, and return for the next curated drop.',
+      icon: '/images/step-pickup-v2.svg',
     },
   ],
   allergenCallout:
@@ -122,12 +126,46 @@ export const forRestaurantsContent = {
     'Your restaurant name stays front and center.',
     'Zero rider and delivery burden.',
   ],
-  commissionRows: [
-    'First 30 days - 0% commission',
-    'Pilot phase - 12%',
-    'Standard - 15%',
-    'Volume tier - 12% at 200+ bags/month',
-    'Zayka Pro SaaS - INR2,499/month (optional)',
+  comparisonRows: [
+    {
+      phase: 'First 30 days',
+      commission: '0%',
+      notes: 'Free onboarding period to launch your first bags without platform fees.',
+    },
+    {
+      phase: 'Pilot phase',
+      commission: '12%',
+      notes: 'Lowest-in-category commission while Hyderabad supply is being built.',
+    },
+    {
+      phase: 'Standard',
+      commission: '15%',
+      notes: 'Applies after pilot once the city network and demand loops mature.',
+    },
+    {
+      phase: 'Volume tier',
+      commission: '12%',
+      notes: 'Available for partners releasing 200+ bags per month.',
+    },
+    {
+      phase: 'Zayka Pro SaaS',
+      commission: 'INR2,499/mo',
+      notes: 'Optional software layer for deeper merchandising and reporting.',
+    },
+  ],
+  differentiators: [
+    {
+      title: 'Protect brand dignity',
+      body: 'You decide what goes out, how it is framed, and who discovers it.',
+    },
+    {
+      title: 'Commission that stays lean',
+      body: 'The economics are designed to recover cost without creating delivery drag.',
+    },
+    {
+      title: 'Pickup keeps operations simple',
+      body: 'No riders, no dispatch complexity, and no compromise on kitchen control.',
+    },
   ],
 } as const;
 
@@ -139,7 +177,7 @@ export const aboutContent = {
     'goZaika makes that path possible through BAM Bags: chef-curated, allergen-disclosed, and pickup-ready.',
     'We are building city by city in Hyderabad with discipline, transparency, and long-term partner alignment.',
   ],
-  mission: 'To build a world where great food finds great people, every evening.',
+  mission: 'To build a world where great food finds great people, every single evening.',
   values: [
     'Premium without pretence',
     'Restaurant dignity first',

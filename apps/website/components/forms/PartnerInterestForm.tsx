@@ -58,7 +58,7 @@ export function PartnerInterestForm(): React.ReactElement {
   };
 
   return (
-    <form id="partner-form" className="space-y-4" onSubmit={handleSubmit}>
+    <form id="partner-form" className="space-y-5" onSubmit={handleSubmit}>
       <Input
         id="partner-restaurant-name"
         label="Restaurant name"
@@ -131,9 +131,9 @@ export function PartnerInterestForm(): React.ReactElement {
           type="checkbox"
           checked={consent}
           onChange={(event) => setConsent(event.target.checked)}
-          className="mt-1"
+          className="mt-1 h-4 w-4 rounded border border-gray200 text-saffron focus:ring-saffron"
         />
-        <label htmlFor="partner-consent" className="text-sm text-gray700">
+        <label htmlFor="partner-consent" className="text-sm leading-relaxed text-gray700">
           By submitting this form, GoZaika Technologies Pvt. Ltd. may contact you
           regarding a potential partnership.
         </label>
@@ -142,18 +142,22 @@ export function PartnerInterestForm(): React.ReactElement {
       <Button
         type="submit"
         fullWidth
+        size="lg"
         loading={status === 'loading'}
         disabled={!consent || status === 'loading'}
       >
         Express Partner Interest
       </Button>
+      <p className="text-center text-xs text-gray400">
+        We only use this information to evaluate partnership fit and follow up with you.
+      </p>
       {status === 'success' ? (
-        <p className="text-sm text-success" role="status" aria-live="polite">
+        <p className="text-center text-sm text-success" role="status" aria-live="polite">
           Thanks for sharing your details. Our team will reach out within 48 hours.
         </p>
       ) : null}
       {errorMessage ? (
-        <p className="text-sm text-error" role="alert" aria-live="polite">
+        <p className="text-center text-sm text-error" role="alert" aria-live="polite">
           {errorMessage}
         </p>
       ) : null}

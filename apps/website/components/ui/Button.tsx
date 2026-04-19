@@ -19,7 +19,7 @@ const sizeClasses = {
 
 const variantClasses = {
   primary:
-    'bg-saffron text-gray900 hover:opacity-90 focus-visible:ring-saffron disabled:bg-saffron/70',
+    'bg-saffron text-white hover:bg-[var(--color-saffron-hover)] focus-visible:ring-saffron disabled:bg-saffron/70',
   secondary:
     'border border-forest bg-transparent text-forest hover:bg-forest hover:text-white focus-visible:ring-forest',
   ghost: 'bg-transparent text-forest hover:bg-saffronLight focus-visible:ring-saffron',
@@ -47,7 +47,7 @@ export function Button({
       type={type}
       disabled={isDisabled}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-md font-semibold uppercase tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed',
+        'inline-flex items-center justify-center gap-2 rounded-md font-semibold transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:active:scale-100',
         sizeClasses[size],
         variantClasses[variant],
         fullWidth && 'w-full',
