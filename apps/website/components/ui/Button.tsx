@@ -19,7 +19,7 @@ const sizeClasses = {
 
 const variantClasses = {
   primary:
-    'bg-saffron text-white hover:bg-[var(--color-saffron-hover)] focus-visible:ring-saffron disabled:bg-saffron/70',
+    'bg-saffron text-gray900 hover:bg-[var(--color-saffron-hover)] focus-visible:ring-saffron disabled:bg-saffron/70',
   secondary:
     'border border-forest bg-transparent text-forest hover:bg-forest hover:text-white focus-visible:ring-forest',
   ghost: 'bg-transparent text-forest hover:bg-saffronLight focus-visible:ring-saffron',

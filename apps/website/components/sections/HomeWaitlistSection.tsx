@@ -36,7 +36,7 @@ export function HomeWaitlistSection({
               key={restaurant.name}
               className="relative overflow-hidden rounded-xl border border-gray100 bg-white p-6 shadow-sm"
             >
-              <span className="absolute top-4 right-4 rounded-full bg-gray100 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-gray400">
+              <span className="absolute top-4 right-4 rounded-full bg-gray100 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-gray700">
                 Preview
               </span>
               <div className="mb-4 h-1 w-12 rounded-full bg-saffron" />
@@ -45,7 +45,7 @@ export function HomeWaitlistSection({
                 {restaurant.cuisine} · {restaurant.area}
               </p>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray400">{restaurant.pickup}</span>
+                <span className="text-gray500">{restaurant.pickup}</span>
                 <span className="font-semibold text-forest">{restaurant.value}</span>
               </div>
             </div>

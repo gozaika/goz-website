@@ -41,7 +41,7 @@ export default function ForRestaurantsPage(): React.ReactElement {
             </p>
             <Link
               href="#partner-form"
-              className="mt-8 inline-flex h-12 items-center justify-center rounded-md bg-saffron px-6 text-base font-semibold text-white transition-colors hover:bg-[var(--color-saffron-hover)]"
+              className="mt-8 inline-flex h-12 items-center justify-center rounded-md bg-saffron px-6 text-base font-semibold text-gray900 transition-colors hover:bg-[var(--color-saffron-hover)]"
             >
               Express Partner Interest
             </Link>
@@ -84,7 +84,7 @@ export default function ForRestaurantsPage(): React.ReactElement {
                 {forRestaurantsContent.comparisonRows.map((row, index) => (
                   <tr key={row.phase} className={index % 2 === 0 ? 'bg-white' : 'bg-forest-light'}>
                     <td className="px-4 py-4 font-medium text-gray900">{row.phase}</td>
-                    <td className="px-4 py-4 font-semibold text-saffron">{row.commission}</td>
+                    <td className="px-4 py-4 font-semibold text-forest">{row.commission}</td>
                     <td className="px-4 py-4 text-gray700">{row.notes}</td>
                   </tr>
                 ))}
@@ -106,7 +106,7 @@ export default function ForRestaurantsPage(): React.ReactElement {
                   key={item.title}
                   className="rounded-xl border border-forest-light bg-white p-6"
                 >
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-saffron-light text-saffron">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-saffron-light text-forest">
                     <Icon className="h-6 w-6" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray900">{item.title}</h3>

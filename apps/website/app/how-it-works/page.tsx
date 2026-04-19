@@ -53,7 +53,7 @@ export default function HowItWorksPage(): React.ReactElement {
           <div className="mt-10">
             <Link
               href="/#waitlist"
-              className="inline-flex h-12 items-center justify-center rounded-md bg-saffron px-6 text-base font-semibold text-white transition-colors hover:bg-[var(--color-saffron-hover)]"
+              className="inline-flex h-12 items-center justify-center rounded-md bg-saffron px-6 text-base font-semibold text-gray900 transition-colors hover:bg-[var(--color-saffron-hover)]"
             >
               Join Waitlist
             </Link>

@@ -79,13 +79,13 @@ export function HeroSection({
             />
             <button
               type="submit"
-              className="h-12 rounded-md bg-saffron px-8 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-saffron-hover)] lg:shrink-0"
+              className="h-12 rounded-md bg-saffron px-8 text-sm font-semibold text-gray900 transition-colors hover:bg-[var(--color-saffron-hover)] lg:shrink-0"
             >
               Join Waitlist
             </button>
           </Reveal>
 
-          <p className="mt-4 text-sm text-gray400">{helper}</p>
+          <p className="mt-4 text-sm text-gray500">{helper}</p>
         </div>
 
         <div className="order-2 relative flex items-center justify-center">

@@ -148,7 +148,7 @@ export function PartnerInterestForm(): React.ReactElement {
       >
         Express Partner Interest
       </Button>
-      <p className="text-center text-xs text-gray400">
+      <p className="text-center text-xs text-gray500">
         We only use this information to evaluate partnership fit and follow up with you.
       </p>
       {status === 'success' ? (

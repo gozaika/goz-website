@@ -70,7 +70,7 @@ export function Header(): React.ReactElement {
           ))}
           <Link
             href="/#waitlist"
-            className="rounded-md bg-saffron px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-saffron-hover)]"
+            className="rounded-md bg-saffron px-5 py-2 text-sm font-semibold text-gray900 transition-colors hover:bg-[var(--color-saffron-hover)]"
             onClick={() => track.ctaClick('Join Waitlist', 'nav')}
           >
             Join Waitlist
@@ -113,7 +113,7 @@ export function Header(): React.ReactElement {
             <li>
               <Link
                 href="/#waitlist"
-                className="mb-4 inline-flex rounded-md bg-saffron px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-saffron-hover)]"
+                className="mb-4 inline-flex rounded-md bg-saffron px-5 py-2 text-sm font-semibold text-gray900 transition-colors hover:bg-[var(--color-saffron-hover)]"
                 onClick={() => {
                   track.ctaClick('Join Waitlist', 'nav');
                   setIsMobileOpen(false);

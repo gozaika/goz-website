@@ -62,7 +62,7 @@ function FooterColumn({ heading, links }: FooterColumnProps): React.ReactElement
         {links.map((link) => (
           <li key={`${heading}-${link.label}`}>
             {link.href === '#' ? (
-              <span className="text-sm text-forest-light/70" aria-label="Coming soon">
+              <span className="text-sm text-forest-light" aria-label="Coming soon">
                 {link.label}
               </span>
             ) : (

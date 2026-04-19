@@ -17,7 +17,7 @@ export function BamBagSection({
     <section className="bg-saffron-light">
       <div className="mx-auto grid max-w-screen-xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:px-8">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-saffron">{eyebrow}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-forest">{eyebrow}</p>
           <h2 className="heading-section mt-4 max-w-xl text-gray900">{heading}</h2>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-gray700">{body}</p>
         </div>

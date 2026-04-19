@@ -29,7 +29,7 @@ export function RestaurantTeaserSection({
     <section id="partners" className="bg-forest">
       <div className="mx-auto grid max-w-screen-xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8">
         <div className="text-white">
-          <span className="mb-6 inline-block rounded-full bg-saffron px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-white">
+          <span className="mb-6 inline-block rounded-full bg-saffron px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-gray900">
             {eyebrow}
           </span>
           <h2 className="heading-section mb-4 text-white">{heading}</h2>
@@ -56,7 +56,7 @@ export function RestaurantTeaserSection({
 
           <Link
             href="/for-restaurants"
-            className="inline-block rounded-md bg-saffron px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-saffron-hover)]"
+            className="inline-block rounded-md bg-saffron px-8 py-3 text-sm font-semibold text-gray900 transition-colors hover:bg-[var(--color-saffron-hover)]"
           >
             {cta}
           </Link>

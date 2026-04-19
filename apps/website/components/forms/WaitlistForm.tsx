@@ -158,7 +158,7 @@ export function WaitlistForm(): React.ReactElement {
         Join Waitlist
       </Button>
 
-      <p className="text-center text-xs text-gray400">
+      <p className="text-center text-xs text-gray500">
         Consent required. We only use your details for launch updates and product communication.
       </p>
 

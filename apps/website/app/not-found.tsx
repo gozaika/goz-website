@@ -9,7 +9,7 @@ export default function NotFound(): React.ReactElement {
       </p>
       <Link
         href="/"
-        className="mt-6 inline-flex rounded-md bg-saffron px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-saffron-hover)]"
+        className="mt-6 inline-flex rounded-md bg-saffron px-5 py-3 text-sm font-semibold text-gray900 transition-colors hover:bg-[var(--color-saffron-hover)]"
       >
         Go to Homepage
       </Link>

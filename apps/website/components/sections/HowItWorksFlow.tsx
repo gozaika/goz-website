@@ -57,7 +57,7 @@ export function HowItWorksFlow({
                   className="h-10 w-10"
                 />
               </div>
-              <span className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-saffron">
+              <span className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-forest">
                 Step {index + 1}
               </span>
               <h3 className="text-xl font-semibold text-gray900">{step.title}</h3>
