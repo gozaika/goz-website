@@ -9,7 +9,7 @@ export const siteRoutes: ReadonlyArray<SiteRoute> = [
   {
     href: '/',
     label: 'Home',
-    title: 'goZaika - Discover. Pickup. Devour.',
+    title: 'goZaika — Discover. Pickup. Devour.',
     description:
       'Discover chef-curated BAM Bags from top restaurants near you. Buy, pickup, and devour.',
     indexable: true,
@@ -25,7 +25,7 @@ export const siteRoutes: ReadonlyArray<SiteRoute> = [
   {
     href: '/for-restaurants',
     label: 'For Restaurants',
-    title: 'Partner With goZaika',
+    title: 'Partner With goZaika | For Restaurants',
     description:
       'A controlled-access discovery platform for partners that want margin without brand dilution.',
     indexable: true,
@@ -40,7 +40,7 @@ export const siteRoutes: ReadonlyArray<SiteRoute> = [
   {
     href: '/faq',
     label: 'FAQ',
-    title: 'FAQ | goZaika',
+    title: 'Frequently Asked Questions | goZaika',
     description:
       'Answers on BAM Bags, pickup, allergens, refunds, and restaurant partnerships.',
     indexable: true,
@@ -50,6 +50,38 @@ export const siteRoutes: ReadonlyArray<SiteRoute> = [
     label: 'Contact',
     title: 'Contact goZaika',
     description: 'Reach the goZaika team for customer, partner, press, or investor queries.',
+    indexable: true,
+  },
+  {
+    href: '/blog',
+    label: 'Blog',
+    title: 'goZaika Journal',
+    description:
+      'Market intelligence, restaurant economics, and strategy essays from the goZaika team.',
+    indexable: true,
+  },
+  {
+    href: '/partner-portal',
+    label: 'Partner Portal',
+    title: 'Partner Portal | goZaika',
+    description:
+      'Partnership opportunities for hospitality groups, ecosystem collaborators, and strategic allies.',
+    indexable: true,
+  },
+  {
+    href: '/cities',
+    label: 'Cities',
+    title: 'Cities | goZaika',
+    description:
+      'The goZaika launch map and market-expansion thesis across India.',
+    indexable: true,
+  },
+  {
+    href: '/company',
+    label: 'Company',
+    title: 'Company | goZaika',
+    description:
+      'Leadership, culture, careers, and investor context for goZaika.',
     indexable: true,
   },
 ];
@@ -101,16 +133,20 @@ export const footerColumns = {
   discover: [
     { label: 'How It Works', href: '/how-it-works' },
     { label: 'FAQ', href: '/faq' },
-    { label: 'Cities', href: '#' },
+    { label: 'Cities', href: '/cities' },
   ],
   partners: [
     { label: 'For Restaurants', href: '/for-restaurants' },
-    { label: 'Partner Portal', href: '#' },
+    { label: 'Partner Portal', href: '/partner-portal' },
   ],
   company: [
     { label: 'About', href: '/about' },
-    { label: 'Contact', href: '/contact' },
-    { label: 'Blog', href: '#' },
+    { label: 'Company', href: '/company' },
+    { label: 'Leadership', href: '/company/leadership' },
+    { label: 'Culture', href: '/company/culture' },
+    { label: 'Careers', href: '/company/careers' },
+    { label: 'Investors', href: '/company/investors' },
+    { label: 'Blog', href: '/blog' },
   ],
   legal: legalRoutes.map((route: SiteRoute) => ({
     label: route.label,

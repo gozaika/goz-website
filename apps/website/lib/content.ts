@@ -123,6 +123,33 @@ export const howItWorksContent = {
   allergenCalloutHeading: 'Your safety is disclosed, always.',
   allergenCalloutBody:
     'Every goZaika listing declares all 14 major allergens specified by FSSAI before you buy. Not after. Not at pickup. Before you pay.',
+  prePurchaseDetails: [
+    {
+      title: 'Indicative price and value',
+      body: 'You will see the purchase price and the expected value range before you claim a bag. The point is discovery, not bargain-basement framing.',
+    },
+    {
+      title: 'What “Claim” means',
+      body: 'Claiming a BAM Bag means payment is complete, your pickup window is reserved, and a QR code is generated for collection.',
+    },
+    {
+      title: 'Pickup verification',
+      body: 'At pickup, you show your QR code. The restaurant verifies the order, hands over the bag, and the transaction is complete.',
+    },
+    {
+      title: 'What you will see before purchase',
+      body: 'Cuisine type, dietary category, spice level, allergen disclosures, pickup window, quantity status, and indicative value are disclosed before payment.',
+    },
+    {
+      title: 'How often drops happen',
+      body: 'Drops are limited and restaurant-led. Frequency depends on partner release patterns, not a fixed daily schedule.',
+    },
+    {
+      title: 'Limited quantity and filters',
+      body: 'Bags are limited quantity by design. Filters will include dietary type, cuisine identity, spice level, and neighborhood in addition to allergens.',
+    },
+  ],
+  roadmapNote: 'App and mobile web checkout on the way. Join the waitlist today.',
 } as const;
 
 export const forRestaurantsContent = {
@@ -141,6 +168,24 @@ export const forRestaurantsContent = {
     {
       title: 'Your brand stays intact',
       body: "Your restaurant name, cuisine identity, and story are front-and-centre on every listing. goZaika never describes your food as 'surplus' or 'leftover' to consumers. Ever.",
+    },
+  ],
+  onboardingSteps: [
+    {
+      title: '1. Onboard',
+      body: 'We review fit, gather your operating details, and align on pickup windows, disclosures, and release logic.',
+    },
+    {
+      title: '2. Publish',
+      body: 'Your team sets the bag value, allergens, cuisine type, quantity, and timing. goZaika turns that into a live listing.',
+    },
+    {
+      title: '3. Fulfil',
+      body: 'Orders appear against your live release. Your team verifies QR pickup at handoff. No riders. No delivery coordination.',
+    },
+    {
+      title: '4. Reconcile',
+      body: 'You receive settlement reporting, release performance, and operational visibility on what moved, when, and for whom.',
     },
   ],
   comparisonRows: [
@@ -182,6 +227,59 @@ export const forRestaurantsContent = {
     {
       title: 'Pickup keeps operations simple',
       body: 'No riders, no dispatch complexity, and no compromise on kitchen control.',
+    },
+  ],
+  operationalNotes: [
+    {
+      title: 'Settlement timing',
+      body: 'Settlements should be treated as a scheduled operating flow, not an ad-hoc reconciliation exercise. The page should communicate clear settlement windows tied to completed pickups.',
+    },
+    {
+      title: 'Partner requirements',
+      body: 'Partners should be FSSAI compliant, operationally reliable during pickup windows, and able to maintain accurate disclosure standards.',
+    },
+    {
+      title: 'Sample dashboard / portal',
+      body: 'Restaurants need a view of live releases, claimed bags, pickup status, customer-facing disclosures, and settlement visibility.',
+    },
+    {
+      title: 'Customer support ownership',
+      body: 'goZaika owns platform-side support and payment-path issues. The restaurant owns product quality at pickup and in-kitchen execution.',
+    },
+    {
+      title: 'POS integration status',
+      body: 'POS integration is not required for launch. The current model is operationally light and QR-led, with integrations introduced only where they remove real friction.',
+    },
+    {
+      title: 'No-shows and volume tier',
+      body: 'No-show handling should be explicit, and the volume tier should be explained as a meaningful threshold for recurring monthly release volume rather than a vague promise.',
+    },
+  ],
+  operationalFaqs: [
+    {
+      question: 'What does onboarding look like?',
+      answer:
+        'Onboarding covers operating fit, disclosures, pickup workflow, release logic, and launch readiness. We do not rush restaurants into a live state before those pieces are clear.',
+    },
+    {
+      question: 'Who handles customer support?',
+      answer:
+        'goZaika handles platform and payment-path communication. The restaurant handles the in-store pickup experience and any kitchen-specific handoff issues.',
+    },
+    {
+      question: 'Is POS integration required?',
+      answer:
+        'No. The initial operating model is intentionally light. QR verification and release management are enough for launch. Integrations come later if they remove real friction.',
+    },
+    {
+      question: 'What happens on a no-show?',
+      answer:
+        'BAM Bags are tied to a declared pickup window. If a customer does not arrive, the bag is not held indefinitely. The operator should have a clear closure rule and the platform should communicate that policy upfront.',
+    },
+    {
+      question: 'What does the volume tier mean in practice?',
+      answer:
+        'The volume tier is meant for partners releasing bags consistently enough to justify more favorable economics. It should be framed as recurring monthly release depth, not just sporadic spikes.',
     },
   ],
 } as const;

@@ -29,7 +29,8 @@ export function WaitlistForm(): React.ReactElement {
 
     return prefetchedEmail ?? '';
   });
-  const [city, setCity] = React.useState<string>('Hyderabad');
+  const [selectedCity, setSelectedCity] = React.useState<string>('Hyderabad');
+  const [customCity, setCustomCity] = React.useState<string>('');
   const [role, setRole] = React.useState<'consumer' | 'restaurant'>('consumer');
 
   React.useEffect((): (() => void) => {
@@ -55,19 +56,26 @@ export function WaitlistForm(): React.ReactElement {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
 
+    const finalCity = selectedCity === 'Other City' ? customCity.trim() : selectedCity;
+
     if (!consent) {
       setErrorMessage('Please provide consent to continue.');
       return;
     }
 
+    if (finalCity.length === 0) {
+      setErrorMessage('Please select or enter your city.');
+      return;
+    }
+
     setStatus('loading');
     setErrorMessage(null);
-    track.waitlistSubmit(city, role);
+    track.waitlistSubmit(finalCity, role);
 
     const response = await fetch('/api/waitlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, city, role, cfToken }),
+      body: JSON.stringify({ name, email, city: finalCity, role, cfToken }),
     });
 
     const data = (await response.json()) as { ok: boolean; error?: string };
@@ -81,7 +89,7 @@ export function WaitlistForm(): React.ReactElement {
     }
 
     setStatus('success');
-    track.waitlistSuccess(city, role);
+    track.waitlistSuccess(finalCity, role);
   };
 
   return (
@@ -104,34 +112,62 @@ export function WaitlistForm(): React.ReactElement {
         maxLength={120}
         onChange={(event) => setEmail(event.target.value)}
       />
-      <Input
-        id="waitlist-city"
-        label="City"
-        required
-        value={city}
-        maxLength={80}
-        onChange={(event) => setCity(event.target.value)}
-      />
       <div className="flex flex-col gap-2">
-        <label htmlFor="waitlist-role" className="mb-1 block text-sm font-medium text-gray700">
-          I am joining as
+        <label htmlFor="waitlist-city" className="mb-1 block text-sm font-medium text-gray700">
+          City
         </label>
         <select
-          id="waitlist-role"
+          id="waitlist-city"
           className="h-11 w-full rounded-md border border-gray200 px-4 text-base text-gray900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-saffron"
-          value={role}
+          value={selectedCity}
           onChange={(event) => {
-            if (event.target.value === 'restaurant') {
-              setRole('restaurant');
-              return;
-            }
-            setRole('consumer');
+            setSelectedCity(event.target.value);
           }}
         >
-          <option value="consumer">Consumer</option>
-          <option value="restaurant">Restaurant</option>
+          <option value="Hyderabad">Hyderabad</option>
+          <option value="Bengaluru">Bengaluru</option>
+          <option value="Mumbai">Mumbai</option>
+          <option value="Delhi NCR">Delhi NCR</option>
+          <option value="Other City">Other City</option>
         </select>
       </div>
+      {selectedCity === 'Other City' ? (
+        <Input
+          id="waitlist-custom-city"
+          label="Which city?"
+          required
+          value={customCity}
+          maxLength={80}
+          onChange={(event) => setCustomCity(event.target.value)}
+        />
+      ) : null}
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium text-gray700">I am joining as:</legend>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="flex items-center gap-3 rounded-md border border-gray200 px-4 py-3 text-sm text-gray900">
+            <input
+              type="radio"
+              name="waitlist-role"
+              value="consumer"
+              checked={role === 'consumer'}
+              onChange={() => setRole('consumer')}
+              className="h-4 w-4 border border-gray200 text-saffron focus:ring-saffron"
+            />
+            Consumer
+          </label>
+          <label className="flex items-center gap-3 rounded-md border border-gray200 px-4 py-3 text-sm text-gray900">
+            <input
+              type="radio"
+              name="waitlist-role"
+              value="restaurant"
+              checked={role === 'restaurant'}
+              onChange={() => setRole('restaurant')}
+              className="h-4 w-4 border border-gray200 text-saffron focus:ring-saffron"
+            />
+            Restaurant
+          </label>
+        </div>
+      </fieldset>
       <div className="flex items-start gap-2">
         <input
           id="waitlist-consent"

@@ -32,6 +32,7 @@ Follow these rules exactly unless the user explicitly overrides them.
   - functions
   - triggers
 - Prefer singular table names.
+- Every db object must have a prefix that identifies module/domain. This is so that objects (tables, procs, functions, etc) sort in manageable fashion and can be understood easily.
 - Use explicit, operational names. Avoid vague names like data, info, mapping, misc, temp.
 - Favor consistency over cleverness.
 

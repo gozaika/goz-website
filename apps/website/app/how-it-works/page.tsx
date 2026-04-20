@@ -52,6 +52,22 @@ export default function HowItWorksPage(): React.ReactElement {
             <p className="text-gray700">{howItWorksContent.allergenCalloutBody}</p>
           </div>
 
+          <div className="mt-12">
+            <h2 className="heading-section text-gray900">What you will know before you pay</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {howItWorksContent.prePurchaseDetails.map((item) => (
+                <article
+                  key={item.title}
+                  className="rounded-2xl border border-gray100 bg-white p-5 shadow-[0_10px_30px_rgba(26,92,56,0.08)]"
+                >
+                  <h3 className="text-lg font-semibold text-gray900">{item.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-gray700">{item.body}</p>
+                </article>
+              ))}
+            </div>
+            <p className="mt-6 text-base font-medium text-forest">{howItWorksContent.roadmapNote}</p>
+          </div>
+
           <div className="mt-10">
             <Link
               href="/#waitlist"
