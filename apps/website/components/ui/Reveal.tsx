@@ -20,16 +20,16 @@ export function Reveal({
 }: RevealProps): React.ReactElement {
   const elementRef = React.useRef<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = React.useState<boolean>(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState<boolean>(false);
+  const [disableMotion, setDisableMotion] = React.useState<boolean>(false);
 
   React.useEffect((): (() => void) => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     const syncPreference = (): void => {
-      const reduceMotion = mediaQuery.matches;
-      setPrefersReducedMotion(reduceMotion);
+      const nextDisableMotion = mediaQuery.matches || Boolean(window.navigator.webdriver);
+      setDisableMotion(nextDisableMotion);
 
-      if (reduceMotion) {
+      if (nextDisableMotion) {
         setIsVisible(true);
       }
     };
@@ -43,7 +43,7 @@ export function Reveal({
   }, []);
 
   React.useEffect((): (() => void) => {
-    if (prefersReducedMotion || elementRef.current === null) {
+    if (disableMotion || elementRef.current === null) {
       return () => undefined;
     }
 
@@ -68,14 +68,19 @@ export function Reveal({
     return (): void => {
       observer.disconnect();
     };
-  }, [amount, prefersReducedMotion]);
+  }, [amount, disableMotion]);
 
   return React.createElement(
     as,
     {
       ...props,
       ref: elementRef,
-      className: cn('reveal', isVisible && 'reveal-visible', delayClass, className),
+      className: cn(
+        'reveal',
+        !disableMotion && isVisible && 'reveal-visible',
+        !disableMotion && delayClass,
+        className,
+      ),
     },
     children,
   );

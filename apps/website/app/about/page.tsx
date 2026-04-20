@@ -32,7 +32,7 @@ export default function AboutPage(): React.ReactElement {
           <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:items-center">
             <Reveal as="div" className="space-y-4" amount={0.15}>
               {aboutContent.paragraphs.map((paragraph) => (
-                <p key={paragraph} className="text-base leading-relaxed text-gray700">
+                <p key={paragraph} className="text-base leading-relaxed text-gray900">
                   {paragraph}
                 </p>
               ))}
@@ -53,7 +53,7 @@ export default function AboutPage(): React.ReactElement {
       <section className="bg-white">
         <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
           <Reveal as="div" className="premium-card my-12 rounded-2xl bg-forest p-8 text-center text-white" amount={0.18}>
-            <p className="mb-3 text-xs uppercase tracking-[0.24em] text-forest-light">
+            <p className="mb-3 text-xs uppercase tracking-[0.24em] text-cream">
               Our Mission
             </p>
             <p className="mx-auto max-w-xl text-2xl font-bold leading-snug [font-family:var(--font-display)]">
@@ -82,12 +82,12 @@ export default function AboutPage(): React.ReactElement {
 
           <Reveal as="div" className="premium-card mt-12 rounded-2xl bg-white p-8" amount={0.18}>
             <h3 className="text-xl font-semibold text-gray900">{aboutContent.hyderabadHeading}</h3>
-            <p className="mt-3 max-w-3xl text-base leading-relaxed text-gray700">
+            <p className="mt-3 max-w-3xl text-base leading-relaxed text-gray900">
               {aboutContent.hyderabadBody}
             </p>
             <Link
               href="/contact"
-              className="mt-6 inline-flex h-12 items-center justify-center rounded-md bg-saffron px-6 text-base font-semibold text-gray900 transition-colors hover:bg-[var(--color-saffron-hover)]"
+              className="mt-6 inline-flex h-12 items-center justify-center rounded-md bg-forest px-6 text-base font-semibold text-white transition-colors hover:bg-forest/95"
             >
               Contact Us
             </Link>
