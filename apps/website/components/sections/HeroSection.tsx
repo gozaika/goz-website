@@ -98,22 +98,45 @@ export function HeroSection({
             </button>
           </Reveal>
 
-          <p className="mt-4 text-sm text-gray500">{helper}</p>
+          <Reveal
+            as="p"
+            className="mt-4 text-sm text-gray500"
+            amount={0.2}
+            delayClass="reveal-delay-300"
+          >
+            {helper}
+          </Reveal>
           {/* PHASE 2: Replace dynamically with real count from Supabase once ≥50 real signups. */}
-          <p className="mt-2 text-sm text-gray600">{socialProof}</p>
+          <Reveal
+            as="p"
+            className="mt-2 text-sm text-gray600"
+            amount={0.2}
+            delayClass="reveal-delay-300"
+          >
+            {socialProof}
+          </Reveal>
         </div>
 
         <div className="order-2 relative flex items-center justify-center">
-          <div className="floating-illustration relative flex items-center justify-center">
-            <Image
-              src="/images/hero-bam-bag-v2.svg"
-              alt="goZaika mystery meal bag illustration"
-              width={620}
-              height={620}
-              className="h-auto w-full max-w-xl"
-              priority
-            />
-          </div>
+          <div className="ambient-glow ambient-glow-saffron bottom-14 left-14 h-40 w-40" />
+          <div className="ambient-glow ambient-glow-forest right-10 top-10 h-48 w-48" />
+          <Reveal
+            as="div"
+            className="reveal-media floating-illustration relative flex items-center justify-center"
+            amount={0.15}
+            delayClass="reveal-delay-160"
+          >
+            <div className="rounded-[2rem] border border-white/50 bg-white/55 p-4 backdrop-blur-sm">
+              <Image
+                src="/images/hero-bam-bag-v2.svg"
+                alt="goZaika mystery meal bag illustration"
+                width={620}
+                height={620}
+                className="h-auto w-full max-w-xl"
+                priority
+              />
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>

@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 
 import { cn } from '@gozaika/utils';
@@ -13,11 +14,12 @@ import { headerNav } from '@/lib/navigation';
 
 export function Header(): React.ReactElement {
   const [isMobileOpen, setIsMobileOpen] = React.useState<boolean>(false);
-  const [hasScrollShadow, setHasScrollShadow] = React.useState<boolean>(false);
+  const [isScrolled, setIsScrolled] = React.useState<boolean>(false);
+  const pathname = usePathname();
 
   React.useEffect((): (() => void) => {
     const handleScroll = (): void => {
-      setHasScrollShadow(window.scrollY > 100);
+      setIsScrolled(window.scrollY > 100);
     };
 
     handleScroll();
@@ -35,11 +37,18 @@ export function Header(): React.ReactElement {
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 bg-forest shadow-sm transition-shadow',
-        hasScrollShadow ? 'shadow-md' : 'shadow-sm',
+        'sticky top-0 z-50 border-b transition-all duration-300',
+        isScrolled
+          ? 'border-[var(--color-header-glass-border)] bg-[var(--color-header-glass)]/80 shadow-[0_10px_30px_rgba(26,92,56,0.1)] backdrop-blur-xl'
+          : 'border-transparent bg-forest shadow-sm',
       )}
     >
-      <div className="mx-auto flex max-w-screen-xl items-center justify-between px-4 py-4 md:px-6 lg:px-8">
+      <div
+        className={cn(
+          'mx-auto flex max-w-screen-xl items-center justify-between px-4 transition-[padding] duration-300 md:px-6 lg:px-8',
+          isScrolled ? 'py-3' : 'py-4',
+        )}
+      >
         <Link
           href="/"
           className="inline-flex items-center"
@@ -62,7 +71,19 @@ export function Header(): React.ReactElement {
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium text-forest-light transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
+              className={cn(
+                'rounded-full px-3 py-2 text-sm font-medium transition-all focus:outline-none focus:ring-2',
+                isScrolled
+                  ? 'focus:ring-forest'
+                  : 'focus:ring-white',
+                pathname === item.href
+                  ? isScrolled
+                    ? 'bg-white/80 text-forest'
+                    : 'bg-white/10 text-white'
+                  : isScrolled
+                    ? 'text-gray700 hover:bg-white/60 hover:text-forest'
+                    : 'text-forest-light hover:text-white',
+              )}
               onClick={() => track.navClick(item.label, 'header')}
             >
               {item.label}
@@ -70,7 +91,7 @@ export function Header(): React.ReactElement {
           ))}
           <Link
             href="/#waitlist"
-            className="rounded-md bg-saffron px-5 py-2 text-sm font-semibold text-gray900 transition-colors hover:bg-[var(--color-saffron-hover)]"
+            className="rounded-md bg-saffron px-5 py-2 text-sm font-semibold text-gray900 transition-all hover:-translate-y-0.5 hover:bg-[var(--color-saffron-hover)]"
             onClick={() => track.ctaClick('Join Waitlist', 'nav')}
           >
             Join Waitlist
@@ -90,17 +111,33 @@ export function Header(): React.ReactElement {
 
       <div
         className={cn(
-          'overflow-hidden bg-forest transition-[max-height,opacity] duration-300 lg:hidden',
+          'overflow-hidden transition-[max-height,opacity,background-color] duration-300 lg:hidden',
+          isScrolled ? 'bg-[var(--color-header-glass)]/95 backdrop-blur-xl' : 'bg-forest',
           isMobileOpen ? 'max-h-[28rem] opacity-100' : 'max-h-0 opacity-0',
         )}
       >
-        <nav className="border-t border-white/20 px-4" aria-label="Mobile">
+        <nav
+          className={cn(
+            'px-4',
+            isScrolled ? 'border-t border-[var(--color-header-glass-border)]' : 'border-t border-white/20',
+          )}
+          aria-label="Mobile"
+        >
           <ul className="flex flex-col gap-3">
             {headerNav.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="block py-4 text-base font-medium text-forest-light transition-colors hover:text-white"
+                  className={cn(
+                    'block rounded-xl px-3 py-4 text-base font-medium transition-colors',
+                    pathname === item.href
+                      ? isScrolled
+                        ? 'bg-white/80 text-forest'
+                        : 'bg-white/10 text-white'
+                      : isScrolled
+                        ? 'text-gray700 hover:bg-white/60 hover:text-forest'
+                        : 'text-forest-light hover:text-white',
+                  )}
                   onClick={() => {
                     track.navClick(item.label, 'mobile_drawer');
                     setIsMobileOpen(false);
@@ -113,7 +150,7 @@ export function Header(): React.ReactElement {
             <li>
               <Link
                 href="/#waitlist"
-                className="mb-4 inline-flex rounded-md bg-saffron px-5 py-2 text-sm font-semibold text-gray900 transition-colors hover:bg-[var(--color-saffron-hover)]"
+                className="mb-4 inline-flex rounded-md bg-saffron px-5 py-2 text-sm font-semibold text-gray900 transition-all hover:-translate-y-0.5 hover:bg-[var(--color-saffron-hover)]"
                 onClick={() => {
                   track.ctaClick('Join Waitlist', 'nav');
                   setIsMobileOpen(false);

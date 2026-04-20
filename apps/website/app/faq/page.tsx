@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
 
+import { Reveal } from '@/components/ui/Reveal';
+import { SectionIntro } from '@/components/ui/SectionIntro';
 import { faqs } from '@/lib/faqs';
 import { canonical, openGraphFor, twitterFor } from '@/lib/metadata';
 
@@ -26,30 +28,53 @@ export default function FaqPage(): React.ReactElement {
     <>
       <section className="bg-cream">
         <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <h1 className="heading-page text-gray900">Frequently asked questions</h1>
-          <p className="text-lead mt-4 max-w-3xl text-gray700">
-            We answer the core trust, pickup, and partner questions below.
-          </p>
+          <SectionIntro
+            titleAs="h1"
+            title="Frequently asked questions"
+            body="We answer the core trust, pickup, and partner questions below."
+            className="max-w-3xl"
+          />
         </div>
       </section>
 
       <section className="bg-white">
         <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="rounded-2xl bg-white">
-            {faqs.map((faq) => (
-              <details key={faq.id} className="group border-b border-gray100">
+            {faqs.map((faq, index) => (
+              <Reveal
+                as="div"
+                key={faq.id}
+                amount={0.12}
+                delayClass={
+                  index % 3 === 1
+                    ? 'reveal-delay-80'
+                    : index % 3 === 2
+                      ? 'reveal-delay-160'
+                      : undefined
+                }
+              >
+              <details className="group border-b border-gray100">
                 <summary className="flex cursor-pointer list-none items-center justify-between py-5 text-left text-base font-semibold text-gray900 transition-colors hover:text-forest">
                   <span>{faq.question}</span>
                   <ChevronDown className="h-5 w-5 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                 </summary>
-                <div className="pb-5 text-sm leading-relaxed text-gray600">
-                  <p>{faq.answer}</p>
+                <div className="faq-answer">
+                  <div className="faq-answer-inner">
+                    <div className="pb-5 text-sm leading-relaxed text-gray600">
+                      <p>{faq.answer}</p>
+                    </div>
+                  </div>
                 </div>
               </details>
+              </Reveal>
             ))}
           </div>
 
-          <div className="mt-12 rounded-2xl bg-forest-light p-8 text-center">
+          <Reveal
+            as="div"
+            className="premium-card mt-12 rounded-2xl bg-forest-light p-8 text-center"
+            amount={0.2}
+          >
             <p className="mb-2 font-semibold text-forest">Still have questions?</p>
             <Link
               href="/contact"
@@ -57,7 +82,7 @@ export default function FaqPage(): React.ReactElement {
             >
               Contact Us
             </Link>
-          </div>
+          </Reveal>
         </div>
       </section>
     </>

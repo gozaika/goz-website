@@ -47,7 +47,7 @@ export function Button({
       type={type}
       disabled={isDisabled}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-md font-semibold transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:active:scale-100',
+        'inline-flex items-center justify-center gap-2 rounded-md font-semibold transition-all hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:active:scale-100',
         sizeClasses[size],
         variantClasses[variant],
         fullWidth && 'w-full',

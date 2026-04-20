@@ -9,13 +9,13 @@ export const legalCopy = {
     'We collect only data required to operate waitlist, contact, and partner workflows: name, email, mobile (where applicable), city, and submitted message fields.',
     'We do not sell personal data. You may request access, correction, or erasure by emailing privacy@gozaika.in.',
     'Waitlist and enquiry records are retained only for operational follow-up windows and legal obligations.',
-    'For grievances, contact grievance@gozaika.in. Placeholder regulatory details are marked pending incorporation.',
+    'For privacy concerns or grievance escalation related to personal data, contact grievance@gozaika.in.',
   ],
   termsOfService: [
     'You must be 18 years or older to use the platform.',
     'goZaika is an intermediary discovery platform; partner restaurants prepare food and handle pickup service directly.',
     'BAM Bag contents are undisclosed by design, but allergen categories and pickup window details are shown before purchase.',
-    'Usage of the platform implies acceptance of the Refund Policy and Food Safety Policy routes.',
+    'Usage of the platform implies acceptance of the Refund Policy and Food Safety Policy.',
     'Disputes are governed by the laws of India with jurisdiction in Hyderabad, Telangana.',
   ],
   refundPolicy: [

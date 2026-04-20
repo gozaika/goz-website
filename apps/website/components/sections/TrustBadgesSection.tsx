@@ -33,7 +33,7 @@ export function TrustBadgesSection({
               <Reveal
                 as="div"
                 key={badge.title}
-                className="flex items-center gap-3"
+                className="premium-card premium-card-hover flex items-center gap-3 rounded-2xl border border-white/8 bg-white/6 p-4 backdrop-blur-sm"
                 amount={0.15}
                 delayClass={delayClass}
               >

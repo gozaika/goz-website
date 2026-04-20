@@ -1,5 +1,8 @@
 import Image from 'next/image';
 
+import { Reveal } from '@/components/ui/Reveal';
+import { SectionIntro } from '@/components/ui/SectionIntro';
+
 interface BamBagSectionProps {
   eyebrow: string;
   heading: string;
@@ -16,24 +19,30 @@ export function BamBagSection({
   return (
     <section className="bg-saffron-light">
       <div className="mx-auto grid max-w-screen-xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:px-8">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-forest">{eyebrow}</p>
-          <h2 className="heading-section mt-4 max-w-xl text-gray900">{heading}</h2>
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-gray700">{body}</p>
-        </div>
+        <SectionIntro
+          eyebrow={eyebrow}
+          title={heading}
+          body={body}
+          className="max-w-2xl"
+        />
 
-        <div className="grid gap-5 rounded-3xl bg-white p-6 shadow-[0_10px_30px_rgba(26,92,56,0.08)]">
+        <Reveal
+          as="div"
+          className="reveal-media premium-card premium-card-hover grid gap-5 rounded-3xl bg-white p-6"
+          amount={0.15}
+          delayClass="reveal-delay-160"
+        >
           <Image
             src="/images/hero-bam-bag-v2.svg"
             alt="Illustration of a chef-curated BAM Bag"
             width={560}
             height={560}
-            className="h-auto w-full rounded-2xl bg-cream p-4"
+            className="h-auto w-full rounded-2xl bg-cream p-4 transition-transform duration-300 hover:scale-[1.01]"
           />
           <div className="rounded-2xl border border-forest-light bg-cream p-5 text-sm leading-relaxed text-gray700">
             {callout}
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

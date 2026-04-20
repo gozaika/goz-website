@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { Reveal } from '@/components/ui/Reveal';
+import { SectionIntro } from '@/components/ui/SectionIntro';
 import { aboutContent } from '@/lib/content';
 import { canonical, openGraphFor, twitterFor } from '@/lib/metadata';
 
@@ -26,54 +28,59 @@ export default function AboutPage(): React.ReactElement {
     <>
       <section className="bg-cream">
         <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <h1 className="heading-page max-w-4xl text-gray900">{aboutContent.title}</h1>
+          <SectionIntro titleAs="h1" title={aboutContent.title} className="max-w-4xl" />
           <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:items-center">
-            <div className="space-y-4">
+            <Reveal as="div" className="space-y-4" amount={0.15}>
               {aboutContent.paragraphs.map((paragraph) => (
                 <p key={paragraph} className="text-base leading-relaxed text-gray700">
                   {paragraph}
                 </p>
               ))}
-            </div>
-            <Image
-              src="/images/about-illustration-v1.svg"
-              alt="About goZaika visual showing curated bag on kitchen counter"
-              width={800}
-              height={600}
-              className="h-auto w-full rounded-3xl bg-white p-4 shadow-[0_10px_30px_rgba(26,92,56,0.08)]"
-            />
+            </Reveal>
+            <Reveal as="div" className="reveal-media premium-card rounded-3xl bg-white p-4" amount={0.15} delayClass="reveal-delay-160">
+              <Image
+                src="/images/about-illustration-v1.svg"
+                alt="About goZaika visual showing curated bag on kitchen counter"
+                width={800}
+                height={600}
+                className="h-auto w-full rounded-3xl transition-transform duration-300 hover:scale-[1.01]"
+              />
+            </Reveal>
           </div>
         </div>
       </section>
 
       <section className="bg-white">
         <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="my-12 rounded-2xl bg-forest p-8 text-center text-white">
+          <Reveal as="div" className="premium-card my-12 rounded-2xl bg-forest p-8 text-center text-white" amount={0.18}>
             <p className="mb-3 text-xs uppercase tracking-[0.24em] text-forest-light">
               Our Mission
             </p>
             <p className="mx-auto max-w-xl text-2xl font-bold leading-snug [font-family:var(--font-display)]">
               {aboutContent.mission}
             </p>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="bg-cream">
         <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
-          <h2 className="heading-section text-gray900">What we believe</h2>
+          <SectionIntro title="What we believe" />
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {aboutContent.values.map((value) => (
-              <div
+            {aboutContent.values.map((value, index) => (
+              <Reveal
+                as="div"
                 key={value}
-                className="rounded-r-xl border-l-4 border-saffron bg-saffron-light p-5"
+                className="premium-card premium-card-hover rounded-r-xl border-l-4 border-saffron bg-saffron-light p-5"
+                amount={0.12}
+                delayClass={index % 2 === 1 ? 'reveal-delay-100' : undefined}
               >
                 <p className="font-semibold text-gray900">{value}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
 
-          <div className="mt-12 rounded-2xl bg-white p-8 shadow-[0_10px_30px_rgba(26,92,56,0.08)]">
+          <Reveal as="div" className="premium-card mt-12 rounded-2xl bg-white p-8" amount={0.18}>
             <h3 className="text-xl font-semibold text-gray900">{aboutContent.hyderabadHeading}</h3>
             <p className="mt-3 max-w-3xl text-base leading-relaxed text-gray700">
               {aboutContent.hyderabadBody}
@@ -84,7 +91,7 @@ export default function AboutPage(): React.ReactElement {
             >
               Contact Us
             </Link>
-          </div>
+          </Reveal>
 
           <div className="mt-10 flex flex-wrap gap-3">
             <Link

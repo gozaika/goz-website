@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { cn } from '@gozaika/utils';
 
 import { Reveal } from '@/components/ui/Reveal';
+import { SectionIntro } from '@/components/ui/SectionIntro';
 
 interface HowItWorksStep {
   title: string;
@@ -34,9 +35,13 @@ export function HowItWorksFlow({
   return (
     <section id={id} className={cn(className)}>
       <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:px-8">
-        {title ? <h2 className="heading-section text-center text-gray900">{title}</h2> : null}
-        {subtitle ? (
-          <p className="text-lead mx-auto mt-4 max-w-3xl text-center text-gray600">{subtitle}</p>
+        {title ? (
+          <SectionIntro
+            title={title}
+            body={subtitle}
+            centered
+            className="mx-auto max-w-3xl"
+          />
         ) : null}
 
         <div
@@ -56,7 +61,7 @@ export function HowItWorksFlow({
             <Reveal
               as="article"
               key={step.title}
-              className="relative flex flex-col items-start rounded-lg border-l-4 border-saffron-light bg-white p-6 shadow-sm lg:items-center lg:border-l-0 lg:bg-transparent lg:p-0 lg:text-center lg:shadow-none"
+              className="premium-card premium-card-hover relative flex flex-col items-start rounded-2xl border-l-4 border-saffron-light bg-white p-6 lg:items-center lg:border-l-0 lg:bg-transparent lg:p-6 lg:text-center"
               amount={0.2}
               delayClass={index === 1 ? 'reveal-delay-100' : index === 2 ? 'reveal-delay-200' : undefined}
             >

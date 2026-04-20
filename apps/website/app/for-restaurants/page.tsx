@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { PackageCheck, Percent, ShieldCheck } from 'lucide-react';
 
 import { PartnerInterestForm } from '@/components/forms/PartnerInterestForm';
+import { Reveal } from '@/components/ui/Reveal';
+import { SectionIntro } from '@/components/ui/SectionIntro';
 import { forRestaurantsContent } from '@/lib/content';
 import { canonical, openGraphFor, twitterFor } from '@/lib/metadata';
 
@@ -33,12 +35,12 @@ export default function ForRestaurantsPage(): React.ReactElement {
       <section className="bg-cream">
         <div className="mx-auto grid max-w-screen-xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-20">
           <div>
-            <h1 className="heading-page max-w-3xl text-gray900">
-              {forRestaurantsContent.title}
-            </h1>
-            <p className="text-lead mt-4 max-w-2xl text-gray700">
-              {forRestaurantsContent.subtitle}
-            </p>
+            <SectionIntro
+              titleAs="h1"
+              title={forRestaurantsContent.title}
+              body={forRestaurantsContent.subtitle}
+              className="max-w-3xl"
+            />
             <Link
               href="#partner-form"
               className="mt-8 inline-flex h-12 items-center justify-center rounded-md bg-saffron px-6 text-base font-semibold text-gray900 transition-colors hover:bg-[var(--color-saffron-hover)]"
@@ -46,29 +48,32 @@ export default function ForRestaurantsPage(): React.ReactElement {
               Express Partner Interest
             </Link>
           </div>
-          <Image
-            src="/images/restaurant-hero-v2.svg"
-            alt="Restaurant partner growth illustration"
-            width={800}
-            height={600}
-            className="h-auto w-full rounded-3xl bg-white p-4 shadow-[0_10px_30px_rgba(26,92,56,0.08)]"
-            priority
-          />
+          <Reveal as="div" className="reveal-media premium-card rounded-3xl bg-white p-4" amount={0.15} delayClass="reveal-delay-160">
+            <Image
+              src="/images/restaurant-hero-v2.svg"
+              alt="Restaurant partner growth illustration"
+              width={800}
+              height={600}
+              className="h-auto w-full rounded-3xl transition-transform duration-300 hover:scale-[1.01]"
+              priority
+            />
+          </Reveal>
         </div>
 
         <div className="mx-auto max-w-screen-xl px-4 pb-16 sm:px-6 lg:px-8">
-          <h2 className="heading-section text-gray900">
-            Here&apos;s exactly how it works for your kitchen
-          </h2>
+          <SectionIntro title="Here's exactly how it works for your kitchen" />
           <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {forRestaurantsContent.kitchenFlow.map((item) => (
-              <div
+            {forRestaurantsContent.kitchenFlow.map((item, index) => (
+              <Reveal
+                as="div"
                 key={item.title}
-                className="rounded-2xl border border-gray100 bg-white p-6 shadow-sm"
+                className="premium-card premium-card-hover rounded-2xl bg-white p-6"
+                amount={0.12}
+                delayClass={index > 0 ? 'reveal-delay-100' : undefined}
               >
                 <h3 className="text-lg font-semibold text-gray900">{item.title}</h3>
                 <p className="mt-3 text-base leading-relaxed text-gray700">{item.body}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -76,16 +81,19 @@ export default function ForRestaurantsPage(): React.ReactElement {
 
       <section className="bg-white">
         <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:px-8">
-          <h2 className="heading-section text-gray900">Operationally, this is how it runs</h2>
+          <SectionIntro title="Operationally, this is how it runs" />
           <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {forRestaurantsContent.onboardingSteps.map((step) => (
-              <article
+            {forRestaurantsContent.onboardingSteps.map((step, index) => (
+              <Reveal
+                as="article"
                 key={step.title}
-                className="rounded-2xl border border-gray100 bg-cream p-6"
+                className="premium-card premium-card-hover rounded-2xl bg-cream p-6"
+                amount={0.12}
+                delayClass={index > 0 ? 'reveal-delay-100' : undefined}
               >
                 <h3 className="text-lg font-semibold text-gray900">{step.title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-gray700">{step.body}</p>
-              </article>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -124,16 +132,19 @@ export default function ForRestaurantsPage(): React.ReactElement {
 
       <section className="bg-cream">
         <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:px-8">
-          <h2 className="heading-section text-gray900">Operational clarity for serious operators</h2>
+          <SectionIntro title="Operational clarity for serious operators" />
           <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {forRestaurantsContent.operationalNotes.map((item) => (
-              <article
+            {forRestaurantsContent.operationalNotes.map((item, index) => (
+              <Reveal
+                as="article"
                 key={item.title}
-                className="rounded-2xl border border-gray100 bg-white p-6 shadow-[0_10px_30px_rgba(26,92,56,0.08)]"
+                className="premium-card premium-card-hover rounded-2xl bg-white p-6"
+                amount={0.12}
+                delayClass={index % 3 === 1 ? 'reveal-delay-80' : index % 3 === 2 ? 'reveal-delay-160' : undefined}
               >
                 <h3 className="text-lg font-semibold text-gray900">{item.title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-gray700">{item.body}</p>
-              </article>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -141,22 +152,25 @@ export default function ForRestaurantsPage(): React.ReactElement {
 
       <section className="bg-white">
         <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:px-8">
-          <h2 className="heading-section text-gray900">Why goZaika is different</h2>
+          <SectionIntro title="Why goZaika is different" />
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {forRestaurantsContent.differentiators.map((item, index) => {
               const Icon = differentiatorIcons[index] ?? ShieldCheck;
 
               return (
-                <div
+                <Reveal
+                  as="div"
                   key={item.title}
-                  className="rounded-xl border border-forest-light bg-white p-6"
+                  className="premium-card premium-card-hover rounded-xl border border-forest-light bg-white p-6"
+                  amount={0.12}
+                  delayClass={index > 0 ? 'reveal-delay-100' : undefined}
                 >
                   <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-saffron-light text-forest">
                     <Icon className="h-6 w-6" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray900">{item.title}</h3>
                   <p className="mt-3 text-sm leading-relaxed text-gray700">{item.body}</p>
-                </div>
+                </Reveal>
               );
             })}
           </div>
@@ -166,11 +180,11 @@ export default function ForRestaurantsPage(): React.ReactElement {
       <section className="bg-cream">
         <div className="mx-auto grid max-w-screen-xl gap-8 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8">
           <div className="space-y-4">
-            <h2 className="heading-section text-gray900">Ready to become a goZaika partner?</h2>
-            <p className="text-base text-gray700">
-              Share your details and our team will connect with you within 48 hours.
-            </p>
-            <div className="rounded-2xl bg-white p-6">
+            <SectionIntro
+              title="Ready to become a goZaika partner?"
+              body="Share your details and our team will connect with you within 48 hours."
+            />
+            <div className="premium-card rounded-2xl bg-white p-6">
               <h3 className="text-lg font-semibold text-gray900">Operational FAQ</h3>
               <div className="mt-4 space-y-4">
                 {forRestaurantsContent.operationalFaqs.map((faq) => (
@@ -182,9 +196,9 @@ export default function ForRestaurantsPage(): React.ReactElement {
               </div>
             </div>
           </div>
-          <div className="rounded-2xl bg-white p-8 shadow-[0_10px_40px_rgba(26,92,56,0.1)]">
+          <Reveal as="div" className="premium-card rounded-2xl bg-white p-8" amount={0.16}>
             <PartnerInterestForm />
-          </div>
+          </Reveal>
         </div>
       </section>
     </>

@@ -14,10 +14,7 @@ export function LegalPage({ sections, title }: LegalPageProps): React.ReactEleme
           <p key={paragraph}>{paragraph}</p>
         ))}
       </div>
-      <p className="mt-6 text-xs text-gray500">
-        Legal placeholders marked as pending incorporation should be validated by counsel
-        before production launch.
-      </p>
+      <p className="mt-6 text-xs text-gray500">For legal questions, contact hello@gozaika.in.</p>
     </div>
   );
 }
