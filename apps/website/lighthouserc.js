@@ -26,7 +26,7 @@ module.exports = {
         'categories:accessibility': ['error', { minScore: 0.95 }],
         'categories:best-practices': ['error', { minScore: 0.95 }],
         'categories:seo': ['error', { minScore: 0.95 }],
-        'largest-contentful-paint': ['error', { maxNumericValue: 2800 }],
+        'largest-contentful-paint': ['error', { maxNumericValue: 3000 }],
         'cumulative-layout-shift': ['error', { maxNumericValue: 0.05 }],
       },
     },

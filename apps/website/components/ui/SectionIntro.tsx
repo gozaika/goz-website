@@ -1,7 +1,3 @@
-'use client';
-
-import { Reveal } from '@/components/ui/Reveal';
-
 interface SectionIntroProps {
   eyebrow?: string;
   title: string;
@@ -30,31 +26,19 @@ export function SectionIntro({
   return (
     <div className={className}>
       {eyebrow ? (
-        <Reveal
-          as="p"
-          className={`text-xs font-semibold uppercase tracking-[0.24em] ${eyebrowColor} ${alignment}`}
-          amount={0.15}
-        >
+        <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${eyebrowColor} ${alignment}`}>
           {eyebrow}
-        </Reveal>
+        </p>
       ) : null}
-      <Reveal
-        as={titleAs}
-        className={`${titleClass} mt-4 ${titleColor} ${alignment}`}
-        amount={0.2}
-        delayClass="reveal-delay-100"
-      >
-        {title}
-      </Reveal>
+      {titleAs === 'h1' ? (
+        <h1 className={`${titleClass} mt-4 ${titleColor} ${alignment}`}>{title}</h1>
+      ) : (
+        <h2 className={`${titleClass} mt-4 ${titleColor} ${alignment}`}>{title}</h2>
+      )}
       {body ? (
-        <Reveal
-          as="p"
-          className={`mt-4 text-base leading-relaxed ${bodyColor} ${alignment}`}
-          amount={0.2}
-          delayClass="reveal-delay-200"
-        >
+        <p className={`mt-4 text-base leading-relaxed ${bodyColor} ${alignment}`}>
           {body}
-        </Reveal>
+        </p>
       ) : null}
     </div>
   );

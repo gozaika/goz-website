@@ -1,6 +1,5 @@
 import Image from 'next/image';
 
-import { Reveal } from '@/components/ui/Reveal';
 import { SectionIntro } from '@/components/ui/SectionIntro';
 
 interface BamBagSectionProps {
@@ -26,12 +25,7 @@ export function BamBagSection({
           className="max-w-2xl"
         />
 
-        <Reveal
-          as="div"
-          className="reveal-media premium-card premium-card-hover grid gap-5 rounded-3xl bg-white p-6"
-          amount={0.15}
-          delayClass="reveal-delay-160"
-        >
+        <div className="premium-card premium-card-hover grid gap-5 rounded-3xl bg-white p-6">
           <Image
             src="/images/hero-bam-bag-v2.svg"
             alt="Illustration of a chef-curated BAM Bag"
@@ -42,7 +36,7 @@ export function BamBagSection({
           <div className="rounded-2xl border border-forest-light bg-cream p-5 text-sm leading-relaxed text-gray700">
             {callout}
           </div>
-        </Reveal>
+        </div>
       </div>
     </section>
   );

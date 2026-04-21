@@ -1,12 +1,7 @@
-'use client';
-
-import * as React from 'react';
-
 import Image from 'next/image';
 
 import { cn } from '@gozaika/utils';
 
-import { Reveal } from '@/components/ui/Reveal';
 import { SectionIntro } from '@/components/ui/SectionIntro';
 
 interface HowItWorksStep {
@@ -58,12 +53,9 @@ export function HowItWorksFlow({
           />
 
           {steps.map((step, index) => (
-            <Reveal
-              as="article"
+            <article
               key={step.title}
               className="premium-card premium-card-hover relative flex flex-col items-start rounded-2xl border-l-4 border-saffron-light bg-white p-6 lg:items-center lg:border-l-0 lg:bg-transparent lg:p-6 lg:text-center"
-              amount={0.2}
-              delayClass={index === 1 ? 'reveal-delay-100' : index === 2 ? 'reveal-delay-200' : undefined}
             >
               <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border-2 border-saffron bg-saffron-light">
                 <Image
@@ -81,7 +73,7 @@ export function HowItWorksFlow({
               <p className="mt-3 max-w-xs text-sm leading-relaxed text-gray600">
                 {step.description}
               </p>
-            </Reveal>
+            </article>
           ))}
         </div>
       </div>

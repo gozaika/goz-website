@@ -20,7 +20,6 @@ const playfair = Playfair_Display({
   weight: ['700'],
   variable: '--font-display',
   display: 'optional',
-  preload: false,
 });
 
 export const metadata: Metadata = {
