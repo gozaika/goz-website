@@ -44,8 +44,9 @@ export default function HomePage(): React.ReactElement {
       <HomeWaitlistSection
         heading={homeContent.launch.heading}
         body={homeContent.launch.body}
+        foundingOffer={homeContent.launch.foundingOffer}
+        teaser={homeContent.launch.teaser}
         disclaimer={homeContent.launch.disclaimer}
-        restaurants={homeContent.partnerPreviews}
       />
     </>
   );

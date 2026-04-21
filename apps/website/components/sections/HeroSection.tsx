@@ -9,18 +9,24 @@ interface HeroSectionProps {
   eyebrow: string;
   headline: string;
   supportLine: string;
+  founderLine: string;
   body: string;
   helper: string;
   socialProof: string;
+  waitlistCount: number;
+  trustStrip: ReadonlyArray<string>;
 }
 
 export function HeroSection({
   eyebrow,
+  founderLine,
   headline,
   socialProof,
   supportLine,
+  trustStrip,
   body,
   helper,
+  waitlistCount,
 }: HeroSectionProps): React.ReactElement {
   const [email, setEmail] = React.useState<string>('');
 
@@ -68,6 +74,15 @@ export function HeroSection({
 
           <Reveal
             as="p"
+            className="mt-2 text-sm text-gray500"
+            amount={0.25}
+            delayClass="reveal-delay-200"
+          >
+            {founderLine}
+          </Reveal>
+
+          <Reveal
+            as="p"
             className="text-lead mt-5 max-w-md text-gray600"
             amount={0.25}
             delayClass="reveal-delay-200"
@@ -98,6 +113,16 @@ export function HeroSection({
             </button>
           </Reveal>
 
+          {/* PHASE 2: Replace hardcoded waitlist count with live database count. */}
+          <Reveal
+            as="p"
+            className="mt-3 text-sm text-gray500"
+            amount={0.2}
+            delayClass="reveal-delay-300"
+          >
+            {waitlistCount} people already on the waitlist
+          </Reveal>
+
           <Reveal
             as="p"
             className="mt-4 text-sm text-gray500"
@@ -105,6 +130,33 @@ export function HeroSection({
             delayClass="reveal-delay-300"
           >
             {helper}
+          </Reveal>
+          <Reveal
+            as="div"
+            className="mt-4 flex flex-wrap gap-3"
+            amount={0.2}
+            delayClass="reveal-delay-300"
+          >
+            {trustStrip.map((item) => (
+              <div
+                key={item}
+                className="inline-flex items-center gap-2 rounded-full border border-forest/12 bg-white/70 px-3 py-1.5 text-xs text-gray600 backdrop-blur-sm"
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                  className="h-3.5 w-3.5 shrink-0 text-forest"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m4 10 4 4 8-8" />
+                </svg>
+                <span>{item}</span>
+              </div>
+            ))}
           </Reveal>
           {/* PHASE 2: Replace dynamically with real count from Supabase once ≥50 real signups. */}
           <Reveal

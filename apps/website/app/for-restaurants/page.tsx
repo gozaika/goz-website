@@ -130,6 +130,25 @@ export default function ForRestaurantsPage(): React.ReactElement {
         </div>
       </section>
 
+      <section className="bg-white">
+        <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:px-8">
+          <SectionIntro title="How goZaika protects your brand" />
+          <div className="mt-8 grid gap-6 md:grid-cols-2">
+            {forRestaurantsContent.brandProtection.map((item, index) => (
+              <Reveal
+                as="article"
+                key={item}
+                className="premium-card premium-card-hover rounded-r-2xl border-l-4 border-forest bg-cream p-6"
+                amount={0.12}
+                delayClass={index % 2 === 1 ? 'reveal-delay-100' : undefined}
+              >
+                <p className="text-base leading-relaxed text-gray700">{item}</p>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="bg-cream">
         <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:px-8">
           <SectionIntro title="Operational clarity for serious operators" />

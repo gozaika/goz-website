@@ -29,10 +29,10 @@ export default function AboutPage(): React.ReactElement {
       <section className="bg-cream">
         <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
           <SectionIntro titleAs="h1" title={aboutContent.title} className="max-w-4xl" />
-          <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:items-center">
-            <Reveal as="div" className="space-y-4" amount={0.15}>
+          <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:items-start">
+            <Reveal as="div" className="max-w-2xl space-y-6 lg:pr-6" amount={0.15}>
               {aboutContent.paragraphs.map((paragraph) => (
-                <p key={paragraph} className="text-base leading-relaxed text-gray900">
+                <p key={paragraph} className="text-[1.02rem] leading-8 text-gray900">
                   {paragraph}
                 </p>
               ))}

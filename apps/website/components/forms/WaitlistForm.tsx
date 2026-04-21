@@ -112,6 +112,35 @@ export function WaitlistForm(): React.ReactElement {
         maxLength={120}
         onChange={(event) => setEmail(event.target.value)}
       />
+      {email.trim().length > 0 ? (
+        <fieldset className="space-y-3">
+          <legend className="text-sm font-medium text-gray700">I am joining as:</legend>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="flex items-center gap-3 rounded-md border border-gray200 px-4 py-3 text-sm text-gray900">
+              <input
+                type="radio"
+                name="waitlist-role"
+                value="consumer"
+                checked={role === 'consumer'}
+                onChange={() => setRole('consumer')}
+                className="h-4 w-4 border border-gray200 text-saffron focus:ring-saffron"
+              />
+              Consumer
+            </label>
+            <label className="flex items-center gap-3 rounded-md border border-gray200 px-4 py-3 text-sm text-gray900">
+              <input
+                type="radio"
+                name="waitlist-role"
+                value="restaurant"
+                checked={role === 'restaurant'}
+                onChange={() => setRole('restaurant')}
+                className="h-4 w-4 border border-gray200 text-saffron focus:ring-saffron"
+              />
+              Restaurant
+            </label>
+          </div>
+        </fieldset>
+      ) : null}
       <div className="flex flex-col gap-2">
         <label htmlFor="waitlist-city" className="mb-1 block text-sm font-medium text-gray700">
           City
@@ -141,33 +170,6 @@ export function WaitlistForm(): React.ReactElement {
           onChange={(event) => setCustomCity(event.target.value)}
         />
       ) : null}
-      <fieldset className="space-y-3">
-        <legend className="text-sm font-medium text-gray700">I am joining as:</legend>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="flex items-center gap-3 rounded-md border border-gray200 px-4 py-3 text-sm text-gray900">
-            <input
-              type="radio"
-              name="waitlist-role"
-              value="consumer"
-              checked={role === 'consumer'}
-              onChange={() => setRole('consumer')}
-              className="h-4 w-4 border border-gray200 text-saffron focus:ring-saffron"
-            />
-            Consumer
-          </label>
-          <label className="flex items-center gap-3 rounded-md border border-gray200 px-4 py-3 text-sm text-gray900">
-            <input
-              type="radio"
-              name="waitlist-role"
-              value="restaurant"
-              checked={role === 'restaurant'}
-              onChange={() => setRole('restaurant')}
-              className="h-4 w-4 border border-gray200 text-saffron focus:ring-saffron"
-            />
-            Restaurant
-          </label>
-        </div>
-      </fieldset>
       <div className="flex items-start gap-2">
         <input
           id="waitlist-consent"

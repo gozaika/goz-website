@@ -6,11 +6,18 @@
 export const homeContent = {
   hero: {
     eyebrow: 'LAUNCHING IN HYDERABAD',
-    headline: "India's first mystery meal drop.",
+    headline: 'Great food. No menu. No algorithm.',
     supportLine: 'BAM! बड़ा ज़ायका, आएगा मज़ा',
+    founderLine: 'From a 15-year food-tech CTO. Launching in Hyderabad.',
     body: "BAM Bags from Hyderabad's best restaurants — chef-curated, allergen-disclosed, always a surprise.",
     helper: 'Join the waitlist · Free · No spam',
     socialProof: 'Be among the first in Hyderabad',
+    waitlistCount: 47,
+    trustStrip: [
+      '3 restaurant partners in discussion',
+      'Allergens disclosed on every bag',
+      'Pickup only — zero delivery surprises',
+    ],
   },
   trustBadges: [
     {
@@ -67,6 +74,9 @@ export const homeContent = {
   launch: {
     heading: 'Launching in Hyderabad',
     body: 'Join the waitlist to hear about launch windows, first restaurant reveals, and the first premium BAM Bag drops near you.',
+    foundingOffer: 'First 100 consumers get Swaad Club membership free for 3 months at launch.',
+    teaser:
+      "Our first restaurant partners will be announced at launch. They're premium, they're intentional, and they're not on any delivery app right now.",
     disclaimer:
       '*Preview listings are illustrative only. Final restaurant partners will be announced at launch.',
   },
@@ -282,15 +292,26 @@ export const forRestaurantsContent = {
         'The volume tier is meant for partners releasing bags consistently enough to justify more favorable economics. It should be framed as recurring monthly release depth, not just sporadic spikes.',
     },
   ],
+  brandProtection: [
+    "You control the bag. We never specify contents — that's your chef's decision.",
+    'No public discounting. goZaika is access-controlled, not listed on Zomato or Google.',
+    'Direct payouts. T+1 settlement via Razorpay. No intermediary hold.',
+    'Your name, front and centre. Every bag shows your restaurant brand to the customer.',
+  ],
 } as const;
 
 export const aboutContent = {
   title:
-    "We built goZaika because India's best restaurants deserve a smarter exit for great food.",
+    'We build goZaika for people who love the thrill of finding something great',
   paragraphs: [
-    "Every evening, kitchens across India produce more than they sell. That output — carefully prepared, fully safe, restaurant-quality — has nowhere to go that doesn't compromise the brand. It doesn't belong in a discount bin. It doesn't belong in a charity channel. It belongs in the hands of someone who will genuinely love it.",
-    'goZaika creates that path. We call our drops BAM Bags — Big Aayega Maza. Chef-curated, allergen-disclosed, mystery to-go selections from restaurants that have chosen to release them on their own terms. The restaurant designs the experience. We surface it to the right people.',
-    'We are building in Hyderabad first — intentionally, slowly, and with deep alignment with the restaurants we partner with. We believe trust is built city by city, kitchen by kitchen. Not by scale.',
+    'Some of the best meals are not the ones you plan for. They are the ones you stumble into, hear about just in time, or pick up because something about them feels worth the chance.',
+    'goZaika turns that feeling into a new kind of food experience.',
+    'We work with great restaurants to release chef-curated BAM Bags — surprise to-go drops that tell you what matters before you buy: allergens, dietary fit, spice level, pickup window, and the restaurant behind it. What stays unknown is the most fun part: exactly what is inside.',
+    'For diners, goZaika is a more playful way to discover food. A little adventure. A little status. A little “how did I not know about this place before?” It is premium food access without the pretence, and discovery without the algorithmic sameness.',
+    'For restaurants, goZaika is a controlled discovery channel. A way to reach curious new customers, showcase quality, and create excitement on their own terms. Every release is intentional. Every listing keeps the restaurant’s name, identity, and standards front and centre.',
+    'We are not a discount bin. We are not a leftover marketplace. We are not a delivery app trying to flatten every kitchen into the same experience.',
+    'We are building a city-by-city network for culinary discovery — one where great restaurants can be found in a more surprising way, and great food gets the audience it deserves.',
+    'We are launching in Hyderabad first, slowly and intentionally. Because food trust is local. Discovery is local. And the best taste stories are always rooted in place.',
   ],
   mission: 'To build a world where great food finds great people, every single evening.',
   values: [
