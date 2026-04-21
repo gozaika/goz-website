@@ -2,10 +2,19 @@
 
 import * as React from 'react';
 import dynamic from 'next/dynamic';
+import type { TurnstileInstance } from '@marsidev/react-turnstile';
+
+import { shouldBypassTurnstile } from '@/lib/turnstile';
 
 interface TurnstileWidgetProps {
   onVerify: (token: string) => void;
   onExpire?: () => void;
+  onError?: () => void;
+}
+
+export interface TurnstileWidgetHandle {
+  getToken: () => Promise<string | null>;
+  reset: () => void;
 }
 
 const Turnstile = dynamic(
@@ -19,22 +28,65 @@ const Turnstile = dynamic(
   },
 );
 
-export function TurnstileWidget({
-  onExpire,
-  onVerify,
-}: TurnstileWidgetProps): React.ReactElement | null {
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+export const TurnstileWidget = React.forwardRef<TurnstileWidgetHandle, TurnstileWidgetProps>(
+  function TurnstileWidget(
+    { onError, onExpire, onVerify }: TurnstileWidgetProps,
+    ref,
+  ): React.ReactElement | null {
+    const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+    const turnstileRef = React.useRef<TurnstileInstance>(null);
+    const shouldRenderWidget =
+      typeof window === 'undefined' || !shouldBypassTurnstile(window.location.hostname);
 
-  if (!siteKey) {
-    return null;
-  }
+    React.useImperativeHandle(
+      ref,
+      () => ({
+        getToken: async (): Promise<string | null> => {
+          if (!siteKey || !shouldRenderWidget) {
+            return null;
+          }
 
-  return (
-    <Turnstile
-      siteKey={siteKey}
-      onSuccess={onVerify}
-      onExpire={onExpire}
-      options={{ theme: 'light', size: 'invisible' }}
-    />
-  );
-}
+          const existingToken = turnstileRef.current?.getResponse();
+          const isExpired = turnstileRef.current?.isExpired() ?? false;
+
+          if (existingToken && !isExpired) {
+            return existingToken;
+          }
+
+          if (isExpired) {
+            turnstileRef.current?.reset();
+          }
+
+          turnstileRef.current?.execute();
+
+          try {
+            return (await turnstileRef.current?.getResponsePromise()) ?? null;
+          } catch {
+            return null;
+          }
+        },
+        reset: (): void => {
+          turnstileRef.current?.reset();
+        },
+      }),
+      [siteKey, shouldRenderWidget],
+    );
+
+    if (!siteKey || !shouldRenderWidget) {
+      return null;
+    }
+
+    return (
+      <Turnstile
+        ref={turnstileRef}
+        siteKey={siteKey}
+        onSuccess={onVerify}
+        onExpire={onExpire}
+        onError={() => {
+          onError?.();
+        }}
+        options={{ theme: 'light', size: 'invisible', execution: 'execute' }}
+      />
+    );
+  },
+);

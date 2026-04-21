@@ -3,10 +3,14 @@
 import * as React from 'react';
 
 import { track } from '@/lib/analytics';
+import { shouldBypassTurnstile } from '@/lib/turnstile';
 
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { TurnstileWidget } from '@/components/ui/TurnstileWidget';
+import {
+  TurnstileWidget,
+  type TurnstileWidgetHandle,
+} from '@/components/ui/TurnstileWidget';
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -32,6 +36,7 @@ export function WaitlistForm(): React.ReactElement {
   const [selectedCity, setSelectedCity] = React.useState<string>('Hyderabad');
   const [customCity, setCustomCity] = React.useState<string>('');
   const [role, setRole] = React.useState<'consumer' | 'restaurant'>('consumer');
+  const turnstileRef = React.useRef<TurnstileWidgetHandle>(null);
 
   React.useEffect((): (() => void) => {
     if (typeof window === 'undefined') {
@@ -72,16 +77,36 @@ export function WaitlistForm(): React.ReactElement {
     setErrorMessage(null);
     track.waitlistSubmit(finalCity, role);
 
+    const shouldVerifyTurnstile =
+      typeof window !== 'undefined' && !shouldBypassTurnstile(window.location.hostname);
+    const verificationToken = cfToken ?? (await turnstileRef.current?.getToken()) ?? null;
+
+    if (shouldVerifyTurnstile && !verificationToken) {
+      setStatus('error');
+      setCfToken(null);
+      setErrorMessage('Security check failed. Please try again.');
+      track.waitlistError('security_check_failed');
+      return;
+    }
+
     const response = await fetch('/api/waitlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, city: finalCity, role, cfToken }),
+      body: JSON.stringify({
+        name,
+        email,
+        city: finalCity,
+        role,
+        ...(verificationToken ? { cfToken: verificationToken } : {}),
+      }),
     });
 
     const data = (await response.json()) as { ok: boolean; error?: string };
 
     if (!response.ok || !data.ok) {
       setStatus('error');
+      turnstileRef.current?.reset();
+      setCfToken(null);
       const message = data.error ?? 'Unable to join right now.';
       setErrorMessage(message);
       track.waitlistError('api_error');
@@ -184,7 +209,12 @@ export function WaitlistForm(): React.ReactElement {
         </label>
       </div>
 
-      <TurnstileWidget onVerify={setCfToken} onExpire={() => setCfToken(null)} />
+      <TurnstileWidget
+        ref={turnstileRef}
+        onVerify={setCfToken}
+        onExpire={() => setCfToken(null)}
+        onError={() => setCfToken(null)}
+      />
 
       <Button
         type="submit"

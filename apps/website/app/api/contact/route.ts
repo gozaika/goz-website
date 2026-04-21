@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 import { checkRateLimit } from '@/lib/ratelimit';
 import { sanitize } from '@/lib/sanitize';
-import { verifyTurnstile } from '@/lib/turnstile';
+import { shouldBypassTurnstile, verifyTurnstile } from '@/lib/turnstile';
 
 const contactSchema = z.object({
   name: z.string().min(1).max(100),
@@ -14,7 +14,7 @@ const contactSchema = z.object({
   subject: z.enum(['general', 'restaurant', 'investor', 'press', 'careers']),
   message: z.string().min(10).max(2000),
   consent: z.boolean(),
-  cfToken: z.string().optional(),
+  cfToken: z.string().nullish(),
 });
 
 function getResendClient(): Resend | null {
@@ -27,6 +27,7 @@ function getResendClient(): Resend | null {
 export async function POST(req: NextRequest): Promise<Response> {
   const block = await checkRateLimit(req, 'contact');
   if (block) return block;
+  const shouldVerifyTurnstile = !shouldBypassTurnstile(req.nextUrl.hostname);
 
   let body: unknown;
   try {
@@ -44,13 +45,15 @@ export async function POST(req: NextRequest): Promise<Response> {
     return Response.json({ ok: false, error: 'Consent is required.' }, { status: 400 });
   }
 
-  if (!parsed.data.cfToken) {
+  if (shouldVerifyTurnstile && !parsed.data.cfToken) {
     return Response.json({ ok: false, error: 'Security check required.' }, { status: 400 });
   }
 
-  const isHuman = await verifyTurnstile(parsed.data.cfToken);
-  if (!isHuman) {
-    return Response.json({ ok: false, error: 'Security check failed.' }, { status: 403 });
+  if (shouldVerifyTurnstile) {
+    const isHuman = await verifyTurnstile(parsed.data.cfToken!);
+    if (!isHuman) {
+      return Response.json({ ok: false, error: 'Security check failed.' }, { status: 403 });
+    }
   }
 
   const payload = {

@@ -2,10 +2,15 @@
 
 import * as React from 'react';
 
+import { shouldBypassTurnstile } from '@/lib/turnstile';
+
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
-import { TurnstileWidget } from '@/components/ui/TurnstileWidget';
+import {
+  TurnstileWidget,
+  type TurnstileWidgetHandle,
+} from '@/components/ui/TurnstileWidget';
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -23,11 +28,23 @@ export function PartnerInterestForm(): React.ReactElement {
   const [cuisine, setCuisine] = React.useState<string>('');
   const [dailyCovers, setDailyCovers] = React.useState<string>('');
   const [message, setMessage] = React.useState<string>('');
+  const turnstileRef = React.useRef<TurnstileWidgetHandle>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     setStatus('loading');
     setErrorMessage(null);
+
+    const shouldVerifyTurnstile =
+      typeof window !== 'undefined' && !shouldBypassTurnstile(window.location.hostname);
+    const verificationToken = cfToken ?? (await turnstileRef.current?.getToken()) ?? null;
+
+    if (shouldVerifyTurnstile && !verificationToken) {
+      setStatus('error');
+      setCfToken(null);
+      setErrorMessage('Security check failed. Please try again.');
+      return;
+    }
 
     const response = await fetch('/api/partner-interest', {
       method: 'POST',
@@ -42,7 +59,7 @@ export function PartnerInterestForm(): React.ReactElement {
         dailyCovers,
         message,
         consent,
-        cfToken,
+        ...(verificationToken ? { cfToken: verificationToken } : {}),
       }),
     });
 
@@ -50,6 +67,8 @@ export function PartnerInterestForm(): React.ReactElement {
 
     if (!response.ok || !data.ok) {
       setStatus('error');
+      turnstileRef.current?.reset();
+      setCfToken(null);
       setErrorMessage(data.error ?? 'Unable to submit right now.');
       return;
     }
@@ -138,7 +157,12 @@ export function PartnerInterestForm(): React.ReactElement {
           regarding a potential partnership.
         </label>
       </div>
-      <TurnstileWidget onVerify={setCfToken} onExpire={() => setCfToken(null)} />
+      <TurnstileWidget
+        ref={turnstileRef}
+        onVerify={setCfToken}
+        onExpire={() => setCfToken(null)}
+        onError={() => setCfToken(null)}
+      />
       <Button
         type="submit"
         fullWidth

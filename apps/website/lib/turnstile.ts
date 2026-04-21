@@ -7,6 +7,12 @@ interface TurnstileResponse {
   readonly success: boolean;
 }
 
+const localDevelopmentHosts = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
+
+export function shouldBypassTurnstile(hostname: string): boolean {
+  return process.env.NODE_ENV !== 'production' && localDevelopmentHosts.has(hostname);
+}
+
 /**
  * Verifies a Cloudflare Turnstile token server-side.
  *
