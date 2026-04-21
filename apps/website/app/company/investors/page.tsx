@@ -37,22 +37,24 @@ export default function InvestorsPage(): React.ReactElement {
 
       <section className="bg-white">
         <div className="mx-auto grid max-w-screen-xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8">
-          <div>
-            <h2 className="heading-section text-gray900">Why this matters now</h2>
-            <div className="mt-5 space-y-4 text-base leading-relaxed text-gray700">
-              <p>
-                India’s premium restaurant market has strong supply, but weak brand-safe customer
-                acquisition channels. Current digital products solve convenience and discount-led
-                volume well. They do not solve controlled discovery for operators who care about
-                perception, quality, and repeat intent.
-              </p>
-              <p>
-                goZaika is designed around that gap. The product asks whether demand can be shaped
-                through trust, disclosure, and curation rather than through price compression. That
-                is the category question. Hyderabad is the proving ground.
-              </p>
-            </div>
-          </div>
+        <div>
+  <h2 className="heading-section text-gray900">Why building this well matters</h2>
+  <div className="mt-5 space-y-4 text-base leading-relaxed text-gray700">
+    <p>
+      goZaika is not just another food platform. It is trying to build something more delicate:
+      trust between great restaurants and new diners, surprise without compromise, and wider
+      access without loss of quality or dignity.
+    </p>
+    <p>
+      That kind of idea cannot be built casually. It needs product discipline, operational care,
+      and a long-term commitment to getting the details right.
+    </p>
+    <p>
+      The goal is not to sound ambitious. The goal is to build something worthy of the culture it
+      hopes to serve.
+    </p>
+  </div>
+</div>
 
           <div className="rounded-3xl bg-forest p-8 text-white">
             <h2 className="heading-section text-white">Core investor points</h2>
