@@ -4,11 +4,16 @@ export interface LeadershipRole {
 }
 
 export const founderStory = {
-  heading: 'A founder who has built through multiple technology cycles',
+  heading: "Let’s open the joy of great food to more people.",
   paragraphs: [
-    'Venkat Reddy has spent more than three decades building products at the intersection of technology depth, market timing, and organizational discipline. Across enterprise software, hardware-software systems, AR, and GenAI, his career has followed a repeatable pattern: identify a category shift early, build the right product architecture around it, and scale teams that can deliver with credibility.',
-    'He is a four-time founder with two successful exits, including companies acquired by Oracle and Apple. Across those ventures he has raised capital, built global product and engineering teams, and taken technically ambitious products from research through execution and strategic outcomes. That matters for goZaika because the company does not need only a storyteller or only an operator. It needs someone who can connect market thesis, product discipline, systems design, and long-horizon execution.',
-    'goZaika sits inside hospitality, but its core challenge is product design under trust constraints. The platform has to work for restaurants that care about brand, for customers who care about safety, and for a market that has learned to expect discounting from digital food products. Venkat’s background makes that combination unusually legible. He has spent a career building systems where precision matters, where market education matters, and where product integrity is the difference between novelty and durable value.',
+    "Growing up in India, I saw early that food is never just food. It brings families together. It carries memory, pride, generosity, and identity. Some of our deepest expressions of love happen around a shared meal.",
+    "India has one of the world’s richest culinary traditions — shaped over centuries, across regions, communities, languages, and histories. Our finest kitchens are not just businesses. They are custodians of craft. They carry an art that belongs to this land and, in spirit, to all its people.",
+    "I have long believed that great food should not feel reserved for a select few. In a modern India full of aspiration, creativity, and confidence, access to extraordinary food should widen, not narrow. Hospitality, at its best, is an act of inclusion. That belief is at the heart of goZaika.",
+    "I want goZaika to help create a cultural shift: from food as something gated, formal, or out of reach, to food as discovery, joy, and shared possibility. A platform where more people can experience the quality, imagination, and artistry of great restaurants — and where restaurants can open their craft to future regulars, not just familiar circles.",
+    "This is not only about convenience. It is about respect: respect for food, for the people who make it, and for the communities that gather around it. Food nourishes us. Shared with others, it becomes celebration.",
+    "My background is in building products and platforms. I have spent decades creating technology companies, leading product and engineering teams, and taking ventures from idea to scale, including successful exits. Now I want to bring that experience to something deeply personal: using innovation to make great food more accessible, more discoverable, and more widely loved.",
+    "We are starting in Hyderabad. But the vision is much larger.",
+    "The joy of great food should belong to more of us."
   ],
 } as const;
 

@@ -349,7 +349,7 @@ Heading:  We built goZaika because India’s best restaurants deserve a smarter 
 Body 1:  Every evening, kitchens across India produce more than they sell. That surplus — carefully prepared, fully safe, restaurant-quality — has nowhere to go. It doesn’t belong in the discount bin. It doesn’t belong in a charity bag. It belongs in your hands, at a fair price, with the full story of where it came from.
 Body 2:  goZaika is the platform that makes that possible. We call our drops BAM Bags — Big Aayega Maza. Chef-curated, allergen-disclosed, mystery to-go selections from restaurants that have chosen to release them on their terms.
 Body 3:  We are a small team of food lovers, technologists, and restaurant industry veterans. We believe that discovery and dignity can coexist in the same brown bag.
-Mission statement box:  To build a world where great food finds great people, every single evening.
+Mission statement box:  To build a world where great food finds everyone, every single evening.
 Values heading:  What we believe
 Premium without pretence — great food should be accessible
 Restaurant dignity first — never a discount, always a decision

@@ -302,18 +302,17 @@ export const forRestaurantsContent = {
 
 export const aboutContent = {
   title:
-    'We build goZaika for people who love the thrill of finding something great',
-  paragraphs: [
-    'Some of the best meals are not the ones you plan for. They are the ones you stumble into, hear about just in time, or pick up because something about them feels worth the chance.',
-    'goZaika turns that feeling into a new kind of food experience.',
-    'We work with great restaurants to release chef-curated BAM Bags — surprise to-go drops that tell you what matters before you buy: allergens, dietary fit, spice level, pickup window, and the restaurant behind it. What stays unknown is the most fun part: exactly what is inside.',
-    'For diners, goZaika is a more playful way to discover food. A little adventure. A little status. A little “how did I not know about this place before?” It is premium food access without the pretence, and discovery without the algorithmic sameness.',
-    'For restaurants, goZaika is a controlled discovery channel. A way to reach curious new customers, showcase quality, and create excitement on their own terms. Every release is intentional. Every listing keeps the restaurant’s name, identity, and standards front and centre.',
-    'We are not a discount bin. We are not a leftover marketplace. We are not a delivery app trying to flatten every kitchen into the same experience.',
-    'We are building a city-by-city network for culinary discovery — one where great restaurants can be found in a more surprising way, and great food gets the audience it deserves.',
-    'We are launching in Hyderabad first, slowly and intentionally. Because food trust is local. Discovery is local. And the best taste stories are always rooted in place.',
+    "Let’s make great food a bigger part of more lives.",
+  paragraphs:  [
+    "Food fills the stomach. Shared well, it fills a city with joy.",
+    "We believe great food should not belong to a select few. It should travel further. Reach wider. Surprise more people. Turn an ordinary evening into a little celebration. Because good food is not just indulgence. It is nourishment, memory, mood, and one of the simplest ways people experience happiness.",
+    "That is why goZaika exists.",
+    "For diners, goZaika is a playful new way to discover food worth getting excited about — chef-curated, allergen-disclosed, and always full of surprise. A little adventure. A little celebration. A chance to taste more of the city than you thought was for you.",
+    "For restaurants, this is an invitation to extend hospitality beyond the usual table. To share craft with more people. To treat food with the respect it deserves. A chef is not just making dishes for a few; they are shaping taste, culture, and memory for society. We want to help great kitchens be discovered by future regulars, not just familiar faces.",
+    "We are building goZaika as a cultural movement around discovery, inclusion, and respect for food — Hyderabad first, then city by city.",
+    "बड़ा ज़ायका। सबके लिए।"
   ],
-  mission: 'To build a world where great food finds great people, every single evening.',
+  mission: 'To build a world where great food finds everyone, every single evening.',
   values: [
     'Premium without pretence',
     'Restaurant dignity first',
