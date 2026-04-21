@@ -44,20 +44,29 @@ export default function LeadershipPage(): React.ReactElement {
             </div>
           </div>
 
+
+
+
+
           <div className="rounded-3xl bg-forest p-8 text-white">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-forest-light">
-              Why this matters
+            Why building this well matters
             </p>
             <div className="mt-5 space-y-4 text-sm leading-relaxed text-white/90">
-              <p>
-                goZaika is not trying to be another generic restaurant marketplace. It is building
-                a trust-sensitive, operator-aware demand layer. That requires a leadership DNA that
-                understands products, capital, systems, and category framing at the same time.
-              </p>
-              <p>
-                The right company story is not about charisma. It is about evidence that the team
-                knows how to build hard things and stay disciplined while doing it.
-              </p>
+            <p>
+              goZaika is not just another food platform. It is trying to build something more delicate:
+              trust between great restaurants and new diners, surprise without compromise, and wider
+              access without loss of quality or dignity.
+            </p>
+            <p>
+              That kind of idea cannot be built casually. It needs product discipline, operational care,
+              and a long-term commitment to getting the details right.
+            </p>
+            <p>
+              The goal is not to sound ambitious. The goal is to build something worthy of the culture it
+              hopes to serve.
+            </p>
+
             </div>
           </div>
         </div>
