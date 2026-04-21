@@ -20,19 +20,7 @@ export function WaitlistForm(): React.ReactElement {
   const [cfToken, setCfToken] = React.useState<string | null>(null);
   const [consent, setConsent] = React.useState<boolean>(false);
   const [name, setName] = React.useState<string>('');
-  const [email, setEmail] = React.useState<string>(() => {
-    if (typeof window === 'undefined') {
-      return '';
-    }
-
-    const prefetchedEmail = window.sessionStorage.getItem('gozaika_waitlist_prefill_email');
-
-    if (prefetchedEmail) {
-      window.sessionStorage.removeItem('gozaika_waitlist_prefill_email');
-    }
-
-    return prefetchedEmail ?? '';
-  });
+  const [email, setEmail] = React.useState<string>('');
   const [selectedCity, setSelectedCity] = React.useState<string>('Hyderabad');
   const [customCity, setCustomCity] = React.useState<string>('');
   const [role, setRole] = React.useState<'consumer' | 'restaurant'>('consumer');

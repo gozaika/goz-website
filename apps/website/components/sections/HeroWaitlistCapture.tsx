@@ -12,7 +12,6 @@ export function HeroWaitlistCapture(): React.ReactElement {
       return;
     }
 
-    window.sessionStorage.setItem('gozaika_waitlist_prefill_email', email);
     window.dispatchEvent(new CustomEvent('gozaika:prefill-waitlist-email', { detail: email }));
     window.location.hash = 'waitlist';
   };

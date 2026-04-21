@@ -35,8 +35,13 @@ export const TurnstileWidget = React.forwardRef<TurnstileWidgetHandle, Turnstile
   ): React.ReactElement | null {
     const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
     const turnstileRef = React.useRef<TurnstileInstance>(null);
+    const isHydrated = React.useSyncExternalStore(
+      () => () => undefined,
+      () => true,
+      () => false,
+    );
     const shouldRenderWidget =
-      typeof window === 'undefined' || !shouldBypassTurnstile(window.location.hostname);
+      isHydrated && Boolean(siteKey) && !shouldBypassTurnstile(window.location.hostname);
 
     React.useImperativeHandle(
       ref,
@@ -72,21 +77,25 @@ export const TurnstileWidget = React.forwardRef<TurnstileWidgetHandle, Turnstile
       [siteKey, shouldRenderWidget],
     );
 
-    if (!siteKey || !shouldRenderWidget) {
+    if (!siteKey) {
       return null;
     }
 
     return (
-      <Turnstile
-        ref={turnstileRef}
-        siteKey={siteKey}
-        onSuccess={onVerify}
-        onExpire={onExpire}
-        onError={() => {
-          onError?.();
-        }}
-        options={{ theme: 'light', size: 'invisible', execution: 'execute' }}
-      />
+      <div suppressHydrationWarning>
+        {shouldRenderWidget ? (
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={siteKey}
+            onSuccess={onVerify}
+            onExpire={onExpire}
+            onError={() => {
+              onError?.();
+            }}
+            options={{ theme: 'light', size: 'invisible', execution: 'execute' }}
+          />
+        ) : null}
+      </div>
     );
   },
 );
