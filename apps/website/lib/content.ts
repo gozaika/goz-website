@@ -8,7 +8,7 @@ export const homeContent = {
     eyebrow: 'LAUNCHING IN HYDERABAD',
     headline: 'Great food. No menu. No algorithm.',
     supportLine: 'BAM! बड़ा ज़ायका, आएगा मज़ा',
-    founderLine: 'From a 15-year food-tech CTO. Launching in Hyderabad.',
+    founderLine: 'A new way to discover great food... coming soon to Hyderabad.',
     body: "BAM Bags from Hyderabad's best restaurants — chef-curated, allergen-disclosed, always a surprise.",
     helper: 'Join the waitlist · Free · No spam',
     socialProof: 'Be among the first in Hyderabad',

@@ -41,6 +41,10 @@ export default function CitiesPage(): React.ReactElement {
   const orderedCities = [...cityLaunchTiers].sort(
     (left, right) => cityTierOrder.indexOf(left.tier) - cityTierOrder.indexOf(right.tier),
   );
+  const mainlandPath =
+    'M198 34 216 26 236 34 248 48 266 50 281 63 292 84 286 102 271 111 262 128 278 149 276 171 255 180 242 194 232 214 236 236 224 256 207 273 193 301 177 318 161 332 139 354 132 377 111 388 100 409 110 428 126 441 132 462 145 486 162 508 177 535 188 565 198 590 208 619 221 630 235 617 246 589 258 566 268 538 275 508 285 484 296 458 307 432 321 410 333 386 342 358 344 334 337 313 331 292 333 272 345 255 350 232 361 217 379 203 390 183 382 164 365 161 352 150 333 151 319 168 303 185 289 192 280 176 261 165 250 148 245 128 231 112 213 98 200 80 186 62 188 46Z';
+  const northEastPath =
+    'M322 176 339 164 360 161 378 166 394 160 403 172 397 188 381 198 364 205 345 206 328 198 319 186Z';
 
   return (
     <>
@@ -63,35 +67,109 @@ export default function CitiesPage(): React.ReactElement {
         <div className="mx-auto grid max-w-screen-xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
           <div className="rounded-3xl border border-gray100 bg-cream p-6">
             <div className="relative h-[640px] overflow-hidden rounded-3xl bg-white">
+              <div className="absolute right-4 top-4 z-20 rounded-2xl border border-gray100 bg-white/92 p-3 backdrop-blur-sm">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray600">
+                  Legend
+                </p>
+                <div className="mt-3 space-y-2">
+                  {cityTierOrder.map((tier) => {
+                    const tone = tierTone[tier];
+
+                    return (
+                      <div key={tier} className="flex items-center gap-2 text-xs text-gray700">
+                        <span className={`h-2.5 w-2.5 rounded-full ${tone.dot}`} />
+                        <span>{tier}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
               <svg
                 viewBox="0 0 420 640"
-                className="absolute inset-0 h-full w-full text-forest-light"
+                className="absolute inset-0 h-full w-full"
                 aria-hidden="true"
               >
+                <defs>
+                  <clipPath id="india-map-clip">
+                    <path d={mainlandPath} />
+                    <path d={northEastPath} />
+                  </clipPath>
+                </defs>
+
                 <path
-                  d="M212 30 246 62 273 116 318 150 311 196 334 236 320 292 338 336 305 388 282 438 252 486 256 548 220 594 190 560 176 500 138 470 120 420 88 388 70 330 84 286 62 240 76 190 110 154 122 102 160 74 182 34Z"
-                  fill="currentColor"
-                  opacity="0.7"
+                  d={mainlandPath}
+                  fill="rgb(234 243 222 / 0.74)"
+                  stroke="rgb(26 92 56 / 0.32)"
+                  strokeWidth="5"
+                  strokeLinejoin="round"
                 />
+                <path
+                  d={northEastPath}
+                  fill="rgb(234 243 222 / 0.74)"
+                  stroke="rgb(26 92 56 / 0.32)"
+                  strokeWidth="5"
+                  strokeLinejoin="round"
+                />
+
+                <g clipPath="url(#india-map-clip)">
+                  {cityLaunchTiers.map((city) => {
+                    const tone = tierTone[city.tier];
+                    const x = (Number.parseFloat(city.left) / 100) * 420;
+                    const y = (Number.parseFloat(city.top) / 100) * 640;
+
+                    return (
+                      <g key={`${city.city}-marker`}>
+                        <circle cx={x} cy={y} r="18" className={tone.ring} opacity="0.9" />
+                        <circle
+                          cx={x}
+                          cy={y}
+                          r="18"
+                          className={`${tone.ring} origin-center animate-ping`}
+                          opacity="0.55"
+                        />
+                        <circle
+                          cx={x}
+                          cy={y}
+                          r="7"
+                          className={tone.dot}
+                          stroke="white"
+                          strokeWidth="3"
+                        />
+                      </g>
+                    );
+                  })}
+                </g>
+
+                {cityLaunchTiers.map((city) => {
+                  const x = (Number.parseFloat(city.left) / 100) * 420;
+                  const y = (Number.parseFloat(city.top) / 100) * 640;
+                  const labelWidth = Math.max(52, city.city.length * 8.4);
+
+                  return (
+                    <g key={`${city.city}-label`}>
+                      <rect
+                        x={x + 12}
+                        y={y - 12}
+                        width={labelWidth}
+                        height="24"
+                        rx="12"
+                        fill="white"
+                        opacity="0.94"
+                        stroke="rgb(229 231 235)"
+                      />
+                      <text
+                        x={x + 22}
+                        y={y + 4}
+                        fontSize="12"
+                        fontWeight="600"
+                        fill="rgb(17 24 39)"
+                      >
+                        {city.city}
+                      </text>
+                    </g>
+                  );
+                })}
               </svg>
-
-              {cityLaunchTiers.map((city) => {
-                const tone = tierTone[city.tier];
-
-                return (
-                  <div
-                    key={city.city}
-                    className="absolute -translate-x-1/2 -translate-y-1/2"
-                    style={{ top: city.top, left: city.left }}
-                  >
-                    <div className={`absolute inset-0 animate-ping rounded-full ${tone.ring}`} />
-                    <div className={`relative h-4 w-4 rounded-full border-2 border-white ${tone.dot}`} />
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-full bg-white px-2 py-1 text-xs font-semibold text-gray900">
-                      {city.city}
-                    </span>
-                  </div>
-                );
-              })}
             </div>
           </div>
 
