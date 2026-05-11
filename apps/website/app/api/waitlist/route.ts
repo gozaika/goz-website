@@ -62,7 +62,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   try {
     const supabase = getSupabaseClient();
-    const insertResult = await supabase.from('waitlist_lead').insert(payload);
+    const insertResult = await supabase.from('website_waitlist_lead').insert(payload);
     if (insertResult.error && insertResult.error.code !== '23505') {
       return Response.json({ ok: false, error: 'Unable to save waitlist entry.' }, { status: 500 });
     }

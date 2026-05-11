@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img" aria-label="Hero BAM Bag illustration v2">
+  <rect width="600" height="600" fill="#FFF8F0"/>
+  <path d="M80 350 C160 250, 260 230, 350 260 C430 287, 500 350, 520 430 L80 430 Z" fill="#EAF3DE"/>
+  <rect x="200" y="170" width="210" height="260" rx="22" fill="#FF6B35"/>
+  <path d="M236 170 C236 120, 374 120, 374 170" fill="none" stroke="#1A5C38" stroke-width="18" stroke-linecap="round"/>
+  
+  <!-- Container for the Flame -->
+  <rect x="250" y="232" width="110" height="110" rx="16" fill="#FFF8F0"/>
+
+  <!-- Integrated Flame SVG -->
+  <svg x="250" y="232" width="110" height="110" viewBox="88 64 320 320">
+    <defs>
+      <mask id="v2-hero-flame-mask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+        <rect width="512" height="512" fill="white" />
+        <g transform="translate(4, 14.5) scale(0.06)" fill="none" stroke="black" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+          <g transform="translate(10, 25)">
+            <path d="M 10 5 Q 70 5 70 25 Q 70 40 10 40 Q 70 40 70 55 Q 70 75 10 75" />
+          </g>
+          <g transform="translate(88, 35)">
+            <path d="M 11.75 75 Q 11.75 5 40 5 Q 68.25 5 68.25 75" />
+            <rect x="11.75" y="40" width="56.5" height="10" fill="black" stroke="none" />
+          </g>
+          <g transform="translate(170, 30)">
+            <path d="M 10 75 Q 10 5 25 5 Q 40 5 40 75 Q 40 5 55 5 Q 70 5 70 75" />
+          </g>
+        </g>
+      </mask>
+    </defs>
+    <g transform="translate(56, 40) scale(16)">
+      <path fill="#1A5C38" 
+            mask="url(#v2-hero-flame-mask)"
+            d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235" />
+    </g>
+  </svg>
+
+  <circle cx="166" cy="214" r="20" fill="#D4A017"/>
+  <circle cx="438" cy="214" r="20" fill="#1A5C38"/>
+  <circle cx="467" cy="265" r="12" fill="#D4A017"/>
+</svg>

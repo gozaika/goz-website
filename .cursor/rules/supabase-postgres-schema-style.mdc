@@ -32,7 +32,7 @@ Follow these rules exactly unless the user explicitly overrides them.
   - functions
   - triggers
 - Prefer singular table names.
-- Every db object must have a prefix that identifies module/domain. This is so that objects (tables, procs, functions, etc) sort in manageable fashion and can be understood easily.
+- Every db object must have a prefix that identifies the bounded context. This is so that objects (tables, procs, functions, etc) sort in manageable fashion and can be understood easily.
 - Use explicit, operational names. Avoid vague names like data, info, mapping, misc, temp.
 - Favor consistency over cleverness.
 
@@ -40,11 +40,10 @@ Follow these rules exactly unless the user explicitly overrides them.
 - Default primary key column naming pattern:
   - <table_name>_pk
 - Default PK type:
-  - bigint generated always as identity primary key
+  - UUID PKs for all tables that are only internal and not functionlity related like audit tables etc. 
 - Example:
   - app_user_pk bigint generated always as identity primary key
   - tenant_pk bigint generated always as identity primary key
-- Do not switch to uuid PKs unless explicitly requested.
 - Do not use generic id if the project convention is *_pk.
 
 # 4) FOREIGN KEY RULES
@@ -104,8 +103,8 @@ Master table content rules:
   - description
   - sort_order
   - is_active
-  - created_on
-  - updated_on
+  - created_at
+  - updated_at
 - Add unique constraints on the business code.
 - Treat master tables as controlled reference data, not user-generated content.
 - Deletes from master tables should usually be restricted.
@@ -134,30 +133,30 @@ Default master table pattern:
 # 7) TIMESTAMP RULES
 - Use timestamptz for operational timestamps unless there is a strong reason not to.
 - Preferred timestamp naming:
-  - created_on
-  - updated_on
-  - started_on
-  - ended_on
-  - expires_on
-  - resolved_on
-  - closed_on
-  - last_login_on
-  - last_seen_on
-  - last_turn_on
+  - created_at
+  - updated_at
+  - started_at
+  - ended_at
+  - expires_at
+  - resolved_at
+  - closed_at
+  - last_login_at
+  - last_seen_at
+  - last_turn_at
 - Default patterns:
-  - created_on timestamptz not null default now()
-  - updated_on timestamptz not null default now()
-- If updated_on must auto-refresh on update, use a trigger function.
-- Do not rely on application code alone to keep updated_on correct when a reusable trigger is appropriate.
+  - created_at timestamptz not null default now()
+  - updated_at timestamptz not null default now()
+- If updated_at must auto-refresh on update, use a trigger function.
+- Do not rely on application code alone to keep updated_at correct when a reusable trigger is appropriate.
 
-# 8) UPDATED_ON TRIGGER RULE
-If a table has updated_on and rows are mutable, prefer a reusable trigger pattern.
+# 8) UPDATED_at TRIGGER RULE
+If a table has updated_at and rows are mutable, prefer a reusable trigger pattern.
 
 Preferred reusable pattern:
-- create function set_updated_on()
+- create function set_updated_at()
 - return trigger
-- set NEW.updated_on = now()
-- create trigger <table>_set_updated_on before update on <table> for each row execute function set_updated_on()
+- set NEW.updated_at = now()
+- create trigger <table>_set_updated_at before update on <table> for each row execute function set_updated_at()
 
 Do not create a new one-off trigger function for every table unless specifically requested.
 Prefer one reusable shared function.
@@ -165,15 +164,15 @@ Prefer one reusable shared function.
 # 9) USER / AUDIT FIELD RULES
 Use these fields when applicable:
 - created_by varchar(120)
-- created_on timestamptz not null default now()
+- created_at timestamptz not null default now()
 - updated_by varchar(120)
-- updated_on timestamptz not null default now()
+- updated_at timestamptz not null default now()
 
 Guidance:
-- Include created_on on almost all mutable business tables.
-- Include updated_on on mutable tables.
+- Include created_at on almost all mutable business tables.
+- Include updated_at on mutable tables.
 - Include created_by / updated_by only when the application will actually populate and use them.
-- For append-only history tables, usually use created_on only.
+- For append-only history tables, usually use created_at only.
 
 # 10) STRING / TEXT RULES
 - Prefer text unless there is a real enforced max length requirement.
@@ -211,7 +210,7 @@ For auth/security-related tables:
 - Store hashes, not raw secrets, whenever possible.
 - Prefer column names like:
   - token_hash
-  - expires_on
+  - expires_at
   - is_used
   - challenge
   - nonce
@@ -272,15 +271,15 @@ For bridge or membership tables:
 Typical membership fields when relevant:
 - is_active boolean not null default true
 - is_default boolean not null default false
-- created_on timestamptz not null default now()
-- updated_on timestamptz not null default now()
+- created_at timestamptz not null default now()
+- updated_at timestamptz not null default now()
 
 # 17) HISTORY / STATUS TABLE RULES
 For append-only history tables:
 - Use a dedicated surrogate PK.
-- Include created_on.
+- Include created_at.
 - Prefer append-only structure.
-- Usually omit updated_on unless rows really change.
+- Usually omit updated_at unless rows really change.
 - Use from_*_fk and to_*_fk fields when tracking transitions.
 - Include concise status description fields only when operationally useful.
 
@@ -314,7 +313,7 @@ For file/image handling:
   - storage_path
   - mime_type
   - file_size_bytes
-  - created_on
+  - created_at
 
 # 21) OUTPUT FORMAT RULES
 When generating schema:
@@ -326,7 +325,7 @@ When generating schema:
   4. comments
   5. RLS enablement
   6. policies
-  7. trigger/function for updated_on if needed
+  7. trigger/function for updated_at if needed
 - If modifying existing schema, use surgical ALTER TABLE / CREATE INDEX / CREATE POLICY statements only.
 - Do not rewrite unrelated objects.
 - Do not mix explanation into the SQL block.
@@ -341,6 +340,10 @@ Retain the project’s general schema theme:
 - practical indexes
 - append-only history tables where appropriate
 - clearly named master/reference tables
+
+# 23) PERFORMANCE
+resturant staff module and customer module must be highly responsive. Include any computed columns necessary to enable hihg performance in these modules. Such columns along with objects like triggers, functions, procedures created tomaintain these columns must always be prefixed with "COMPUTED_"
+
 
 But implement all of it as idiomatic PostgreSQL for Supabase.
 

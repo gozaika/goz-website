@@ -1,0 +1,137 @@
+%%{init: {'theme':'base','flowchart': {'defaultRenderer':'elk','nodeSpacing': 42,'rankSpacing': 62,'htmlLabels': true}} }%%
+flowchart LR
+  CTX_AUTH___IAM["<b>AUTH / IAM</b>"]
+  CTX_CONSUMER["<b>CONSUMER</b>"]
+  CTX_ORDER___PAYMENT["<b>ORDER / PAYMENT</b>"]
+  CTX_RESTAURANT["<b>RESTAURANT</b>"]
+  CTX_FINANCE["<b>FINANCE</b>"]
+  CTX_DROP___CATALOG["<b>DROP / CATALOG</b>"]
+  CTX_GEO["<b>GEO</b>"]
+  CTX_MARKETING___CMS["<b>MARKETING / CMS</b>"]
+  CTX_SUPPORT___INCIDENT["<b>SUPPORT / INCIDENT</b>"]
+  CTX_SHARED___OPS["<b>SHARED / OPS</b>"]
+  CTX_AUTH___IAM -->|"[C] 2 owns"| CTX_CONSUMER
+  CTX_AUTH___IAM -->|"[R] 1 has"| CTX_CONSUMER
+  CTX_AUTH___IAM -->|"[S] 2 optional"| CTX_CONSUMER
+  CTX_AUTH___IAM -->|"[S] 8 optional"| CTX_DROP___CATALOG
+  CTX_AUTH___IAM -->|"[S] 1 optional"| CTX_FINANCE
+  CTX_AUTH___IAM -->|"[C] 1 owns"| CTX_MARKETING___CMS
+  CTX_AUTH___IAM -->|"[S] 4 optional"| CTX_MARKETING___CMS
+  CTX_AUTH___IAM -->|"[S] 3 optional"| CTX_ORDER___PAYMENT
+  CTX_AUTH___IAM -->|"[C] 1 owns"| CTX_RESTAURANT
+  CTX_AUTH___IAM -->|"[S] 8 optional"| CTX_RESTAURANT
+  CTX_AUTH___IAM -->|"[S] 5 optional"| CTX_SHARED___OPS
+  CTX_AUTH___IAM -->|"[S] 6 optional"| CTX_SUPPORT___INCIDENT
+  CTX_CONSUMER -->|"[C] 1 owns"| CTX_DROP___CATALOG
+  CTX_CONSUMER -->|"[S] 1 optional"| CTX_MARKETING___CMS
+  CTX_CONSUMER -->|"[C] 2 owns"| CTX_ORDER___PAYMENT
+  CTX_CONSUMER -->|"[R] 2 has"| CTX_ORDER___PAYMENT
+  CTX_CONSUMER -->|"[C] 1 owns"| CTX_RESTAURANT
+  CTX_DROP___CATALOG -->|"[S] 1 optional"| CTX_FINANCE
+  CTX_DROP___CATALOG -->|"[S] 1 optional"| CTX_MARKETING___CMS
+  CTX_DROP___CATALOG -->|"[R] 4 has"| CTX_ORDER___PAYMENT
+  CTX_DROP___CATALOG -->|"[S] 1 optional"| CTX_ORDER___PAYMENT
+  CTX_DROP___CATALOG -->|"[R] 1 has"| CTX_RESTAURANT
+  CTX_DROP___CATALOG -->|"[S] 3 optional"| CTX_RESTAURANT
+  CTX_DROP___CATALOG -->|"[S] 1 optional"| CTX_SHARED___OPS
+  CTX_GEO -->|"[S] 1 optional"| CTX_AUTH___IAM
+  CTX_GEO -->|"[R] 1 has"| CTX_CONSUMER
+  CTX_GEO -->|"[R] 1 has"| CTX_DROP___CATALOG
+  CTX_GEO -->|"[S] 1 optional"| CTX_DROP___CATALOG
+  CTX_GEO -->|"[C] 1 owns"| CTX_MARKETING___CMS
+  CTX_GEO -->|"[S] 2 optional"| CTX_MARKETING___CMS
+  CTX_GEO -->|"[R] 1 has"| CTX_RESTAURANT
+  CTX_GEO -->|"[S] 2 optional"| CTX_RESTAURANT
+  CTX_MARKETING___CMS -->|"[S] 1 optional"| CTX_SUPPORT___INCIDENT
+  CTX_ORDER___PAYMENT -->|"[S] 2 optional"| CTX_DROP___CATALOG
+  CTX_ORDER___PAYMENT -->|"[S] 2 optional"| CTX_FINANCE
+  CTX_ORDER___PAYMENT -->|"[C] 1 owns"| CTX_RESTAURANT
+  CTX_ORDER___PAYMENT -->|"[S] 2 optional"| CTX_SUPPORT___INCIDENT
+  CTX_RESTAURANT -->|"[C] 1 owns"| CTX_CONSUMER
+  CTX_RESTAURANT -->|"[C] 3 owns"| CTX_DROP___CATALOG
+  CTX_RESTAURANT -->|"[R] 3 has"| CTX_FINANCE
+  CTX_RESTAURANT -->|"[C] 1 owns"| CTX_MARKETING___CMS
+  CTX_RESTAURANT -->|"[S] 1 optional"| CTX_MARKETING___CMS
+  CTX_RESTAURANT -->|"[R] 2 has"| CTX_ORDER___PAYMENT
+  CTX_RESTAURANT -->|"[S] 2 optional"| CTX_SUPPORT___INCIDENT
+  CTX_SHARED___OPS -->|"[R] 1 has"| CTX_AUTH___IAM
+  CTX_SHARED___OPS -->|"[R] 1 has"| CTX_CONSUMER
+  CTX_SHARED___OPS -->|"[R] 3 has"| CTX_DROP___CATALOG
+  CTX_SHARED___OPS -->|"[R] 4 has"| CTX_RESTAURANT
+  CTX_SHARED___OPS -->|"[R] 6 has"| CTX_SUPPORT___INCIDENT
+  CTX_SHARED___OPS -->|"[S] 4 optional"| CTX_SUPPORT___INCIDENT
+  CTX_SUPPORT___INCIDENT -->|"[S] 1 optional"| CTX_MARKETING___CMS
+  LEGEND["<b>Legend</b><br/>[C] Cascade — red solid 3pt<br/>[R] Restrict — indigo solid 2pt<br/>[S] Set Null — gray dashed 1.5pt<br/>[L] Logical — teal solid 1.5pt<br/><br/>Text colors → violet uuid, blue string, green integer,<br/>orange boolean, brown datetime, gold money, cyan json"]
+  class LEGEND legend
+  class CTX_AUTH___IAM auth
+  class CTX_CONSUMER con
+  class CTX_ORDER___PAYMENT ord
+  class CTX_RESTAURANT res
+  class CTX_FINANCE fin
+  class CTX_DROP___CATALOG cat
+  class CTX_GEO geo
+  class CTX_MARKETING___CMS mkt
+  class CTX_SUPPORT___INCIDENT sup
+  class CTX_SHARED___OPS shr
+  classDef auth fill:#eef2ff,stroke:#818cf8,stroke-width:1.5px,color:#111827;
+  classDef con fill:#f5f3ff,stroke:#a78bfa,stroke-width:1.5px,color:#111827;
+  classDef ord fill:#fdf4ff,stroke:#e879f9,stroke-width:1.5px,color:#111827;
+  classDef res fill:#fff7ed,stroke:#fb923c,stroke-width:1.5px,color:#111827;
+  classDef fin fill:#f0fdf4,stroke:#4ade80,stroke-width:1.5px,color:#111827;
+  classDef cat fill:#f0f9ff,stroke:#38bdf8,stroke-width:1.5px,color:#111827;
+  classDef geo fill:#f0fdfa,stroke:#2dd4bf,stroke-width:1.5px,color:#111827;
+  classDef mkt fill:#fefce8,stroke:#facc15,stroke-width:1.5px,color:#111827;
+  classDef sup fill:#fff1f2,stroke:#fb7185,stroke-width:1.5px,color:#111827;
+  classDef shr fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#111827;
+  classDef legend fill:#ffffff,stroke:#111827,stroke-width:1px,color:#111827;
+  linkStyle 0 stroke:#f87171,stroke-width:3px;
+  linkStyle 1 stroke:#818cf8,stroke-width:2px;
+  linkStyle 2 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 3 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 4 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 5 stroke:#f87171,stroke-width:3px;
+  linkStyle 6 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 7 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 8 stroke:#f87171,stroke-width:3px;
+  linkStyle 9 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 10 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 11 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 12 stroke:#f87171,stroke-width:3px;
+  linkStyle 13 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 14 stroke:#f87171,stroke-width:3px;
+  linkStyle 15 stroke:#818cf8,stroke-width:2px;
+  linkStyle 16 stroke:#f87171,stroke-width:3px;
+  linkStyle 17 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 18 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 19 stroke:#818cf8,stroke-width:2px;
+  linkStyle 20 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 21 stroke:#818cf8,stroke-width:2px;
+  linkStyle 22 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 23 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 24 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 25 stroke:#818cf8,stroke-width:2px;
+  linkStyle 26 stroke:#818cf8,stroke-width:2px;
+  linkStyle 27 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 28 stroke:#f87171,stroke-width:3px;
+  linkStyle 29 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 30 stroke:#818cf8,stroke-width:2px;
+  linkStyle 31 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 32 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 33 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 34 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 35 stroke:#f87171,stroke-width:3px;
+  linkStyle 36 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 37 stroke:#f87171,stroke-width:3px;
+  linkStyle 38 stroke:#f87171,stroke-width:3px;
+  linkStyle 39 stroke:#818cf8,stroke-width:2px;
+  linkStyle 40 stroke:#f87171,stroke-width:3px;
+  linkStyle 41 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 42 stroke:#818cf8,stroke-width:2px;
+  linkStyle 43 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 44 stroke:#818cf8,stroke-width:2px;
+  linkStyle 45 stroke:#818cf8,stroke-width:2px;
+  linkStyle 46 stroke:#818cf8,stroke-width:2px;
+  linkStyle 47 stroke:#818cf8,stroke-width:2px;
+  linkStyle 48 stroke:#818cf8,stroke-width:2px;
+  linkStyle 49 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;
+  linkStyle 50 stroke:#9ca3af,stroke-width:1.5px,stroke-dasharray:5 5;

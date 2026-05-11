@@ -1,0 +1,129 @@
+Refine the goZaika marketing website to feel more premium, dynamic, and launch-ready, while preserving a restrained, editorial, food-first tone. Do not turn it into a flashy SaaS landing page. Add motion for polish, hierarchy, and depth — not spectacle.
+
+Goals:
+- Make the website feel more alive and premium through subtle Framer-style motion
+- Improve perceived finish and launch readiness
+- Preserve fast performance, accessibility, and mobile quality
+- Keep animation warm, elegant, and restrained
+
+Global motion system:
+- Add a reusable viewport reveal system for sections using Framer Motion
+- Default reveal: opacity 0 -> 1, y 24 -> 0, duration 0.5–0.7s, ease out
+- Add staggered child reveals for cards, steps, icons, and preview tiles
+- Respect prefers-reduced-motion and disable non-essential motion when enabled
+- Keep motion subtle and consistent across all pages
+
+Header / nav:
+- Make header sticky
+- On scroll, transition header into a frosted glass style with:
+  - translucent warm background
+  - backdrop blur
+  - subtle border
+  - soft shadow
+  - slightly reduced vertical padding
+- Add smooth active-state transitions on nav items
+- Add smooth anchor scrolling with correct offset for sticky header
+
+Hero:
+- Add elegant hero text reveal on first load:
+  - eyebrow
+  - headline
+  - subhead
+  - CTA
+  - social proof / helper text
+- Stagger these in sequence
+- Add subtle float or depth motion to hero illustration
+- Add a very soft gradient glow or ambient background treatment behind hero art
+- Keep hero motion understated and premium
+
+Section transitions:
+- Add viewport-triggered reveal for all major homepage sections:
+  - how it works
+  - BAM Bag explanation
+  - restaurant value proposition
+  - Hyderabad launch preview
+  - waitlist CTA
+- Each section should feel like it arrives intentionally as user scrolls
+- Add slightly different reveal choreography for headings vs body copy vs cards
+
+Cards and content blocks:
+- Add staggered reveals to:
+  - 3-step “How a BAM Bag works” cards
+  - restaurant preview cards
+  - trust/value cards
+  - FAQ items
+- Add hover lift to cards:
+  - translateY(-4px)
+  - slightly stronger shadow
+  - subtle border/color enhancement
+- Add CTA hover polish:
+  - slight scale or lift
+  - smoother color transition
+  - optional arrow/icon nudge
+
+Numbers / stats:
+- Animate the restaurant stat values (12%, 0%, 0) when they enter viewport
+- Use tasteful count-up or fade-up animation
+- Ensure no jank on mobile
+
+Images / illustrations:
+- Add image reveal treatment on section entry:
+  - soft fade + scale from 0.96 to 1
+  - optional masked reveal from bottom
+- Add subtle hover motion to illustration blocks where appropriate
+- Do not overuse parallax
+
+FAQ:
+- Improve accordion interaction with smooth open/close height animation
+- Add icon rotation and tighter easing
+- Make FAQ feel polished and deliberate
+
+Waitlist / forms:
+- Improve form interaction states:
+  - refined focus rings
+  - floating or animated labels if done cleanly
+  - success/error state transitions
+- Fix the role selector wording/UX so it does not read awkwardly
+- Make consent/helper text more visually refined and less clunky
+
+Content / trust fixes:
+- Remove all placeholder legal language from legal pages
+- Remove duplicated consent copy on contact page
+- Improve the pricing section on /for-restaurants into a more polished visual structure (cards or proper comparison rows)
+- Replace or reframe illustrative restaurant previews so they feel intentional and credibility-safe
+- Ensure footer/company links are either real, hidden, or clearly marked as coming soon
+
+Visual polish:
+- Introduce subtle depth through layered shadows, soft borders, and selective background blur
+- Use glass/frost effects sparingly:
+  - header
+  - maybe one featured CTA band or card cluster
+  - not throughout the whole site
+- Add gentle section separators or background tone shifts so long pages feel more dimensional
+
+Performance / implementation constraints:
+- Use Framer Motion or equivalent lightweight animation approach
+- Avoid expensive scroll-linked transforms on every element
+- Keep Lighthouse/perceived performance high
+- Avoid layout shift
+- Ensure animations are smooth on mobile Safari
+- Respect reduced motion settings
+- Prefer reusable motion primitives over page-specific hacks
+
+Design intent:
+- Premium, warm, editorial, modern
+- Food-first, not enterprise-SaaS flashy
+- Motion should make the site feel finished, not busy
+
+Pages to update:
+- Home
+- For Restaurants
+- About
+- FAQ
+- Contact
+- Legal pages only where needed for polish/consistency, not decorative motion
+
+Output:
+- Implement the motion system and component updates
+- Refactor repeated patterns into reusable motion wrappers
+- Keep code clean and production-ready

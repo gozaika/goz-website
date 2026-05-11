@@ -1,0 +1,2746 @@
+You are working in the goZaika monorepo.
+
+Slice 0 and Slice 1 are complete. Do NOT rewrite them. Inspect the repo before changing anything.
+
+Repository topology from Slice 0:
+gozaika/
+  apps/
+    website/                  # canonical production website, preserve exactly
+    consumer-web/             # Next 16.2.4 / React 19.2.4
+    restaurant-mgmt-web/      # Next 16.2.4 / React 19.2.4
+    admin-web/                # Next 16.2.4 / React 19.2.4
+    consumer-mobile/          # Expo SDK 55
+    restaurant-staff-mobile/  # Expo SDK 55
+  packages/
+    config/
+    db/
+    logger/
+    supabase/
+    types/
+    ui/
+    utils/
+  supabase/
+    migrations/
+    functions/
+    seed.sql
+    seeds/
+      demo/
+  docs/
+    architecture/
+    adr/
+    runbooks/
+    product/
+
+Non-negotiable repo rules:
+- apps/website is the canonical production website and must be preserved exactly.
+- Do not modify apps/website unless absolutely necessary for shared config compatibility; if necessary, stop and explain first.
+- New web apps must follow the website config pattern:
+  - Next config style
+  - ESLint 9 flat config
+  - Tailwind 4 via @tailwindcss/postcss
+  - lint command must be eslint ., not next lint
+- Use npm workspaces.
+- Keep package-lock.json.
+- Do not introduce pnpm-workspace.yaml, pnpm-lock.yaml, pnpm scripts, workspace:* deps, or packageManager: pnpm.
+- Internal workspace dependencies should be npm-compatible, preferably "*".
+- Web versions:
+  - next@16.2.4
+  - react@19.2.4
+  - react-dom@19.2.4
+  - TypeScript 5.9.x
+  - eslint-config-next@16.2.4
+  - tailwindcss@4.x
+  - @tailwindcss/postcss
+  - @supabase/supabase-js@^2.57.4
+  - @supabase/ssr where needed
+  - zod@^4.1.12
+- Mobile apps are not in scope for Slice 2 except docs/TODOs; native deps must use npx expo install if ever touched.
+- Preserve and reuse shared goZaika brand/logo components/assets created or propagated in Slice 1.
+- Do not expose service_role keys to browser code.
+
+Local auth testing context:
+- For local Supabase development, Phone OTP uses a fixed test OTP:
+  - Phone number: +15555550100
+  - OTP: 123456
+- This is configured in supabase/config.toml.
+- Use this only for local validation notes; do not hardcode production OTP assumptions.
+
+Slice 2 goal:
+Implement Restaurant Onboarding vertical slice.
+
+Product/spec validation gate:
+- Restaurant owner can log in to restaurant-mgmt-web.
+- Restaurant owner can complete restaurant profile/onboarding.
+- Restaurant owner can upload FSSAI/KYC/compliance docs to Supabase Storage.
+- Restaurant team membership is created and scoped by RLS.
+- Admin can review/approve/reject onboarding/compliance/documents in a minimal admin-web workflow.
+- Approved restaurants can move to ACTIVE.
+- Do NOT implement drops, bag templates, inventory, orders, payments, pickup verification, notifications, finance settlement, analytics, Swaad Club, or full admin portal modules.
+
+Before coding:
+1. Inspect the actual repo state after Slice 1.
+2. Identify actual app/package paths and conventions.
+3. Inspect current Supabase migrations and consolidated schema.
+4. Reuse existing Supabase client utilities, server actions, route handlers, Zod patterns, UI components, and brand assets from Slice 1.
+5. Determine whether Slice 1 created any profile bootstrap RPC/server action and reuse it.
+6. Confirm package manager is npm only.
+7. Confirm apps/website is untouched.
+8. Do not regenerate or downgrade apps.
+9. Do not scaffold generic branding.
+
+Known schema targets from consolidated schema:
+Use existing table names/columns where present. Do not invent parallel tables.
+
+Restaurant domain:
+- restaurant_restaurant
+  - restaurant_restaurant_pk
+  - restaurant_name
+  - restaurant_slug
+  - legal_entity_name
+  - restaurant_status_code: PENDING, ONBOARDING, ACTIVE, PAUSED, SUSPENDED, OFFBOARDED
+  - geo_city_fk
+  - geo_neighborhood_fk
+  - geo_address_fk
+  - owner_profile_fk
+  - primary_contact_email
+  - primary_contact_phone_e164
+  - pickup_instructions
+- restaurant_public_profile
+  - restaurant_fk
+  - headline
+  - story_markdown
+  - hero_storage_object_fk
+  - logo_storage_object_fk
+  - is_featured
+  - published_at
+- restaurant_compliance
+  - restaurant_fk
+  - fssai_license_number
+  - fssai_license_expiry_date
+  - gstin
+  - pan_number
+  - compliance_status_code: PENDING, UNDER_REVIEW, APPROVED, REJECTED, EXPIRED
+  - last_reviewed_by_profile_fk
+  - last_reviewed_at
+- restaurant_contact
+  - restaurant_fk
+  - contact_type_code: OWNER, MANAGER, FINANCE, PICKUP, SUPPORT, LEGAL
+  - contact_name
+  - email_address
+  - phone_e164
+  - is_primary
+- restaurant_cuisine_map
+  - restaurant_fk
+  - master_cuisine_fk
+  - is_primary
+- restaurant_document
+  - restaurant_fk
+  - master_document_type_fk
+  - master_document_status_fk
+  - storage_object_fk
+  - document_number
+  - issued_at
+  - expires_at
+  - rejection_reason
+  - uploaded_by_profile_fk
+  - reviewed_by_profile_fk
+  - reviewed_at
+- restaurant_payout_account
+  - restaurant_fk
+  - account_holder_name
+  - bank_name
+  - masked_account_number
+  - ifsc_code
+  - razorpay_fund_account_ref
+  - payout_account_status_code: PENDING, VERIFIED, REJECTED, DISABLED
+  - Important: never store full bank account numbers.
+- restaurant_setting
+  - restaurant_fk
+  - setting_key
+  - setting_value_json
+- restaurant_onboarding_task
+  - restaurant_fk
+  - task_code
+  - task_name
+  - task_status_code: PENDING, IN_PROGRESS, BLOCKED, COMPLETED, WAIVED
+  - due_at
+  - completed_at
+  - completed_by_profile_fk
+
+Identity/access:
+- iam_profile maps auth.users to business identity.
+- restaurant_team_membership links iam_profile to restaurant_restaurant with restaurant_team_role.
+- restaurant_team_role / restaurant_team_role_scope / master_scope define team roles and permissions.
+- iam_profile.is_restaurant_user should be true when the user has at least one active restaurant_team_membership.
+
+Storage:
+- storage_object tracks Supabase Storage object metadata.
+- master_storage_visibility controls PUBLIC_CDN, AUTHENTICATED_ONLY, SERVICE_ONLY, OWNER_ONLY or equivalent.
+- KYC/FSSAI/PAN/bank documents must use private/service-only visibility.
+- Public hero/logo images may use PUBLIC_CDN if intentionally public.
+- Supabase Storage buckets expected by schema/comments may include:
+  - public-media
+  - private-docs or private-documents, depending on actual repo/Supabase config
+  - private-exports
+- Inspect current bucket naming and use what exists or add migrations/config consistently.
+
+Master/reference data:
+- master_document_type should include required document types:
+  - FSSAI_LICENSE
+  - GST_CERTIFICATE
+  - PAN_CARD
+  - BANK_CANCELLED_CHEQUE
+- Optional examples:
+  - FOOD_SAFETY_AUDIT
+  - MENU_CARD
+  - IDENTITY_PROOF
+- master_document_status should include:
+  - PENDING_REVIEW
+  - UNDER_REVIEW
+  - APPROVED
+  - REJECTED
+  - EXPIRED
+- master_cuisine should already exist from foundation; reuse.
+- geo_city / geo_neighborhood / geo_address should already exist; reuse.
+- restaurant_team_role and role scopes should include at least OWNER, ADMIN, OPERATIONS, PICKUP_STAFF, FINANCE if not already seeded.
+- Do not duplicate reference rows. Use idempotent upserts/on conflict.
+
+Implementation tasks:
+
+1. Database / migrations
+
+Add Slice 2 migrations only. Name them clearly, e.g.:
+- supabase/migrations/<timestamp>_slice2_restaurant_onboarding.sql
+- supabase/migrations/<timestamp>_slice2_restaurant_storage_rls.sql
+Use actual timestamp convention from repo.
+
+The migration should:
+- Add missing indexes needed for onboarding:
+  - restaurant_restaurant(owner_profile_fk)
+  - restaurant_restaurant(restaurant_status_code)
+  - restaurant_team_membership(iam_profile_fk, is_active)
+  - restaurant_team_membership(restaurant_fk, iam_profile_fk, is_active)
+  - restaurant_document(restaurant_fk, master_document_status_fk)
+  - restaurant_compliance(restaurant_fk, compliance_status_code)
+  - restaurant_onboarding_task(restaurant_fk, task_status_code)
+  - storage_object(bucket_name, object_path), if not already unique/indexed
+- Add any missing constraints/helpers required by onboarding, but do not reshape already stable foundational schema unnecessarily.
+- Seed/upsert required master_document_type and master_document_status rows.
+- Seed/upsert restaurant_team_role rows and scopes needed for owner portal access.
+- Seed/upsert onboarding task definitions only if the schema has a task template table; otherwise create tasks per restaurant in app/server logic.
+- Add helper functions/RPCs only where they improve security and idempotency.
+
+Recommended RPC/server-side functions:
+- ensure_restaurant_owner_profile or reuse Slice 1 profile bootstrap.
+- create_or_get_restaurant_onboarding:
+  - authenticated user only
+  - ensures iam_profile exists
+  - creates restaurant_restaurant in ONBOARDING or PENDING/ONBOARDING as appropriate
+  - sets owner_profile_fk
+  - creates restaurant_compliance
+  - creates restaurant_public_profile
+  - creates restaurant_contact OWNER
+  - creates restaurant_team_membership with OWNER role
+  - creates required restaurant_onboarding_task rows
+  - idempotent: repeat calls must not duplicate records
+- complete/update onboarding functions may be route handlers/server actions rather than RPCs.
+
+Do not manually insert into auth.users. Auth users must be managed through Supabase Auth/Admin API scripts only.
+
+2. RLS policies
+
+Review existing RLS. Do not weaken existing policies.
+
+Required RLS behavior:
+- Restaurant team members can select their own restaurant_restaurant rows.
+- Restaurant owners/admins can update safe onboarding fields for their restaurant only:
+  - restaurant_name
+  - legal_entity_name
+  - geo_city_fk / geo_neighborhood_fk / geo_address_fk where allowed
+  - primary_contact_email
+  - primary_contact_phone_e164
+  - pickup_instructions
+  - public profile headline/story/logo/hero
+  - cuisine mappings
+  - contact rows
+  - onboarding task status where appropriate
+- Restaurant team members can read their own membership and roles.
+- Restaurant team members can select own restaurant_compliance summary.
+- Restaurant team members can insert/select restaurant_document rows for their restaurant through secure server route or RLS with strict ownership checks.
+- Restaurant team members should not directly approve documents or compliance.
+- Restaurant team members can read their own private document metadata, but actual file URLs must come from secure signed URL route, not public access.
+- Platform admins can approve/reject compliance/docs.
+- Platform admins can transition restaurant_restaurant to ACTIVE/REJECTED-equivalent workflow states as appropriate.
+- No broad “using true” on private restaurant/compliance/document/payout tables.
+- Avoid for all policies on sensitive tables unless both USING and WITH CHECK are strongly tenant-scoped.
+- Storage object metadata access must match visibility:
+  - public assets can be publicly readable only if PUBLIC_CDN.
+  - KYC/FSSAI/PAN/bank docs must not be browser-public.
+  - private docs use signed upload/download route handlers with server-side authorization.
+
+If existing policies are select-only for restaurant_document/onboarding_task and route handlers are safer for writes, use server-side service-role routes for writes with explicit authz. Never expose service_role to browser.
+
+3. Supabase Storage integration
+
+Implement secure document upload for restaurant onboarding.
+
+Preferred flow:
+- Browser requests signed upload URL from restaurant-mgmt-web route handler/server action.
+- Server verifies authenticated user has restaurant access.
+- Server creates stable object path, e.g.:
+  private-docs/restaurants/{restaurantId}/compliance/{documentTypeCode}/{uuid-or-safe-filename}
+- Server returns signed upload token/URL or performs upload depending on existing convention.
+- Browser uploads file directly only to the signed path.
+- Server records storage_object row and restaurant_document row.
+- Server sets master_storage_visibility to SERVICE_ONLY or equivalent.
+- Server validates:
+  - file type allowlist: PDF, JPEG, PNG, WebP if appropriate
+  - max file size from config
+  - document type is allowed
+  - restaurant belongs to current user
+- Do not use public buckets for KYC/FSSAI/PAN/bank docs.
+- Do not expose permanent private URLs.
+- Add secure signed download route for team/admin review where needed.
+
+Public profile image upload:
+- Optional in Slice 2 if it fits cleanly.
+- If implemented, use public-media and PUBLIC_CDN for logo/hero.
+- Do not block validation gate on public images.
+
+4. Restaurant Management Portal UI
+
+Build minimal P0 restaurant onboarding flow in apps/restaurant-mgmt-web.
+
+Routes may be adjusted to existing app conventions, but target:
+- /auth/login
+- /portal or /portal/onboarding
+- /portal/profile
+- /portal/compliance
+- /portal/team, optional minimal
+- /portal/settings, optional minimal
+
+Auth:
+- Reuse Slice 1 Supabase auth client/middleware patterns.
+- Phone OTP primary.
+- Email/password demo login section visible only in development or NEXT_PUBLIC_ENABLE_DEMO_LOGIN=true.
+- Google OAuth if already supported in shared auth UI utilities.
+- On login, ensure profile bootstrap.
+- If no restaurant membership exists, show “Create restaurant onboarding” flow for restaurant demo/owner users.
+- If membership exists, route to default restaurant dashboard/onboarding checklist.
+
+Local phone OTP:
+- Mention local test number +15555550100 / OTP 123456 in docs only, not production UI copy unless already common local-dev banner pattern exists.
+
+Onboarding UI requirements:
+- Mobile/tablet responsive but portal can be desktop-first.
+- Use official goZaika logo/brand assets/components from packages/ui.
+- Inline field errors.
+- Skeleton/loading states, not spinner-only pages.
+- Minimum 44px tap targets.
+- Clear stepper/checklist:
+  1. Restaurant basics
+  2. Location/pickup instructions
+  3. Compliance details
+  4. Document upload
+  5. Contacts
+  6. Review status
+- Do not overbuild full Zayka Pro analytics/drop navigation.
+
+Restaurant basics form:
+- restaurant_name
+- restaurant_slug, generated from name but editable with validation
+- legal_entity_name
+- primary_contact_email
+- primary_contact_phone_e164
+- city/neighborhood selection from reference data
+- pickup_instructions
+
+Compliance form:
+- FSSAI license number
+- FSSAI expiry date
+- GSTIN
+- PAN
+- optional bank/payout masked fields if already modeled:
+  - account_holder_name
+  - bank_name
+  - masked_account_number only
+  - IFSC
+- Never request or store full bank account number unless a secure tokenization provider flow exists. For Slice 2, masked account only is acceptable.
+
+Document upload UI:
+- Required document checklist:
+  - FSSAI license
+  - GST certificate
+  - PAN card
+  - Bank cancelled cheque
+- Show upload status:
+  - missing
+  - pending review
+  - approved
+  - rejected with reason
+  - expired
+- Allow replacing rejected/expired documents by uploading a new row or safe new version. Do not mutate historical review record beyond permitted fields unless schema expects updates.
+- Do not implement OCR.
+
+Onboarding dashboard:
+- Show restaurant status:
+  - PENDING / ONBOARDING / ACTIVE / PAUSED / SUSPENDED / OFFBOARDED
+- Show compliance status:
+  - PENDING / UNDER_REVIEW / APPROVED / REJECTED / EXPIRED
+- Show task checklist from restaurant_onboarding_task.
+- Show “Submitted for review” state.
+- Do not let restaurant self-approve.
+
+5. Minimal Admin Approval Flow
+
+Build only the minimal admin-web surface needed for Slice 2 validation. Do not build full admin portal.
+
+Target routes:
+- /admin/restaurants/onboarding or existing admin route convention
+- /admin/restaurants/[id]/review
+
+Admin auth:
+- Reuse Supabase auth.
+- Access only if user has platform admin membership or existing rls_is_platform_admin equivalent.
+- If platform admin seeding does not exist locally, add a safe local demo admin auth/profile script or seed doc path. Do not weaken prod auth.
+
+Admin list:
+- Show restaurants with statuses PENDING/ONBOARDING and compliance statuses PENDING/UNDER_REVIEW/REJECTED/EXPIRED.
+- Show basic data:
+  - restaurant name
+  - owner
+  - city/neighborhood
+  - document counts
+  - compliance status
+  - created_at/updated_at
+
+Admin review page:
+- Read restaurant basics, contacts, compliance, documents.
+- Generate signed private document download/view URLs server-side after admin authz.
+- Approve/reject individual documents:
+  - APPROVED sets reviewed_by_profile_fk and reviewed_at.
+  - REJECTED requires rejection_reason.
+- Approve/reject compliance:
+  - APPROVED only if required documents are approved and required fields are present.
+  - REJECTED requires reason if schema supports it; if no compliance rejection reason column exists, record in document rejection or audit/log docs.
+- Activate restaurant:
+  - restaurant_status_code becomes ACTIVE only when compliance APPROVED and required onboarding tasks completed/waived.
+  - Otherwise keep ONBOARDING and show missing prerequisites.
+- Do not implement finance, settlements, drops, order management, monitoring, data repair, reports, or CMS.
+
+6. Server actions / route handlers
+
+Implement server actions or route handlers with Zod validation for:
+- ensure/create restaurant onboarding
+- get current user’s restaurants/memberships
+- update restaurant basics
+- update public profile basics
+- update compliance fields
+- upload/sign document
+- record restaurant_document metadata
+- get signed private document URL
+- submit for review, if needed
+- admin list pending onboarding restaurants
+- admin approve/reject document
+- admin approve/reject compliance
+- admin activate restaurant
+
+Use shared types/packages where appropriate:
+- packages/types for schemas if Slice 1 established that convention.
+- packages/supabase for clients.
+- packages/logger for structured logs.
+- packages/utils for slug/phone/email helpers if present.
+
+Validation:
+- restaurant_slug lowercase-kebab-case.
+- phone E.164.
+- email valid.
+- GSTIN and PAN basic format validation where reasonable.
+- FSSAI basic length/format validation where reasonable.
+- dates must be sane; expiry should not be in past for approval.
+- IFSC basic pattern if payout fields are included.
+- file extension/MIME/size allowlist.
+
+Security:
+- Use user Supabase server client for RLS reads where possible.
+- Use service-role only in server-only modules/routes for storage signing/admin actions where required.
+- Never import service-role client into browser/client components.
+- Never log secrets or full document URLs if they contain tokens.
+- Redact sensitive identifiers in logs where appropriate.
+- Use no-store/cache controls for admin/private pages and signed URL endpoints.
+
+7. Restaurant demo data framework
+
+Extend demo seed framework from Slice 1.
+
+Add:
+supabase/seeds/demo/002_slice2_restaurant_onboarding_demo.sql
+
+Update if needed:
+supabase/seeds/demo/delete_demo_data.sql
+docs/runbooks/demo-data.md
+
+Demo seed requirements:
+- Deterministic.
+- Stable UUIDs.
+- Stable timestamps.
+- Clearly fake data.
+- No faker/random values.
+- No real personal data.
+- Register demo-owned rows in dev_demo_seed_registry or existing Slice 1 mechanism.
+- delete_demo_data.sql must delete only registered demo rows.
+- delete_demo_data.sql must be idempotent.
+- FK-safe delete order.
+- No broad TRUNCATE.
+- Do not delete reference/config rows.
+
+Use the restaurant demo identities created in Slice 1:
+1. Biryani Baithak
+   email: biryani.baithak@gozaika.example
+   phone: +919000100001
+   area: Banjara Hills
+   cuisine: ["Hyderabadi", "Biryani", "Mughlai"]
+
+2. Charminar Chai Co.
+   email: charminar.chai.co@gozaika.example
+   phone: +919000100002
+   area: Old City
+   cuisine: ["Irani Chai", "Snacks", "Bakery"]
+
+3. Deccan Dosa House
+   email: deccan.dosa.house@gozaika.example
+   phone: +919000100003
+   area: Madhapur
+   cuisine: ["South Indian", "Breakfast", "Vegetarian"]
+
+4. Golconda Grills
+   email: golconda.grills@gozaika.example
+   phone: +919000100004
+   area: Gachibowli
+   cuisine: ["Kebabs", "Grill", "North Indian"]
+
+5. HITEC Handi
+   email: hitec.handi@gozaika.example
+   phone: +919000100005
+   area: HITEC City
+   cuisine: ["Indian", "Curries", "Family Meals"]
+
+For each demo restaurant:
+- Ensure iam_profile exists only if profile bootstrap/scripts created it.
+- Create restaurant_restaurant.
+- Set owner_profile_fk to matching demo restaurant auth/profile if present.
+- Create restaurant_team_membership OWNER role.
+- Create restaurant_compliance with mixed statuses:
+  - at least one APPROVED
+  - at least one UNDER_REVIEW
+  - at least one REJECTED document path for UI testing
+- Create restaurant_contact OWNER.
+- Create restaurant_cuisine_map entries.
+- Create restaurant_public_profile stub using official tone; no “leftover” framing.
+- Create restaurant_onboarding_task rows.
+- Optionally create storage_object metadata rows for fake demo document object paths, but do not require real binary files unless local Storage seeding is already available.
+- Do not seed drops/templates/orders/payments.
+
+8. Demo auth / admin support scripts
+
+Review Slice 1 scripts:
+- scripts/demo/create-demo-auth-users.ts
+- scripts/demo/delete-demo-auth-users.ts
+
+Update or add scripts only if needed:
+- scripts/demo/create-demo-restaurant-onboarding.ts, optional
+- scripts/demo/create-demo-admin-user.ts, optional
+
+Safety requirements:
+- SUPABASE_URL
+- SUPABASE_SERVICE_ROLE_KEY
+- Refuse remote unless SUPABASE_URL contains localhost/127.0.0.1 or DEMO_SEED_ALLOW_REMOTE=true.
+- Never print service_role.
+- Mark demo auth users with app_metadata:
+  {
+    app: "gozaika",
+    demo: true,
+    role: "restaurant" | "platform_admin" if creating admin
+  }
+- Do not delete by email domain alone.
+- Delete only users where app_metadata.app === "gozaika" and app_metadata.demo === true.
+- Print created/updated/skipped/deleted counts.
+
+If adding a platform admin demo user, use clearly fake local-only credentials and document them:
+- email: admin.ops@gozaika.example
+- password: GozaikaDemo@123
+- app_metadata.role: "platform_admin"
+- Create iam_profile and iam_platform_membership using existing platform role tables.
+- Do not grant platform admin through insecure client code.
+
+9. npm scripts
+
+Add/update npm-only scripts where appropriate:
+- db:seed:demo should include Slice 2 demo SQL or call a sequence.
+- db:demo:delete should delete Slice 2 demo rows safely.
+- demo:auth:create remains compatible.
+- demo:auth:delete remains compatible.
+- demo:restaurant:create or demo:onboarding:create if needed.
+- demo:admin:create if needed.
+- demo:reset may combine safe delete/create.
+
+Do not add pnpm scripts.
+
+10. Docs
+
+Create or update:
+- docs/runbooks/restaurant-onboarding.md
+- docs/runbooks/demo-data.md
+- docs/product/restaurant-onboarding.md, optional if product docs convention exists
+
+Include:
+- how to start local Supabase
+- how to obtain SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY from supabase status / supabase status -o env
+- how to run migrations/reset
+- how to seed reference data
+- how to create demo auth users
+- how to seed Slice 2 restaurant onboarding demo rows
+- demo restaurant credentials
+- demo admin credentials if added
+- local phone OTP test number and OTP:
+  +15555550100 / 123456
+- how restaurant owner logs in
+- how owner completes onboarding
+- how document upload works locally
+- how admin reviews/approves
+- how to delete demo data
+- warnings:
+  - never commit real service_role keys
+  - never run remote demo deletion unless intentionally using DEMO_SEED_ALLOW_REMOTE=true
+  - never use demo data in production
+  - KYC/FSSAI/PAN/bank documents must use private buckets and signed access only
+
+11. Tests / validation
+
+Add tests where repo setup supports them.
+
+Recommended tests:
+- create_or_get_restaurant_onboarding is idempotent.
+- owner membership is created once.
+- iam_profile.is_restaurant_user becomes true or equivalent access helper returns true.
+- restaurant owner can read own restaurant.
+- restaurant owner cannot read another restaurant.
+- restaurant owner can update safe onboarding fields for own restaurant.
+- restaurant owner cannot approve own compliance/documents.
+- restaurant document upload route refuses unauthorized restaurant.
+- private document signed URL route refuses non-team user.
+- admin can approve/reject document.
+- compliance cannot approve unless required docs/fields are present.
+- ACTIVE transition blocked until compliance APPROVED and required tasks complete/waived.
+- demo delete does not remove master_document_type/master_document_status/master_cuisine/reference rows.
+- demo scripts refuse remote URLs by default.
+
+Run:
+- npm run lint --workspaces --if-present
+- npm run typecheck --workspaces --if-present
+- npm run test --workspaces --if-present
+- npm run build --workspaces --if-present
+- npm run ci if present
+
+If local Supabase is running and env vars are available, run:
+- supabase db reset or migration flow used by repo
+- demo auth create script
+- Slice 2 demo seed script
+- validate restaurant demo user can log in or validate via Admin API
+- validate owner has restaurant membership
+- validate admin user can approve in DB/API path
+- demo delete script
+- recreate demo users/data only if useful for final local state
+
+12. Explicitly out of scope for Slice 2
+
+Do not implement:
+- Slice 3 bag template/drop lifecycle beyond onboarding checklist placeholders.
+- Drop creation/publish.
+- Inventory.
+- Orders.
+- Razorpay.
+- Pickup QR/OTP verification.
+- Restaurant staff mobile app.
+- Notifications/WATI/Resend outbox processing.
+- Finance settlements/invoices/payout runs.
+- Zayka Pro analytics.
+- Full admin portal modules.
+- Consumer mobile.
+- Swaad Club/referrals.
+- OCR document verification.
+- Real KYC provider integrations.
+- Public restaurant discovery pages unless minor links already exist.
+
+13. Final output required
+
+At the end, report:
+
+- Summary of files changed.
+- Migration names.
+- New/updated RLS policies.
+- New/updated route handlers/server actions/RPCs.
+- Storage bucket/config changes.
+- Scripts added/updated.
+- Demo seed files added/updated.
+- Docs added/updated.
+- Commands run.
+- Whether local Supabase was available.
+- Whether demo auth scripts were run.
+- Created/updated/deleted demo user counts, if scripts were run.
+- Demo restaurant rows created/updated/deleted counts, if seed was run.
+- Tests/build/lint results.
+- Confirmation that apps/website was preserved.
+- Confirmation that no pnpm artifacts were introduced.
+- Manual follow-ups, especially:
+  - Supabase local env setup
+  - Phone OTP provider config
+  - Google OAuth provider config
+  - Storage bucket creation/policies
+  - Admin demo user creation if not automated
+  - Any skipped tests and why
+- A running document that documents what you did exactly in each slice. This document should be comprehensive enough such that it will allow me redo the entire project once slice at a time using codex at a later time.
+
+
+
+======
+You are working in the goZaika monorepo. Slice 0 is complete and followed this topology:
+
+gozaika/
+  apps/
+    website/                  # canonical production website, preserve exactly
+    consumer-web/             # Next 16.2.4 / React 19.2.4
+    restaurant-mgmt-web/      # Next 16.2.4 / React 19.2.4
+    admin-web/                # Next 16.2.4 / React 19.2.4
+    consumer-mobile/          # Expo SDK 55
+    restaurant-staff-mobile/  # Expo SDK 55
+  packages/
+    config/
+    db/
+    logger/
+    supabase/
+    types/
+    ui/
+    utils/
+  supabase/
+    migrations/
+    functions/
+    seed.sql
+  docs/
+    architecture/
+    adr/
+    runbooks/
+    product/
+
+Important Slice 0 rules:
+- apps/website is the canonical production website and must be preserved exactly.
+- New web apps must copy the website config pattern:
+  - Next config style
+  - ESLint 9 flat config
+  - Tailwind 4 via @tailwindcss/postcss
+  - lint command must be eslint ., not next lint
+- Use npm workspaces.
+- Keep package-lock.json.
+- Do not introduce pnpm-workspace.yaml, pnpm-lock.yaml, pnpm scripts, or packageManager: pnpm.
+- Internal workspace dependencies should be npm-compatible, preferably "*", not workspace:*.
+- Web versions:
+  - next@16.2.4
+  - react@19.2.4
+  - react-dom@19.2.4
+  - TypeScript 5.9.x
+  - eslint-config-next@16.2.4
+  - tailwindcss@4.x
+  - @tailwindcss/postcss
+  - @supabase/supabase-js@^2.57.4
+  - zod@^4.1.12
+- Mobile apps use Expo SDK 55 and native dependencies must be installed with npx expo install.
+
+Slice 1 goal:
+Implement Auth/Profile for consumer-web with Supabase Auth, iam_profile, consumer_profile, DPDP consent capture, RLS, and demo data tooling.
+
+Branding requirement: reuse the official logo/icon/illustration assets already incorporated in apps/website; do not scaffold generic placeholders for auth/profile screens.
+
+Product requirements:
+- goZaika uses Vercel + Supabase Auth + Supabase Postgres + Prisma.
+- Consumer Web App is Next 16.2.4 App Router + React 19.2.4 + TypeScript.
+- Auth priority:
+  - phone OTP primary
+  - Google OAuth secondary
+  - demo email/password users for local demo/testing only
+- Create iam_profile 1:1 with Supabase auth.users.
+- Create consumer_profile for consumer users.
+- Capture DPDP consent per purpose using append-only privacy_consent_event rows.
+- Consent purposes:
+  - OPERATIONAL
+  - MARKETING
+  - ANALYTICS
+  - REFERRAL_COMMS
+  - WHATSAPP_TRANSACTIONAL
+  - WHATSAPP_MARKETING
+- OPERATIONAL is required.
+- Optional consents default off.
+- RLS-first tenancy: users may read/update only their own profile and consent history.
+- Validation gate:
+  - user can sign up/log in on consumer-web
+  - profile is created
+  - consent is stored
+  - demo users can be created locally
+  - demo data can be deleted safely
+
+Before coding:
+1. Inspect the repo.
+2. Identify actual app/package paths.
+3. Reuse existing conventions.
+4. Do not rewrite Slice 0.
+5. Do not modify apps/website except if absolutely necessary for shared config compatibility; if so, stop and explain first.
+6. Do not introduce pnpm.
+
+Implementation tasks:
+
+1. Database / migrations
+
+Implement or adjust Slice 1 migrations only.
+
+Tables or equivalent existing tables must support:
+
+iam_profile:
+- id uuid primary key, matching auth.users.id if the architecture expects that
+- phone
+- email
+- full_name
+- avatar_url
+- preferred_language
+- profile_type or audience discriminator if already modeled
+- timestamps
+
+consumer_profile:
+- profile_fk references iam_profile
+- city
+- area or neighborhood if useful for demo data
+- dietary/allergen preference linkage if already modeled
+- referral_code if already part of foundation
+- timestamps
+
+privacy_consent_purpose:
+- purpose_code unique
+- required boolean
+- description
+- display_order if useful
+- timestamps
+
+privacy_consent_event:
+- append-only
+- profile_fk
+- purpose_fk or purpose_code
+- state: GRANTED / REVOKED
+- policy_version
+- capture_source_code
+- proof_json jsonb
+- created_at timestamptz
+
+Add indexes:
+- latest consent lookup by profile and purpose
+- profile lookup by auth user id
+- consumer_profile by profile_fk
+
+Seed required consent purposes.
+
+Do not implement Slice 2 restaurant onboarding tables unless they already exist from Slice 0.
+
+2. Profile bootstrap
+
+Implement a safe, idempotent profile bootstrap path:
+- After successful auth, ensure iam_profile exists.
+- Ensure consumer_profile exists for consumer-web users.
+- Must not create duplicates.
+- Must be safe to run repeatedly.
+- Prefer a Postgres RPC or server-side route/action if that fits repo conventions.
+- Never expose service_role key to browser code.
+- For demo users with app_metadata.role = "consumer", create consumer profile.
+- For demo users with app_metadata.role = "restaurant", do not fully implement restaurant onboarding in Slice 1; either skip domain restaurant rows or create only what already exists safely from Slice 0.
+
+3. RLS policies
+
+Add/verify RLS:
+- Authenticated user can select own iam_profile.
+- Authenticated user can update limited own safe profile fields, or use server-side update path if column-level restrictions are not practical.
+- Authenticated user can select own consumer_profile.
+- Authenticated user can update own consumer_profile.
+- Authenticated user can insert own privacy_consent_event.
+- Authenticated user can select own consent history.
+- privacy_consent_purpose can be readable by authenticated users and anon users if needed for signup/onboarding UI.
+- Do not weaken existing policies.
+- Do not use broad "using true" on private tables.
+
+4. Supabase client utilities
+
+In consumer-web and/or packages/supabase:
+- Implement browser Supabase client.
+- Implement server Supabase client.
+- Implement middleware/proxy session refresh with @supabase/ssr.
+- Support Next 16 App Router.
+- Preserve strict TypeScript.
+- Follow existing package boundaries.
+
+5. Auth UI
+
+Build /auth/login in apps/consumer-web:
+- Phone OTP form:
+  - phone input
+  - send OTP
+  - verify OTP
+  - inline validation/errors
+  - loading states
+- Google OAuth button.
+- Local demo email/password login section, visible only in development or when NEXT_PUBLIC_ENABLE_DEMO_LOGIN=true.
+- On success:
+  - call/trigger profile bootstrap
+  - route to onboarding/consent if required
+  - otherwise route to /account or home
+- UI rules:
+  - mobile-first
+  - 44px minimum tap targets
+  - inline errors
+  - skeleton/loading states, not spinner-only pages
+  - copy visual/config patterns from apps/website where applicable
+
+6. Consent capture UI
+
+Add onboarding or account consent capture:
+- Required OPERATIONAL consent must be shown and granted before onboarding completes.
+- Optional consent toggles default off:
+  - MARKETING
+  - ANALYTICS
+  - REFERRAL_COMMS
+  - WHATSAPP_TRANSACTIONAL
+  - WHATSAPP_MARKETING
+- On submit, append privacy_consent_event rows.
+- Do not update old consent rows.
+- Include:
+  - policy_version
+  - capture_source_code
+  - proof_json with UI version, source route, timestamp, user agent if available
+- Latest consent state must be derived from latest event per purpose.
+
+7. Account/Profile page
+
+Implement minimal P0 /account:
+- Protected route.
+- Anonymous users redirect to /auth/login.
+- Show:
+  - name
+  - email
+  - phone
+  - city/area if present
+  - language preference
+- Allow editing safe profile fields.
+- Show latest consent state by purpose.
+- Allow toggling optional consent; every toggle appends a new event.
+- Show latest consent captured timestamp or basic consent history.
+- Include sign out.
+
+8. Server actions / route handlers
+
+Implement server actions or route handlers for:
+- ensure profile
+- update profile
+- capture consent events
+- get latest consent state
+- demo login support only if needed by UI
+
+Use Zod schemas where appropriate, preferably in packages/types if that matches existing conventions.
+
+9. Demo data framework
+
+Create an expandable demo seed framework for future slices.
+
+Structure:
+supabase/
+  seed.sql
+  seeds/
+    demo/
+      001_slice1_auth_profile_demo.sql
+      delete_demo_data.sql
+
+Reference seed:
+- Keep app-required reference/config data in supabase/seed.sql.
+- For Slice 1, privacy_consent_purpose belongs in reference seed.
+
+Demo seed:
+- Demo SQL should be deterministic.
+- Use stable UUIDs.
+- Use stable timestamps.
+- Use clearly fake data.
+- No faker/random values.
+- No real personal data.
+- Do not seed payments, orders, drops, finance, or admin data in Slice 1.
+
+Demo ownership:
+- Add a safe mechanism to identify demo-owned rows.
+- Prefer a dev_demo_seed_registry table if existing schema does not support seed_tag.
+- If using a registry, record:
+  - seed_key
+  - entity_table
+  - entity_id
+  - slice
+  - created_at
+- delete_demo_data.sql must delete only registered/marked demo rows.
+- delete_demo_data.sql must be idempotent.
+- delete_demo_data.sql must delete in FK-safe order.
+- delete_demo_data.sql must not delete reference/config rows like privacy_consent_purpose.
+- delete_demo_data.sql must not use broad TRUNCATE.
+
+10. Demo auth users
+
+Generate local-only scripts:
+
+scripts/demo/create-demo-auth-users.ts
+scripts/demo/delete-demo-auth-users.ts
+
+Use @supabase/supabase-js Admin API.
+
+Environment:
+- SUPABASE_URL
+- SUPABASE_SERVICE_ROLE_KEY
+
+Safety:
+- Refuse to run unless SUPABASE_URL contains localhost, 127.0.0.1, or DEMO_SEED_ALLOW_REMOTE=true.
+- Never print the service_role key.
+- Never import these scripts into browser/client code.
+- Mark all auth demo users with:
+  app_metadata: {
+    app: "gozaika",
+    demo: true,
+    role: "consumer" | "restaurant"
+  }
+
+Create these users:
+
+Restaurant demo auth users:
+1. Biryani Baithak
+   email: biryani.baithak@gozaika.example
+   phone: +919000100001
+   area: Banjara Hills
+   cuisine: ["Hyderabadi", "Biryani", "Mughlai"]
+
+2. Charminar Chai Co.
+   email: charminar.chai.co@gozaika.example
+   phone: +919000100002
+   area: Old City
+   cuisine: ["Irani Chai", "Snacks", "Bakery"]
+
+3. Deccan Dosa House
+   email: deccan.dosa.house@gozaika.example
+   phone: +919000100003
+   area: Madhapur
+   cuisine: ["South Indian", "Breakfast", "Vegetarian"]
+
+4. Golconda Grills
+   email: golconda.grills@gozaika.example
+   phone: +919000100004
+   area: Gachibowli
+   cuisine: ["Kebabs", "Grill", "North Indian"]
+
+5. HITEC Handi
+   email: hitec.handi@gozaika.example
+   phone: +919000100005
+   area: HITEC City
+   cuisine: ["Indian", "Curries", "Family Meals"]
+
+Consumer demo auth users:
+1. Aarav Reddy, aarav.reddy@gozaika.example, +919100200001, Jubilee Hills
+2. Ananya Sharma, ananya.sharma@gozaika.example, +919100200002, Kondapur
+3. Rohan Khan, rohan.khan@gozaika.example, +919100200003, Tolichowki
+4. Meera Iyer, meera.iyer@gozaika.example, +919100200004, Secunderabad
+5. Vikram Rao, vikram.rao@gozaika.example, +919100200005, Ameerpet
+6. Sana Fatima, sana.fatima@gozaika.example, +919100200006, Mehdipatnam
+7. Arjun Nair, arjun.nair@gozaika.example, +919100200007, Miyapur
+8. Priya Menon, priya.menon@gozaika.example, +919100200008, Kukatpally
+9. Kabir Ali, kabir.ali@gozaika.example, +919100200009, Begumpet
+10. Nisha Verma, nisha.verma@gozaika.example, +919100200010, Manikonda
+11. Dev Patel, dev.patel@gozaika.example, +919100200011, Nallagandla
+12. Zoya Siddiqui, zoya.siddiqui@gozaika.example, +919100200012, Lakdikapul
+13. Ishaan Gupta, ishaan.gupta@gozaika.example, +919100200013, Madhapur
+14. Kavya Reddy, kavya.reddy@gozaika.example, +919100200014, Banjara Hills
+15. Sameer Das, sameer.das@gozaika.example, +919100200015, Gachibowli
+
+Demo password:
+GozaikaDemo@123
+
+create-demo-auth-users.ts requirements:
+- idempotent
+- list existing users and match by email
+- if user exists, update password, metadata, phone, email_confirm, phone_confirm where supported
+- if user does not exist, create user
+- use email_confirm: true
+- use phone_confirm: true if supported by installed Supabase JS types/API
+- after create/update, call profile bootstrap or RPC if implemented
+- for consumer demo users, create/ensure consumer profile and insert demo consent events if safe
+- print created/updated/skipped counts
+
+delete-demo-auth-users.ts requirements:
+- refuse remote unless DEMO_SEED_ALLOW_REMOTE=true
+- list users
+- delete only users where app_metadata.app === "gozaika" and app_metadata.demo === true
+- do not delete by email domain alone
+- print deleted/skipped counts
+- call SQL demo cleanup before or after auth deletion depending on FK constraints; choose the safe order and document it
+
+11. npm scripts
+
+Add root or appropriate package scripts using npm only:
+- db:seed:demo
+- db:demo:delete
+- demo:auth:create
+- demo:auth:delete
+- demo:reset if useful, combining delete then create
+
+Do not add pnpm scripts.
+
+Scripts must work with local Supabase by default.
+
+12. Docs
+
+Create or update:
+docs/runbooks/demo-data.md
+
+Include:
+- how to start local Supabase
+- how to get local SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY from supabase status / supabase status -o env
+- how to run migrations/reset
+- how to seed reference data
+- how to create demo auth users
+- demo credentials
+- how to delete demo data
+- how future slices should add:
+  - 002_slice2_restaurant_demo.sql
+  - 003_slice3_bag_templates_drops.sql
+  - etc.
+- warnings:
+  - never commit real service_role keys
+  - never run remote demo deletion unless intentionally using DEMO_SEED_ALLOW_REMOTE=true
+  - never use demo data in production
+
+13. Tests / validation
+
+Add tests where repo setup supports them:
+- profile bootstrap is idempotent
+- consent capture appends rows
+- latest consent query returns newest event per purpose
+- unauthorized user cannot read another profile if RLS test pattern exists
+- delete_demo_data.sql does not remove reference consent purposes
+- demo auth scripts refuse remote URLs by default
+
+Run:
+- npm run lint --workspaces --if-present
+- npm run typecheck --workspaces --if-present
+- npm run test --workspaces --if-present
+- npm run build --workspaces --if-present
+- npm run ci if present
+
+If local Supabase is running and env vars are available, run:
+- demo auth create script
+- validate demo login or at least validate users exist through Admin API
+- demo delete script
+- recreate demo users if useful for final state
+
+14. Constraints
+
+Do not implement:
+- Slice 2 restaurant onboarding
+- restaurant compliance/KYC upload
+- drops
+- inventory
+- orders
+- payments
+- pickup verification
+- notifications
+- finance
+- admin portal
+
+Do not:
+- modify apps/website unnecessarily
+- introduce pnpm
+- downgrade Next/React
+- use next lint
+- expose service_role key
+- manually insert into auth.users unless explicitly justified and documented; prefer Supabase Admin API
+
+Final output:
+- Summary of files changed
+- Migration names
+- Scripts added
+- Commands run
+- Whether demo auth scripts were run
+- Created/updated/deleted demo user counts
+- Manual follow-ups, especially:
+  - Supabase local env setup
+  - Phone OTP provider config
+  - Google OAuth provider config
+  - Any skipped tests and why
+
+
+
+Slice 1 Addendum — Incorporate goZaika Logos / Icons / Illustrations
+
+Context:
+The production website at apps/website already incorporates the official goZaika logo, iconography, and food/discovery illustrations. Slice 0 did not propagate these assets into the new monorepo apps/packages.
+
+Goal:
+Incorporate the existing official logo/icon/illustration assets into the shared app foundation so consumer-web, restaurant-mgmt-web, admin-web, and future mobile apps can reuse the correct goZaika branding.
+
+Rules:
+1. Preserve apps/website exactly.
+   - Do not redesign it.
+   - Do not replace its existing assets.
+   - Do not modify its pages unless strictly necessary, and if necessary explain why first.
+
+2. Treat apps/website as the canonical brand/design baseline.
+   - Inspect apps/website asset locations.
+   - Identify existing logos, icons, favicon/app icons, SVGs, PNGs, and illustrations.
+   - Reuse the same assets or copy them into a shared asset location.
+   - Do not invent new logos.
+   - Do not regenerate images.
+   - Do not rename assets in a way that breaks existing website imports.
+
+3. Create a shared brand asset convention.
+   Prefer one of these, based on repo conventions:
+   - packages/ui/assets/brand/
+   - packages/ui/public/brand/
+   - packages/ui/src/brand/
+   - packages/config/brand/
+   
+   Choose the option that best fits the existing monorepo and document it.
+
+4. Add reusable brand components in packages/ui if appropriate:
+   - GoZaikaLogo
+   - GoZaikaMark
+   - GoZaikaWordmark
+   - AppIcon
+   - BrandIllustration, if useful
+   
+   Components should:
+   - support accessible alt text / aria labels
+   - support sizing via className
+   - work in Next 16 / React 19
+   - avoid hardcoded layout assumptions
+   - preserve the original visual proportions
+   - not depend on apps/website internals
+
+5. Wire branding into consumer-web Slice 1 surfaces:
+   - /auth/login should show the official goZaika logo.
+   - onboarding/consent screen should use official branding.
+   - /account should use official header/logo treatment if a header exists.
+   - favicon/app metadata should use the official icon if appropriate and compatible with Next 16 app metadata conventions.
+   - Keep UI aligned with apps/website visual baseline.
+
+6. Prepare for future apps:
+   - restaurant-mgmt-web and admin-web may import the shared logo component if they already have shell/layout scaffolds.
+   - Do not overbuild full portal layouts in Slice 1.
+   - Mobile apps can receive copied asset files or a documented TODO if the mobile asset pipeline is not yet ready.
+
+7. Asset inventory documentation:
+   Create or update:
+   docs/product/brand-assets.md
+
+   Include:
+   - asset name
+   - source path in apps/website
+   - shared destination path, if copied
+   - intended usage
+   - file type
+   - notes about whether it is logo, mark, favicon, illustration, or UI icon
+
+8. Do not commit unnecessary duplicates.
+   - If assets can be imported safely from a shared package, prefer that.
+   - If Next public directory rules require app-local copies, document why.
+   - Do not duplicate large images across every app unless required.
+
+9. Validate:
+   - npm run lint --workspaces --if-present
+   - npm run typecheck --workspaces --if-present
+   - npm run build --workspaces --if-present
+   - confirm apps/website remains buildable
+   - confirm consumer-web auth/login renders logo correctly
+
+Final output:
+- List discovered brand assets.
+- List copied/shared asset paths.
+- List new reusable UI components.
+- Confirm apps/website was preserved.
+- Confirm consumer-web uses official logo on login/onboarding/account surfaces.
+
+====
+Restart Slice 0, but preserve the existing @gozaika/website app exactly as the canonical production website. Do not downgrade or rewrite it unless required for monorepo integration.
+
+The existing website stack is the baseline for all web apps:
+- Next.js 16.2.4
+- React 19.2.4
+- React DOM 19.2.4
+- TypeScript 5.9.x
+- ESLint 9.x with flat config
+- Tailwind CSS 4.x
+- eslint-config-next 16.2.4
+- npm workspaces and package-lock.json currently exist
+
+Do not introduce Next 14, React 18, legacy .eslintrc, or next lint.
+
+First, inspect the existing website package.json, lockfile, eslint config, tsconfig, Tailwind config, and scripts. Then propose a monorepo version matrix that preserves website compatibility.
+
+Package manager policy:
+keep npm workspaces for Slice 0 to avoid disrupting the existing website.
+Only propose pnpm migration as a separate dedicated slice, not mixed with app scaffolding.
+
+For new web apps, use the same major framework stack as website unless there is a documented incompatibility.
+
+For mobile apps, use Expo SDK 55 and install native dependencies through Expo’s installer so React Native versions are selected by Expo.
+
+Use workspace-local internal packages consistently.
+Make `npm run ci` non-interactive.
+Do not use `next lint`.
+Use ESLint CLI with flat config.
+Write all JSON/YAML/config files as UTF-8 without BOM.
+
+Stop after producing:
+1. proposed monorepo structure,
+2. version matrix,
+3. package manager recommendation,
+4. migration/scaffold plan,
+5. risks and files that would be touched.
+
+Wait for approval before modifying files.
+
+
+Supabase Migration: Complete with following Notices.
+NOTICE (42710): extension "pgcrypto" already exists, skipping
+NOTICE (00000): trigger "master_scope_set_updated_at" for relation "master_scope" does not exist, skipping
+NOTICE (00000): trigger "master_allergen_set_updated_at" for relation "master_allergen" does not exist, skipping
+NOTICE (00000): trigger "master_cuisine_set_updated_at" for relation "master_cuisine" does not exist, skipping
+NOTICE (00000): trigger "master_audience_segment_set_updated_at" for relation "master_audience_segment" does not exist, skipping
+NOTICE (00000): trigger "master_storage_visibility_set_updated_at" for relation "master_storage_visibility" does not exist, skipping
+NOTICE (00000): trigger "master_document_type_set_updated_at" for relation "master_document_type" does not exist, skipping
+NOTICE (00000): trigger "master_document_status_set_updated_at" for relation "master_document_status" does not exist, skipping
+NOTICE (00000): trigger "master_support_ticket_type_set_updated_at" for relation "master_support_ticket_type" does not exist, skipping
+NOTICE (00000): trigger "master_support_ticket_status_set_updated_at" for relation "master_support_ticket_status" does not exist, skipping
+NOTICE (00000): trigger "master_support_ticket_priority_set_updated_at" for relation "master_support_ticket_priority" does not exist, skipping
+NOTICE (00000): trigger "master_incident_type_set_updated_at" for relation "master_incident_type" does not exist, skipping
+NOTICE (00000): trigger "master_incident_status_set_updated_at" for relation "master_incident_status" does not exist, skipping
+NOTICE (00000): trigger "master_incident_severity_set_updated_at" for relation "master_incident_severity" does not exist, skipping
+NOTICE (00000): trigger "geo_city_set_updated_at" for relation "geo_city" does not exist, skipping
+NOTICE (00000): trigger "geo_neighborhood_set_updated_at" for relation "geo_neighborhood" does not exist, skipping
+NOTICE (00000): trigger "geo_address_set_updated_at" for relation "geo_address" does not exist, skipping
+NOTICE (00000): trigger "iam_profile_set_updated_at" for relation "iam_profile" does not exist, skipping
+NOTICE (00000): trigger "iam_platform_role_set_updated_at" for relation "iam_platform_role" does not exist, skipping
+NOTICE (00000): trigger "iam_platform_membership_set_updated_at" for relation "iam_platform_membership" does not exist, skipping
+NOTICE (00000): trigger "iam_platform_role_scope_set_updated_at" for relation "iam_platform_role_scope" does not exist, skipping
+NOTICE (00000): trigger "restaurant_team_role_set_updated_at" for relation "restaurant_team_role" does not exist, skipping
+NOTICE (00000): trigger "restaurant_team_role_scope_set_updated_at" for relation "restaurant_team_role_scope" does not exist, skipping
+NOTICE (00000): trigger "restaurant_team_membership_set_updated_at" for relation "restaurant_team_membership" does not exist, skipping
+NOTICE (00000): trigger "marketing_waitlist_lead_set_updated_at" for relation "marketing_waitlist_lead" does not exist, skipping
+NOTICE (00000): trigger "marketing_partner_lead_set_updated_at" for relation "marketing_partner_lead" does not exist, skipping
+NOTICE (00000): trigger "privacy_consent_purpose_set_updated_at" for relation "privacy_consent_purpose" does not exist, skipping
+NOTICE (00000): trigger "privacy_retention_policy_set_updated_at" for relation "privacy_retention_policy" does not exist, skipping
+NOTICE (00000): trigger "privacy_erasure_request_set_updated_at" for relation "privacy_erasure_request" does not exist, skipping
+NOTICE (00000): trigger "consumer_profile_set_updated_at" for relation "consumer_profile" does not exist, skipping
+NOTICE (00000): trigger "consumer_saved_restaurant_set_updated_at" for relation "consumer_saved_restaurant" does not exist, skipping
+NOTICE (00000): trigger "consumer_dietary_preference_set_updated_at" for relation "consumer_dietary_preference" does not exist, skipping
+NOTICE (00000): trigger "consumer_allergen_preference_set_updated_at" for relation "consumer_allergen_preference" does not exist, skipping
+NOTICE (00000): trigger "consumer_city_preference_set_updated_at" for relation "consumer_city_preference" does not exist, skipping
+NOTICE (00000): trigger "consumer_referral_code_set_updated_at" for relation "consumer_referral_code" does not exist, skipping
+NOTICE (00000): trigger "consumer_referral_set_updated_at" for relation "consumer_referral" does not exist, skipping
+NOTICE (00000): trigger "consumer_subscription_plan_set_updated_at" for relation "consumer_subscription_plan" does not exist, skipping
+NOTICE (00000): trigger "consumer_subscription_set_updated_at" for relation "consumer_subscription" does not exist, skipping
+NOTICE (00000): trigger "consumer_passport_stat_set_updated_at" for relation "consumer_passport_stat" does not exist, skipping
+NOTICE (00000): trigger "consumer_notification_preference_set_updated_at" for relation "consumer_notification_preference" does not exist, skipping
+NOTICE (00000): trigger "restaurant_restaurant_set_updated_at" for relation "restaurant_restaurant" does not exist, skipping
+NOTICE (00000): trigger "restaurant_public_profile_set_updated_at" for relation "restaurant_public_profile" does not exist, skipping
+NOTICE (00000): trigger "restaurant_compliance_set_updated_at" for relation "restaurant_compliance" does not exist, skipping
+NOTICE (00000): trigger "restaurant_contact_set_updated_at" for relation "restaurant_contact" does not exist, skipping
+NOTICE (00000): trigger "restaurant_cuisine_map_set_updated_at" for relation "restaurant_cuisine_map" does not exist, skipping
+NOTICE (00000): trigger "restaurant_document_set_updated_at" for relation "restaurant_document" does not exist, skipping
+NOTICE (00000): trigger "restaurant_payout_account_set_updated_at" for relation "restaurant_payout_account" does not exist, skipping
+NOTICE (00000): trigger "restaurant_commission_plan_set_updated_at" for relation "restaurant_commission_plan" does not exist, skipping
+NOTICE (00000): trigger "restaurant_commission_override_set_updated_at" for relation "restaurant_commission_override" does not exist, skipping
+NOTICE (00000): trigger "restaurant_setting_set_updated_at" for relation "restaurant_setting" does not exist, skipping
+NOTICE (00000): trigger "restaurant_onboarding_task_set_updated_at" for relation "restaurant_onboarding_task" does not exist, skipping
+NOTICE (00000): trigger "storage_object_set_updated_at" for relation "storage_object" does not exist, skipping
+NOTICE (00000): trigger "catalog_bag_template_set_updated_at" for relation "catalog_bag_template" does not exist, skipping
+NOTICE (00000): trigger "catalog_bag_template_revision_set_updated_at" for relation "catalog_bag_template_revision" does not exist, skipping
+NOTICE (00000): trigger "catalog_bag_template_allergen_set_updated_at" for relation "catalog_bag_template_allergen" does not exist, skipping
+NOTICE (00000): trigger "catalog_bag_template_media_set_updated_at" for relation "catalog_bag_template_media" does not exist, skipping
+NOTICE (00000): trigger "drop_recurring_schedule_set_updated_at" for relation "drop_recurring_schedule" does not exist, skipping
+NOTICE (00000): trigger "drop_drop_set_updated_at" for relation "drop_drop" does not exist, skipping
+NOTICE (00000): trigger "drop_audience_set_updated_at" for relation "drop_audience" does not exist, skipping
+NOTICE (00000): trigger "drop_media_set_updated_at" for relation "drop_media" does not exist, skipping
+NOTICE (00000): trigger "drop_inventory_hold_set_updated_at" for relation "drop_inventory_hold" does not exist, skipping
+NOTICE (00000): trigger "order_order_set_updated_at" for relation "order_order" does not exist, skipping
+NOTICE (00000): trigger "order_item_set_updated_at" for relation "order_item" does not exist, skipping
+NOTICE (00000): trigger "payment_order_intent_set_updated_at" for relation "payment_order_intent" does not exist, skipping
+NOTICE (00000): trigger "payment_refund_set_updated_at" for relation "payment_refund" does not exist, skipping
+NOTICE (00000): trigger "billing_subscription_charge_set_updated_at" for relation "billing_subscription_charge" does not exist, skipping
+NOTICE (00000): trigger "finance_settlement_run_set_updated_at" for relation "finance_settlement_run" does not exist, skipping
+NOTICE (00000): trigger "finance_invoice_set_updated_at" for relation "finance_invoice" does not exist, skipping
+NOTICE (00000): trigger "notification_template_set_updated_at" for relation "notification_template" does not exist, skipping
+NOTICE (00000): trigger "notification_device_set_updated_at" for relation "notification_device" does not exist, skipping
+NOTICE (00000): trigger "notification_outbox_set_updated_at" for relation "notification_outbox" does not exist, skipping
+NOTICE (00000): trigger "review_review_set_updated_at" for relation "review_review" does not exist, skipping
+NOTICE (00000): trigger "review_media_set_updated_at" for relation "review_media" does not exist, skipping
+NOTICE (00000): trigger "support_ticket_set_updated_at" for relation "support_ticket" does not exist, skipping
+NOTICE (00000): trigger "incident_incident_set_updated_at" for relation "incident_incident" does not exist, skipping
+NOTICE (00000): trigger "cms_page_set_updated_at" for relation "cms_page" does not exist, skipping
+NOTICE (00000): trigger "cms_city_page_set_updated_at" for relation "cms_city_page" does not exist, skipping
+NOTICE (00000): trigger "cms_post_set_updated_at" for relation "cms_post" does not exist, skipping
+NOTICE (00000): trigger "cms_banner_set_updated_at" for relation "cms_banner" does not exist, skipping
+NOTICE (00000): trigger "cms_restaurant_feature_set_updated_at" for relation "cms_restaurant_feature" does not exist, skipping
+NOTICE (00000): trigger "cms_seo_metadata_set_updated_at" for relation "cms_seo_metadata" does not exist, skipping
+NOTICE (00000): trigger "config_feature_flag_set_updated_at" for relation "config_feature_flag" does not exist, skipping
+NOTICE (00000): trigger "config_runtime_setting_set_updated_at" for relation "config_runtime_setting" does not exist, skipping
+NOTICE (00000): trigger "admin_export_job_set_updated_at" for relation "admin_export_job" does not exist, skipping
+NOTICE (00000): trigger "admin_data_correction_set_updated_at" for relation "admin_data_correction" does not exist, skipping
+NOTICE (00000): trigger "privacy_consent_event_immutable" for relation "privacy_consent_event" does not exist, skipping
+NOTICE (00000): trigger "drop_inventory_event_immutable" for relation "drop_inventory_event" does not exist, skipping
+NOTICE (00000): trigger "order_status_transition_immutable" for relation "order_status_transition" does not exist, skipping
+NOTICE (00000): trigger "order_pickup_verification_event_immutable" for relation "order_pickup_verification_event" does not exist, skipping
+NOTICE (00000): trigger "payment_webhook_event_immutable" for relation "payment_webhook_event" does not exist, skipping
+NOTICE (00000): trigger "billing_subscription_event_immutable" for relation "billing_subscription_event" does not exist, skipping
+NOTICE (00000): trigger "support_ticket_event_immutable" for relation "support_ticket_event" does not exist, skipping
+NOTICE (00000): trigger "incident_event_immutable" for relation "incident_event" does not exist, skipping
+NOTICE (00000): trigger "analytics_event_immutable" for relation "analytics_event" does not exist, skipping
+NOTICE (00000): trigger "audit_log_immutable" for relation "audit_log" does not exist, skipping
+NOTICE (00000): trigger "drop_drop_computed_sell_through" for relation "drop_drop" does not exist, skipping
+NOTICE (00000): trigger "drop_drop_computed_restaurant_counts" for relation "drop_drop" does not exist, skipping
+NOTICE (00000): trigger "order_order_computed_restaurant_counts" for relation "order_order" does not exist, skipping
+NOTICE (00000): trigger "order_order_computed_pickup_ready" for relation "order_order" does not exist, skipping
+NOTICE (00000): trigger "review_review_computed_restaurant_rating" for relation "review_review" does not exist, skipping
+NOTICE (42622): identifier "idxfk_restaurant_commission_override_restaurant_commission_plan_fk" will be truncated to "idxfk_restaurant_commission_override_restaurant_commission_plan"
+
+====
+
+Restart the project from Slice 0 using a latest stable mutually compatible stack. Do not use arbitrary latest package versions. Define and pin a compatibility matrix first, then scaffold.
+
+Required stack policy:
+- Use Node.js 24 LTS.
+- Use pnpm 10.x through Corepack if possible. Update Corepack first to avoid package-manager signature issues.
+- Pin packageManager in root package.json.
+- Use pnpm workspaces with pnpm-workspace.yaml from the start.
+- Use workspace:* for all internal @gozaika/* package dependencies.
+- Use Next.js 16.2.x for web apps.
+- Use React 19.2.x and react-dom 19.2.x for Next apps.
+- Do not use next lint. Next 16 removed next lint. Use ESLint CLI with eslint.config.mjs flat config.
+- Use ESLint 9.x flat config repo-wide.
+- Use Expo SDK 55 for mobile apps.
+- For Expo apps, install native/mobile dependencies only through `pnpm exec expo install ... --pnpm` so Expo chooses compatible React Native versions.
+- Do not manually install react-native@latest.
+- Use Supabase CLI for local database work. Do not install Supabase CLI through unsupported global npm patterns.
+- Create .env.example files and document env copying.
+- Add scripts: lint, typecheck, test, build, ci.
+- Ensure `pnpm run ci` is non-interactive and passes or clearly reports only intentionally stubbed areas.
+- Avoid Windows BOM issues: write JSON/YAML/config files as UTF-8 without BOM.
+- Commit after each successful setup checkpoint.
+
+Before creating files, output the proposed version matrix and explain why the selected versions are mutually compatible. Wait for confirmation.
+
+Slice 0A: stack scaffold only
+Slice 0B: workspace packages and shared config
+Slice 0C: apps scaffold
+Slice 0D: Supabase local setup
+Slice 0E: CI passes
+Slice 1: product work
+
+=============
+Prerequisites are ready for Slice 1. Node is v22.12.0. Repo pins pnpm@9.15.4; Corepack is broken locally due to the known signing-key issue, so global pnpm@9.15.4 is being used. Supabase CLI v2.90.0 is installed and Docker is reachable. supabase status reports no local container, so the local stack is not running; start it only if Slice 1 needs DB work. Expo CLI works through pnpm exec/scripts. Continue Slice 1, avoiding apps/website unless explicitly required because website has existing typecheck issues.
+
+Setup completed: dependencies installed with repo-pinned pnpm, root/app env files copied where missing, Supabase CLI and Docker verified, local Supabase started/reset if DB work was needed, and checks run with pnpm ci. Remaining failure, if any, is the pre-existing apps/website typecheck issue around @/lib/turnstile and next.config i18n typing.
+
+Before continuing Slice 1: keep dependency changes conservative. Do not upgrade frameworks or major versions to latest. Follow the repo pins: Node >=20.19.0, packageManager pnpm@9.15.4, Expo SDK 52-compatible package versions via `pnpm exec expo install --pnpm`, and Next 14-compatible lint/dependency versions. Treat dependency upgrades/migrations as out of scope unless required to complete Slice 1. Avoid apps/website unless Slice 1 explicitly requires it because it has existing unrelated typecheck issues.
+
+Node.js: OK, v22.12.0 satisfies >=20.19.0.
+pnpm: OK, use repo-pinned pnpm@9.15.4.
+Corepack: broken on this machine due to signing-key issue; using global pnpm@9.15.4 fallback.
+Supabase CLI: OK, v2.90.0 installed.
+Docker: OK, engine reachable now.
+Supabase local stack: not running/stale; run supabase start only if Slice 1 needs DB work.
+Expo CLI: OK through pnpm exec / scripts.
+Vitest: OK; pnpm -r test passes after --passWithNoTests script updates.
+
+
+
+
+====
+
+Node v22.12.0 satisfies >=20.19.0. Repo pins pnpm@9.15.4, so use pnpm 9.15.4. Corepack is broken on this machine due to the signing-key issue, so pnpm@9.15.4 is installed globally as a fallback.
+
+
+Prerequisites are complete enough for Slice 1: Node is v22.12.0, pnpm is v9.15.9, pnpm workspace is configured, local @gozaika/* deps use workspace links, Vitest is installed, no-test app scripts use --passWithNoTests, consumer-mobile Expo deps are installed through pnpm, and restaurant-staff-mobile Expo deps were checked/installed through pnpm. Corepack is still broken on this machine due to the known signing-key error, so I am using global pnpm@9.15.9. Supabase CLI should be installed via Scoop or used via npx; do not use npm -g supabase. Continue Slice 1. Avoid touching apps/website unless Slice 1 explicitly includes fixing its existing Turnstile/next.config typecheck issues.
+
+
+
+===
+You are Codex acting as a principal full-stack engineer, product-minded architect, senior UI/UX engineer, security reviewer, and implementation lead for goZaika.
+
+Your job is to develop the complete goZaika platform from the provided technical specification and SQL DDL. This is a large multi-surface system. Work carefully, systematically, and production-grade from the beginning.
+
+============================================================
+PROJECT CONTEXT
+============================================================
+
+goZaika is a premium-access, pickup-only BAM Bag marketplace for India.
+
+Restaurants release chef-curated “BAM Bags” through time-limited “drops.” Consumers discover, claim, pay, and collect bags directly from the restaurant during a pickup window. The contents are a surprise, but allergen disclosures, dietary category, spice level, pickup window, price, and restaurant identity are disclosed before purchase.
+
+goZaika is NOT:
+- a discount app
+- a delivery platform
+- a leftover/surplus rescue app
+- an algorithmic food feed
+
+goZaika IS:
+- a controlled-access, off-menu discovery layer
+- a premium food discovery experience
+- a restaurant-dignity-first platform
+- a pickup-first operational model
+- allergen-disclosed and trust-led
+- Hyderabad-first, then city-by-city expansion
+
+Brand positioning:
+- “Great food. No menu. No algorithm.”
+- “BAM! बड़ा ज़ायका, आएगा मज़ा”
+- “Not a deal. A discovery.”
+- “Recover cost, not reputation.”
+- “Premium without pretence.”
+- “Restaurant dignity first.”
+- “Radical transparency.”
+- “Depth before breadth.”
+
+Launch city:
+- Hyderabad first
+- Initial neighborhoods: Banjara Hills, Jubilee Hills, Kondapur
+- Later expansion: Bengaluru, Mumbai, Delhi, Gurugram, Pune, Chennai, Goa, Ahmedabad, Kolkata, Jaipur, Kochi
+
+Consumer product promise:
+- Chef-curated BAM Bags
+- Surprise contents
+- Allergens always disclosed
+- Dietary category disclosed
+- Pickup only
+- QR/OTP pickup verification
+- Swaad Club loyalty/subscription
+- Zayka Passport gamification later
+
+Restaurant product promise:
+- Lowest-friction revenue channel
+- Pickup only, no riders
+- Restaurant controls bag, timing, disclosures, quantity, price
+- Restaurant brand stays front and center
+- No public discount framing
+- QR-led fulfillment
+- Settlement and performance visibility
+- Zayka Pro analytics
+
+============================================================
+AUTHORITATIVE SOURCE FILES
+============================================================
+
+Before coding, review goZaika website at https://goz-website-one.vercel.app/ and read these files carefully:
+
+1. goZaika_Technology_Specification_v2.docx
+2. gozaika_consolidated_schema.sql
+
+Treat the SQL DDL as the canonical database contract.
+
+The DDL contains:
+- Supabase PostgreSQL 16 schema
+- 98 base tables plus analytics partitions
+- table comments and column comments that are part of the AI code-generation contract
+- RLS helper functions
+- RLS policies
+- inventory hold RPCs
+- append-only ledgers
+- computed maintenance triggers
+- seed/reference data
+- public API read-model views
+
+The DDL comments are not decorative. They define:
+- valid status values
+- state-machine transitions
+- write rules
+- safety-critical disclosure requirements
+- tenancy constraints
+- which surface may perform which action
+- audit/ledger semantics
+
+Do not casually alter the DDL. If application code appears to require a schema change, first prefer adapting the application to the existing schema. Only add migrations when absolutely necessary, and make them additive, documented, and consistent with the existing naming conventions.
+
+============================================================
+CORE ARCHITECTURE
+============================================================
+
+Use this stack:
+
+- Monorepo: Turborepo
+- Web apps: Next.js 14 App Router + TypeScript strict mode
+- Mobile apps: React Native + Expo + TypeScript
+- Database: Supabase PostgreSQL 16
+- Auth: Supabase Auth
+- ORM: Prisma
+- Supabase client: @supabase/supabase-js
+- Realtime: Supabase Realtime
+- Storage: Supabase Storage
+- Edge/background jobs: Supabase Edge Functions
+- Payments: Razorpay
+- Notifications: WATI/WhatsApp + Resend email
+- Rate limiting/idempotency: Upstash Redis
+- Error monitoring: Sentry
+- Web analytics: Vercel Analytics
+- Web UI: Tailwind CSS + shadcn/ui + Radix primitives
+- Data fetching: TanStack Query
+- Client state: Zustand
+- Validation: Zod
+- Forms: React Hook Form + Zod resolver
+- Testing: Vitest, React Testing Library, Playwright, Expo testing utilities where appropriate
+- Formatting/linting: Prettier, ESLint, TypeScript strict
+- Package manager: pnpm
+
+Target monorepo structure:
+
+gozaika/
+  apps/
+    consumer-web/
+    restaurant-mgmt-web/
+    admin-web/
+    consumer-mobile/
+    restaurant-staff-mobile/
+  packages/
+    db/
+    supabase/
+    ui/
+    types/
+    utils/
+    config/
+  supabase/
+    migrations/
+    functions/
+    seed.sql
+  docs/
+    architecture/
+    adr/
+    runbooks/
+    product/
+    implementation-plan.md
+
+============================================================
+NON-NEGOTIABLE ENGINEERING RULES
+============================================================
+
+1. TypeScript must be strict everywhere.
+2. Do not put Supabase service-role keys in browser, mobile, or public client code.
+3. Browser/mobile clients use anon/authenticated Supabase clients only.
+4. Sensitive admin/finance/payment operations must run server-side only.
+5. Payment success must never be trusted from the client alone. Razorpay webhook verification is the source of truth.
+6. All Razorpay webhook handlers must verify signatures.
+7. All money must be bigint paise. Never use floating point for money.
+8. All timestamps are timestamptz in DB and displayed in local user/restaurant context.
+9. All API inputs must be validated with Zod.
+10. All mutations must be idempotent where retries are plausible.
+11. Inventory claims must use the provided DB RPC / transaction logic. Do not implement unsafe read-then-write inventory logic in application code.
+12. RLS-first tenancy is mandatory.
+13. All public views must avoid private/internal columns.
+14. PII must not be logged.
+15. Audit logs, inventory events, consent events, delivery attempts, payment webhook events, and settlement ledgers must be append-only where the DDL says they are append-only.
+16. DPDP consent is purpose-based and append-only. Never implement consent as a single boolean.
+17. All destructive admin actions require confirmation UI and audit trail.
+18. All generated code must include useful tests for critical business logic.
+19. For security-critical flows, include explicit TODO/HUMAN_REVIEW comments and tests.
+20. Prefer vertical slices over horizontal scaffolding.
+
+============================================================
+DATABASE CONTRACT SUMMARY
+============================================================
+
+Use the DDL’s bounded contexts and table prefixes exactly:
+
+- master_: reference data
+- geo_: cities, neighborhoods, addresses
+- iam_: identity and platform roles
+- restaurant_team_: restaurant role memberships and scopes
+- marketing_: waitlist and partner leads
+- privacy_: consent, erasure, retention
+- consumer_: consumer profile, prefs, subscriptions, referrals, passport
+- restaurant_: restaurant profile, compliance, contacts, documents, payout, settings
+- storage_: storage metadata
+- catalog_: BAM Bag templates and revisions
+- drop_: drops, audience, media, inventory holds/events, closure logs
+- order_: orders, items, status transitions, pickup verification events
+- payment_: payment intents, transactions, webhooks, refunds
+- billing_: subscription charges/events
+- finance_: settlement runs, payout entries, invoices
+- notification_: templates, outbox, delivery attempts, devices
+- review_: reviews and media
+- support_: support tickets/events
+- incident_: incidents/events
+- cms_: content, SEO, banners, city pages, posts
+- analytics_: analytics event partitions
+- config_: feature flags and runtime settings
+- admin_: export jobs and data corrections
+- audit_: audit log
+
+Important DB behaviors:
+- Primary keys are UUIDs using gen_random_uuid().
+- Money is bigint paise.
+- Status columns use text with CHECK constraints.
+- Inventory has a hybrid hold + confirmation model.
+- drop_drop is the high-contention inventory table.
+- drop_inventory_hold represents temporary claim holds.
+- drop_inventory_event is the inventory audit ledger.
+- order_order snapshots restaurant/drop/bag details at purchase time.
+- privacy_consent_event is append-only.
+- audit_log is central to admin visibility.
+- RLS helper functions exist and must be respected.
+- The following views should be used for safe read models where applicable:
+  - api_public_drop_card
+  - api_public_restaurant_profile
+  - api_consumer_order_history
+  - api_restaurant_pickup_queue
+- The following DB RPCs exist for inventory:
+  - api_create_inventory_hold
+  - api_release_expired_inventory_holds
+
+============================================================
+PRODUCT SURFACES TO BUILD
+============================================================
+
+Build all of the following system components.
+
+------------------------------------------------------------
+1. Consumer Web App: apps/consumer-web
+------------------------------------------------------------
+
+Next.js 14 App Router PWA.
+
+Core routes:
+- /
+- /drops
+- /drops/[id]
+- /restaurants
+- /restaurants/[slug]
+- /checkout/[orderId]
+- /account
+- /swaad-club
+- /auth/login
+- /cities/[city]
+
+P0 features:
+- city selection and persistence
+- Hyderabad default/fallback
+- drop discovery grid
+- map/list toggle scaffold
+- filters for cuisine, dietary category, allergens, price, pickup window
+- live quantity available via Supabase Realtime
+- drop card with:
+  - restaurant name
+  - dietary badge
+  - allergen chips
+  - price
+  - pickup window
+  - progress bar
+  - countdown
+  - claim CTA
+  - sold-out overlay
+- drop detail page:
+  - bag info
+  - allergen disclosure
+  - dietary category
+  - spice level
+  - serves
+  - restaurant profile summary
+  - pickup map/link
+  - countdown
+  - claim CTA
+- auth login:
+  - phone OTP primary
+  - Google OAuth optional
+- checkout:
+  - create inventory hold
+  - Razorpay order creation
+  - payment handoff
+  - confirmation screen
+- order confirmation:
+  - QR display
+  - OTP fallback
+  - pickup window
+  - restaurant instructions
+- account:
+  - profile
+  - order history
+  - dietary prefs
+  - allergen prefs
+  - saved restaurants
+  - referral code
+  - consent settings
+  - erasure request initiation
+
+P1/P2:
+- Swaad Club landing and subscription UI
+- reviews
+- Zayka Passport
+- city SEO pages
+- restaurant discovery improvements
+
+------------------------------------------------------------
+2. Consumer Mobile App: apps/consumer-mobile
+------------------------------------------------------------
+
+Expo React Native app.
+
+Core screens:
+- onboarding/location
+- OTP login
+- home feed
+- drops
+- drop detail
+- claim/checkout
+- pickup QR
+- order history
+- profile/preferences
+- restaurant discovery
+- Swaad Club
+- referrals
+- DPDP settings
+
+Mobile-specific requirements:
+- push notification registration
+- geolocation permission requested contextually
+- offline-cacheable pickup QR and OTP
+- brightness boost on QR screen where feasible
+- haptic feedback on successful claim and pickup display
+- bottom tabs: Home, Drops, Orders, Profile
+- pull-to-refresh
+- optimistic claim button disable
+- realtime sold-out updates
+- native share sheet for referrals
+- secure storage for QR/OTP cache
+- network reconnect resync
+
+------------------------------------------------------------
+3. Restaurant Staff Mobile App: apps/restaurant-staff-mobile
+------------------------------------------------------------
+
+Expo React Native app for counter staff only.
+
+Core screens:
+- staff login
+- main pickup screen
+- QR scanner
+- OTP entry
+- live order queue
+- sold count display
+- drop controls
+- incident report
+- offline status/cache indicator
+
+P0 features:
+- scan customer QR
+- enter 6-digit OTP
+- POST verification to server
+- verify restaurant match
+- verify order is READY_FOR_PICKUP
+- mark order COLLECTED
+- append pickup verification event
+- update drop collected count/inventory event where appropriate
+- failure states:
+  - wrong nonce
+  - already collected
+  - expired pickup window
+  - wrong restaurant
+  - offline unavailable
+- offline mode:
+  - 15-minute order cache
+  - local verification queue
+  - sync on reconnect
+- incident report:
+  - dietary mismatch
+  - packaging issue
+  - safety issue
+  - missing order
+  - other
+
+UX:
+- one primary action: large QR scan button
+- high contrast counter-friendly UI
+- huge readable order count
+- full-screen green success
+- full-screen red error
+- persistent offline banner
+- minimal navigation
+
+------------------------------------------------------------
+4. Restaurant Management Portal: apps/restaurant-mgmt-web
+------------------------------------------------------------
+
+Next.js 14 App Router portal, also called Zayka Pro.
+
+Core routes:
+- /portal
+- /portal/dashboard
+- /portal/drops
+- /portal/drops/new
+- /portal/drops/[id]
+- /portal/templates
+- /portal/templates/new
+- /portal/templates/[id]
+- /portal/orders
+- /portal/orders/[id]
+- /portal/finance
+- /portal/finance/settlements
+- /portal/finance/invoices
+- /portal/analytics
+- /portal/team
+- /portal/team/invite
+- /portal/profile
+- /portal/profile/compliance
+- /portal/settings
+- /portal/notifications
+
+P0 features:
+- dashboard KPI cards:
+  - today’s revenue
+  - active drops
+  - orders pending pickup
+  - sell-through rate
+- restaurant onboarding checklist:
+  - profile
+  - compliance docs
+  - payout info
+  - first bag template
+  - first drop
+- bag template CRUD:
+  - dietary category
+  - allergens
+  - spice level
+  - serves
+  - max holding
+  - min menu value
+  - media
+  - revision creation
+- drop creation wizard:
+  - select template revision
+  - quantity
+  - price
+  - pickup window
+  - drop type
+  - audience
+  - media
+  - preview
+  - draft auto-save
+  - publish
+- drop lifecycle:
+  - DRAFT
+  - SCHEDULED
+  - ACTIVE
+  - PAUSED
+  - SOLD_OUT
+  - PICKUP_CLOSED
+  - EMERGENCY_CLOSED
+  - CANCELLED
+- order management:
+  - filter by drop/status/date
+  - order timeline
+  - pickup status
+- finance:
+  - settlement list
+  - payout entries
+  - invoices
+  - exact ₹ amounts
+- profile/compliance:
+  - FSSAI
+  - GST/PAN
+  - documents
+  - contacts
+- team management:
+  - invite
+  - roles
+  - revoke access
+- settings:
+  - pickup instructions
+  - notification preferences
+
+P1:
+- Zayka Pro analytics:
+  - sell-through rate
+  - time-to-sell-out
+  - optimal timing heatmap
+  - customer acquisition
+  - pickup completion
+  - cohort analysis
+  - anonymous neighborhood benchmarking
+  - demand forecasting scaffold
+  - CSV export
+
+------------------------------------------------------------
+5. Admin Portal: apps/admin-web
+------------------------------------------------------------
+
+Next.js 14 App Router internal operations portal.
+
+Access:
+- platform admins only
+- SUPER_ADMIN / SUPPORT_ADMIN / FINANCE_ADMIN / OPS_ADMIN
+- server-side service-role usage only
+- restricted deployment assumed
+- browser must never receive service-role credentials
+
+Core modules:
+- restaurant management
+- user management
+- order management
+- billing & settlement
+- configuration management
+- incident & support
+- monitoring dashboard
+- data repair tools
+- reports & exports
+- CMS/content management
+
+P0 features:
+- restaurant onboarding:
+  - create restaurant
+  - review partner lead
+  - compliance/KYC review
+  - document upload/view
+  - approve/suspend/reinstate
+  - assign commission plan
+  - create owner/team membership
+- user management:
+  - search users
+  - view order history
+  - fraud flags scaffold
+  - Swaad Club admin
+  - DPDP erasure workflow
+- order management:
+  - search/filter all orders
+  - status timeline
+  - manual intervention with audit
+  - refund trigger scaffold
+- finance:
+  - settlement run creation
+  - draft/open/locked/sent/paid/reconciled lifecycle
+  - payout entry list
+  - invoice generation scaffold
+  - Razorpay reconciliation scaffold
+- config:
+  - feature flags
+  - runtime settings
+  - commission tiers
+  - hold expiry
+  - price limits
+- support/incidents:
+  - support tickets
+  - incident investigation
+  - SLA status
+  - refund linkage
+- monitoring:
+  - active drops
+  - live orders
+  - payment failure rate
+  - notification delivery rate
+  - Sentry link placeholders
+- admin data correction:
+  - before/after JSON
+  - 4-eyes approval workflow
+- exports:
+  - async export job model
+  - CSV generation scaffold
+- CMS:
+  - pages
+  - city pages
+  - posts
+  - banners
+  - SEO metadata
+  - restaurant features
+
+UX:
+- data-dense internal tool
+- neutral admin palette
+- server-side pagination/filtering/sorting
+- bulk action bars
+- 2-step confirmation for destructive actions
+- inline audit trail on entity pages
+- no decorative consumer branding beyond logo/header
+
+------------------------------------------------------------
+6. API Layer
+------------------------------------------------------------
+
+Implement typed server APIs using Next.js route handlers and Supabase Edge Functions.
+
+Prefer shared service modules in packages/ so behavior is reused across web/mobile.
+
+Required API/service domains:
+
+Auth/Profile:
+- profile bootstrap after Supabase Auth signup
+- consumer profile creation
+- restaurant team membership resolution
+- platform admin membership resolution
+- current actor helper
+
+Discovery:
+- list public drops
+- get drop detail
+- list restaurants
+- get restaurant profile
+- apply city/cuisine/dietary/allergen filters
+- use safe views where possible
+
+Claim/Checkout:
+- create inventory hold using DB RPC
+- create payment order with Razorpay
+- create order intent
+- handle abandoned hold
+- expose checkout state
+
+Payment:
+- Razorpay webhook Edge Function
+- signature verification
+- idempotent webhook event storage
+- convert hold to paid order
+- transition order status
+- create payment transaction rows
+- trigger notification outbox
+- handle refunds scaffold
+
+Pickup:
+- QR/nonce verification
+- OTP verification
+- restaurant match check
+- status transition READY_FOR_PICKUP -> COLLECTED
+- pickup_verification_event append
+- duplicate pickup protection
+- offline sync endpoint
+
+Drop Management:
+- create/update templates
+- create revisions
+- create/update/publish drops
+- pause/resume/close/emergency close
+- recurring schedule scaffold
+- media upload metadata
+
+Restaurant Portal:
+- dashboard summaries
+- orders
+- finance summaries
+- team
+- profile/compliance
+- analytics
+
+Admin:
+- restaurant onboarding
+- support
+- incidents
+- config
+- data correction
+- exports
+- settlements
+- audit
+
+Privacy:
+- consent capture
+- latest consent resolution
+- erasure request
+- admin erasure workflow scaffold
+- retention policy display
+
+Notifications:
+- outbox create
+- outbox processor Edge Function
+- WATI adapter
+- Resend adapter
+- delivery attempts
+- device registration
+
+Storage:
+- bucket constants
+- signed upload/download helpers
+- public media URL helpers
+- private docs authorization
+
+============================================================
+SUPABASE EDGE FUNCTIONS
+============================================================
+
+Create Supabase Edge Functions under supabase/functions:
+
+1. razorpay-webhook
+   - verify signature
+   - store payment_webhook_event idempotently
+   - process payment authorized/captured/failed/refunded events
+   - convert hold/order state only after verified webhook
+   - write payment_transaction/payment_refund where appropriate
+   - enqueue notifications
+   - log safely, no PII
+
+2. release-expired-holds
+   - scheduled
+   - calls api_release_expired_inventory_holds
+   - service-role only
+   - emits metrics/logs
+
+3. notification-outbox-processor
+   - finds pending outbox rows
+   - checks latest consent where required
+   - sends WhatsApp/email/push through adapters
+   - writes delivery_attempt rows
+   - retries with backoff
+   - marks final failures
+
+4. pickup-reminder-cron
+   - finds confirmed orders 30 min before pickup
+   - enqueues reminder notifications
+   - idempotent
+
+5. recurring-drop-scheduler
+   - reads ACTIVE schedules
+   - creates future drops
+   - advances next_run_at
+   - idempotent
+
+6. settlement-run-worker
+   - scaffold/admin-triggered
+   - calculates settlement summaries
+   - creates payout entries/invoice metadata
+   - does not perform irreversible payout without explicit admin action
+
+============================================================
+SHARED PACKAGES
+============================================================
+
+packages/types:
+- Zod schemas
+- inferred TS types
+- status constants
+- table enum-like constants matching CHECK constraints
+- API request/response contracts
+- DTOs for all apps
+
+packages/utils:
+- money formatting in paise
+- date/time helpers
+- pickup window formatting
+- allergen helpers
+- dietary badge helpers
+- phone normalization
+- idempotency key generation
+- QR payload helpers
+- safe error helpers
+
+packages/db:
+- Prisma schema
+- generated client
+- DB access helpers
+- server-only repository functions
+- migration instructions
+- seed helpers
+
+packages/supabase:
+- browser client
+- server client
+- service-role server-only client
+- auth helpers
+- Realtime helpers
+- Storage helpers
+- RLS-aware helper functions
+- Edge Function shared utilities
+
+packages/ui:
+- design tokens
+- Tailwind preset
+- shadcn/ui components
+- app shell components
+- buttons/cards/forms/tables/dialogs
+- drop cards
+- dietary badges
+- allergen chips
+- progress bars
+- countdown components
+- QR display
+- skeletons
+- empty states
+- admin data table
+- portal sidebar
+- mobile-compatible token exports
+
+packages/config:
+- shared tsconfig
+- eslint config
+- prettier config
+- tailwind config
+
+============================================================
+DESIGN SYSTEM
+============================================================
+
+Use a best-in-class contemporary UI/UX with strong product polish.
+
+Brand tokens:
+- saffron.DEFAULT: #FF6B35
+- forest.DEFAULT: #1A5C38
+- gold.DEFAULT: #D4A017
+- cream.DEFAULT: #FFF8F0
+- charcoal.DEFAULT: #2D2D2D
+
+Typography:
+- Display: Playfair Display
+- Sans/UI: Poppins or Inter
+- Hindi: Hind
+
+Consumer feel:
+- premium, warm, playful, trust-led
+- saffron CTAs
+- cream backgrounds
+- forest trust/secondary accents
+- gold for premium/Swaad Club/Zayka Gold
+- large food imagery
+- rounded cards
+- tasteful motion
+- never cheap/discount-looking
+
+Restaurant portal feel:
+- professional SaaS
+- clear operations dashboard
+- forest active states
+- precise financial data
+- guided creation flows
+
+Admin feel:
+- data-dense
+- functional
+- minimal decoration
+- neutral palette
+- high information density
+
+UI rules:
+- mobile-first for consumer web
+- desktop-first for restaurant/admin portals
+- minimum tap targets: 44px/44pt
+- skeleton loaders, not spinners
+- inline validation, not modal alerts
+- Sonner/toasts for transient feedback
+- illustrated empty states
+- WCAG 2.1 AA
+- ARIA labels
+- keyboard navigation
+- screen-reader friendly
+- no hidden allergen disclosures
+- sold-out animation overlay
+- progress bar turns urgent below 20%
+- confirmation dialogs explain consequences
+- every async table has loading, error, empty, and success states
+- all amounts shown in ₹ exactly from paise
+- never approximate financials
+
+Dietary badges:
+- Veg: green
+- Non-Veg: red
+- Jain: orange
+- Egg: yellow
+
+Allergen UI:
+- visible chips
+- expand-on-tap detail
+- never hidden behind horizontal scroll only
+- safety-critical warnings must be prominent
+
+============================================================
+CRITICAL BUSINESS FLOWS
+============================================================
+
+------------------------------------------------------------
+Consumer claim/payment flow
+------------------------------------------------------------
+
+1. Consumer taps Claim.
+2. If unauthenticated, redirect to login.
+3. Server validates drop visibility, status, audience, pickup window, quantity.
+4. Server creates inventory hold by calling api_create_inventory_hold.
+5. Server creates Razorpay order/payment intent.
+6. Client opens Razorpay Checkout.
+7. Client may display pending state, but must not mark order paid.
+8. Razorpay webhook verifies payment.
+9. Server converts hold to sold/order.
+10. order_order status becomes PAID/CONFIRMED/READY_FOR_PICKUP according to schema/state rules.
+11. QR nonce and OTP hash are generated server-side.
+12. Notification outbox receives confirmation message.
+13. Consumer sees QR/OTP confirmation.
+14. 30 min before pickup, reminder notification is enqueued.
+15. If payment fails or hold expires, reserved inventory is released.
+
+Implement idempotency throughout.
+
+------------------------------------------------------------
+Pickup verification flow
+------------------------------------------------------------
+
+1. Customer shows QR/OTP.
+2. Staff scans QR or enters OTP.
+3. Server validates:
+   - staff auth
+   - staff restaurant access
+   - order exists
+   - order belongs to restaurant
+   - order is pickup-ready
+   - pickup window rules
+   - nonce/OTP valid
+   - not already collected
+4. Server transitions order to COLLECTED.
+5. Server writes order_pickup_verification_event.
+6. Server writes order_status_transition.
+7. Server updates relevant drop counters according to DB rules.
+8. Staff app shows success.
+9. Duplicate attempts show “already collected,” not generic error.
+10. Offline verifications are queued and synced safely.
+
+------------------------------------------------------------
+Restaurant drop creation flow
+------------------------------------------------------------
+
+1. Owner selects or creates bag template.
+2. Template has allergens, dietary category, spice level, serves, max holding, min menu value.
+3. Publishing a template creates an immutable revision.
+4. Drops reference a specific template revision.
+5. Owner sets quantity, price, pickup window, type, audience, media.
+6. Save as DRAFT.
+7. Preview consumer-facing card/detail.
+8. Publish to SCHEDULED or ACTIVE depending on publish_at/pickup window.
+9. Realtime inventory updates after claims.
+
+------------------------------------------------------------
+Admin restaurant onboarding flow
+------------------------------------------------------------
+
+1. Partner lead arrives from website/marketing.
+2. Admin reviews.
+3. Admin creates restaurant entity.
+4. Admin records compliance/FSSAI/GST/PAN details.
+5. Admin uploads private docs.
+6. Admin assigns commission plan.
+7. Admin creates owner/team access.
+8. Admin activates restaurant.
+9. Restaurant portal shows onboarding checklist.
+
+------------------------------------------------------------
+DPDP consent flow
+------------------------------------------------------------
+
+1. At signup, required operational consent is captured.
+2. Optional consents default off.
+3. Every toggle creates a privacy_consent_event.
+4. Consent is append-only.
+5. Notification sends must check latest consent where required.
+6. Erasure request creates privacy_erasure_request.
+7. Admin reviews.
+8. Approved erasure anonymizes profile data while retaining financial/legal records as required.
+9. All actions audit logged.
+
+============================================================
+IMPLEMENTATION STRATEGY
+============================================================
+
+This is too large for a reckless single-pass implementation. Work in vertical slices, but create the full architecture and component boundaries up front.
+
+First, create or update:
+- docs/implementation-plan.md
+- docs/architecture/overview.md
+- docs/adr/0001-monorepo-stack.md
+- docs/adr/0002-supabase-rls-first.md
+- docs/runbooks/local-dev.md
+- docs/runbooks/payments.md
+- docs/runbooks/privacy-erasure.md
+
+Then implement in this order:
+
+Slice 0 — Foundation
+- Turborepo setup
+- pnpm workspace
+- shared configs
+- environment variable examples
+- Supabase migration using provided SQL
+- Prisma setup
+- Supabase clients
+- design tokens
+- shared UI primitives
+- seed/dev scripts
+- CI scripts
+- README
+
+Slice 1 — Auth/Profile/Consent
+- Supabase auth helpers
+- profile bootstrap
+- consumer profile
+- role resolution
+- login UI
+- consent capture
+- account/profile shell
+
+Slice 2 — Public Discovery
+- consumer home
+- drops list
+- drop detail
+- restaurants list/profile
+- filters
+- realtime inventory
+- skeletons/empty states
+
+Slice 3 — Restaurant Portal Templates/Drops
+- portal shell
+- dashboard
+- bag template CRUD
+- drop wizard
+- publish/pause/close
+- media upload scaffold
+
+Slice 4 — Claim/Checkout/Payment
+- inventory hold
+- Razorpay order
+- checkout UI
+- webhook Edge Function
+- order confirmation
+- QR/OTP
+- expired hold cleanup
+
+Slice 5 — Pickup Staff App
+- staff app auth
+- queue
+- QR scanner
+- OTP verification
+- offline cache
+- incident report
+
+Slice 6 — Notifications
+- notification outbox service
+- WhatsApp/email adapters
+- delivery attempts
+- pickup reminders
+- device registration
+
+Slice 7 — Finance/Admin
+- admin shell
+- restaurant onboarding
+- order admin
+- settlements
+- invoices scaffold
+- config
+- audit
+- exports scaffold
+
+Slice 8 — Mobile Consumer
+- consumer app navigation
+- auth
+- feed
+- detail
+- checkout handoff
+- QR screen
+- orders
+- profile
+- push scaffold
+
+Slice 9 — Analytics/Swaad Club/Referrals/CMS
+- Zayka Pro analytics views
+- Swaad Club UI/backend scaffold
+- referrals
+- Zayka Passport
+- CMS pages
+- city pages
+
+For each slice:
+- implement code
+- add tests
+- update docs
+- ensure typecheck/lint passes
+- include realistic mock/seed states
+- avoid dead links/buttons
+- include TODO/HUMAN_REVIEW where integrations need real credentials
+
+============================================================
+ENVIRONMENT VARIABLES
+============================================================
+
+Create .env.example files for each app and package as needed.
+
+Use clear names such as:
+
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_DB_URL=
+DATABASE_URL=
+DIRECT_URL=
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+RAZORPAY_WEBHOOK_SECRET=
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+WATI_API_URL=
+WATI_API_TOKEN=
+RESEND_API_KEY=
+SENTRY_DSN=
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
+EXPO_PUBLIC_SUPABASE_URL=
+EXPO_PUBLIC_SUPABASE_ANON_KEY=
+
+Never expose server secrets to client bundles.
+
+============================================================
+QUALITY BAR
+============================================================
+
+Every major UI must feel real, not like a wireframe.
+
+Avoid generic SaaS placeholders. Use goZaika-specific language:
+- BAM Bag
+- drop
+- claim
+- pickup window
+- allergen-disclosed
+- chef-curated
+- Swaad Club
+- Zayka Pro
+- Zayka Passport
+- restaurant dignity
+- pickup-only
+
+Use helpful empty states:
+- “No drops near you yet — get notified when Hyderabad’s next BAM Bag lands.”
+- “Create your first BAM Bag template.”
+- “No pickups pending for this window.”
+- “No settlement runs yet.”
+
+Use safe error messages:
+- “This drop just sold out.”
+- “Your hold expired. Please claim again.”
+- “This QR has already been collected.”
+- “This order belongs to another restaurant.”
+- “Payment is still being confirmed.”
+
+Do not use scary internal errors in user-facing UI.
+
+============================================================
+TESTING REQUIREMENTS
+============================================================
+
+Add tests for:
+
+- money formatting
+- pickup window formatting
+- status constants
+- Zod schemas
+- API validation
+- inventory hold service wrappers
+- checkout state transitions
+- payment webhook idempotency
+- pickup verification cases
+- consent latest-state resolver
+- role/permission helpers
+- drop card rendering
+- portal wizard validation
+- admin destructive confirmation flows
+
+Add Playwright smoke tests for:
+- consumer discovery
+- login shell
+- drop detail
+- restaurant portal drop wizard
+- admin restaurant list
+- checkout mocked flow where feasible
+
+Add mobile tests where feasible for:
+- QR screen
+- staff OTP entry
+- offline banner state
+
+============================================================
+DELIVERABLE EXPECTATIONS
+============================================================
+
+At the end of your work, the repository should have:
+
+1. A working monorepo.
+2. All five apps scaffolded and meaningfully implemented:
+   - consumer web
+   - consumer mobile
+   - restaurant staff mobile
+   - restaurant management web
+   - admin web
+3. Shared packages with real reusable logic.
+4. Supabase migration wired to the provided SQL.
+5. Prisma configured.
+6. Typed API contracts.
+7. Auth/profile/role helpers.
+8. Core discovery UI.
+9. Core restaurant drop/template portal.
+10. Core checkout/payment architecture.
+11. Razorpay webhook Edge Function.
+12. Expired hold cleanup Edge Function.
+13. Staff pickup verification architecture.
+14. Notification outbox architecture.
+15. Admin portal architecture.
+16. Privacy/consent architecture.
+17. Strong design system.
+18. Tests and docs.
+19. Clear TODO/HUMAN_REVIEW markers only where external credentials, production secrets, legal review, or unavoidable manual integration are required.
+
+============================================================
+WORKING STYLE
+============================================================
+
+Do not merely produce a plan. Implement.
+
+However, begin by briefly summarizing:
+- what files you found
+- the architecture you will create
+- any assumptions you are making
+- the first implementation slice
+
+Then proceed to modify/create files.
+
+When the task is too large to complete in one Codex session:
+- finish the current vertical slice cleanly
+- leave the repo in a runnable state
+- update docs/implementation-plan.md with exact next steps
+- do not leave broken TypeScript
+- do not leave half-wired imports
+- do not create fake success for unimplemented integrations
+
+============================================================
+FINAL IMPORTANT WARNINGS
+============================================================
+
+Security-critical areas:
+- auth
+- RLS
+- payment webhooks
+- refunds
+- settlements
+- service-role access
+- consent/erasure
+- admin data correction
+
+For these:
+- write conservative code
+- add tests
+- include HUMAN_REVIEW comments
+- do not invent unsafe shortcuts
+
+The goal is to build goZaika like it can become a unicorn:
+- fast
+- beautiful
+- trustworthy
+- restaurant-respectful
+- privacy-first
+- scalable
+- operationally clear
+- delightful for consumers
+- powerful for restaurants
+- controlled for admins
+
+Now start by reading the spec and SQL DDL, then create the monorepo foundation and implementation plan, then begin Slice 0.

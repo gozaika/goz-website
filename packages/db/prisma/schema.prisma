@@ -1,0 +1,15 @@
+// Prisma is configured for type-safe server repositories and Studio inspection.
+// The canonical schema lives in supabase/migrations/20260425000000_gozaika_consolidated_schema.sql.
+// Run `pnpm --filter @gozaika/db prisma:introspect` against a migrated Supabase database
+// before adding model-level repository code.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+

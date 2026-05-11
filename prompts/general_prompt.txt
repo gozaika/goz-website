@@ -1,0 +1,50 @@
+
+Similarly, in "https://goz-website-one.vercel.app/company/leadership", founder story including its title seems incredibly week. Access this. A few thoughts i have about hos this content should come across
+
+
+
+
+
+===
+Business model question: A friction point for restaurants will be potential cannibalization of their main stream business through BAM bags.  I want to evaluate the idea of a monthly pass that allows upto x BAM bags from one resturant and/or a pool of resturants. Would this make sense? Should this offering exists alongside single BAM bag purchase? Also, to gamify the experience, should there be a spotify like recomendation engine that uses customer preferences, purchases and comments to guide culinary discoveries?
+==
+
+Clause prompt:
+
+Context:
+1) Gozaika website is at https://goz-website-one.vercel.app/. Review it thoroughly for context.
+2) Attached file "database_prompt.txt" is the prompt for schema generation and generated schema description is gozaika-foundational-schema.md. Analyze these documents
+
+Tasks:
+1) Modify claude_goZaika_Technology_Specification_v1.docx to reflect use of vercel and supabase instead of aws fargate, rds. Supabase storage will be used to store files. Supabase auth will b used. Update feature list and flows for each component based on latest scope. No need to elaborate website section as that is already implemented. For all other sections, include flows, deature lists and function points. Describe UI/UX rules and consideration, themes, etc. for each component. I should be able to create a detailed technical spec for each component from this.
+
+2) I am attaching schema documentation rules supabase-postgres-schema-style.mdc: review this end point out any rules that may be counter to craating a highly perfomant and best prctices based supabase postgress schema. I want to adhere to coding standards.
+
+3) analyze generated foundational schema in gozaika-foundational-schema.md thoroughly. Identify inconsistency's and incomplete aspects. This is critically important ans the schema will form foundation for entire enterprise. Rewrite foundational schema after factoring in your critical analysis.  Do not apply shortcuts during your analysis or authoring the new foundational schema. Make it completely comprehensive while keeping it compact for long term maintainability.
+
+4) I want to reduces drift, catch schema mistakes earlier, and avoid spending weeks building middleware for features whose UX and real-world edge cases are still untested. Give me a roadmap for development: Once db schema is created in supabase, should i procced with developing component by component e.g. Consumer Web App, Consumer mobile App, Restaurant Staff App, Restaurant mgmt. portal etc.. Or should i develop **vertical slices** of functionality: auth/profile slice, restaurant onboarding slice, bag template/drop slice, claim/payment slice, pickup verification slice, then notifications, analytics, and admin. 
+
+5) Website review and analysis: Provide qualitative feedback on presentation and content. Include cursor prompt to implement the feedback.
+
+
+=====
+
+restaurant:
+proof of demand,
+onboarding steps,
+order handling workflow,
+settlement timing,
+partner requirements,
+sample dashboard or portal,
+who owns customer support,
+whether POS integration exists,
+what happens on no-shows,
+what “volume tier” actually means in practice
+
+======
+
+
+I will create account in vercel, GitHub,  GA4 property , Create Supabase project,   Resend account. 
+
+
+

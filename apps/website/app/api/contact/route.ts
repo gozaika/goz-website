@@ -65,7 +65,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   try {
     const supabase = getSupabaseClient();
-    const insertResult = await supabase.from('contact_submission').insert(payload);
+    const insertResult = await supabase.from('website_contact_submission').insert(payload);
     if (insertResult.error) {
       return Response.json(
         { ok: false, error: 'Unable to save contact submission.' },

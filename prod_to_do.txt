@@ -1,0 +1,19 @@
+1) supabase: 
+
+Local Phone OTP Testing: For local Supabase development, Phone OTP uses a fixed test OTP.
+Phone number: +15555550100  OTP: 123456
+This is configured in: supabase/config.toml
+Do not use this setup in production. Hosted Supabase Phone OTP requires a real SMS provider such as Twilio.
+
+
+
+Supabase Dashboard
+→ Authentication
+→ Providers
+→ Phone
+→ Enable provider
+→ Configure SMS provider
+
+2) GOogle oauth: 
+add auth/callback: https://console.cloud.google.com/auth/clients/915014140153-b827eojjvnrmr7u44251shmjph7r1sl6.apps.googleusercontent.com?project=razzl-geni
+https://your-production-domain.com/auth/callback

@@ -1,0 +1,174 @@
+
+You are now responsible for building, testing, and deploying the goZaika website phase with zero compromise on quality.
+
+This is a high-stakes execution. Quality bar is world-class:
+- visual identity execution
+- layout hierarchy and whitespace discipline
+- mobile responsiveness
+- subtle, premium micro-interactions
+- accessible components (WCAG 2.1 AA)
+- performance-first engineering
+
+Be detail-oriented, comprehensive, and concise.
+
+## 0) Mission Scope
+
+This repository is a MONOREPO for future apps:
+1) website
+2) customer
+3) restaurant
+4) goZaikaAdmin
+etc.
+
+In THIS phase, build ONLY the `website` app (landing + discovery website), but structure monorepo for future multi-app expansion.
+
+You must:
+A) Build only website app in this phase  
+B) Create full website codebase + docs  
+C) Test comprehensively  
+D) Wire CI/CD flow through GitHub into Vercel and Supabase  
+E) Produce architecture + operations documentation  
+F) Create a checklist document for migration to custom domain `gozaika.in`
+
+## 1) Binding Inputs
+
+Ingest all these documents thoroughly:
+
+- `docs/visual asset pack and Platform Accounts and Access.txt`
+- `docs/goZaika_Engineering_Lock_v1.docx`
+- `docs/goZaika_Execution_Briefing_v1.docx`
+- `docs/goZaika_Build_Readiness_Pack_v1.docx`
+- `docs/goZaika_Website_Spec_v1.docx`
+- `docs/gozaika-nextjs-content-package.md`
+- `docs/gozaika-nextjs-website-spec.md`
+
+Assets:
+- `icons/` (all icon/logo references)
+
+Rules:
+- `.cursorrules`
+- `.cursor/rules/supabase-postgres-schema-style.mdc`
+
+## 2) Conflict Resolution Order (Strict)
+
+If documents conflict, precedence is:
+
+1. `docs/goZaika_Engineering_Lock_v1.docx`
+2. `docs/goZaika_Execution_Briefing_v1.docx`
+3. `docs/goZaika_Build_Readiness_Pack_v1.docx`
+4. `docs/goZaika_Website_Spec_v1.docx`
+5. `docs/gozaika-nextjs-content-package.md`
+6. `docs/gozaika-nextjs-website-spec.md`
+
+When conflict is detected:
+- follow higher precedence
+- log conflict in implementation notes
+
+## 3) Monorepo Architecture Requirements
+
+Create a structure that supports independent deployment of each app:
+
+- `apps/website` (this phase only)
+- shared code in reusable packages (no duplication), e.g.:
+  - `packages/db` (Supabase client and shared DB helpers)
+  - `packages/logger`
+  - `packages/config`
+  - `packages/utils`
+  - `packages/types`
+
+Website must be deployable independently as a standalone Node app on Vercel.
+
+## 4) Required Stack (Website Phase)
+
+- Next.js (App Router) + TypeScript + Tailwind
+- Supabase
+- Resend
+- Upstash rate limiting
+- Cloudflare Turnstile
+- GA4 + Search Console
+- CI: lint + typecheck + build + smoke e2e + accessibility + lighthouse
+- Vercel deployment pipeline from GitHub
+
+## 5) Non-Negotiables
+
+- No hardcoded brand colors in components; use locked tokens
+- No route drift from canonical route matrix
+- No bypassing accessibility or performance gates
+- No secrets in client bundle
+- No duplicated shared logic across app folders
+
+## 6) Execution Workflow (Mandatory)
+
+Before coding:
+1) Parse and summarize all authoritative docs
+2) Produce a phased plan checklist
+3) Wait for internal consistency check complete
+4) Start implementation
+
+Phases (in order):
+- Phase A: scaffold monorepo + website app + shared packages baseline
+- Phase B: design system/tokens/typography/layout shell
+- Phase C: route map + metadata + redirects + robots + sitemap
+- Phase D: components + page implementation with locked content
+- Phase E: forms + API routes + validation + sanitization
+- Phase F: Supabase schema + RLS + integration
+- Phase G: security layers (rate limit + Turnstile)
+- Phase H: analytics + tracking taxonomy + Search Console readiness
+- Phase I: CI pipeline + e2e + a11y + Lighthouse
+- Phase J: deployment + ops docs + domain migration checklist
+
+After each phase:
+- list files created/changed
+- list checks run
+- report pass/fail
+- report blockers and unresolved dependencies
+
+## 7) CI/CD Deliverables
+
+Implement full CI/CD from GitHub to Vercel:
+- PR checks enforced
+- build/test gates enforced
+- preview deployments
+- production deployment from protected branch strategy
+- env var strategy for preview/prod
+- rollback procedure documented
+
+Also wire Supabase + Resend + Upstash + Turnstile in deploy pipeline expectations.
+
+## 8) Documentation Deliverables (Required)
+
+Create:
+
+1. Codebase explainer
+2. Architecture document (monorepo + website boundaries + shared packages)
+3. Operations manual (deploy, rollback, monitoring, incident handling)
+4. Configuration/env reference
+5. Domain migration checklist for `gozaika.in`:
+   - DNS records
+   - Vercel domain mapping
+   - SSL verification
+   - GA4/Search Console property updates
+   - Resend sender domain updates
+   - Supabase allowed origins/CORS updates
+   - canonical URL/base URL changes
+   - robots/sitemap recrawl steps
+
+## 9) Validation Gates (Must Pass)
+
+Minimum:
+- lint: pass
+- typecheck: pass
+- build: pass
+- smoke e2e: pass
+- a11y checks: pass (critical/serious = 0)
+- Lighthouse thresholds per lock docs: pass
+- route + redirect checks: pass
+- form happy/error/rate-limit/security flows: pass
+
+No “done” claim without all required gates or explicit credential-gated exceptions.
+
+## 10) Quality Expectation
+
+Output must feel premium and best-in-class for a modern consumer brand launch.
+If any requirement is unclear, stop and ask before implementing assumptions.
+

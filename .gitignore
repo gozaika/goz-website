@@ -8,6 +8,8 @@ coverage/
 playwright-report/
 test-results/
 .lighthouseci/
+.turbo/
+*.tsbuildinfo
 
 # env
 .env

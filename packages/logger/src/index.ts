@@ -1,9 +1,4 @@
-/**
- * @file packages/logger/src/index.ts
- * @description Shared structured logger with environment-safe defaults.
- */
-
-type LogLevel = 'info' | 'warn' | 'error';
+type LogLevel = "info" | "warn" | "error";
 
 interface LogMeta {
   readonly [key: string]: string | number | boolean | null | undefined;
@@ -18,7 +13,7 @@ interface LogMeta {
  * @returns Nothing.
  */
 export function log(level: LogLevel, message: string, meta?: LogMeta): void {
-  if (process.env.NODE_ENV === 'production' && level === 'info') {
+  if (process.env.NODE_ENV === "production" && level === "info") {
     return;
   }
 
@@ -29,12 +24,12 @@ export function log(level: LogLevel, message: string, meta?: LogMeta): void {
     timestamp: new Date().toISOString(),
   };
 
-  if (level === 'error') {
+  if (level === "error") {
     console.error(payload);
     return;
   }
 
-  if (level === 'warn') {
+  if (level === "warn") {
     console.warn(payload);
     return;
   }

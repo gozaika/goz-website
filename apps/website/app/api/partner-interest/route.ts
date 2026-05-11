@@ -73,7 +73,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   try {
     const supabase = getSupabaseClient();
-    const insertResult = await supabase.from('partner_interest').insert(payload);
+    const insertResult = await supabase.from('website_partner_interest').insert(payload);
     if (insertResult.error) {
       return Response.json({ ok: false, error: 'Unable to save partner submission.' }, { status: 500 });
     }

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { cityLaunchTiers, cityTierOrder } from '@/lib/cities';
+import { cityLaunchTiers, cityTierOrder, type CityLaunchTier } from '@/lib/cities';
 import { canonical, openGraphFor, twitterFor } from '@/lib/metadata';
 
 export const metadata: Metadata = {
@@ -21,30 +21,63 @@ export const metadata: Metadata = {
 
 const tierTone = {
   Live: {
-    dot: 'bg-saffron',
-    ring: 'bg-saffron/30',
+    dotFill: '#FF6B35',
+    ringFill: 'rgba(255, 107, 53, 0.18)',
     pill: 'bg-saffron-light text-forest',
   },
   'Wave 2': {
-    dot: 'bg-forest',
-    ring: 'bg-forest/20',
+    dotFill: '#1A5C38',
+    ringFill: 'rgba(26, 92, 56, 0.16)',
     pill: 'bg-forest-light text-forest',
   },
   'Wave 3': {
-    dot: 'bg-gray500',
-    ring: 'bg-gray200',
+    dotFill: '#6B7280',
+    ringFill: 'rgba(229, 231, 235, 0.95)',
     pill: 'bg-gray100 text-gray700',
   },
 } as const;
 
+const tierNarrative: Record<CityLaunchTier['tier'], string> = {
+  Live: 'The proof market where we earn repeat trust, tighten operations, and learn fast.',
+  'Wave 2': 'Natural adjacency markets that extend the same premium behavior without diluting focus.',
+  'Wave 3': 'Later markets that matter, but only once the first operating playbook is genuinely repeatable.',
+};
+
+const cityLabelPlacement: Record<
+  string,
+  {
+    readonly side: 'left' | 'right';
+    readonly dx: number;
+    readonly dy: number;
+  }
+> = {
+  Hyderabad: { side: 'right', dx: 18, dy: -14 },
+  Bengaluru: { side: 'left', dx: 18, dy: 18 },
+  Mumbai: { side: 'left', dx: 18, dy: -18 },
+  Delhi: { side: 'left', dx: 16, dy: -22 },
+  Gurugram: { side: 'right', dx: 14, dy: 18 },
+  Pune: { side: 'right', dx: 16, dy: 20 },
+  Chennai: { side: 'right', dx: 16, dy: 2 },
+  Goa: { side: 'left', dx: 16, dy: 18 },
+  Ahmedabad: { side: 'left', dx: 16, dy: -14 },
+  Kolkata: { side: 'left', dx: 18, dy: -10 },
+  Jaipur: { side: 'left', dx: 16, dy: 18 },
+  Kochi: { side: 'left', dx: 16, dy: -8 },
+};
+
+const indiaMapWidth = 666.66669;
+const indiaMapHeight = 777.33331;
+const cityMarkerOffsetX = -20;
+const indiaOutlinePath =
+  'm 215.2163,738.62564 -4,-2.84704 -5.08396,-4.77739 -5.08397,-4.77738 -2.58571,-4.16224 -2.58571,-4.16225 -2.73664,-11.17108 -2.73662,-11.1711 -4.80426,-12.66666 -4.80425,-12.66667 -3.9362,-8 -3.9362,-8 -5.01572,-6.66667 -5.01572,-6.66666 -4.17085,-10.95699 -4.17086,-10.95699 v -3.31493 -3.31493 l -3.95422,-12.19948 -3.95423,-12.19949 -6.04578,-10.31244 -6.04577,-10.31246 v -0.87925 -0.87925 l -3.817,-8.3369 -3.81701,-8.33689 -1.48505,-4 -1.48505,-4 -1.42982,-12 -1.42982,-12 -4.14814,-15.92888 -4.14815,-15.92888 1.54669,-0.51557 1.54668,-0.51556 v -3.36487 -3.36488 l -1.81762,0.6975 -1.81763,0.69748 -0.85927,-10.30346 -0.85928,-10.30345 2.77715,-8.4596 2.77715,-8.45961 -2.95944,-9.20386 -2.95943,-9.20386 2.85918,-3.86726 2.85919,-3.86725 v -0.62793 -0.62792 l -2.82757,-0.42607 -2.82757,-0.42607 -0.53124,-5.97786 -0.53125,-5.97787 -1.83309,-1.83308 -1.83308,-1.83309 -1.47477,6.87658 -1.47476,6.87658 -0.005,2.93437 -0.005,2.93437 -2.693839,4.41843 -2.69383,4.41844 -8.35049,3.90767 -8.350489,3.90766 -7.55505,1.39663 -7.55505,1.39663 -5.28474,-3.33611 -5.28474,-3.33612 -5.1109,-6.26743 -5.1109,-6.26744 -6.29777,-7.09401 -6.29777,-7.09403 -3.58171,-5.41234 -3.58172,-5.41234 1.39566,-1.39566 1.39566,-1.39566 0.89585,1.44951 0.89584,1.44951 5.58798,-0.008 5.58798,-0.008 4.83022,-1.3417 4.83022,-1.34169 6.2277,-5.48184 6.2277,-5.48184 -0.50394,-0.50394 -0.50394,-0.50394 -8.78786,2.16862 -8.78785,2.16862 -4.48755,-0.84186 -4.48755,-0.84187 -7.54448,-4.71911 -7.54448,-4.7191 -2.06743,-4.14426 -2.06753,-4.14313 v -1.6418 -1.6418 l 3.44902,-2.25988 3.44902,-2.25989 -0.72543,-0.72542 -0.72542,-0.72542 -4.79981,2.83196 -4.79981,2.83196 h -0.67902 -0.67901 l 0.42189,-3.66667 0.4219,-3.66667 4.97993,-0.41262 4.97994,-0.41263 1.96682,-2.80804 1.96683,-2.80804 5.71991,0.17657 5.71991,0.17656 7.64598,0.83928 7.64599,0.83928 6.69897,-1.71689 6.69897,-1.71689 1.58837,1.58838 1.58838,1.58838 h 3.15432 3.15433 l 2.49487,-1.33522 2.49488,-1.33522 -0.75993,-4.99811 -0.75994,-4.99812 -3.15593,-9.83685 -3.15593,-9.83687 v -1.8406 -1.8406 l -5.34549,-2.13884 -5.34548,-2.13884 -0.80513,-3.20788 -0.80512,-3.20787 0.91322,-7.30916 0.91322,-7.30916 h -2.82883 -2.82882 l -3.91447,-2.02425 -3.91447,-2.02425 -0.80629,-3.2125 -0.80628,-3.2125 1.1203,-1.95513 1.12031,-1.95512 9.50149,-10.14146 9.5015,-10.14145 h 2.74199 2.74198 l 0.80815,2.54625 0.80816,2.54627 1.67494,1.39008 1.67494,1.39008 9.94009,-1.78487 9.940089,-1.78486 2,-0.90115 1.999999,-0.90113 5.33334,-6.7847 5.33333,-6.78468 3.72072,-3.46565 3.72071,-3.46564 5.93016,-5.83483 5.93016,-5.83481 3.55728,-7.27084 3.55729,-7.27083 3.45851,-2.1405 3.45851,-2.14051 3,-2.65292 3,-2.65293 v -1.91003 -1.91004 l 5.45108,-6.85755 5.45108,-6.85754 1.66944,-0.94715 1.66942,-0.94716 -0.31645,-9.05284 -0.31645,-9.05285 2.02382,-2.28313 2.02384,-2.28315 4.83878,-1.55729 4.83877,-1.5573 1.66667,-1.32282 1.66666,-1.32283 v -1.85407 -1.85406 l -5.76484,-2.80079 -5.76485,-2.80077 -1.45267,-3.84856 -1.45253,-3.84856 h -2.59459 -2.5946 l -7.85456,-3.95934 -7.85456,-3.95934 -1.57907,-17.70733 -1.57908,-17.707325 7.47046,-6.786157 7.47045,-6.786156 -0.89811,-2.340429 -0.8981,-2.34043 -2.58502,-0.675996 -2.58501,-0.675996 -0.40827,-2.858883 -0.40825,-2.858883 -4.66667,-2.194372 -4.66667,-2.194372 -2.53998,-2.810829 -2.53999,-2.810829 h -3.74643 -3.74644 l -1.45411,-2.717031 -1.45411,-2.717029 0.74048,-2.333039 0.74048,-2.333038 6.72316,-6.616599 6.72317,-6.616597 h 6.94355 6.94356 l -0.45187,-2.594964 -0.45185,-2.594964 1.85544,1.53988 1.85544,1.539881 3.92975,-2.097217 3.92976,-2.097217 9.73397,-0.217171 9.73397,-0.217172 9.06994,8.702805 9.06993,8.702805 4.40104,3.271139 4.40103,3.27114 2.6031,4.411929 2.60311,4.411929 5.85861,1.475219 5.85863,1.475217 v 2.50838 2.50838 h 5.14564 5.14564 l 7.58808,-4.049225 7.58808,-4.049227 6.13351,-0.62063 6.13351,-0.620631 1.70365,-1.413913 1.70367,-1.413914 4.02957,2.083771 4.02956,2.083769 h 1.96391 1.96392 l 4.10229,3.451859 4.10231,3.451857 v 2.339408 2.339408 l -2.56184,7.446105 -2.56183,7.446105 -5.03233,4.746637 -5.03234,4.746639 -1.40582,4.287074 -1.40584,4.287069 -4.66667,0.0623 -4.66667,0.0622 v 4.21767 4.21768 l -1,1.00455 -1,1.00454 v 3.13269 3.13268 l 4.66667,2.22538 4.66667,2.22537 0.0472,2.75305 0.0472,2.75305 1.9055,3.33334 1.90551,3.33333 0.0472,1.70851 0.0472,1.70852 -2.33333,0.822 -2.33334,0.82198 -4.34937,3.21626 -4.34939,3.21625 -2.31728,-4.07167 -2.31729,-4.07165 -1.50341,-0.008 -1.5034,-0.008 -1.7146,2.06597 -1.7146,2.06596 2.99361,7.22264 2.99361,7.22263 0.96058,7.07852 0.96057,7.07852 0.99231,1.60557 0.99229,1.60558 2.63773,-1.63936 2.63774,-1.63936 3.2599,4.15804 3.2599,4.15804 7.57764,3.58784 7.57762,3.58784 2.6316,3.34553 2.6316,3.34553 7.03387,3.11071 7.03388,3.11071 -6.91036,7.13454 -6.91036,7.13455 -3.14015,10.57763 -3.14014,10.57762 3.84796,3.07908 3.84794,3.07909 1.20044,0.007 1.20044,0.007 7.46623,3.5886 7.46623,3.58858 2.99262,2.88888 2.99262,2.88888 5.67405,2.7075 5.67404,2.70749 4.66667,1.63416 4.66667,1.63417 3.70365,0.67096 3.70365,0.67096 1.31255,2.45254 1.31256,2.45252 4.50292,0.84476 4.50292,0.84474 9.8142,-1.55618 9.81421,-1.5562 4.80499,2.03856 4.80499,2.03857 2.21452,3.37977 2.2145,3.37976 5.26072,2.68383 5.26071,2.68381 h 3.88987 3.88985 l 1.52101,1.83271 1.52102,1.83271 6.97557,0.99337 6.97559,0.99336 6.96587,0.25089 6.96585,0.25091 0.92303,0.92303 0.92302,0.92302 8.11112,-0.0204 8.11111,-0.0204 1.61844,-1.02846 1.61844,-1.02846 0.10853,-15.95112 0.10854,-15.95112 0.086,-2.91381 0.086,-2.91381 5.38509,-2.15468 5.38509,-2.15468 1.40227,1.40226 1.40228,1.40228 0.38401,9.5432 0.384,9.54319 2.03242,3.10187 2.03241,3.10185 3.6498,1.00557 3.6498,1.00559 8.66667,-0.20035 8.66666,-0.20033 6,-0.20389 6,-0.2039 15.04815,-2.13725 15.04815,-2.13727 -0.88471,-6.10958 -0.88469,-6.10959 -0.65955,-1.13604 -0.65954,-1.13605 -4.50391,-1.88184 -4.50389,-1.88186 v -2.73862 -2.73863 l 2.82554,0.8968 2.82555,0.89679 3.50779,-1.61398 3.50778,-1.61398 4.54252,-2.18224 4.54254,-2.18226 0.58048,-2.21973 0.58046,-2.21975 5.21034,-4.18713 5.21033,-4.18715 v -1.98454 -1.98455 l 5.89897,-2.5286 5.89896,-2.52858 7.78179,-8.17726 7.78177,-8.17725 3.98592,2.07835 3.98592,2.07834 4.25224,0.008 4.25224,0.008 6.0931,-5.27353 6.09309,-5.27353 3.07748,2.9402 3.0775,2.9402 -1.0895,1.26666 -1.08948,1.26667 v 2.56325 2.56327 l 2.14428,-1.7796 2.1443,-1.7796 1.8557,2.53785 1.85572,2.53784 -0.0472,1.41183 -0.0472,1.41183 -1.9055,3.33333 -1.90551,3.33333 -0.0472,1.05771 -0.0472,1.05771 4.33333,-0.2973 4.33334,-0.2973 4.96926,0.23958 4.96926,0.2396 2.23409,3.40966 2.23409,3.40965 -2.88893,3.59034 -2.88893,3.59035 -1.49258,2.92128 -1.49257,2.92127 2.79985,4.7454 2.79986,4.74538 h -1.03354 -1.03352 l -2.58817,-1.9576 -2.58817,-1.95758 -2.79936,-0.0424 -2.79936,-0.0424 -5.38843,3.66666 -5.38843,3.66667 -8.81221,8.28771 -8.81222,8.28769 v 11.11993 11.11992 l -3.43397,4.59238 -3.43397,4.59237 0.71976,5.33333 0.71976,5.33334 -4.21271,12 -4.21271,12 -1.25398,0.85716 -1.25398,0.85715 -7.77806,-0.70529 -7.77807,-0.70529 1.29229,4.506 1.29231,4.506 v 8.19948 8.19948 l -2,0.76748 -2,0.76746 v 13.12035 13.12033 l -1.66667,2.13243 -1.66666,2.13241 -2.92642,-1.14072 -2.92641,-1.14073 -0.87372,-5.07019 -0.87371,-5.07018 -3.11882,-12 -3.11883,-12 -1.75353,-5.33334 -1.75352,-5.33333 h -1.97623 -1.97621 l -1.8764,3.91499 -1.87642,3.91498 -0.65174,5.7823 -0.65175,5.78229 -1.35809,0.83935 -1.35811,0.83936 -2.58125,-3.54351 -2.58127,-3.54349 -1.04625,0.64662 -1.04626,0.64662 -2.29006,-5.99647 -2.29008,-5.99647 1.78588,-5.56113 1.78586,-5.56113 3.87506,-1.02258 3.87505,-1.02257 4.39667,-4.26142 4.39668,-4.26142 0.97984,-4.13149 0.97984,-4.13149 -0.31002,-1.66667 -0.31001,-1.66667 h 1.55504 1.55504 l -1.65985,-2 -1.65986,-2 -22.83673,-0.13293 -22.83675,-0.13293 -3.33333,-0.92696 -3.33334,-0.92698 -0.96818,-7.94012 -0.96818,-7.94013 -1.51006,-3.33333 -1.51006,-3.33334 -1.99806,2.9704 -1.99807,2.97039 -2.85703,-1.47487 -2.85702,-1.47486 -3.08122,-3.49554 -3.08121,-3.49552 -0.69656,1.66667 -0.69657,1.66667 -2.22222,-0.0424 -2.22222,-0.0424 -2.58818,-1.95759 -2.58817,-1.9576 h -1.15719 -1.15717 l 0.76739,1.24165 0.76738,1.24167 -3.35537,4.9444 -3.35536,4.9444 v 1.26105 1.26106 l 4.33333,3.81332 4.33334,3.8133 4.56388,3.07291 4.56386,3.07291 0.54724,1.66666 0.54724,1.66667 h -2.80757 -2.80757 l -5.9702,5.50315 -5.97022,5.50314 v 2.429 2.429 l 4.45919,3.40119 4.45919,3.40118 h 2.18208 2.18208 l 0.80509,3.20775 0.80509,3.20775 -2.24342,3.42389 -2.24342,3.42389 2.79706,4.52574 2.79706,4.52574 v 2.30078 2.30078 l 2.56204,0.66999 2.56206,0.66999 -0.61258,4.20518 -0.61256,4.20519 2.58803,10.56085 2.58804,10.56087 -0.68017,1.77247 -0.68016,1.77248 h -3.23759 -3.2376 l -3.35488,2.1982 -3.35488,2.19821 -1.13545,-1.19821 -1.13546,-1.1982 -0.46276,-2.56956 -0.46274,-2.56956 -3.48502,5.23622 -3.48501,5.23623 -6.83025,2.38175 -6.83026,2.38174 -3.61598,3.11035 -3.61599,3.11033 1.49424,6.50792 1.49424,6.50791 -1.89632,2.10499 -1.89632,2.10498 v 2.18391 2.18389 l -4.56725,4.56726 -4.56726,4.56725 -7.35017,3.4772 -7.35019,3.47718 h -1.97145 -1.97146 l -0.52441,-1.57321 -0.5244,-1.57321 -2.26491,0.86912 -2.2649,0.86913 -1.63688,3.70409 -1.63688,3.70408 -9.53804,12.66667 -9.53804,12.66667 -7.60648,6.51918 -7.60648,6.51918 -3.89774,5.38068 -3.89774,5.38068 -6.30932,3.63956 -6.30934,3.63956 -3,2.84585 -3,2.84585 v 5.219 5.219 l -6.33333,2.95159 -6.33334,2.95157 -5.25897,0.1108 -5.25899,0.1108 -4.07434,5.47402 -4.07436,5.47401 -1.70722,2.52599 -1.70721,2.52598 -0.73723,-1.66666 -0.73724,-1.66667 h -3.59221 -3.59221 l -2.98119,2.08811 -2.9812,2.0881 -2.69829,5.28912 -2.69831,5.28911 0.63792,13.66356 0.63793,13.66356 1.41156,3.71268 1.41156,3.71269 v 1.24653 1.24654 h -2 -2 v 1.28642 1.28642 l 2.83419,1.51681 2.8342,1.51681 -0.86745,7.3807 -0.86747,7.38068 -1.74589,3.48274 -1.7459,3.48275 -3.76314,7.23493 -3.76316,7.23495 0.23496,16.76505 0.23496,16.76507 0.71644,2.28892 0.71644,2.28892 -3.07576,0.6788 -3.07575,0.67881 -3.91979,0.3656 -3.91977,0.36561 -3.0138,5.33334 -3.01379,5.33333 -2.34532,4.40032 -2.34532,4.40032 1.50588,2.41131 1.5059,2.4113 -6.91764,1.5481 -6.91763,1.54809 -4.21623,2.56405 -4.21624,2.56404 -0.86989,5.80086 -0.86988,5.80085 -6.41975,3.60871 -6.41975,3.60872 -3.80349,-0.0423 -3.80349,-0.0423 -4,-2.84704 z';
+
 export default function CitiesPage(): React.ReactElement {
-  const orderedCities = [...cityLaunchTiers].sort(
-    (left, right) => cityTierOrder.indexOf(left.tier) - cityTierOrder.indexOf(right.tier),
-  );
-  const mainlandPath =
-    'M198 34 216 26 236 34 248 48 266 50 281 63 292 84 286 102 271 111 262 128 278 149 276 171 255 180 242 194 232 214 236 236 224 256 207 273 193 301 177 318 161 332 139 354 132 377 111 388 100 409 110 428 126 441 132 462 145 486 162 508 177 535 188 565 198 590 208 619 221 630 235 617 246 589 258 566 268 538 275 508 285 484 296 458 307 432 321 410 333 386 342 358 344 334 337 313 331 292 333 272 345 255 350 232 361 217 379 203 390 183 382 164 365 161 352 150 333 151 319 168 303 185 289 192 280 176 261 165 250 148 245 128 231 112 213 98 200 80 186 62 188 46Z';
-  const northEastPath =
-    'M322 176 339 164 360 161 378 166 394 160 403 172 397 188 381 198 364 205 345 206 328 198 319 186Z';
+  const citiesByTier = cityTierOrder.map((tier) => ({
+    tier,
+    cities: cityLaunchTiers.filter((city) => city.tier === tier),
+  }));
+  const primaryTierGroups = citiesByTier.filter(({ tier }) => tier !== 'Wave 3');
+  const waveThreeGroup = citiesByTier.find(({ tier }) => tier === 'Wave 3');
 
   return (
     <>
@@ -64,141 +97,241 @@ export default function CitiesPage(): React.ReactElement {
       </section>
 
       <section className="bg-white">
-        <div className="mx-auto grid max-w-screen-xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
-          <div className="rounded-3xl border border-gray100 bg-cream p-6">
-            <div className="relative h-[640px] overflow-hidden rounded-3xl bg-white">
-              <div className="absolute right-4 top-4 z-20 rounded-2xl border border-gray100 bg-white/92 p-3 backdrop-blur-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray600">
-                  Legend
-                </p>
-                <div className="mt-3 space-y-2">
-                  {cityTierOrder.map((tier) => {
-                    const tone = tierTone[tier];
+        <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(320px,0.88fr)] lg:items-stretch">
+            <div className="rounded-3xl border border-gray100 bg-cream p-5 sm:p-6">
+              <div className="flex h-full flex-col gap-4 rounded-[2rem] bg-white p-5 sm:p-6">
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-forest">
+                      Launch map
+                    </p>
+                    <h2 className="mt-3 text-2xl font-semibold text-gray900 sm:text-[2rem]">
+                      A real India-first footprint, not a coverage graphic.
+                    </h2>
+                  </div>
 
-                    return (
-                      <div key={tier} className="flex items-center gap-2 text-xs text-gray700">
-                        <span className={`h-2.5 w-2.5 rounded-full ${tone.dot}`} />
-                        <span>{tier}</span>
-                      </div>
-                    );
-                  })}
+                  <div className="min-w-[176px] rounded-2xl border border-gray100 bg-cream p-4 sm:min-w-[208px]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray600">
+                      Legend
+                    </p>
+                    <div className="mt-3 space-y-2.5">
+                      {cityTierOrder.map((tier) => {
+                        const tone = tierTone[tier];
+
+                        return (
+                          <div
+                            key={tier}
+                            className="flex items-center gap-2.5 whitespace-nowrap text-sm text-gray700"
+                          >
+                            <span
+                              className="h-2.5 w-2.5 rounded-full"
+                              style={{ backgroundColor: tone.dotFill }}
+                            />
+                            <span>{tier === 'Live' ? 'Live market' : tier}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <p className="text-sm leading-relaxed text-gray600 sm:text-base lg:col-span-2">
+                    Hyderabad is the first live market. Every next city earns its place only after
+                    the operating loop, restaurant quality, and repeat demand are proven in the wave
+                    before it.
+                  </p>
                 </div>
-              </div>
-              <svg
-                viewBox="0 0 420 640"
-                className="absolute inset-0 h-full w-full"
-                aria-hidden="true"
-              >
-                <defs>
-                  <clipPath id="india-map-clip">
-                    <path d={mainlandPath} />
-                    <path d={northEastPath} />
-                  </clipPath>
-                </defs>
 
-                <path
-                  d={mainlandPath}
-                  fill="rgb(234 243 222 / 0.74)"
-                  stroke="rgb(26 92 56 / 0.32)"
-                  strokeWidth="5"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d={northEastPath}
-                  fill="rgb(234 243 222 / 0.74)"
-                  stroke="rgb(26 92 56 / 0.32)"
-                  strokeWidth="5"
-                  strokeLinejoin="round"
-                />
+                <div className="flex-1 overflow-hidden rounded-[2rem] border border-gray100 bg-[linear-gradient(180deg,rgba(234,243,222,0.16),rgba(255,255,255,0.96))] p-3 sm:p-5">
+                  <svg
+                    viewBox={`0 0 ${indiaMapWidth} ${indiaMapHeight}`}
+                    className="mx-auto block h-auto w-full max-w-[560px]"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d={indiaOutlinePath}
+                      fill="rgba(234, 243, 222, 0.9)"
+                      stroke="rgba(26, 92, 56, 0.32)"
+                      strokeWidth="6"
+                      strokeLinejoin="round"
+                    />
 
-                <g clipPath="url(#india-map-clip)">
-                  {cityLaunchTiers.map((city) => {
-                    const tone = tierTone[city.tier];
-                    const x = (Number.parseFloat(city.left) / 100) * 420;
-                    const y = (Number.parseFloat(city.top) / 100) * 640;
+                    <g transform={`translate(${cityMarkerOffsetX} 0)`}>
+                      {cityLaunchTiers.map((city) => {
+                        const tone = tierTone[city.tier];
+                        const x = (Number.parseFloat(city.left) / 100) * indiaMapWidth;
+                        const y = (Number.parseFloat(city.top) / 100) * indiaMapHeight;
 
-                    return (
-                      <g key={`${city.city}-marker`}>
-                        <circle cx={x} cy={y} r="18" className={tone.ring} opacity="0.9" />
-                        <circle
-                          cx={x}
-                          cy={y}
-                          r="18"
-                          className={`${tone.ring} origin-center animate-ping`}
-                          opacity="0.55"
-                        />
-                        <circle
-                          cx={x}
-                          cy={y}
-                          r="7"
-                          className={tone.dot}
-                          stroke="white"
-                          strokeWidth="3"
-                        />
-                      </g>
-                    );
-                  })}
-                </g>
+                        return (
+                          <g key={`${city.city}-marker`}>
+                            <circle cx={x} cy={y} r="20" fill={tone.ringFill} />
+                            {city.tier === 'Live' ? (
+                              <circle
+                                cx={x}
+                                cy={y}
+                                r="20"
+                                fill={tone.ringFill}
+                                className="origin-center animate-ping"
+                                opacity="0.8"
+                              />
+                            ) : null}
+                            <circle
+                              cx={x}
+                              cy={y}
+                              r="7.5"
+                              fill={tone.dotFill}
+                              stroke="white"
+                              strokeWidth="4"
+                            />
+                          </g>
+                        );
+                      })}
 
-                {cityLaunchTiers.map((city) => {
-                  const x = (Number.parseFloat(city.left) / 100) * 420;
-                  const y = (Number.parseFloat(city.top) / 100) * 640;
-                  const labelWidth = Math.max(52, city.city.length * 8.4);
+                      {cityLaunchTiers.map((city) => {
+                        const x = (Number.parseFloat(city.left) / 100) * indiaMapWidth;
+                        const y = (Number.parseFloat(city.top) / 100) * indiaMapHeight;
+                        const labelWidth = Math.max(72, city.city.length * 7.5 + 28);
+                        const placement = cityLabelPlacement[city.city] ?? {
+                          side: 'right',
+                          dx: 18,
+                          dy: -14,
+                        };
+                        const labelX =
+                          placement.side === 'left' ? x - labelWidth - placement.dx : x + placement.dx;
+                        const labelY = y + placement.dy;
+                        const connectorX = placement.side === 'left' ? labelX + labelWidth : labelX;
+                        const textAnchor = placement.side === 'left' ? 'end' : 'start';
+                        const textX =
+                          placement.side === 'left' ? labelX + labelWidth - 12 : labelX + 12;
 
-                  return (
-                    <g key={`${city.city}-label`}>
-                      <rect
-                        x={x + 12}
-                        y={y - 12}
-                        width={labelWidth}
-                        height="24"
-                        rx="12"
-                        fill="white"
-                        opacity="0.94"
-                        stroke="rgb(229 231 235)"
-                      />
-                      <text
-                        x={x + 22}
-                        y={y + 4}
-                        fontSize="12"
-                        fontWeight="600"
-                        fill="rgb(17 24 39)"
-                      >
-                        {city.city}
-                      </text>
+                        return (
+                          <g key={`${city.city}-label`}>
+                            <path
+                              d={`M ${x} ${y} L ${placement.side === 'left' ? x - 10 : x + 10} ${y} L ${connectorX} ${labelY}`}
+                              fill="none"
+                              stroke="rgba(107, 114, 128, 0.45)"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                            />
+                            <rect
+                              x={labelX}
+                              y={labelY - 15}
+                              width={labelWidth}
+                              height="30"
+                              rx="15"
+                              fill="rgba(255, 255, 255, 0.96)"
+                              stroke="rgb(229 231 235)"
+                            />
+                            <text
+                              x={textX}
+                              y={labelY + 4}
+                              fontSize="12"
+                              fontWeight="600"
+                              fill="rgb(17 24 39)"
+                              textAnchor={textAnchor}
+                            >
+                              {city.city}
+                            </text>
+                          </g>
+                        );
+                      })}
                     </g>
-                  );
-                })}
-              </svg>
-            </div>
-          </div>
+                  </svg>
+                </div>
 
-          <div>
-            <h2 className="heading-section text-gray900">Launch sequencing</h2>
-            <div className="mt-6 space-y-4">
-              {orderedCities.map((city) => {
-                const tone = tierTone[city.tier];
+                <p className="text-sm leading-relaxed text-gray600">
+                  The launch order is intentional: prove depth in one high-signal market, expand to
+                  adjacent premium behavior, and only then widen the footprint.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-4 lg:h-full lg:grid-rows-[auto_minmax(0,1fr)_minmax(0,1fr)]">
+              <div className="rounded-3xl border border-gray100 bg-white p-5 shadow-[0_12px_30px_rgba(26,92,56,0.06)] sm:p-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-forest">
+                  Launch sequencing
+                </p>
+                <h2 className="mt-3 text-2xl font-semibold text-gray900">Three waves. One proof loop.</h2>
+                <p className="mt-3 text-sm leading-relaxed text-gray600 sm:text-base">
+                  We are not stacking cities for optics. Each wave is earned by showing that the
+                  prior market can sustain restaurant quality, premium demand, and operational
+                  discipline.
+                </p>
+              </div>
+
+              {primaryTierGroups.map(({ tier, cities }) => {
+                const tone = tierTone[tier];
 
                 return (
-                  <article
-                    key={city.city}
-                    className="rounded-2xl border border-gray100 bg-white p-5 shadow-[0_10px_24px_rgba(26,92,56,0.06)]"
+                  <section
+                    key={tier}
+                    className="flex h-full flex-col rounded-3xl border border-gray100 bg-white p-5 shadow-[0_12px_30px_rgba(26,92,56,0.06)]"
                   >
                     <div className="flex flex-wrap items-center gap-3">
                       <span className={`rounded-full px-3 py-1 text-xs font-semibold ${tone.pill}`}>
-                        {city.tier}
+                        {tier}
                       </span>
-                      <h3 className="text-lg font-semibold text-gray900">
-                        {city.city}, {city.state}
-                      </h3>
+                      <p className="text-sm font-medium text-gray700">{tierNarrative[tier]}</p>
                     </div>
-                    <p className="mt-2 text-sm font-medium text-gray700">{city.focusZones}</p>
-                    <p className="mt-3 text-sm leading-relaxed text-gray600">{city.rationale}</p>
-                  </article>
+
+                    <div className="mt-4 flex flex-1 flex-col gap-3">
+                      {cities.map((city) => (
+                        <article
+                          key={city.city}
+                          className="rounded-2xl border border-gray100 bg-cream p-4"
+                        >
+                          <h3 className="text-base font-semibold text-gray900">
+                            {city.city}, {city.state}
+                          </h3>
+                          <p className="mt-1 text-sm font-medium text-gray700">{city.focusZones}</p>
+                          <p className="mt-2 text-sm leading-relaxed text-gray600">{city.rationale}</p>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
                 );
               })}
             </div>
           </div>
+
+          {waveThreeGroup ? (
+            <section className="mt-8 rounded-3xl border border-gray100 bg-white p-6 shadow-[0_12px_30px_rgba(26,92,56,0.06)] sm:p-7">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${tierTone[waveThreeGroup.tier].pill}`}
+                    >
+                      {waveThreeGroup.tier}
+                    </span>
+                    <p className="text-sm font-medium text-gray700">
+                      {tierNarrative[waveThreeGroup.tier]}
+                    </p>
+                  </div>
+                  <h3 className="mt-3 text-xl font-semibold text-gray900">
+                    Long-horizon markets once the playbook compounds.
+                  </h3>
+                </div>
+                <p className="max-w-xl text-sm leading-relaxed text-gray600">
+                  These cities matter, but they come after depth is repeatable. Presenting them
+                  full-width keeps the page balanced instead of forcing the right column far below
+                  the map.
+                </p>
+              </div>
+
+              <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {waveThreeGroup.cities.map((city) => (
+                  <article key={city.city} className="rounded-2xl border border-gray100 bg-cream p-4">
+                    <h4 className="text-base font-semibold text-gray900">
+                      {city.city}, {city.state}
+                    </h4>
+                    <p className="mt-1 text-sm font-medium text-gray700">{city.focusZones}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-gray600">{city.rationale}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
         </div>
       </section>
     </>

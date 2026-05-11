@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-forest: #1A5C38;
+  --color-saffron: #FF6B35;
+  --color-cream: #FFF8F0;
+}
+
+body {
+  margin: 0;
+  background: #f7faf8;
+  color: #1f2933;
+}

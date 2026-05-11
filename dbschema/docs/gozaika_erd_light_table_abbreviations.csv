@@ -1,0 +1,100 @@
+abbreviated_label,full_table_name,context
+SHR:DATA.CORR,admin_data_correction,SHARED / OPS
+SHR:EXPO.JOB,admin_export_job,SHARED / OPS
+SHR:EVEN,analytics_event,SHARED / OPS
+SHR:LOG,audit_log,SHARED / OPS
+AUTH:USER,auth.users,AUTH / IAM
+ORD:SUB.CHAR,billing_subscription_charge,ORDER / PAYMENT
+ORD:SUB.EVEN,billing_subscription_event,ORDER / PAYMENT
+CAT:BAG.TEMP,catalog_bag_template,DROP / CATALOG
+CAT:BAG.TEMP.ALLE,catalog_bag_template_allergen,DROP / CATALOG
+CAT:BAG.TEMP.MEDI,catalog_bag_template_media,DROP / CATALOG
+CAT:BAG.TEMP.REVI,catalog_bag_template_revision,DROP / CATALOG
+MKT:BANN,cms_banner,MARKETING / CMS
+MKT:CITY.PAGE,cms_city_page,MARKETING / CMS
+MKT:PAGE,cms_page,MARKETING / CMS
+MKT:POST,cms_post,MARKETING / CMS
+MKT:REST.FEAT,cms_restaurant_feature,MARKETING / CMS
+MKT:SEO.META,cms_seo_metadata,MARKETING / CMS
+SHR:FEAT.FLAG,config_feature_flag,SHARED / OPS
+SHR:RUNT.SETT,config_runtime_setting,SHARED / OPS
+CON:ALLE.PREF,consumer_allergen_preference,CONSUMER
+CON:CITY.PREF,consumer_city_preference,CONSUMER
+CON:DIET.PREF,consumer_dietary_preference,CONSUMER
+CON:NOTI.PREF,consumer_notification_preference,CONSUMER
+CON:PASS.STAT,consumer_passport_stat,CONSUMER
+CON:PROF,consumer_profile,CONSUMER
+CON:REFE,consumer_referral,CONSUMER
+CON:REFE.CODE,consumer_referral_code,CONSUMER
+CON:SAVE.REST,consumer_saved_restaurant,CONSUMER
+CON:SUB,consumer_subscription,CONSUMER
+CON:SUB.PLAN,consumer_subscription_plan,CONSUMER
+CAT:AUDI,drop_audience,DROP / CATALOG
+CAT:CLOS.LOG,drop_closure_log,DROP / CATALOG
+CAT:DROP,drop_drop,DROP / CATALOG
+CAT:INV.EVEN,drop_inventory_event,DROP / CATALOG
+CAT:INV.HOLD,drop_inventory_hold,DROP / CATALOG
+CAT:MEDI,drop_media,DROP / CATALOG
+CAT:RECU.SCHE,drop_recurring_schedule,DROP / CATALOG
+FIN:INVO,finance_invoice,FINANCE
+FIN:REST.PAYO.ENTR,finance_restaurant_payout_entry,FINANCE
+FIN:SETT.RUN,finance_settlement_run,FINANCE
+GEO:ADDR,geo_address,GEO
+GEO:CITY,geo_city,GEO
+GEO:NEIG,geo_neighborhood,GEO
+AUTH:PLAT.MEMB,iam_platform_membership,AUTH / IAM
+AUTH:PLAT.ROLE,iam_platform_role,AUTH / IAM
+AUTH:PLAT.ROLE.SCOP,iam_platform_role_scope,AUTH / IAM
+AUTH:PROF,iam_profile,AUTH / IAM
+SUP:EVEN,incident_event,SUPPORT / INCIDENT
+SUP:INCI,incident_incident,SUPPORT / INCIDENT
+MKT:PART.LEAD,marketing_partner_lead,MARKETING / CMS
+MKT:WAIT.LEAD,marketing_waitlist_lead,MARKETING / CMS
+SHR:ALLE,master_allergen,SHARED / OPS
+SHR:AUDI.SEGM,master_audience_segment,SHARED / OPS
+SHR:CUIS,master_cuisine,SHARED / OPS
+SHR:DOCU.STAT,master_document_status,SHARED / OPS
+SHR:DOCU.TYPE,master_document_type,SHARED / OPS
+SHR:INCI.SEVE,master_incident_severity,SHARED / OPS
+SHR:INCI.STAT,master_incident_status,SHARED / OPS
+SHR:INCI.TYPE,master_incident_type,SHARED / OPS
+SHR:SCOP,master_scope,SHARED / OPS
+SHR:STOR.VISI,master_storage_visibility,SHARED / OPS
+SHR:SUPP.TICK.PRIO,master_support_ticket_priority,SHARED / OPS
+SHR:SUPP.TICK.STAT,master_support_ticket_status,SHARED / OPS
+SHR:SUPP.TICK.TYPE,master_support_ticket_type,SHARED / OPS
+MKT:DELI.ATTE,notification_delivery_attempt,MARKETING / CMS
+MKT:DEVI,notification_device,MARKETING / CMS
+MKT:OUTB,notification_outbox,MARKETING / CMS
+MKT:TEMP,notification_template,MARKETING / CMS
+ORD:ITEM,order_item,ORDER / PAYMENT
+ORD:ORDE,order_order,ORDER / PAYMENT
+ORD:PICK.VERI.EVEN,order_pickup_verification_event,ORDER / PAYMENT
+ORD:STAT.TRAN,order_status_transition,ORDER / PAYMENT
+ORD:ORDE.INTE,payment_order_intent,ORDER / PAYMENT
+ORD:REFU,payment_refund,ORDER / PAYMENT
+ORD:TXN,payment_transaction,ORDER / PAYMENT
+ORD:WEBH.EVEN,payment_webhook_event,ORDER / PAYMENT
+CON:CONS.EVEN,privacy_consent_event,CONSUMER
+CON:CONS.PURP,privacy_consent_purpose,CONSUMER
+CON:ERAS.REQU,privacy_erasure_request,CONSUMER
+CON:RETE.POLI,privacy_retention_policy,CONSUMER
+RES:COMM.OVER,restaurant_commission_override,RESTAURANT
+RES:COMM.PLAN,restaurant_commission_plan,RESTAURANT
+RES:COMP,restaurant_compliance,RESTAURANT
+RES:CONT,restaurant_contact,RESTAURANT
+RES:CUIS.MAP,restaurant_cuisine_map,RESTAURANT
+RES:DOCU,restaurant_document,RESTAURANT
+RES:ONBO.TASK,restaurant_onboarding_task,RESTAURANT
+RES:PAYO.ACCO,restaurant_payout_account,RESTAURANT
+RES:PUBL.PROF,restaurant_public_profile,RESTAURANT
+RES:REST,restaurant_restaurant,RESTAURANT
+RES:SETT,restaurant_setting,RESTAURANT
+RES:TEAM.MEMB,restaurant_team_membership,RESTAURANT
+RES:TEAM.ROLE,restaurant_team_role,RESTAURANT
+RES:TEAM.ROLE.SCOP,restaurant_team_role_scope,RESTAURANT
+RES:MEDI,review_media,RESTAURANT
+RES:REVI,review_review,RESTAURANT
+CAT:OBJE,storage_object,DROP / CATALOG
+SUP:TICK,support_ticket,SUPPORT / INCIDENT
+SUP:TICK.EVEN,support_ticket_event,SUPPORT / INCIDENT

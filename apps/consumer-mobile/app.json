@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "goZaika",
+    "slug": "gozaika-consumer",
+    "scheme": "gozaika",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "platforms": ["ios", "android"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FFF8F0"
+      }
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
+  }
+}

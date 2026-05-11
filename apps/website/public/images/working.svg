@@ -1,39 +1,105 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img" aria-label="Hero BAM Bag illustration v2">
-  <rect width="600" height="600" fill="#FFF8F0"/>
-  <path d="M80 350 C160 250, 260 230, 350 260 C430 287, 500 350, 520 430 L80 430 Z" fill="#EAF3DE"/>
-  <rect x="200" y="170" width="210" height="260" rx="22" fill="#FF6B35"/>
-  <path d="M236 170 C236 120, 374 120, 374 170" fill="none" stroke="#1A5C38" stroke-width="18" stroke-linecap="round"/>
-  
-  <!-- Container for the Flame -->
-  <rect x="250" y="232" width="110" height="110" rx="16" fill="#FFF8F0"/>
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="80" x2="1400" y2="920" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF7ED"/>
+      <stop offset="0.45" stop-color="#FFF1DE"/>
+      <stop offset="1" stop-color="#F4E8D5"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(1110 460) rotate(90) scale(280 320)">
+      <stop offset="0" stop-color="#FFE7AE" stop-opacity="0.95"/>
+      <stop offset="0.45" stop-color="#FFD48D" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#FFD48D" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bagGrad" x1="980" y1="270" x2="1190" y2="710" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F89331"/>
+      <stop offset="1" stop-color="#E16A1A"/>
+    </linearGradient>
+    <linearGradient id="innerBag" x1="1010" y1="330" x2="1160" y2="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8E3D13"/>
+      <stop offset="1" stop-color="#6B2E10"/>
+    </linearGradient>
+    <linearGradient id="handTone" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#D89267"/>
+      <stop offset="1" stop-color="#C26F4C"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFF6EC"/>
+      <stop offset="1" stop-color="#F7E4C8"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#A0561B" flood-opacity="0.18"/>
+    </filter>
+    <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#76522C" flood-opacity="0.12"/>
+    </filter>
+    <filter id="blur">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+  </defs>
 
-  <!-- Integrated Flame SVG -->
-  <svg x="250" y="232" width="110" height="110" viewBox="88 64 320 320">
-    <defs>
-      <mask id="v2-hero-flame-mask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
-        <rect width="512" height="512" fill="white" />
-        <g transform="translate(4, 14.5) scale(0.06)" fill="none" stroke="black" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
-          <g transform="translate(10, 25)">
-            <path d="M 10 5 Q 70 5 70 25 Q 70 40 10 40 Q 70 40 70 55 Q 70 75 10 75" />
-          </g>
-          <g transform="translate(88, 35)">
-            <path d="M 11.75 75 Q 11.75 5 40 5 Q 68.25 5 68.25 75" />
-            <rect x="11.75" y="40" width="56.5" height="10" fill="black" stroke="none" />
-          </g>
-          <g transform="translate(170, 30)">
-            <path d="M 10 75 Q 10 5 25 5 Q 40 5 40 75 Q 40 5 55 5 Q 70 5 70 75" />
-          </g>
-        </g>
-      </mask>
-    </defs>
-    <g transform="translate(56, 40) scale(16)">
-      <path fill="#1A5C38" 
-            mask="url(#v2-hero-flame-mask)"
-            d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235" />
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+
+  <ellipse cx="270" cy="760" rx="280" ry="150" fill="#F3D9B3" opacity="0.25" filter="url(#blur)"/>
+  <ellipse cx="1410" cy="180" rx="180" ry="110" fill="#E9C98B" opacity="0.15" filter="url(#blur)"/>
+  <path d="M132 240C206 178 292 146 392 160C445 167 483 183 537 209" stroke="#D8B06C" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+  <path d="M126 310C222 246 335 221 457 238" stroke="#9FBE8C" stroke-width="4" stroke-linecap="round" opacity="0.32"/>
+  <path d="M135 382C217 349 303 341 399 360" stroke="#E5B471" stroke-width="4" stroke-linecap="round" opacity="0.28"/>
+
+  <path d="M1210 708C1255 660 1315 640 1368 646C1346 699 1300 734 1234 742" fill="#4F7A47" opacity="0.16"/>
+  <path d="M1268 735C1300 700 1342 683 1386 687C1371 729 1338 758 1286 767" fill="#688F57" opacity="0.18"/>
+
+  <ellipse cx="1095" cy="780" rx="246" ry="74" fill="#8B5A2B" opacity="0.09"/>
+
+  <g filter="url(#shadow)">
+    <path d="M1234 398C1262 385 1291 391 1307 413C1319 431 1316 455 1307 473C1296 496 1279 515 1259 530C1242 543 1220 551 1199 550C1184 548 1176 539 1175 527C1172 504 1195 489 1207 470C1218 453 1214 430 1221 413C1224 406 1228 401 1234 398Z" fill="url(#handTone)"/>
+    <path d="M1212 475C1232 467 1244 453 1251 434" stroke="#A85C3E" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
+
+    <path d="M934 310C934 279 959 254 990 254H1137C1169 254 1195 279 1195 310V699C1195 734 1167 762 1132 762H995C961 762 934 734 934 699V310Z" fill="url(#bagGrad)"/>
+
+    <path d="M1005 272C1005 220 1041 183 1092 183C1142 183 1177 221 1177 272" stroke="#CE5E18" stroke-width="24" stroke-linecap="round"/>
+    <path d="M1029 272C1029 231 1056 204 1092 204C1129 204 1155 231 1155 272" stroke="#F6B070" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+
+    <rect x="1014" y="470" width="116" height="116" rx="30" fill="#FFF3E6" opacity="0.95"/>
+    <text x="1072" y="522" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#E46819">BAM</text>
+    <text x="1072" y="555" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="600" fill="#4D7F4C">goZaika</text>
+
+    <path d="M934 325C984 333 1042 337 1098 337C1151 337 1180 333 1195 329V703C1195 736 1167 762 1132 762H995C961 762 934 734 934 699V325Z" fill="#F07F25" opacity="0.18"/>
+
+    <path d="M947 286C974 271 1003 268 1034 271L1015 397C991 390 969 379 949 364C937 355 930 344 927 330C925 315 934 294 947 286Z" fill="#F7C28E"/>
+    <path d="M951 292C973 282 998 279 1026 282" stroke="#E59B57" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+
+    <path d="M1158 277C1187 278 1215 287 1238 305C1248 313 1254 325 1253 338C1252 352 1245 364 1234 375C1218 392 1198 405 1175 415L1144 289C1148 286 1153 278 1158 277Z" fill="#F3B783"/>
+    <path d="M1160 289C1181 292 1201 299 1217 311" stroke="#E59B57" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+
+    <path d="M1008 295C1044 286 1092 282 1143 289C1160 349 1166 407 1163 462C1118 482 1061 489 1007 474C1001 412 1002 351 1008 295Z" fill="url(#innerBag)"/>
+    <ellipse cx="1086" cy="430" rx="180" ry="190" fill="url(#halo)"/>
+
+    <g filter="url(#softShadow)">
+      <rect x="1015" y="364" width="92" height="68" rx="18" transform="rotate(-10 1015 364)" fill="url(#paper)"/>
+      <rect x="1060" y="338" width="118" height="86" rx="22" transform="rotate(7 1060 338)" fill="#EFE1C9"/>
+      <path d="M1127 333C1158 329 1187 337 1206 360C1179 388 1146 405 1099 406C1099 378 1106 348 1127 333Z" fill="#57784B"/>
+      <path d="M1028 400C1061 395 1086 403 1104 424C1074 447 1040 462 997 460C997 434 1007 408 1028 400Z" fill="#6E945C"/>
+      <path d="M1061 431C1109 421 1150 432 1178 464C1139 495 1084 513 1023 509C1027 474 1037 442 1061 431Z" fill="#F7E7CE" opacity="0.92"/>
+      <path d="M1054 353C1074 344 1096 344 1117 354" stroke="#DDAA62" stroke-width="5" stroke-linecap="round"/>
+      <path d="M1088 451C1113 442 1139 444 1160 456" stroke="#D7A35A" stroke-width="5" stroke-linecap="round"/>
     </g>
-  </svg>
 
-  <circle cx="166" cy="214" r="20" fill="#D4A017"/>
-  <circle cx="438" cy="214" r="20" fill="#1A5C38"/>
-  <circle cx="467" cy="265" r="12" fill="#D4A017"/>
+    <path d="M1060 256C1045 238 1042 216 1055 194C1069 171 1070 152 1058 132" stroke="#E6B26F" stroke-width="8" stroke-linecap="round" opacity="0.75"/>
+    <path d="M1100 248C1088 230 1088 211 1099 192C1112 170 1112 151 1102 134" stroke="#EDC07F" stroke-width="8" stroke-linecap="round" opacity="0.85"/>
+    <path d="M1140 259C1128 242 1129 223 1142 205C1157 183 1157 160 1146 143" stroke="#E5B06C" stroke-width="8" stroke-linecap="round" opacity="0.68"/>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <path d="M886 355C859 365 839 385 829 410C821 430 817 449 818 470C819 485 829 495 843 499C868 507 899 497 924 490C949 483 969 467 975 443C981 421 972 396 953 382C934 367 907 347 886 355Z" fill="url(#handTone)"/>
+    <path d="M889 370C907 383 919 403 922 425" stroke="#A85C3E" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
+    <path d="M936 394C949 380 965 370 984 365" stroke="#A85C3E" stroke-width="4" stroke-linecap="round" opacity="0.25"/>
+  </g>
+
+  <circle cx="1215" cy="430" r="5" fill="#FFD98E" opacity="0.8"/>
+  <circle cx="1246" cy="468" r="4" fill="#FFE4B1" opacity="0.7"/>
+  <circle cx="975" cy="298" r="4" fill="#FFE4B1" opacity="0.75"/>
+
+  <path d="M168 620C292 560 410 554 530 606" stroke="#C9A565" stroke-width="6" stroke-linecap="round" opacity="0.18"/>
+  <path d="M160 690C284 638 395 640 502 688" stroke="#6E925C" stroke-width="5" stroke-linecap="round" opacity="0.16"/>
 </svg>
