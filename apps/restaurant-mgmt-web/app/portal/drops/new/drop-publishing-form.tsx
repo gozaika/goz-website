@@ -50,7 +50,10 @@ export function DropPublishingForm({
   readonly drops: readonly PortalDrop[];
 }) {
   const router = useRouter();
-  const activeTemplates = useMemo(() => templates.filter((template) => template.activeRevisionPk), [templates]);
+  const activeTemplates = useMemo(
+    () => templates.filter((template) => template.activeRevisionPk && template.templateStatusCode === "ACTIVE"),
+    [templates],
+  );
   const initialTemplate = activeTemplates[0] ?? null;
   const initialStart = initialTemplate ? nextRoundedStart(initialTemplate.defaultPickupStartOffsetMinutes) : "";
   const [feedback, setFeedback] = useState<Feedback | null>(null);

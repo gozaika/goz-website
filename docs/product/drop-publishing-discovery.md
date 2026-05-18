@@ -18,6 +18,9 @@ An ACTIVE Hyderabad restaurant can publish a BAM Bag drop, and consumers can dis
 - Realtime read path for inventory/status updates from `drop_drop`.
 - Basic restaurant operational controls: activate, pause, close.
 - Template library shows whether a template is ready for drops and can publish an existing revision if a template is stuck without `active_revision_fk`.
+- Template edits publish a new immutable revision for future drops; existing drops keep their original revision reference.
+- Template archive is the delete-equivalent for Slice 3. Hard delete is intentionally avoided so historical drops, audits, and future orders remain explainable.
+- Template library includes duplicate and created-date affordances to help restaurants manage repeated daily drops.
 - Drop publishing is optimized for restaurant speed: templates carry default bag quantity, pickup start offset, and pickup duration, so staff can publish a well-defined drop with minimal edits.
 - Drop creation errors must render as errors with field-level correction details, not as generic success-colored messages.
 

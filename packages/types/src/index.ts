@@ -357,13 +357,22 @@ export interface PortalBagTemplate {
   readonly templateStatusCode: string;
   readonly activeRevisionPk: string | null;
   readonly displayName: string | null;
+  readonly shortDescription: string | null;
   readonly dietaryCategoryCode: DietaryCategoryCode | null;
   readonly spiceLevelCode: SpiceLevelCode | null;
+  readonly servesMin: number | null;
+  readonly servesMax: number | null;
+  readonly maxHoldingMinutes: number | null;
+  readonly holdingGuidanceText: string | null;
+  readonly minMenuValuePaise: number | null;
   readonly suggestedPricePaise: number | null;
+  readonly allergenSummaryText: string | null;
+  readonly includedItemHintText: string | null;
   readonly defaultDropQuantity: number;
   readonly defaultPickupStartOffsetMinutes: number;
   readonly defaultPickupDurationMinutes: number;
   readonly allergenCodes: readonly string[];
+  readonly createdAt: string;
   readonly updatedAt: string;
 }
 

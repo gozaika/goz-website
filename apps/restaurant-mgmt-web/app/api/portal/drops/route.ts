@@ -44,23 +44,25 @@ export async function POST(request: Request) {
   }
 
   const service = createServiceRoleSupabaseClient();
+  const { data: template, error: templateError } = await service
+    .from("catalog_bag_template")
+    .select("catalog_bag_template_pk,active_revision_fk")
+    .eq("restaurant_fk", restaurant.restaurantPk)
+    .eq("template_status_code", "ACTIVE")
+    .eq("active_revision_fk", parsed.data.templateRevisionPk)
+    .maybeSingle();
+
+  if (templateError || !template) {
+    return NextResponse.json({ ok: false, error: "Choose an active template for this restaurant." }, { status: 400 });
+  }
+
   const { data: revision, error: revisionError } = await service
     .from("catalog_bag_template_revision")
-    .select("catalog_bag_template_revision_pk,display_name,catalog_bag_template!inner(restaurant_fk,template_status_code,active_revision_fk)")
+    .select("catalog_bag_template_revision_pk,display_name")
     .eq("catalog_bag_template_revision_pk", parsed.data.templateRevisionPk)
     .maybeSingle();
 
-  const template = Array.isArray(revision?.catalog_bag_template)
-    ? revision?.catalog_bag_template[0]
-    : revision?.catalog_bag_template;
-
-  if (
-    revisionError ||
-    !revision ||
-    template?.restaurant_fk !== restaurant.restaurantPk ||
-    template.template_status_code !== "ACTIVE" ||
-    template.active_revision_fk !== parsed.data.templateRevisionPk
-  ) {
+  if (revisionError || !revision) {
     return NextResponse.json({ ok: false, error: "Choose an active template for this restaurant." }, { status: 400 });
   }
 

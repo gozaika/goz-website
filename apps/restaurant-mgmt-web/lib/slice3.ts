@@ -42,9 +42,17 @@ export async function loadDefaultRestaurant(profilePk: string): Promise<ActivePo
 type TemplateRevisionRelation = {
   readonly catalog_bag_template_revision_pk: string;
   readonly display_name: string;
+  readonly short_description: string | null;
   readonly dietary_category_code: PortalBagTemplate["dietaryCategoryCode"];
   readonly spice_level_code: PortalBagTemplate["spiceLevelCode"];
+  readonly serves_min: number | string | null;
+  readonly serves_max: number | string | null;
+  readonly max_holding_minutes: number | string | null;
+  readonly holding_guidance_text: string | null;
+  readonly min_menu_value_paise: number | string | null;
   readonly suggested_price_paise: number | string | null;
+  readonly allergen_summary_text: string | null;
+  readonly included_item_hint_text: string | null;
 };
 
 type TemplateRow = {
@@ -55,6 +63,7 @@ type TemplateRow = {
   readonly default_drop_quantity: number | string | null;
   readonly default_pickup_start_offset_minutes: number | string | null;
   readonly default_pickup_duration_minutes: number | string | null;
+  readonly created_at: string;
   readonly updated_at: string;
   readonly catalog_bag_template_revision?: TemplateRevisionRelation | TemplateRevisionRelation[] | null;
 };
@@ -64,7 +73,7 @@ export async function loadPortalTemplates(restaurantPk: string): Promise<PortalB
   const { data: templates, error } = await service
     .from("catalog_bag_template")
     .select(
-      "catalog_bag_template_pk,template_name,template_status_code,active_revision_fk,default_drop_quantity,default_pickup_start_offset_minutes,default_pickup_duration_minutes,updated_at,catalog_bag_template_revision!fk_catalog_bag_template_active_revision(catalog_bag_template_revision_pk,display_name,dietary_category_code,spice_level_code,suggested_price_paise)",
+      "catalog_bag_template_pk,template_name,template_status_code,active_revision_fk,default_drop_quantity,default_pickup_start_offset_minutes,default_pickup_duration_minutes,created_at,updated_at,catalog_bag_template_revision!fk_catalog_bag_template_active_revision(catalog_bag_template_revision_pk,display_name,short_description,dietary_category_code,spice_level_code,serves_min,serves_max,max_holding_minutes,holding_guidance_text,min_menu_value_paise,suggested_price_paise,allergen_summary_text,included_item_hint_text)",
     )
     .eq("restaurant_fk", restaurantPk)
     .order("updated_at", { ascending: false });
@@ -104,10 +113,19 @@ export async function loadPortalTemplates(restaurantPk: string): Promise<PortalB
       defaultPickupStartOffsetMinutes: Number(template.default_pickup_start_offset_minutes ?? 15),
       defaultPickupDurationMinutes: Number(template.default_pickup_duration_minutes ?? 90),
       displayName: revision?.display_name ?? null,
+      shortDescription: revision?.short_description ?? null,
       dietaryCategoryCode: revision?.dietary_category_code ?? null,
       spiceLevelCode: revision?.spice_level_code ?? null,
+      servesMin: revision?.serves_min == null ? null : Number(revision.serves_min),
+      servesMax: revision?.serves_max == null ? null : Number(revision.serves_max),
+      maxHoldingMinutes: revision?.max_holding_minutes == null ? null : Number(revision.max_holding_minutes),
+      holdingGuidanceText: revision?.holding_guidance_text ?? null,
+      minMenuValuePaise: revision?.min_menu_value_paise == null ? null : Number(revision.min_menu_value_paise),
       suggestedPricePaise: revision?.suggested_price_paise == null ? null : Number(revision.suggested_price_paise),
+      allergenSummaryText: revision?.allergen_summary_text ?? null,
+      includedItemHintText: revision?.included_item_hint_text ?? null,
       allergenCodes: template.active_revision_fk ? (allergensByRevision.get(template.active_revision_fk) ?? []) : [],
+      createdAt: template.created_at,
       updatedAt: template.updated_at,
     };
   });

@@ -286,3 +286,10 @@ Apply migration `20260518001000_slice3_template_drop_preferences.sql` before dep
 - `default_pickup_duration_minutes`
 
 The restaurant drop form uses those defaults to preselect the template, quantity, price, pickup start, pickup end, type, and active status. Busy restaurant staff should be able to publish a standard drop with one confirmation click, while still having quick controls for start time and pickup duration.
+
+### Template Revision Rules
+
+- Editing a template creates a new published revision and points `active_revision_fk` at it.
+- Existing drops continue to reference the revision they were created from.
+- Deleting a template means archiving it (`template_status_code = 'ARCHIVED'`), not hard-deleting rows.
+- Duplicating a template copies the active revision and allergen map into a new active template.
