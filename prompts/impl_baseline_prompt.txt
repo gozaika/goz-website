@@ -1,18 +1,256 @@
-Do not modify source code. This is only a planning exercise.
+You are Codex working in C:\venkat\limca\gozaika\sourcecode.
 
-Now i want to focus on constructing a comprehensive prompt for next development iteration.
+MODE
+- This is an implementation task.
+- Make code changes unless blocked.
+- Do not stop at a proposal.
+- Preserve unrelated user changes.
+- Run verification before final response.
 
-Review \project docs\goZaika_Technology_Specification_v2.docx and determine scope for next implementation. Give me a detailed comprehensive prompt that I can use in codex next chat on this project. The prompt should be comprehensive such that i can apply this at a later time if I need to recreate entire project from gounds up. Construct the prompt such that it makes codex most efficient and precise in implementing it.
+Current git state:
+- Branch: main
+- Latest commit: cd22d7f
+- Expected state: all intended implementation changes are committed and pushed before this slice begins. prompts/impl_baseline_prompt.txt and prompts/template-development.txt will be dirty.
+- Codex must run `git status --short --branch` first and report any dirty files before editing.
 
-UI must have responsive layout, visible buttons, clear errors, fast primary workflow, no dead-end screens, and Playwright/screenshot checks for critical pages. Prevent “functionally present but visually broken” issues.
+Remote migration state:
+- Remote Supabase migrations for prior slices have already been applied.
+- Local Supabase may lag behind remote.
+- Do not assume local DB is current unless verified.
+- If this slice adds a migration, document exactly how I should apply it remotely.
 
-Ensure your prompt addresses documents update. Execially implementation-plan.doc, which will be used to recreate entire imeplementation from grounds up on codex again.
+SLICE
+- Slice name: Claim Hold / Order Intent
+- Slice number: 4A
+- Phase: Phase 1 — Pilot Marketplace Core
+- Business goal: Let a signed-in consumer temporarily reserve a public active/scheduled BAM Bag without oversell, while keeping Razorpay/payment capture out of scope until Slice 4B.
+- User-facing proof point: A consumer can open a public drop, sign in if needed, tap Claim, receive a clear hold/order-intent confirmation with expiry, and see remaining availability update without any payment being charged.
 
-Advise on following 2 questions
-1) Is it better to start next development iteration on a new chat. Does that help you to start with a clean context window? What can i do to make you more efficient. For example, in this chat window, i notice you have started to loose quality towards the end. is it because you are hitting athreshhold on compute?
+PROJECT CONTEXT
+- Current deployed surfaces:
+  - Website: https://gozaika.in/
+  - Consumer web: https://customer.gozaika.in/
+  - Restaurant portal: https://restaurant.gozaika.in/
+  - Admin portal: https://admin.gozaika.in/
+- Owned domains: gozaik.in, gozaika.com
+- Baseline roadmap: project docs/goZaika_Technology_Specification_v2.docx
+- Rebuild source of truth: docs/implementation-plan.md
+- Current completed slices:
+  - Slice 0: Foundation — monorepo, canonical schema, app shells, shared packages, Supabase client separation, UI baseline, CI shape.
+  - Slice 1: Auth/Profile/Consent — consumer auth, profile bootstrap, consent capture, account surface, Supabase SSR session refresh.
+  - Slice 2: Restaurant Onboarding — restaurant owner portal, onboarding/compliance, document upload, admin review/activation, active restaurant membership gate.
+  - Slice 3: First Drop Publishing & Consumer Discovery, plus Slice 3.5 Manual Launch Comms Support — active restaurants publish public drops, consumer discovery/detail reads safe public drop data, manual public links and WhatsApp-safe alert copy exist for restaurant/admin.
+- Migrations already applied: 20260425000000_gozaika_consolidated_schema.sql, 20260427000000_slice1_auth_profile_consent.sql, 20260502000000_slice2_restaurant_onboarding.sql, 20260502001000_slice2_restaurant_rls_hardening.sql, 20260513000000_slice3_drop_publishing_discovery.sql, 20260517000000_slice3_public_drop_aliases.sql, 20260518000000_slice3_template_active_revision_repair.sql, 20260518001000_slice3_template_drop_preferences.sql.
+- Known deployment/env state: Remote Vercel and remote Supabase are the primary test targets. Prior migrations are already applied remotely. Local Supabase may not be current. Consumer, restaurant, and admin Vercel env vars for existing Supabase access are expected to exist. No Razorpay/WATI env vars should be required for Slice 4A.
 
-2) I need to do a phase focused on UX and layout design. I am thinking i will go through entire development including mobile apps and then tackle layout finnese for all apps together. Do you think this approach makes sense? Prehap it is prudent to ask explicitly codex to maintain a high stanard of layout design and UX.
+EXPERTISE TO APPLY
+- Product manager: keep scope pilot-first and launch-useful.
+- Senior full-stack engineer: follow existing repo patterns and vertical-slice architecture.
+- Database/RLS engineer: protect tenancy, service-role boundaries, and public/private data separation.
+- UX designer: optimize for fast, obvious workflows with clear mobile/desktop layouts.
+- Food-safety/compliance reviewer: treat allergen, dietary, pickup, and restaurant identity as safety-critical.
+- Payments/security reviewer: apply only if this slice touches payment/auth/webhooks/RLS.
+- QA engineer: define validation gates and run focused checks.
+- Technical writer: update docs so future Codex can rebuild from ground zero.
 
+READ FIRST
+1. Run git status.
+2. Read docs/implementation-plan.md.
+3. Read relevant roadmap section in project docs/goZaika_Technology_Specification_v2.docx.
+4. Read these files before editing:
+   - packages/types/src/index.ts
+   - packages/types/src/index.test.ts
+   - packages/utils/src/index.ts
+   - packages/utils/src/index.test.ts
+   - packages/db/src/index.ts
+   - packages/supabase/src/index.ts
+   - packages/ui/src/index.tsx
+   - apps/consumer-web/lib/drops.ts
+   - apps/consumer-web/lib/supabase/server.ts
+   - apps/consumer-web/lib/supabase/browser.ts
+   - apps/consumer-web/app/drops/[id]/page.tsx
+   - apps/consumer-web/app/drops/drop-discovery-client.tsx
+   - apps/consumer-web/app/checkout/[orderId]/page.tsx
+   - apps/consumer-web/app/auth/login/login-form.tsx
+   - apps/consumer-web/app/onboarding/consent/consent-form.tsx
+   - apps/restaurant-mgmt-web/lib/slice3.ts
+   - apps/restaurant-mgmt-web/app/portal/drops/new/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/drops/new/drop-publishing-form.tsx
+   - apps/admin-web/app/admin/drops/page.tsx
+   - supabase/migrations/20260425000000_gozaika_consolidated_schema.sql
+   - supabase/functions/release-expired-holds/index.ts
+   - docs/product/drop-publishing-discovery.md
+   - docs/runbooks/manual-launch-comms.md
+   - docs/runbooks/payments.md
+   - docs/runbooks/demo-data.md
+5. Inspect existing patterns before adding abstractions.
+
+SCOPE / MUST INCLUDE
+- Consumer claim button on public drop detail and appropriate drop cards, replacing the Slice 3 disabled “claim opens next slice” state for eligible active/scheduled drops with available quantity.
+- Auth gate: anonymous consumers who tap Claim must be sent to login and returned to the intended drop/claim flow after authentication where practical.
+- Atomic inventory hold creation using existing database primitives where possible, especially `api_create_inventory_hold`, with idempotency key support to avoid duplicate holds on retry.
+- Hold expiry handling: show expiry timestamp/countdown in UI and call or expose safe release behavior through the existing `api_release_expired_inventory_holds` path where appropriate.
+- Consumer order-intent/hold confirmation surface: show restaurant, drop title, dietary/allergen disclosures, pickup window, price, quantity held, hold expiry, and “payment coming next” state.
+- Consumer account/order area should show current held/payment-pending claim intents if data is created for them.
+- Realtime or refresh behavior should keep public drop availability honest after holds are created/released.
+- Restaurant portal should show held/reserved count in recent drops where useful, without adding full order management.
+- Admin/operator should have the smallest useful visibility into active holds/order intents for launch support, preferably integrated into existing admin drop/comms surfaces or a narrow admin holds/orders page.
+- Release expired holds route/function/runbook must be documented clearly for remote operation.
+- All copy must avoid saying the bag is paid, confirmed, or ready for pickup until Slice 4B/5 exist.
+
+OUT OF SCOPE / MUST NOT INCLUDE
+- Do not implement Razorpay order creation, Razorpay Checkout.js, payment capture, payment verification, or Razorpay webhook processing.
+- Do not mark orders as PAID, CONFIRMED, READY_FOR_PICKUP, or COLLECTED.
+- Do not generate pickup QR codes or OTPs.
+- Do not implement refunds, settlements, invoices, finance dashboards, payouts, Swaad Club, referrals, native mobile parity, WATI, email, push notifications, or notification outbox processing.
+- Do not build a full campaign/order manager.
+- Do not expose service-role operations to browser/client code.
+- Do not weaken public drop RLS or expose private restaurant/compliance/admin data.
+- Do not require local Supabase to be fully current for the implementation to be valid, but document any migration and remote verification steps.
+
+USER FLOWS
+Consumer:
+- Anonymous user opens `/drops/[id]`, taps Claim, is redirected to `/auth/login` with enough return context to resume the drop.
+- Signed-in user opens an active/scheduled public drop with available quantity and taps Claim.
+- App creates one active hold/order intent with a client idempotency key.
+- Consumer sees a confirmation/payment-pending page or panel with hold expiry, drop details, safety disclosures, and clear messaging that payment is not implemented yet.
+- Consumer can return to the drop page and see reduced availability while the hold is active.
+- If a drop is sold out, paused, closed, cancelled, expired, or pickup window is no longer claimable, Claim is disabled with a specific reason.
+
+Restaurant:
+- Approved restaurant user can view recent drops and see total quantity, available quantity, reserved/held count if exposed by current tables/views/API.
+- Restaurant copy should make clear holds are not paid orders yet.
+- Restaurant cannot manually create consumer holds in this slice.
+
+Admin/Ops:
+- Admin can see active/recent holds/order intents for active/scheduled drops with consumer-safe operational metadata only.
+- Admin can use this to answer “who tried to claim / why is inventory reserved?” without touching the database directly.
+- Admin destructive hold cancellation is optional only if implemented safely with explicit audit/ledger behavior; otherwise document as out of scope.
+
+Mobile:
+- No native mobile implementation. Keep mobile apps unchanged unless shared package type changes require compile fixes.
+- Consumer web/PWA layout must be mobile-friendly because WhatsApp links land on phones.
+
+DATA / DATABASE REQUIREMENTS
+- Prefer additive migrations.
+- Do not edit historical migrations unless fixing idempotency.
+- RLS and service-role usage must be reviewed.
+- Public views must expose only safe fields.
+- Tables/views/RPCs/functions likely involved:
+  - drop_drop
+  - drop_inventory_hold
+  - drop_inventory_event
+  - order_order
+  - order_item
+  - order_status_transition
+  - consumer_profile
+  - iam_profile
+  - restaurant_restaurant
+  - catalog_bag_template_revision
+  - api_public_drop_card
+  - api_create_inventory_hold
+  - api_release_expired_inventory_holds
+  - optional new view such as api_consumer_claim_intent or api_admin_hold_summary if current safe read models are insufficient
+  - optional new RPC wrapper such as api_create_claim_intent only if existing api_create_inventory_hold does not return enough data or cannot create the order-intent state safely
+- Migration naming convention:
+  - supabase/migrations/YYYYMMDDHHMMSS_slice4a_claim_hold_order_intent.sql
+
+API REQUIREMENTS
+- Add a consumer route handler such as `POST /api/claims` or `POST /api/checkout/holds` that requires an authenticated consumer, validates `claimRequestSchema`, checks public/claimable drop state, calls the atomic hold RPC, and returns a typed minimal result.
+- Add read route(s) for the signed-in consumer to fetch active/recent hold/order-intent state, reusing RLS-safe tables/views where practical.
+- Add a release-expired-holds operational route or document the existing Supabase Edge Function path if already sufficient; do not call service-role functions from client code.
+- API responses must be typed through `@gozaika/types` and use existing `ApiResponse` style.
+- Idempotency key must be generated client-side or server-side in a retry-safe way and must not create duplicate active holds for repeated clicks/network retries.
+- Every API error must be specific: login required, drop unavailable, sold out, already held, pickup window closed, invalid quantity, or internal error.
+- Do not create payment intent APIs or Razorpay APIs in this slice.
+
+UI / UX REQUIREMENTS
+- Maintain production-quality layout.
+- Buttons must be visible, labeled, accessible, and responsive.
+- Avoid dead-end screens.
+- Errors must explain what to correct.
+- Success states must be clear.
+- Primary workflow should be fast for the target user.
+- Use existing design tokens/components where possible.
+- Do not add marketing/landing-page fluff inside operational apps.
+- Claim CTA must be prominent but not misleading: use wording like “Hold this BAM Bag” or “Reserve for payment” rather than “Buy” or “Pay”.
+- Show hold expiry clearly, including what happens when the hold expires.
+- Preserve allergen and dietary disclosures directly in the claim confirmation flow.
+- Mobile layout must be checked for drop detail and claim confirmation surfaces.
+- Disabled states must explain why claim is unavailable.
+
+SECURITY / COMPLIANCE REQUIREMENTS
+- No service-role key in client code.
+- No private docs/media exposed publicly.
+- No PII in logs.
+- RLS/tenant checks required for:
+  - Consumer can only read their own holds/order intents.
+  - Restaurant users can only read holds/order intent summaries for their own restaurant.
+  - Admin users must be verified through existing platform membership before viewing ops summaries.
+  - Public drop views must stay limited to discovery-safe data.
+  - Hold creation must verify authenticated consumer profile ownership.
+  - Hold creation must verify drop is public, active/scheduled, within valid claim/pickup timing, and has enough computed available quantity.
+- Human review required for:
+  - auth
+  - payment webhook
+  - RLS
+  - refund/financial mutation
+  - destructive admin action
+
+DOCS REQUIREMENTS
+Update docs in the same implementation:
+1. docs/implementation-plan.md
+   - Add/update slice section.
+   - Include goal, completed items, validation gate, out-of-scope, verification commands.
+   - Keep it usable to recreate all slices from ground zero.
+2. Product/runbook docs:
+   - Update docs/product/drop-publishing-discovery.md or create docs/product/claim-hold-order-intent.md if cleaner.
+   - Update docs/runbooks/payments.md to clarify Slice 4A creates holds/order intents only and Slice 4B owns Razorpay/payment capture.
+   - Create or update docs/runbooks/claim-holds.md with remote operator steps, hold expiry behavior, and manual smoke tests.
+   - Update docs/runbooks/demo-data.md if demo claim/hold data or seed commands are added.
+3. Configuration/deployment docs if env/domain/migration behavior changes:
+   - docs/configuration-reference.md
+   - docs/deployment-pipeline.md
+4. Update DOCX roadmap only if roadmap/scope materially changes:
+   - project docs/goZaika_Technology_Specification_v2.docx
+   - If editing DOCX, use Documents skill and render/visually verify.
+
+DEMO / SEED REQUIREMENTS
+- Add deterministic demo data if needed.
+- Register demo rows in dev_demo_seed_registry where applicable.
+- Update cleanup scripts if demo rows are added.
+- Do not seed production data.
+- Add/update smoke SQL if useful.
+- Prefer not to seed active holds unless needed for admin/restaurant UI verification, because holds expire and can make demos brittle.
+- If adding a demo SQL file, use `supabase/seeds/demo/004_slice4a_claim_hold_order_intent_demo.sql` and make it safe for local/staging only.
+- If demo rows touch `drop_inventory_hold`, `drop_inventory_event`, `order_order`, `order_item`, or `order_status_transition`, cleanup must remove them in FK-safe order.
+
+VALIDATION GATE
+This slice is complete only when:
+- A signed-in consumer can create a temporary hold for an active/scheduled public drop with available quantity and receives a visible expiry/payment-pending confirmation.
+- Anonymous consumers are gated through login before claiming and can return to the intended drop flow.
+- Hold creation is atomic, retry-safe, and does not oversell when quantity is low.
+- Expired holds can be released through the documented operational path and availability returns.
+- Consumer UI never implies payment, QR pickup proof, or confirmed order exists.
+- Restaurant/admin surfaces can see enough hold/order-intent information to support launch operations without direct database access.
+- Public/private boundaries remain safe: no service-role browser use, no private restaurant/compliance data in public APIs, and own-row/tenant RLS assumptions are preserved.
+- docs/implementation-plan.md explains how to rebuild Slice 4A from scratch after Slices 0, 1, 2, 3, and 3.5.
+- Relevant product/runbook/deployment/demo docs are updated.
+- Focused typecheck, lint, builds, and manual/browser smoke tests pass or external blockers are documented.
+
+VERIFICATION COMMANDS
+Run focused checks:
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
 ===
 You are Codex working in the goZaika monorepo. This is an implementation task, not just planning.
 

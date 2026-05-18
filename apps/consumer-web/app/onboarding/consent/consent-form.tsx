@@ -20,7 +20,7 @@ type LatestConsent = {
   recorded_at: string | null;
 };
 
-export function ConsentForm() {
+export function ConsentForm({ nextPath = "/account" }: { readonly nextPath?: string }) {
   const router = useRouter();
   const [purposes, setPurposes] = useState<Purpose[]>([]);
   const [latest, setLatest] = useState<LatestConsent[]>([]);
@@ -117,7 +117,7 @@ export function ConsentForm() {
         throw new Error(payload.error ?? "We could not save consent settings.");
       }
 
-      router.replace("/account");
+      router.replace(nextPath);
       router.refresh();
     } catch (caught) {
       setError(safeErrorMessage(caught, "We could not save consent settings."));

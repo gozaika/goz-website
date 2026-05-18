@@ -382,7 +382,8 @@ export function DropPublishingForm({
                       {drop.statusCode} - {formatPickupWindow(drop.pickupStartAt, drop.pickupEndAt)}
                     </p>
                     <p className="mt-1 text-xs text-slate-500">
-                      {drop.quantityAvailable} / {drop.quantityTotal} available - {formatPaise(drop.pricePaise)}
+                      {drop.quantityAvailable} / {drop.quantityTotal} available - {drop.quantityHeld} held, not paid -{" "}
+                      {formatPaise(drop.pricePaise)}
                     </p>
                   </div>
                 </div>

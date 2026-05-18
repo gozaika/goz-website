@@ -189,7 +189,7 @@ export async function loadPortalDrops(restaurantPk: string): Promise<PortalDrop[
   const service = createServiceRoleSupabaseClient();
   const { data, error } = await service
     .from("drop_drop")
-    .select("drop_drop_pk,drop_title,drop_status_code,quantity_total,computed_quantity_available,price_paise,pickup_start_at,pickup_end_at,updated_at")
+    .select("drop_drop_pk,drop_title,drop_status_code,quantity_total,quantity_reserved,computed_quantity_available,price_paise,pickup_start_at,pickup_end_at,updated_at")
     .eq("restaurant_fk", restaurantPk)
     .order("pickup_start_at", { ascending: false });
 
@@ -202,6 +202,7 @@ export async function loadPortalDrops(restaurantPk: string): Promise<PortalDrop[
     dropTitle: drop.drop_title,
     statusCode: drop.drop_status_code,
     quantityTotal: drop.quantity_total,
+    quantityHeld: Number(drop.quantity_reserved ?? 0),
     quantityAvailable: drop.computed_quantity_available,
     pricePaise: Number(drop.price_paise),
     pickupStartAt: drop.pickup_start_at,

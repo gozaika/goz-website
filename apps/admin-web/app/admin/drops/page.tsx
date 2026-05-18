@@ -5,6 +5,7 @@ import { createPublicDropUrl, formatPaise, formatPickupWindow, generateManualDro
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAdminActor } from "@/lib/admin-auth";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,22 @@ type PublicDropRow = {
   readonly min_menu_value_paise: number | string | null;
   readonly allergen_summary_text: string | null;
   readonly allergen_codes: readonly string[] | null;
+};
+
+type HoldSummaryRow = {
+  readonly hold_pk: string;
+  readonly drop_pk: string;
+  readonly consumer_profile_pk: string;
+  readonly hold_status_code: string;
+  readonly quantity_held: number | string;
+  readonly expires_at: string;
+  readonly hold_created_at: string;
+  readonly drop_title: string;
+  readonly restaurant_name: string;
+  readonly bag_display_name: string;
+  readonly price_paise: number | string;
+  readonly pickup_start_at: string;
+  readonly pickup_end_at: string;
 };
 
 function mapPublicDrop(row: PublicDropRow): PublicDropCard {
@@ -67,17 +84,32 @@ export default async function AdminDropsPage() {
   if (!actor) redirect("/auth/login");
 
   const service = createServiceRoleSupabaseClient();
-  const { data, error } = await service
+  const supabase = await createClient();
+  const [{ data, error }, { data: holdsData, error: holdsError }] = await Promise.all([
+    service
     .from("api_public_drop_card")
     .select("*")
     .in("drop_status_code", ["ACTIVE", "SCHEDULED"])
-    .order("pickup_start_at", { ascending: true });
+      .order("pickup_start_at", { ascending: true }),
+    supabase
+      .from("api_claim_hold_summary")
+      .select(
+        "hold_pk,drop_pk,consumer_profile_pk,hold_status_code,quantity_held,expires_at,hold_created_at,drop_title,restaurant_name,bag_display_name,price_paise,pickup_start_at,pickup_end_at",
+      )
+      .in("hold_status_code", ["ACTIVE", "EXPIRED", "RELEASED"])
+      .order("hold_created_at", { ascending: false })
+      .limit(25),
+  ]);
 
   if (error) {
     throw new Error("Could not load public drops for launch comms.");
   }
+  if (holdsError) {
+    throw new Error("Could not load hold support summary.");
+  }
 
   const drops = ((data ?? []) as PublicDropRow[]).map(mapPublicDrop);
+  const holds = (holdsData ?? []) as HoldSummaryRow[];
 
   return (
     <main>
@@ -146,6 +178,59 @@ export default async function AdminDropsPage() {
             })
           )}
         </div>
+
+        <section className="mt-8">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Claim holds</p>
+            <h2 className="mt-2 text-2xl font-bold">Active and recent hold intents</h2>
+            <p className="mt-2 max-w-3xl text-sm text-black/65">
+              These rows explain why inventory is reserved. They are not paid orders, confirmed pickups, QR codes, or
+              Razorpay payments.
+            </p>
+          </div>
+          <div className="mt-4 grid gap-3">
+            {holds.length === 0 ? (
+              <section className="rounded-lg border border-dashed border-black/15 bg-white p-6 text-sm text-black/60">
+                No active or recent claim holds are visible yet.
+              </section>
+            ) : (
+              holds.map((hold) => (
+                <article key={hold.hold_pk} className="rounded-lg border border-black/10 bg-white p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-[#1A5C38]">{hold.restaurant_name}</p>
+                      <h3 className="mt-1 font-bold">{hold.drop_title || hold.bag_display_name}</h3>
+                      <p className="mt-1 text-xs text-black/55">
+                        Hold {hold.hold_pk.slice(0, 8)} - consumer {hold.consumer_profile_pk.slice(0, 8)}
+                      </p>
+                    </div>
+                    <span className="rounded-full border border-[#1A5C38]/25 px-3 py-1 text-xs font-semibold text-[#1A5C38]">
+                      {hold.hold_status_code}
+                    </span>
+                  </div>
+                  <dl className="mt-3 grid gap-2 text-sm text-black/70 sm:grid-cols-4">
+                    <div>
+                      <dt className="font-semibold text-black">Quantity</dt>
+                      <dd>{Number(hold.quantity_held)}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-black">Price</dt>
+                      <dd>{formatPaise(Number(hold.price_paise))}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-black">Pickup</dt>
+                      <dd>{formatPickupWindow(hold.pickup_start_at, hold.pickup_end_at)}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-black">Expires</dt>
+                      <dd>{new Date(hold.expires_at).toLocaleString("en-IN")}</dd>
+                    </div>
+                  </dl>
+                </article>
+              ))
+            )}
+          </div>
+        </section>
       </section>
     </main>
   );

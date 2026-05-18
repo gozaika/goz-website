@@ -78,7 +78,7 @@ Deterministic SQL fixtures by slice:
 
 - `supabase/seeds/demo/002_slice2_restaurant_onboarding_demo.sql`
 - `supabase/seeds/demo/003_slice3_drop_publishing_demo.sql`
-- `supabase/seeds/demo/004_slice4_checkout_payment.sql`
+- `supabase/seeds/demo/004_slice4a_claim_hold_order_intent_demo.sql`
 
 Every fixture must register owned rows in `dev_demo_seed_registry` and extend `delete_demo_data.sql` in FK-safe order. Do not seed payments, orders, finance, or admin data before the slice that owns those domains.
 
@@ -101,7 +101,7 @@ It creates deterministic fake restaurant onboarding rows for the five restaurant
 Future slices should add deterministic files in order:
 
 - `003_slice3_drop_publishing_demo.sql`
-- `004_slice4_checkout_payment.sql`
+- `004_slice4a_claim_hold_order_intent_demo.sql`
 - `005_slice5_pickup_staff.sql`
 
 Delete demo data safely:
@@ -122,3 +122,9 @@ npx supabase db query --local --file supabase/seeds/demo/003_slice3_drop_publish
 ```
 
 The Slice 3 seed creates a published BAM Bag template and active public drop for the approved Biryani Baithak demo restaurant. It is designed to exercise consumer discovery and restaurant portal drop state without creating orders, payments, holds, pickup QR/OTP, or finance rows.
+
+# Slice 4A Claim Hold Demo Data
+
+No deterministic hold seed is added for Slice 4A. Holds expire quickly and make demos brittle. Use the Slice 3 public demo drop plus a demo consumer login to create a real hold through the consumer UI.
+
+If a future demo seed adds rows to `drop_inventory_hold`, `drop_inventory_event`, `order_order`, `order_item`, or `order_status_transition`, it must register rows in `dev_demo_seed_registry` and delete them in FK-safe order before auth users are removed.

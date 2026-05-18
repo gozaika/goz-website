@@ -1,17 +1,31 @@
-import { AllergenChips, Button, DietaryBadge, DropShareActions, ProgressBar, ShellHeader } from "@gozaika/ui";
+import { AllergenChips, DietaryBadge, DropShareActions, ProgressBar, ShellHeader } from "@gozaika/ui";
 import { createPublicDropUrl, formatPaise, formatPickupWindow, generateManualDropAlertText } from "@gozaika/utils";
 import { notFound } from "next/navigation";
 import { loadPublicDrop } from "@/lib/drops";
+import { createClient } from "@/lib/supabase/server";
+import { ClaimPanel } from "./claim-panel";
 
 export const dynamic = "force-dynamic";
 
-export default async function DropDetailPage({ params }: { readonly params: Promise<{ readonly id: string }> }) {
+export default async function DropDetailPage({
+  params,
+  searchParams,
+}: {
+  readonly params: Promise<{ readonly id: string }>;
+  readonly searchParams?: Promise<{ readonly claim?: string }>;
+}) {
   const { id } = await params;
+  const query = await searchParams;
   const drop = await loadPublicDrop(id);
 
   if (!drop) {
     notFound();
   }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const serves =
     drop.servesMin && drop.servesMax
@@ -89,12 +103,10 @@ export default async function DropDetailPage({ params }: { readonly params: Prom
               {drop.quantityAvailable} of {drop.quantityTotal} bags remaining
             </p>
           </div>
-          <Button disabled className="mt-5 w-full">
-            Claim and payment arrive in Slice 4A
-          </Button>
+          <ClaimPanel drop={drop} isSignedIn={Boolean(user)} autoClaim={query?.claim === "1"} />
           <DropShareActions publicUrl={publicDropUrl} shareText={alertText} className="mt-3" />
           <p className="mt-3 text-xs text-[#2D2D2D]/60">
-            Slice 3 is discovery-only: no holds, payments, QR codes, or refunds are created from this page yet.
+            Holds are temporary payment intents only. Payment capture, confirmed orders, QR codes, and refunds arrive in later slices.
           </p>
         </aside>
       </section>

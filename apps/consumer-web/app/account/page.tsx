@@ -1,5 +1,7 @@
 import { ShellHeader } from "@gozaika/ui";
+import type { ClaimIntent } from "@gozaika/types";
 import { redirect } from "next/navigation";
+import { loadConsumerClaimIntents } from "@/lib/claims";
 import { AccountClient, type AccountConsent, type AccountProfile } from "./account-client";
 import { createClient } from "@/lib/supabase/server";
 
@@ -43,7 +45,10 @@ export default async function AccountPage() {
         .maybeSingle()
     : { data: null };
 
-  const { data: consents } = await supabase.rpc("api_latest_consents");
+  const [{ data: consents }, claimIntents] = await Promise.all([
+    supabase.rpc("api_latest_consents"),
+    loadConsumerClaimIntents().catch((): ClaimIntent[] => []),
+  ]);
 
   const profile: AccountProfile = {
     email: iamProfile?.email_address ?? user.email ?? null,
@@ -56,7 +61,11 @@ export default async function AccountPage() {
   return (
     <main>
       <ShellHeader />
-      <AccountClient initialProfile={profile} initialConsents={(consents ?? []) as AccountConsent[]} />
+      <AccountClient
+        initialProfile={profile}
+        initialConsents={(consents ?? []) as AccountConsent[]}
+        initialClaimIntents={claimIntents}
+      />
     </main>
   );
 }

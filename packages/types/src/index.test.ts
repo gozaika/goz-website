@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  claimIntentStatusCodes,
   claimRequestSchema,
   dropStatusCodes,
   restaurantBasicsUpdateSchema,
@@ -20,6 +21,11 @@ describe("goZaika status constants", () => {
   it("keeps pickup-ready and collected order states available", () => {
     expect(orderStatusCodes).toContain("READY_FOR_PICKUP");
     expect(orderStatusCodes).toContain("COLLECTED");
+  });
+
+  it("keeps claim hold intent states separate from paid order states", () => {
+    expect(claimIntentStatusCodes).toContain("ACTIVE");
+    expect(claimIntentStatusCodes).toContain("EXPIRED");
   });
 
   it("keeps restaurant onboarding and compliance statuses available", () => {

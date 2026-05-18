@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
 import { Clock, MapPin, ShieldCheck } from "lucide-react";
 import type { PublicDropCard } from "@gozaika/types";
-import { cn, dietaryBadgeLabel, formatPaise, formatPickupWindow } from "@gozaika/utils";
+import { cn, dietaryBadgeLabel, formatPaise, formatPickupWindow, getDropClaimAvailability } from "@gozaika/utils";
 
 export { DropShareActions, LaunchCommsPanel } from "./launch-comms-actions";
 
@@ -159,7 +159,8 @@ export function DropCard({
   readonly className?: string;
   readonly actions?: ReactNode;
 }) {
-  const soldOut = drop.quantityAvailable <= 0 || drop.statusCode === "SOLD_OUT";
+  const claimAvailability = getDropClaimAvailability(drop);
+  const soldOut = claimAvailability.code === "SOLD_OUT";
   const serves =
     drop.servesMin && drop.servesMax
       ? drop.servesMin === drop.servesMax
@@ -217,9 +218,18 @@ export function DropCard({
         </a>
       </div>
       <div className="mt-3">
-        <Button disabled className="w-full">
-          {soldOut ? "Sold out" : "Claim opens next slice"}
-        </Button>
+        {claimAvailability.canClaim ? (
+          <a
+            href={`/drops/${drop.dropPk}?claim=1`}
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[#FF6B35] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e85f2f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A5C38]"
+          >
+            Hold this BAM Bag
+          </a>
+        ) : (
+          <Button disabled className="w-full">
+            {claimAvailability.reason}
+          </Button>
+        )}
       </div>
       {actions ? <div className="mt-3">{actions}</div> : null}
     </article>

@@ -26,10 +26,10 @@ An ACTIVE Hyderabad restaurant can publish a BAM Bag drop, and consumers can dis
 - Slice 3.5 manual launch comms: public drop detail links, copy/share controls, and WhatsApp-safe alert text generated from the same public drop fields across consumer, restaurant, and admin surfaces.
 - Restaurant staff can copy the consumer drop URL and generated alert immediately after publishing, and from recent active/scheduled drops.
 - Admin operators can copy the same URL and alert text from a narrow `/admin/drops` launch-ops surface without database access.
+- Slice 4A claim holds: eligible public active/scheduled drops now expose `Hold this BAM Bag`; held quantity reduces available quantity but remains clearly not paid.
 
 ## Not Included Yet
 
-- Inventory hold / claim reservation.
 - Razorpay payment.
 - Order confirmation.
 - Pickup QR/OTP.
@@ -46,7 +46,7 @@ Slice 3 and 3.5 are complete only when:
 2. The owner publishes a scheduled or active public drop.
 3. Consumer-web shows the drop using real Supabase data.
 4. The drop displays dietary/allergen/pickup/price/remaining count.
-5. A disabled or coming-next claim state makes it clear payment is not active yet.
+5. Slice 4A claim holds make it clear payment is not active yet.
 6. Restaurant staff can copy the public drop link and WhatsApp-safe alert text.
 7. Admin/operators can copy the same link and alert text for active or scheduled public drops.
 8. Alert text includes restaurant, drop, pickup window, price, availability, dietary category, allergen note, pickup context, and public URL without claiming payment or automated WhatsApp delivery exists.

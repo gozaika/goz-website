@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/browser";
 
 type LoginStep = "phone" | "otp";
 
-export function LoginForm() {
+export function LoginForm({ nextPath }: { readonly nextPath?: string | null }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [step, setStep] = useState<LoginStep>("phone");
@@ -38,7 +38,12 @@ export function LoginForm() {
       throw new Error(payload.error ?? "We could not prepare your profile yet.");
     }
 
-    router.replace(payload.data?.needs_operational_consent ? "/onboarding/consent" : "/account");
+    const finalNext = nextPath ?? "/account";
+    router.replace(
+      payload.data?.needs_operational_consent
+        ? `/onboarding/consent?next=${encodeURIComponent(finalNext)}`
+        : finalNext,
+    );
     router.refresh();
   }
 
@@ -94,7 +99,7 @@ export function LoginForm() {
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath ?? "/account")}`,
         },
       });
 

@@ -1,9 +1,10 @@
 "use client";
 
 import { Button, GoZaikaLogo } from "@gozaika/ui";
-import { consentPurposeCodes, type ConsentPurposeCode } from "@gozaika/types";
-import { safeErrorMessage } from "@gozaika/utils";
+import { consentPurposeCodes, type ClaimIntent, type ConsentPurposeCode } from "@gozaika/types";
+import { formatPaise, formatPickupWindow, safeErrorMessage } from "@gozaika/utils";
 import { LogOut, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -27,9 +28,11 @@ export interface AccountConsent {
 export function AccountClient({
   initialProfile,
   initialConsents,
+  initialClaimIntents,
 }: {
   readonly initialProfile: AccountProfile;
   readonly initialConsents: readonly AccountConsent[];
+  readonly initialClaimIntents: readonly ClaimIntent[];
 }) {
   const router = useRouter();
   const [profile, setProfile] = useState(initialProfile);
@@ -227,6 +230,43 @@ export function AccountClient({
           </div>
         </div>
       </div>
+
+      <section className="mt-6 rounded-lg border border-black/10 bg-white p-5 shadow-sm">
+        <h2 className="text-xl font-bold text-[#2D2D2D]">Current holds</h2>
+        <p className="mt-1 text-sm text-[#2D2D2D]/65">Temporary BAM Bag holds awaiting the Slice 4B payment flow.</p>
+        <div className="mt-4 grid gap-3">
+          {initialClaimIntents.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-[#2D2D2D]/60">
+              You do not have active or recent claim holds yet.
+            </p>
+          ) : (
+            initialClaimIntents.map((claim) => (
+              <article key={claim.holdPk} className="rounded-lg border border-black/10 p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-[#1A5C38]">{claim.restaurantName}</p>
+                    <h3 className="mt-1 font-bold text-[#2D2D2D]">{claim.bagDisplayName}</h3>
+                    <p className="mt-1 text-xs text-[#2D2D2D]/60">
+                      {claim.statusCode === "ACTIVE" ? "Payment pending hold" : claim.statusCode.toLowerCase()} -{" "}
+                      {formatPickupWindow(claim.pickupStartAt, claim.pickupEndAt)}
+                    </p>
+                  </div>
+                  <span className="rounded-full border border-[#1A5C38]/25 px-3 py-1 text-xs font-semibold text-[#1A5C38]">
+                    {claim.quantityHeld} held
+                  </span>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-[#2D2D2D]/70">
+                  <span>{formatPaise(claim.pricePaise)}</span>
+                  <span>Expires {new Date(claim.expiresAt).toLocaleString("en-IN")}</span>
+                  <Link className="font-semibold text-[#1A5C38]" href={`/checkout/${claim.holdPk}`}>
+                    View hold
+                  </Link>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+      </section>
     </section>
   );
 }

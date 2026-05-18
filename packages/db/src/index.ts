@@ -43,7 +43,7 @@ export async function createInventoryHold(
     p_drop_pk: input.dropPk,
     p_idempotency_key: input.idempotencyKey,
     p_quantity: input.quantity,
-    p_hold_minutes: input.holdMinutes ?? 8,
+    p_hold_minutes: input.holdMinutes ?? 10,
   });
 
   if (error) {

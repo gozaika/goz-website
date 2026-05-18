@@ -132,6 +132,56 @@ export function dietaryBadgeLabel(code: string): string {
   return labels[code] ?? code;
 }
 
+export type DropClaimUnavailableCode =
+  | "SOLD_OUT"
+  | "PAUSED"
+  | "CLOSED"
+  | "CANCELLED"
+  | "PICKUP_WINDOW_CLOSED"
+  | "UNAVAILABLE";
+
+export interface DropClaimAvailability {
+  readonly canClaim: boolean;
+  readonly reason: string;
+  readonly code?: DropClaimUnavailableCode;
+}
+
+export function getDropClaimAvailability(
+  drop: {
+    readonly statusCode: string;
+    readonly quantityAvailable: number;
+    readonly pickupEndAt: string;
+  },
+  now: Date = new Date(),
+): DropClaimAvailability {
+  if (drop.statusCode === "SOLD_OUT" || drop.quantityAvailable <= 0) {
+    return { canClaim: false, code: "SOLD_OUT", reason: "Sold out" };
+  }
+
+  const pickupEnd = Date.parse(drop.pickupEndAt);
+  if (Number.isFinite(pickupEnd) && pickupEnd <= now.valueOf()) {
+    return { canClaim: false, code: "PICKUP_WINDOW_CLOSED", reason: "Pickup window closed" };
+  }
+
+  if (drop.statusCode === "PAUSED") {
+    return { canClaim: false, code: "PAUSED", reason: "Paused by restaurant" };
+  }
+
+  if (drop.statusCode === "PICKUP_CLOSED" || drop.statusCode === "EMERGENCY_CLOSED") {
+    return { canClaim: false, code: "CLOSED", reason: "Drop closed" };
+  }
+
+  if (drop.statusCode === "CANCELLED") {
+    return { canClaim: false, code: "CANCELLED", reason: "Drop cancelled" };
+  }
+
+  if (!["ACTIVE", "SCHEDULED"].includes(drop.statusCode)) {
+    return { canClaim: false, code: "UNAVAILABLE", reason: "Not available to claim" };
+  }
+
+  return { canClaim: true, reason: "Hold this BAM Bag" };
+}
+
 export const DEFAULT_CUSTOMER_WEB_ORIGIN = "https://customer.gozaika.in";
 
 export interface ManualDropAlertInput {

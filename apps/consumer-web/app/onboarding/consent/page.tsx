@@ -3,7 +3,21 @@ import { redirect } from "next/navigation";
 import { ConsentForm } from "./consent-form";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function ConsentPage() {
+function safeNextPath(value: string | string[] | undefined): string {
+  const next = Array.isArray(value) ? value[0] : value;
+  if (!next || !next.startsWith("/") || next.startsWith("//")) {
+    return "/account";
+  }
+
+  return next;
+}
+
+export default async function ConsentPage({
+  searchParams,
+}: {
+  readonly searchParams?: Promise<{ readonly next?: string | string[] }>;
+}) {
+  const query = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -16,7 +30,7 @@ export default async function ConsentPage() {
   return (
     <main>
       <ShellHeader />
-      <ConsentForm />
+      <ConsentForm nextPath={safeNextPath(query?.next)} />
     </main>
   );
 }

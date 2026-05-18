@@ -136,6 +136,9 @@ export const claimRequestSchema = z.object({
   quantity: positiveQuantitySchema.default(1),
 });
 
+export const claimIntentStatusCodes = ["ACTIVE", "EXPIRED", "RELEASED", "CONVERTED"] as const;
+export type ClaimIntentStatusCode = (typeof claimIntentStatusCodes)[number];
+
 export const checkoutStateSchema = z.object({
   orderPk: uuidSchema,
   holdPk: uuidSchema,
@@ -351,6 +354,46 @@ export interface PublicDropCard {
   readonly statusCode: DropStatusCode;
 }
 
+export interface ClaimIntent {
+  readonly holdPk: string;
+  readonly dropPk: string;
+  readonly consumerProfilePk: string;
+  readonly statusCode: ClaimIntentStatusCode;
+  readonly quantityHeld: number;
+  readonly expiresAt: string;
+  readonly holdCreatedAt: string;
+  readonly holdUpdatedAt: string;
+  readonly dropTitle: string;
+  readonly dropStatusCode: DropStatusCode;
+  readonly dropTypeCode: string;
+  readonly quantityTotal: number;
+  readonly quantityAvailable: number;
+  readonly pricePaise: number;
+  readonly pickupStartAt: string;
+  readonly pickupEndAt: string;
+  readonly restaurantPk: string;
+  readonly restaurantName: string;
+  readonly restaurantSlug: string;
+  readonly neighborhoodName: string | null;
+  readonly bagDisplayName: string;
+  readonly bagShortDescription: string | null;
+  readonly dietaryCategoryCode: DietaryCategoryCode;
+  readonly spiceLevelCode: SpiceLevelCode | null;
+  readonly servesMin: number | null;
+  readonly servesMax: number | null;
+  readonly maxHoldingMinutes: number | null;
+  readonly holdingGuidanceText: string | null;
+  readonly minMenuValuePaise: number | null;
+  readonly allergenSummaryText: string | null;
+  readonly allergenCodes: readonly string[];
+}
+
+export interface ClaimCreationResult {
+  readonly claimIntent: ClaimIntent;
+  readonly alreadyHeld: boolean;
+  readonly confirmationHref: string;
+}
+
 export interface PortalBagTemplate {
   readonly templatePk: string;
   readonly templateName: string;
@@ -381,6 +424,7 @@ export interface PortalDrop {
   readonly dropTitle: string;
   readonly statusCode: DropStatusCode;
   readonly quantityTotal: number;
+  readonly quantityHeld: number;
   readonly quantityAvailable: number;
   readonly pricePaise: number;
   readonly pickupStartAt: string;

@@ -32,7 +32,7 @@ Slice 3.5 supports Hyderabad pilot promotion without notification automation. Op
 
 1. Open the copied drop URL on `https://customer.gozaika.in/`.
 2. Confirm restaurant, title, dietary category, allergens, price, pickup window, and available quantity render clearly.
-3. Confirm the page still says claim/payment are coming in Slice 4A.
+3. Confirm claim holds are available only for eligible active/scheduled drops and still say payment is not charged yet.
 4. Use `Copy link` or native `Share` on the drop detail page.
 
 ## Admin Smoke Test

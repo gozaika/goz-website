@@ -44,6 +44,7 @@ Owned domains also include `gozaik.in` and `gozaika.com`. Treat these as reserve
 - Keep names consistent so code paths do not branch by variable names.
 - Consumer and restaurant projects must include Supabase Auth redirect URLs for their `/auth/callback` routes.
 - Slice 3 requires the `api_public_drop_card` view and `drop_drop` Realtime path to be deployed in the target Supabase environment.
+- Slice 4A requires migration `20260518002000_slice4a_claim_hold_order_intent.sql` and the existing `release-expired-holds` Edge Function path before enabling claim holds.
 
 ## Rollback procedure
 

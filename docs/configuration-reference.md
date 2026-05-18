@@ -45,8 +45,11 @@ Owned but not necessarily routed domains: `gozaik.in`, `gozaika.com`.
 - Enable RLS.
 - Add anonymous INSERT policies and authenticated SELECT policies.
 - Apply Slice 3 migration `20260513000000_slice3_drop_publishing_discovery.sql` before relying on consumer discovery.
+- Apply Slice 4A migration `20260518002000_slice4a_claim_hold_order_intent.sql` before deploying claim holds.
 - Grant anon/authenticated read to `api_public_drop_card`.
+- Grant authenticated read to `api_claim_hold_summary`.
 - Enable Realtime for `drop_drop` inventory/status updates if live client updates are required in the target environment.
+- Deploy or schedule the `release-expired-holds` Supabase Edge Function so expired Slice 4A holds return availability.
 - Add Supabase Auth redirect URLs for:
   - `https://customer.gozaika.in/auth/callback`
   - `https://restaurant.gozaika.in/auth/callback`

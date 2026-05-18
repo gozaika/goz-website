@@ -104,6 +104,14 @@ Use this order for a clean rebuild:
    npm run dev:admin
    ```
 
+9. Recreate Slice 4A claim holds after Slices 0, 1, 2, 3, and 3.5 are available:
+
+   - Apply migration `20260518002000_slice4a_claim_hold_order_intent.sql`.
+   - Deploy `customer.gozaika.in`, `restaurant.gozaika.in`, and `admin.gozaika.in`.
+   - Confirm the existing `release-expired-holds` Supabase Edge Function is deployed and can call `api_release_expired_inventory_holds`.
+   - Use a signed-in consumer with operational consent to open a public active/scheduled drop and create one temporary hold.
+   - Do not configure Razorpay, WATI, pickup QR/OTP, refunds, or settlement env vars for Slice 4A.
+
 ## Slice 0: Foundation
 
 ### Goal
@@ -302,7 +310,7 @@ Consumer web:
 
 1. Open the shared drop URL.
 2. Confirm restaurant, title, dietary category, allergens, price, pickup window, and quantity appear clearly.
-3. Confirm claim/payment remains unavailable and points to Slice 4A.
+3. Confirm eligible drops expose a hold CTA and still say payment is not charged yet.
 4. Confirm copy/share controls show visible success or failure feedback.
 
 Admin portal:
@@ -332,7 +340,7 @@ Safety:
 
 | App | What you should see now |
 | --- | --- |
-| `apps/consumer-web` / `https://customer.gozaika.in/` | `/drops` cards and `/drops/[id]` expose copy/share actions. Drop detail remains a public, no-login destination with dietary, allergen, pickup, price, quantity, and Slice 4A claim-unavailable state. |
+| `apps/consumer-web` / `https://customer.gozaika.in/` | `/drops` cards and `/drops/[id]` expose copy/share actions. Drop detail remains a public destination with dietary, allergen, pickup, price, quantity, and Slice 4A claim holds for eligible drops. |
 | `apps/restaurant-mgmt-web` / `https://restaurant.gozaika.in/` | Approved active restaurants can publish a drop and immediately copy the public link or WhatsApp-safe alert. Recent active/scheduled public drops show the same launch comms panel. |
 | `apps/admin-web` / `https://admin.gozaika.in/` | `/admin/drops` lists active/scheduled public drops with copyable public links and matching alert text for manual launch support. |
 | `apps/website` / `https://gozaika.in/` | No Slice 3.5 functional changes. |
@@ -340,7 +348,67 @@ Safety:
 
 ### Out Of Scope
 
-No WATI integration, notification outbox, scheduled/background sends, campaign management, Razorpay, payment, order holds, claim intent, pickup verification, settlements, Swaad Club, referrals, or native mobile work.
+No WATI integration, notification outbox, scheduled/background sends, campaign management, Razorpay, payment, pickup verification, settlements, Swaad Club, referrals, or native mobile work.
+
+## Slice 4A: Claim Hold / Order Intent
+
+### Goal
+
+Let a signed-in consumer temporarily reserve one public active/scheduled BAM Bag without oversell, while keeping Razorpay payment capture, confirmed orders, and pickup proof out of scope.
+
+### Completed
+
+- [x] Add migration `20260518002000_slice4a_claim_hold_order_intent.sql`.
+- [x] Update `api_create_inventory_hold` to accept public `ACTIVE` or `SCHEDULED` drops, keep row-lock/idempotency behavior, require an authenticated consumer profile, and append `drop_inventory_event`.
+- [x] Add `api_claim_hold_summary`, a safe hold/order-intent read model for own consumer holds, own-restaurant support visibility, and verified platform admins.
+- [x] Add consumer `POST /api/claims` with `claimRequestSchema`, login-required handling, duplicate active-hold protection, public claimability checks, idempotency key support, and typed `ApiResponse<ClaimCreationResult>`.
+- [x] Replace the Slice 3 disabled claim state on cards/detail with `Hold this BAM Bag` for claimable drops and specific disabled reasons for sold out, paused, closed, cancelled, expired, or unavailable drops.
+- [x] Preserve anonymous claim intent through `/auth/login?next=/drops/{dropPk}?claim=1`, OAuth callback, and consent capture when required.
+- [x] Add `/checkout/[holdPk]` hold confirmation showing restaurant, drop, dietary/allergen disclosures, pickup window, price, quantity held, expiry timestamp/countdown, and payment-coming-next copy.
+- [x] Add account current holds so consumers can find active/recent payment-pending claim intents.
+- [x] Show held/not-paid count in restaurant recent drops.
+- [x] Extend admin `/admin/drops` with active/recent hold support metadata without exposing private compliance data or payment/provider data.
+- [x] Document hold expiry operations and remote migration steps.
+
+### Validation Gate
+
+A signed-in consumer can claim a public active/scheduled drop with available quantity, receive a visible temporary hold confirmation, and return to the drop to see reduced availability. Anonymous consumers are routed through login and returned to the claim flow. Repeated clicks/retries do not create duplicate active holds for the same consumer/drop, and the database RPC remains the atomic oversell guard.
+
+### Remote Migration Steps
+
+Apply this migration to the target Supabase project before deploying the Slice 4A app code:
+
+```powershell
+Get-Content -Raw supabase/migrations/20260518002000_slice4a_claim_hold_order_intent.sql
+```
+
+Review the SQL, then run the exact file contents once in the Supabase Dashboard SQL editor for the remote project, or through the approved remote migration process used for previous slices. Verify:
+
+```sql
+select to_regprocedure('public.api_create_inventory_hold(uuid,text,integer,integer)');
+select to_regclass('public.api_claim_hold_summary');
+```
+
+### Verification Commands
+
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/utils run typecheck
+npm.cmd --workspace @gozaika/ui run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+```
+
+### Out Of Scope
+
+No Razorpay order creation, Checkout.js, payment capture, payment verification, webhook processing, paid/confirmed order status, pickup QR/OTP, refunds, settlements, payouts, invoices, WATI/email/push sends, notification outbox processing, campaign management, Swaad Club, referrals, native mobile parity, or destructive admin hold cancellation.
 
 ## Slice 3 Follow-Up Activities Required For Complete Functionality
 
@@ -377,7 +445,6 @@ These are operational/configuration steps needed after code merge/deploy:
 
 | Slice | Revised Name | Scope | Gate |
 | --- | --- | --- | --- |
-| 4A | Claim Hold / Order Intent | Claim button, auth gate, inventory hold transaction, hold expiry, order draft/payment-pending state. | Consumer reserves a bag temporarily without oversell. |
 | 4B | Razorpay Payment & Order Confirmation | Razorpay order creation, verified webhook, paid/confirmed order, QR/OTP. | Consumer pays and sees confirmed pickup proof. |
 | 5 | Pickup Verification & Incident Basics | Staff verification MVP, collected status, no-show path, minimal incident creation. | Restaurant verifies pickup and can log launch incidents. |
 | 6 | Transactional Notifications | WhatsApp/email outbox, confirmations, pickup reminders, merchant alerts. | Confirmation and reminder messages are delivered. |

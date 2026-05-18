@@ -21,8 +21,8 @@ export default async function AdminPage() {
             <p className="mt-2 text-sm text-black/65">Review compliance, documents, and activation status.</p>
           </Link>
           <Link className="rounded-lg border border-black/10 bg-white p-5 transition hover:border-[#1A5C38]" href="/admin/drops">
-            <h2 className="text-xl font-bold">Manual drop comms</h2>
-            <p className="mt-2 text-sm text-black/65">Copy public links and WhatsApp-safe alerts for active or scheduled drops.</p>
+            <h2 className="text-xl font-bold">Drop and hold ops</h2>
+            <p className="mt-2 text-sm text-black/65">Copy launch alerts and inspect temporary claim holds for active or scheduled drops.</p>
           </Link>
         </div>
       </section>

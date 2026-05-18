@@ -6,6 +6,7 @@ import {
   formatPaise,
   formatPickupWindow,
   generateManualDropAlertText,
+  getDropClaimAvailability,
   normalizeIndianPhone,
   resolveLatestConsent,
   slugifyRestaurantName,
@@ -76,6 +77,24 @@ describe("manual drop launch comms", () => {
 
     expect(message).toContain("Availability: Not available to claim right now");
     expect(message).toContain("Status: Sold out");
+  });
+});
+
+describe("claim availability", () => {
+  const futurePickupEndAt = "2026-05-18T18:30:00.000Z";
+  const now = new Date("2026-05-18T17:00:00.000Z");
+
+  it("allows active and scheduled drops with available quantity", () => {
+    expect(getDropClaimAvailability({ statusCode: "ACTIVE", quantityAvailable: 1, pickupEndAt: futurePickupEndAt }, now).canClaim).toBe(true);
+    expect(getDropClaimAvailability({ statusCode: "SCHEDULED", quantityAvailable: 2, pickupEndAt: futurePickupEndAt }, now).canClaim).toBe(true);
+  });
+
+  it("explains unavailable claim states", () => {
+    expect(getDropClaimAvailability({ statusCode: "PAUSED", quantityAvailable: 3, pickupEndAt: futurePickupEndAt }, now).reason).toBe("Paused by restaurant");
+    expect(getDropClaimAvailability({ statusCode: "ACTIVE", quantityAvailable: 0, pickupEndAt: futurePickupEndAt }, now).reason).toBe("Sold out");
+    expect(
+      getDropClaimAvailability({ statusCode: "ACTIVE", quantityAvailable: 3, pickupEndAt: "2026-05-18T16:00:00.000Z" }, now).reason,
+    ).toBe("Pickup window closed");
   });
 });
 
