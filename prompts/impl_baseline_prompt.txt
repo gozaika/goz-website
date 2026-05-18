@@ -1,6 +1,259 @@
+Do not modify source code. This is only a planning exercise.
+
+Now i want to focus on constructing a comprehensive prompt for next development iteration.
+
+Review \project docs\goZaika_Technology_Specification_v2.docx and determine scope for next implementation. Give me a detailed comprehensive prompt that I can use in codex next chat on this project. The prompt should be comprehensive such that i can apply this at a later time if I need to recreate entire project from gounds up. Construct the prompt such that it makes codex most efficient and precise in implementing it.
+
+UI must have responsive layout, visible buttons, clear errors, fast primary workflow, no dead-end screens, and Playwright/screenshot checks for critical pages. Prevent “functionally present but visually broken” issues.
+
+Ensure your prompt addresses documents update. Execially implementation-plan.doc, which will be used to recreate entire imeplementation from grounds up on codex again.
+
+Advise on following 2 questions
+1) Is it better to start next development iteration on a new chat. Does that help you to start with a clean context window? What can i do to make you more efficient. For example, in this chat window, i notice you have started to loose quality towards the end. is it because you are hitting athreshhold on compute?
+
+2) I need to do a phase focused on UX and layout design. I am thinking i will go through entire development including mobile apps and then tackle layout finnese for all apps together. Do you think this approach makes sense? Prehap it is prudent to ask explicitly codex to maintain a high stanard of layout design and UX.
+
+===
+You are Codex working in the goZaika monorepo. This is an implementation task, not just planning.
+
+Important: do not assume local Supabase is current. I am primarily testing against remote deployed instances:
+- Website: https://gozaika.in/
+- Consumer web: https://customer.gozaika.in/
+- Restaurant portal: https://restaurant.gozaika.in/
+- Admin portal: https://admin.gozaika.in/
+
+At the end of the project I will bring local Supabase up to date. During this iteration, use whatever repository checks, browser checks, migrations, remote-safe verification, and documentation updates are needed to make the implementation reliable.
+
+Current completed slices:
+- Slice 0: Foundation
+- Slice 1: Auth/Profile
+- Slice 2: Restaurant Onboarding
+- Slice 3: First Drop Publishing & Consumer Discovery
+
+Next implementation:
+Slice 3.5 — Manual Launch Comms Support
+
+Read first:
+- `project docs/goZaika_Technology_Specification_v2.docx`
+- `project docs/claude_goZaika_Master_Business_Document_v3.docx`
+- `docs/implementation-plan.md`
+- Current Slice 3 product/docs/runbooks
+- Existing apps/packages source before editing
+
+Apply these capabilities:
+- Product manager: keep this pilot-first and launch-useful.
+- Senior full-stack engineer: implement narrowly and cleanly across apps/packages.
+- UX designer: make flows fast, obvious, and polished for busy restaurant/admin users.
+- Database/RLS engineer: keep public/private boundaries safe.
+- Launch-ops specialist: support manual WhatsApp and partner comms without premature automation.
+- QA engineer: verify with typecheck/lint/build and browser smoke tests where possible.
+- Technical writer: update rebuild docs so a future Codex run can recreate the slice from scratch.
+
+Goal:
+Enable goZaika operators and restaurant staff to manually promote published drops during the Hyderabad pilot without building the full notification automation system yet.
+
+Business reason:
+goZaika needs first-drop visibility and WhatsApp-friendly sharing before payment/claim automation. Slice 3.5 should help restaurants/admins copy clear, safe, branded drop alerts and share public drop links while keeping the product scope small.
+
+Scope:
+1. Public shareable drop links
+- Every consumer-visible drop detail page should have a stable shareable URL.
+- Drop cards/detail pages should expose a copy/share action where appropriate.
+- The shared link should open the public consumer drop detail page.
+- Do not require login to view public active/scheduled drop details that are already intended for discovery.
+
+2. WhatsApp-safe drop alert copy
+- Add a shared helper that generates a concise manual drop alert from drop fields.
+- Include restaurant name, drop title, pickup window, price, quantity/availability, dietary category, allergen note, pickup location/context if available, and public drop URL.
+- Copy should be plain text, WhatsApp-friendly, not overly promotional, and should not claim guaranteed contents beyond what the drop data supports.
+- Include a safety line such as “Check allergens before claiming” when allergen data exists.
+- Avoid emojis unless existing brand/product docs strongly support them.
+
+3. Restaurant portal support
+- On recent drops/drop detail/drop publish success states, give restaurant users actions to:
+  - copy public drop link
+  - copy WhatsApp/drop alert text
+  - preview the generated message
+- Keep this fast for busy restaurant staff.
+- Do not add complex campaign management.
+
+4. Admin portal support
+- Add a narrow admin/operator way to copy the same drop alert text and public link for any active/scheduled published drop.
+- If an admin drops list/detail already exists, integrate there.
+- If not, add the smallest useful ops surface consistent with existing admin patterns.
+- Admin must be able to support manual launch comms without touching the database directly.
+
+5. Consumer web support
+- Drop detail should be suitable as the destination for a shared link.
+- Ensure public page displays core drop information clearly:
+  - restaurant
+  - title
+  - dietary category
+  - allergens
+  - price
+  - pickup window
+  - available quantity/live count if already supported
+  - claim unavailable/coming-next-slice state, if payment is not implemented
+
+6. Optional Web Share API
+- If appropriate, use native `navigator.share` on supported browsers with fallback to clipboard.
+- Do not make this brittle; clipboard fallback is enough.
+
+Non-goals:
+- Do not implement WATI integration.
+- Do not implement notification outbox processing.
+- Do not implement scheduled/background sends.
+- Do not implement Razorpay, payment, order holds, claim intent, pickup verification, settlements, Swaad Club, referrals, or native mobile.
+- Do not build a full campaign manager.
+- Do not send real WhatsApp messages from the app.
+- Do not expose service-role operations to the browser.
+- Do not require local Supabase to be fully seeded for the implementation to be valid.
+
+Success criteria:
+- A published active/scheduled drop has a public consumer detail URL.
+- A restaurant user can copy the public drop link.
+- A restaurant user can copy a WhatsApp-ready drop alert message.
+- An admin/operator can copy the same public link and alert message for launch support.
+- The generated message is consistent across apps because it uses shared logic or a clearly centralized implementation.
+- Consumer drop detail is good enough to receive traffic from WhatsApp.
+- The implementation remains Slice 3.5 only and does not pull in Slice 4A/payment/order logic.
+- `docs/implementation-plan.md` explains how to recreate Slice 3.5 from scratch.
+- Relevant product/runbook/config docs are updated.
+- Typecheck, lint, and builds pass for touched packages/apps unless a documented external blocker prevents it.
+
+Risk areas:
+- Public/private boundary: public drop pages must only expose safe public discovery data.
+- Clipboard/share behavior: must gracefully handle unsupported browsers.
+- Stale or unavailable drop data: generated copy must not promise bags are available if the drop is sold out/closed/paused.
+- Allergen/dietary safety: alerts must include allergen visibility and avoid unsafe wording.
+- Admin scope creep: keep admin changes narrow and operational.
+- Remote/local mismatch: document any migration/deploy steps needed because remote is my main test target.
+- Mobile layout: WhatsApp-shared landing pages should be usable on phone-sized screens.
+
+Current known state:
+- Slice 3 already supports bag templates, drop creation/publishing, consumer discovery, and live-ish count paths.
+- Restaurant portal currently supports template/drop workflows.
+- Consumer web has drop discovery/detail surfaces.
+- Admin portal has onboarding/review surfaces and may have limited drop operations.
+- Supabase migrations for Slice 3 may exist in the repo, but local DB may not be current.
+- Remote Vercel deployments are my primary validation target.
+- Domains currently in use are `gozaika.in`, `customer.gozaika.in`, `restaurant.gozaika.in`, and `admin.gozaika.in`.
+- I also own `gozaik.in` and `gozaika.com`, but do not change domain routing unless specifically needed and documented.
+
+Data/database expectations:
+- Prefer deriving share copy from existing public drop card/detail data.
+- Add a migration only if necessary.
+- If a migration is needed, make it idempotent and document exactly how I should apply it remotely.
+- Do not rely on service-role keys in client code.
+- Preserve RLS assumptions and document any policy implications.
+
+API expectations:
+- Reuse existing API/public query paths where practical.
+- If adding an endpoint, keep response shape typed and minimal.
+- Do not create APIs that expose private restaurant/compliance/admin data.
+
+UI/UX expectations:
+- Use existing app design patterns.
+- Buttons must be visibly clickable, keyboard accessible, and have clear success/error feedback.
+- Copy actions should show confirmation such as “Copied”.
+- Error states should be visible and specific, not silent.
+- Keep restaurant flow extremely fast: staff should be able to publish a drop and copy/share the alert immediately.
+- Maintain a high standard of layout and responsive behavior now; do not leave obvious UX cleanup for later.
+
+Docs contract:
+Update documentation as part of this slice.
+
+Must update:
+- `docs/implementation-plan.md`
+  - Add Slice 3.5 in the rebuild sequence.
+  - Include exact implementation steps, files/modules changed, database/migration notes, verification commands, manual smoke tests, and expected app behavior.
+  - Keep it suitable for rebuilding the project from ground up with Codex in a future chat.
+- Relevant product doc for drop publishing/discovery or create a Slice 3.5 manual launch comms doc if cleaner.
+- Relevant runbook/docs for operator usage and remote deployment/testing.
+- Configuration reference only if new env vars/configs are introduced.
+- Deployment docs only if deploy or migration steps change.
+
+Implementation-plan requirement:
+`docs/implementation-plan.md` is the canonical rebuild guide. After this slice, a future Codex agent should be able to read it and reconstruct Slices 0, 1, 2, 3, and 3.5 without needing this chat.
+
+Verification commands:
+Run the appropriate checks for all touched workspaces, likely including:
+- `npm.cmd --workspace @gozaika/types run typecheck`
+- `npm.cmd --workspace @gozaika/customer-web run typecheck`
+- `npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck`
+- `npm.cmd --workspace @gozaika/admin-web run typecheck`
+- `npm.cmd --workspace @gozaika/customer-web run lint`
+- `npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint`
+- `npm.cmd --workspace @gozaika/admin-web run lint`
+- Build commands for touched apps
+
+If package names differ, inspect `package.json` and use the correct workspace names.
+
+Remote/browser verification:
+Use browser tooling if available to smoke-test the deployed or local app surfaces. Since my main testing target is remote, clearly separate:
+- what was verified locally/source-level
+- what requires deployment before remote verification
+- what I need to test manually after deploying
+
+current git branch/commit status:
+
+Note that remote migrations have already been applied
+
+
+Manual smoke tests to document:
+1. Restaurant portal:
+- Sign in as an approved restaurant user.
+- Create or use an active template.
+- Publish a drop.
+- Copy public drop link.
+- Copy WhatsApp alert text.
+- Open copied link in a private/incognito browser.
+
+2. Consumer web:
+- Open the shared drop URL.
+- Confirm drop details render clearly.
+- Confirm allergen/dietary/pickup/price/quantity information appears.
+- Confirm claim/payment is still not available if Slice 4 is not implemented.
+
+3. Admin portal:
+- Sign in as admin/operator.
+- Find active/scheduled drop.
+- Copy public link and alert message.
+- Confirm the copied message matches the restaurant version.
+
+4. Safety:
+- Confirm paused/closed/sold-out drops do not generate misleading “available now” copy.
+- Confirm allergen information is present when available.
+
+Deployment/operator notes:
+At the end, tell me:
+- whether any Supabase migration must be applied remotely
+- whether any environment variables must be added to Vercel
+- whether any Vercel redeploys are required and for which apps
+- whether Realtime settings need any change
+- whether I need to refresh seed/demo data
+- exact manual steps I should perform in remote Supabase/Vercel/admin portals
+
+Final response format:
+- Summary of what changed
+- Files changed
+- Verification performed and results
+- Remote deployment/operator steps I must perform
+- What I can expect to see in each app after deployment
+- Any follow-up activities for Slice 3.5 completion========
+From above slice 3 implementation
+1) Keep all docs updated. 
+2) implementation-plan.md must allow me to reimplement all slices from grounds up with codex. Ensure slice 3 is added to implementation-plan.md.
+3) List follow-up activities i have to perform to make this slice completely functional 
+4) what can i expect to see in each app now after this release with slice 3.
+5) Note that i have purchase gozaik.in and gozaika.com domains. Current state of apps can be accessed on vercel at https://gozaika.in/, https://customer.gozaika.in/,  https://restaurant.gozaika.in/ and https://admin.gozaika.in/
+
+
+
+====
 Slice 0, 1 and 2 are implemented and tested. I want to create a comprehensive prompt for slice 3. Below is the prompt for slice 2 for reference. Attached is implementation-plan.md detailing what was done in previous slices. Include following requests in the prmpt 
 1) Keep docs updated. 
-2) implementation-plan.md must allow me to reimplement all slices from grounds up with codex. Add slice 3 to implementation-plan.md.
+2) implementation-plan.md must allow me to reimplement all slices from grounds up with codex. Ensure slice 3 is added to implementation-plan.md.
 3) List follow-up activities i have to perform to make this slice completely functional 
 4) what can i expect to see in each app now after this release with slice 3.
 5) Current state of apps can be accessed on vercel at https://gozaika.in/, https://customer.gozaika.in/,  https://restaurant.gozaika.in/ and https://admin.gozaika.in/

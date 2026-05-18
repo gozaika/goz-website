@@ -1,0 +1,156 @@
+
+Fill only the blanks in teplate and keep the rest. This is to reduces ambiguity, and keeps codeex from drifting into “generic feature build” mode.
+====TEMPLATE
+You are Codex working in C:\venkat\limca\gozaika\sourcecode.
+
+MODE
+- This is an implementation task.
+- Make code changes unless blocked.
+- Do not stop at a proposal.
+- Preserve unrelated user changes.
+- Run verification before final response.
+
+SLICE
+- Slice name:
+- Slice number:
+- Phase:
+- Business goal:
+- User-facing proof point:
+
+PROJECT CONTEXT
+- Current deployed surfaces:
+  - Website: https://gozaika.in/
+  - Consumer web: https://customer.gozaika.in/
+  - Restaurant portal: https://restaurant.gozaika.in/
+  - Admin portal: https://admin.gozaika.in/
+- Owned domains: gozaik.in, gozaika.com
+- Baseline roadmap: project docs/goZaika_Technology_Specification_v2.docx
+- Rebuild source of truth: docs/implementation-plan.md
+- Current completed slices:
+  - Slice 0:
+  - Slice 1:
+  - Slice 2:
+  - Slice 3:
+- Migrations already applied:
+- Known deployment/env state:
+
+EXPERTISE TO APPLY
+- Product manager: keep scope pilot-first and launch-useful.
+- Senior full-stack engineer: follow existing repo patterns and vertical-slice architecture.
+- Database/RLS engineer: protect tenancy, service-role boundaries, and public/private data separation.
+- UX designer: optimize for fast, obvious workflows with clear mobile/desktop layouts.
+- Food-safety/compliance reviewer: treat allergen, dietary, pickup, and restaurant identity as safety-critical.
+- Payments/security reviewer: apply only if this slice touches payment/auth/webhooks/RLS.
+- QA engineer: define validation gates and run focused checks.
+- Technical writer: update docs so future Codex can rebuild from ground zero.
+
+READ FIRST
+1. Run git status.
+2. Read docs/implementation-plan.md.
+3. Read relevant roadmap section in project docs/goZaika_Technology_Specification_v2.docx.
+4. Read these files before editing:
+   - [list files/modules]
+5. Inspect existing patterns before adding abstractions.
+
+SCOPE / MUST INCLUDE
+- 
+- 
+- 
+
+OUT OF SCOPE / MUST NOT INCLUDE
+- 
+- 
+- 
+
+USER FLOWS
+Consumer:
+- 
+
+Restaurant:
+- 
+
+Admin/Ops:
+- 
+
+Mobile:
+- 
+
+DATA / DATABASE REQUIREMENTS
+- Prefer additive migrations.
+- Do not edit historical migrations unless fixing idempotency.
+- RLS and service-role usage must be reviewed.
+- Public views must expose only safe fields.
+- Tables/views/RPCs/functions likely involved:
+  - 
+- Migration naming convention:
+  - supabase/migrations/YYYYMMDDHHMMSS_sliceX_short_name.sql
+
+API REQUIREMENTS
+- 
+- 
+- 
+
+UI / UX REQUIREMENTS
+- Maintain production-quality layout.
+- Buttons must be visible, labeled, accessible, and responsive.
+- Avoid dead-end screens.
+- Errors must explain what to correct.
+- Success states must be clear.
+- Primary workflow should be fast for the target user.
+- Use existing design tokens/components where possible.
+- Do not add marketing/landing-page fluff inside operational apps.
+
+SECURITY / COMPLIANCE REQUIREMENTS
+- No service-role key in client code.
+- No private docs/media exposed publicly.
+- No PII in logs.
+- RLS/tenant checks required for:
+  - 
+- Human review required for:
+  - auth
+  - payment webhook
+  - RLS
+  - refund/financial mutation
+  - destructive admin action
+
+DOCS REQUIREMENTS
+Update docs in the same implementation:
+1. docs/implementation-plan.md
+   - Add/update slice section.
+   - Include goal, completed items, validation gate, out-of-scope, verification commands.
+   - Keep it usable to recreate all slices from ground zero.
+2. Product/runbook docs:
+   - 
+3. Configuration/deployment docs if env/domain/migration behavior changes:
+   - docs/configuration-reference.md
+   - docs/deployment-pipeline.md
+4. Update DOCX roadmap only if roadmap/scope materially changes:
+   - project docs/goZaika_Technology_Specification_v2.docx
+   - If editing DOCX, use Documents skill and render/visually verify.
+
+DEMO / SEED REQUIREMENTS
+- Add deterministic demo data if needed.
+- Register demo rows in dev_demo_seed_registry where applicable.
+- Update cleanup scripts if demo rows are added.
+- Do not seed production data.
+- Add/update smoke SQL if useful.
+
+VALIDATION GATE
+This slice is complete only when:
+- 
+- 
+- 
+
+VERIFICATION COMMANDS
+Run focused checks:
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
