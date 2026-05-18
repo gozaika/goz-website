@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  createPublicDropUrl,
   createIdempotencyKey,
   createPickupQrPayload,
   formatPaise,
   formatPickupWindow,
+  generateManualDropAlertText,
   normalizeIndianPhone,
   resolveLatestConsent,
   slugifyRestaurantName,
@@ -32,6 +34,48 @@ describe("consent resolution", () => {
 describe("pickup window formatting", () => {
   it("formats pickup windows in India time by default", () => {
     expect(formatPickupWindow("2026-04-25T12:30:00.000Z", "2026-04-25T13:30:00.000Z")).toContain("6:00");
+  });
+});
+
+describe("manual drop launch comms", () => {
+  const drop = {
+    dropPk: "33000000-0000-0000-0000-000000000001",
+    dropTitle: "Chef's mystery dinner bag",
+    restaurantName: "Biryani Baithak",
+    neighborhoodName: "Banjara Hills",
+    dietaryCategoryCode: "NON_VEG",
+    allergenSummaryText: "May contain dairy and gluten.",
+    allergenCodes: ["DAIRY", "GLUTEN"],
+    pricePaise: 34900,
+    pickupStartAt: "2026-04-25T12:30:00.000Z",
+    pickupEndAt: "2026-04-25T13:30:00.000Z",
+    quantityTotal: 10,
+    quantityAvailable: 7,
+    statusCode: "ACTIVE",
+  };
+
+  it("builds stable public drop URLs", () => {
+    expect(createPublicDropUrl(drop.dropPk)).toBe(
+      "https://customer.gozaika.in/drops/33000000-0000-0000-0000-000000000001",
+    );
+  });
+
+  it("generates WhatsApp-safe alert text from drop fields", () => {
+    const message = generateManualDropAlertText(drop);
+
+    expect(message).toContain("Restaurant: Biryani Baithak");
+    expect(message).toContain("Availability: 7 of 10 bags shown as available");
+    expect(message).toContain("Dietary: Non-Veg");
+    expect(message).toContain("Allergens: DAIRY, GLUTEN. May contain dairy and gluten.");
+    expect(message).toContain("Check allergens before claiming.");
+    expect(message).toContain("https://customer.gozaika.in/drops/33000000-0000-0000-0000-000000000001");
+  });
+
+  it("does not imply unavailable drops are claimable", () => {
+    const message = generateManualDropAlertText({ ...drop, statusCode: "PAUSED", quantityAvailable: 0 });
+
+    expect(message).toContain("Availability: Not available to claim right now");
+    expect(message).toContain("Status: Sold out");
   });
 });
 

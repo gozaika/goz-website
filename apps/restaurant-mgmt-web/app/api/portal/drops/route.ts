@@ -2,7 +2,7 @@ import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { NextResponse } from "next/server";
 import { createDropDraftSchema } from "@gozaika/types";
 import { getPortalActor } from "@/lib/portal-auth";
-import { loadDefaultRestaurant, loadPortalDrops } from "@/lib/slice3";
+import { loadDefaultRestaurant, loadPortalDrops, loadPublicDropsByDropPks } from "@/lib/slice3";
 
 export async function GET() {
   const actor = await getPortalActor();
@@ -103,5 +103,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Could not publish this drop." }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, data: { dropPk: drop.drop_drop_pk, statusCode: drop.drop_status_code } }, { status: 201 });
+  const [publicDrop] = await loadPublicDropsByDropPks([drop.drop_drop_pk]);
+
+  return NextResponse.json(
+    { ok: true, data: { dropPk: drop.drop_drop_pk, statusCode: drop.drop_status_code, publicDrop: publicDrop ?? null } },
+    { status: 201 },
+  );
 }

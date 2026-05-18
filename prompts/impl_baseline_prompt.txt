@@ -139,6 +139,8 @@ Current known state:
 - Remote Vercel deployments are my primary validation target.
 - Domains currently in use are `gozaika.in`, `customer.gozaika.in`, `restaurant.gozaika.in`, and `admin.gozaika.in`.
 - I also own `gozaik.in` and `gozaika.com`, but do not change domain routing unless specifically needed and documented.
+- current git branch/commit status: All changes committed and pushed.
+- Note that remote migrations have already been applied
 
 Data/database expectations:
 - Prefer deriving share copy from existing public drop card/detail data.
@@ -195,9 +197,6 @@ Use browser tooling if available to smoke-test the deployed or local app surface
 - what requires deployment before remote verification
 - what I need to test manually after deploying
 
-current git branch/commit status:
-
-Note that remote migrations have already been applied
 
 
 Manual smoke tests to document:
@@ -240,7 +239,12 @@ Final response format:
 - Verification performed and results
 - Remote deployment/operator steps I must perform
 - What I can expect to see in each app after deployment
-- Any follow-up activities for Slice 3.5 completion========
+- Any follow-up activities for Slice 3.5 completion
+
+
+
+
+========
 From above slice 3 implementation
 1) Keep all docs updated. 
 2) implementation-plan.md must allow me to reimplement all slices from grounds up with codex. Ensure slice 3 is added to implementation-plan.md.

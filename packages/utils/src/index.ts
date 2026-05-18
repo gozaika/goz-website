@@ -39,6 +39,33 @@ export function formatPickupWindow(
   return `${formatter.format(start)} - ${formatter.format(end)}`;
 }
 
+function formatDropAlertPickupWindow(
+  pickupStartAt: string | Date,
+  pickupEndAt: string | Date,
+  locale = "en-IN",
+  timeZone = "Asia/Kolkata",
+): string {
+  const start = new Date(pickupStartAt);
+  const end = new Date(pickupEndAt);
+  const dateFormatter = new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "short",
+    timeZone,
+  });
+  const timeFormatter = new Intl.DateTimeFormat(locale, {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone,
+  });
+
+  const startDate = dateFormatter.format(start);
+  const endDate = dateFormatter.format(end);
+  const startTime = timeFormatter.format(start);
+  const endTime = timeFormatter.format(end);
+
+  return startDate === endDate ? `${startDate}, ${startTime} - ${endTime}` : `${startDate}, ${startTime} - ${endDate}, ${endTime}`;
+}
+
 export function normalizeIndianPhone(input: string): string {
   const digits = input.replace(/\D/g, "");
   const withoutCountry = digits.startsWith("91") && digits.length === 12 ? digits.slice(2) : digits;
@@ -103,6 +130,82 @@ export function dietaryBadgeLabel(code: string): string {
   };
 
   return labels[code] ?? code;
+}
+
+export const DEFAULT_CUSTOMER_WEB_ORIGIN = "https://customer.gozaika.in";
+
+export interface ManualDropAlertInput {
+  readonly dropPk: string;
+  readonly dropTitle: string;
+  readonly restaurantName: string;
+  readonly neighborhoodName?: string | null;
+  readonly bagDisplayName?: string | null;
+  readonly dietaryCategoryCode: string;
+  readonly allergenSummaryText?: string | null;
+  readonly allergenCodes?: readonly string[] | null;
+  readonly pricePaise: number;
+  readonly pickupStartAt: string;
+  readonly pickupEndAt: string;
+  readonly quantityTotal: number;
+  readonly quantityAvailable: number;
+  readonly statusCode: string;
+}
+
+export function createPublicDropUrl(dropPk: string, origin = DEFAULT_CUSTOMER_WEB_ORIGIN): string {
+  return `${origin.replace(/\/+$/, "")}/drops/${encodeURIComponent(dropPk)}`;
+}
+
+function readableDropStatus(drop: ManualDropAlertInput): string {
+  if (drop.statusCode === "ACTIVE" && drop.quantityAvailable > 0) {
+    return "Active now";
+  }
+
+  if (drop.statusCode === "SCHEDULED" && drop.quantityAvailable > 0) {
+    return "Scheduled";
+  }
+
+  if (drop.quantityAvailable <= 0 || drop.statusCode === "SOLD_OUT") {
+    return "Sold out";
+  }
+
+  return drop.statusCode.replaceAll("_", " ").toLowerCase();
+}
+
+export function generateManualDropAlertText(drop: ManualDropAlertInput, publicDropUrl = createPublicDropUrl(drop.dropPk)): string {
+  const allergenCodes = drop.allergenCodes?.filter(Boolean) ?? [];
+  const allergenText = [
+    allergenCodes.length ? allergenCodes.map((code) => code.replaceAll("_", " ")).join(", ") : null,
+    drop.allergenSummaryText,
+  ]
+    .filter(Boolean)
+    .join(". ");
+  const hasAllergenData = Boolean(allergenText);
+  const availableToPromote = ["ACTIVE", "SCHEDULED"].includes(drop.statusCode) && drop.quantityAvailable > 0;
+  const availability = availableToPromote
+    ? `${drop.quantityAvailable} of ${drop.quantityTotal} bags shown as available`
+    : "Not available to claim right now";
+  const title = drop.dropTitle || drop.bagDisplayName || "BAM Bag";
+  const pickupContext = drop.neighborhoodName ? `${drop.neighborhoodName} pickup` : "Pickup only";
+  const lines = [
+    "goZaika BAM Bag alert",
+    `Restaurant: ${drop.restaurantName}`,
+    `Drop: ${title}`,
+    `Pickup window: ${formatDropAlertPickupWindow(drop.pickupStartAt, drop.pickupEndAt)}`,
+    `Price: ${formatPaise(drop.pricePaise)}`,
+    `Availability: ${availability}`,
+    `Status: ${readableDropStatus(drop)}`,
+    `Dietary: ${dietaryBadgeLabel(drop.dietaryCategoryCode)}`,
+    `Allergens: ${allergenText || "No specific allergen flags listed in this drop data"}`,
+    `Pickup: ${pickupContext}`,
+    `View details: ${publicDropUrl}`,
+  ];
+
+  if (hasAllergenData) {
+    lines.push("Check allergens before claiming.");
+  }
+  lines.push("Availability can change. Please check the drop page before heading to pickup.");
+
+  return lines.join("\n");
 }
 
 export interface ConsentEventLike {

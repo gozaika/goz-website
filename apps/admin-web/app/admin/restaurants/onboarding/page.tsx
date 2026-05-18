@@ -22,7 +22,14 @@ export default async function AdminRestaurantOnboardingPage() {
   return (
     <main>
       <ShellHeader>
-        <span className="text-sm font-semibold text-[#1A5C38]">Admin onboarding</span>
+        <nav className="flex flex-wrap gap-2 text-sm font-semibold">
+          <Link className="text-[#1A5C38]" href="/admin/restaurants/onboarding">
+            Onboarding
+          </Link>
+          <Link className="text-[#1A5C38]" href="/admin/drops">
+            Drops
+          </Link>
+        </nav>
       </ShellHeader>
       <section className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex items-end justify-between gap-4">

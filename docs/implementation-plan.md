@@ -87,7 +87,16 @@ Use this order for a clean rebuild:
    npm run build
    ```
 
-7. Start app surfaces:
+7. Recreate Slice 3.5 manual launch comms after Slice 3 is available:
+
+   - Add shared URL and alert helpers in `packages/utils/src/index.ts`.
+   - Add copy/share UI in `packages/ui/src/launch-comms-actions.tsx`.
+   - Integrate customer share actions on `/drops` cards and `/drops/[id]`.
+   - Integrate restaurant publish success and recent-drop copy panels in `apps/restaurant-mgmt-web/app/portal/drops/new`.
+   - Add admin `/admin/drops` for active/scheduled public drops.
+   - No migration, env var, Realtime, or seed changes are required.
+
+8. Start app surfaces:
 
    ```powershell
    npm run dev:consumer
@@ -202,6 +211,137 @@ No Razorpay, payment capture, inventory hold, order confirmation, pickup QR/OTP,
 - `npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build`
 - `npm.cmd --workspace @gozaika/restaurant-mgmt-web run build`
 
+## Slice 3.5: Manual Launch Comms Support
+
+### Goal
+
+Enable Hyderabad pilot operators and restaurant staff to manually promote public drops with stable consumer links and WhatsApp-safe text before WATI, notification outbox, payment, or claim automation exists.
+
+### Completed
+
+- [x] Keep the public drop destination as consumer-web `/drops/[id]`, backed by the existing safe `api_public_drop_card` view.
+- [x] Add centralized launch copy helpers in `packages/utils/src/index.ts`: `createPublicDropUrl` and `generateManualDropAlertText`.
+- [x] Add formatter tests in `packages/utils/src/index.test.ts` for stable URLs, allergen safety copy, and unavailable-drop wording.
+- [x] Add reusable clipboard/native-share UI in `packages/ui/src/launch-comms-actions.tsx`.
+- [x] Add consumer-web copy/share controls to `/drops` cards and `/drops/[id]`.
+- [x] Add restaurant portal copy panels on publish success and recent active/scheduled public drops in `/portal/drops/new`.
+- [x] Add admin `/admin/drops` so operators can copy the same public link and alert text without touching Supabase directly.
+- [x] Update product and runbook docs for manual launch operations.
+
+### Shared Copy Contract
+
+`generateManualDropAlertText` must derive text only from public drop fields: restaurant name, drop title, pickup window, price, quantity/availability, status, dietary category, allergen codes/summary, pickup neighborhood/context, and public URL. It must not promise specific bag contents, payment availability, automatic WhatsApp delivery, or guaranteed remaining stock.
+
+When allergen data exists, the alert includes:
+
+```text
+Check allergens before claiming.
+```
+
+Unavailable or sold-out inputs say:
+
+```text
+Availability: Not available to claim right now
+```
+
+### Files And Modules Changed
+
+- `packages/utils/src/index.ts`
+- `packages/utils/src/index.test.ts`
+- `packages/ui/src/index.tsx`
+- `packages/ui/src/launch-comms-actions.tsx`
+- `apps/consumer-web/app/drops/drop-discovery-client.tsx`
+- `apps/consumer-web/app/drops/[id]/page.tsx`
+- `apps/restaurant-mgmt-web/lib/slice3.ts`
+- `apps/restaurant-mgmt-web/app/api/portal/drops/route.ts`
+- `apps/restaurant-mgmt-web/app/portal/drops/new/page.tsx`
+- `apps/restaurant-mgmt-web/app/portal/drops/new/drop-publishing-form.tsx`
+- `apps/admin-web/app/admin/page.tsx`
+- `apps/admin-web/app/admin/restaurants/onboarding/page.tsx`
+- `apps/admin-web/app/admin/drops/page.tsx`
+- `docs/product/drop-publishing-discovery.md`
+- `docs/runbooks/manual-launch-comms.md`
+- `docs/implementation-plan.md`
+
+### Database And RLS Notes
+
+No Slice 3.5 migration is required. Public links and copy use `api_public_drop_card`, which already grants `select` to `anon` and `authenticated` and is constrained by `public.rls_drop_is_public(drop_drop_pk)`. Admin and restaurant server code may use service-role clients for their authenticated portals, but the copied content is still generated from the same public discovery view where possible. No service-role key is exposed to browser code.
+
+### Verification Commands
+
+Run these from repo root on Windows:
+
+```powershell
+npm.cmd --workspace @gozaika/utils run test
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/utils run typecheck
+npm.cmd --workspace @gozaika/ui run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+```
+
+### Manual Smoke Tests
+
+Restaurant portal:
+
+1. Sign in as an approved restaurant user.
+2. Create or use an active template.
+3. Publish an active or scheduled drop.
+4. Copy public drop link.
+5. Copy WhatsApp alert text.
+6. Open the copied link in a private/incognito browser.
+
+Consumer web:
+
+1. Open the shared drop URL.
+2. Confirm restaurant, title, dietary category, allergens, price, pickup window, and quantity appear clearly.
+3. Confirm claim/payment remains unavailable and points to Slice 4A.
+4. Confirm copy/share controls show visible success or failure feedback.
+
+Admin portal:
+
+1. Sign in as admin/operator.
+2. Open `/admin/drops`.
+3. Find an active or scheduled public drop.
+4. Copy the public link and alert message.
+5. Confirm the copied message matches the restaurant version for the same public drop fields.
+
+Safety:
+
+1. Confirm paused, closed, cancelled, draft, and non-public drops do not appear in the admin launch-comms list.
+2. Confirm unavailable/sold-out formatter output does not say bags are available.
+3. Confirm allergen text and the allergen safety line are present when allergen data exists.
+
+### Deployment And Operator Notes
+
+- Supabase migration: none for Slice 3.5.
+- Vercel env vars: none added.
+- Vercel redeploys required: `customer.gozaika.in`, `restaurant.gozaika.in`, and `admin.gozaika.in`.
+- Realtime settings: no change.
+- Seed/demo refresh: not required if remote already has at least one active or scheduled public drop.
+- Remote manual action: after deploy, sign into restaurant/admin portals and run the smoke tests above against remote drops.
+
+### Expected App State After Slice 3.5
+
+| App | What you should see now |
+| --- | --- |
+| `apps/consumer-web` / `https://customer.gozaika.in/` | `/drops` cards and `/drops/[id]` expose copy/share actions. Drop detail remains a public, no-login destination with dietary, allergen, pickup, price, quantity, and Slice 4A claim-unavailable state. |
+| `apps/restaurant-mgmt-web` / `https://restaurant.gozaika.in/` | Approved active restaurants can publish a drop and immediately copy the public link or WhatsApp-safe alert. Recent active/scheduled public drops show the same launch comms panel. |
+| `apps/admin-web` / `https://admin.gozaika.in/` | `/admin/drops` lists active/scheduled public drops with copyable public links and matching alert text for manual launch support. |
+| `apps/website` / `https://gozaika.in/` | No Slice 3.5 functional changes. |
+| Mobile apps | No Slice 3.5 parity yet. |
+
+### Out Of Scope
+
+No WATI integration, notification outbox, scheduled/background sends, campaign management, Razorpay, payment, order holds, claim intent, pickup verification, settlements, Swaad Club, referrals, or native mobile work.
+
 ## Slice 3 Follow-Up Activities Required For Complete Functionality
 
 These are operational/configuration steps needed after code merge/deploy:
@@ -237,7 +377,6 @@ These are operational/configuration steps needed after code merge/deploy:
 
 | Slice | Revised Name | Scope | Gate |
 | --- | --- | --- | --- |
-| 3.5 | Manual Launch Comms Support | Shareable drop link and WhatsApp-safe copy from drop fields. No WATI integration. | Operator can promote a live drop manually. |
 | 4A | Claim Hold / Order Intent | Claim button, auth gate, inventory hold transaction, hold expiry, order draft/payment-pending state. | Consumer reserves a bag temporarily without oversell. |
 | 4B | Razorpay Payment & Order Confirmation | Razorpay order creation, verified webhook, paid/confirmed order, QR/OTP. | Consumer pays and sees confirmed pickup proof. |
 | 5 | Pickup Verification & Incident Basics | Staff verification MVP, collected status, no-show path, minimal incident creation. | Restaurant verifies pickup and can log launch incidents. |

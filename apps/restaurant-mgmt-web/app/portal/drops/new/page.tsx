@@ -1,7 +1,7 @@
 import { ShellHeader } from "@gozaika/ui";
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
-import { loadDefaultRestaurant, loadPortalDrops, loadPortalTemplates } from "@/lib/slice3";
+import { loadDefaultRestaurant, loadPortalDrops, loadPortalTemplates, loadPublicDropsByDropPks } from "@/lib/slice3";
 import { PortalNav } from "../../portal-nav";
 import { DropPublishingForm } from "./drop-publishing-form";
 
@@ -16,6 +16,7 @@ export default async function NewDropPage() {
     loadPortalTemplates(restaurant.restaurantPk),
     loadPortalDrops(restaurant.restaurantPk),
   ]);
+  const launchDrops = await loadPublicDropsByDropPks(drops.map((drop) => drop.dropPk));
 
   return (
     <main>
@@ -28,7 +29,7 @@ export default async function NewDropPage() {
           Publish scheduled or active inventory to consumer discovery. Checkout, holds, payments, and pickup QR remain out of scope for this slice.
         </p>
         <div className="mt-6">
-          <DropPublishingForm templates={templates} drops={drops} />
+          <DropPublishingForm templates={templates} drops={drops} launchDrops={launchDrops} restaurantName={restaurant.restaurantName} />
         </div>
       </section>
     </main>

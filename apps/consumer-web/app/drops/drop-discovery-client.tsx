@@ -1,7 +1,8 @@
 "use client";
 
-import { DropCard, EmptyState } from "@gozaika/ui";
+import { DropCard, DropShareActions, EmptyState } from "@gozaika/ui";
 import type { PublicDropCard } from "@gozaika/types";
+import { createPublicDropUrl, generateManualDropAlertText } from "@gozaika/utils";
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/browser";
 
@@ -62,7 +63,17 @@ export function DropDiscoveryClient({ initialDrops }: { readonly initialDrops: r
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {sortedDrops.map((drop) => (
-        <DropCard key={drop.dropPk} drop={drop} />
+        <DropCard
+          key={drop.dropPk}
+          drop={drop}
+          actions={
+            <DropShareActions
+              publicUrl={createPublicDropUrl(drop.dropPk)}
+              shareText={generateManualDropAlertText(drop)}
+              className="justify-end"
+            />
+          }
+        />
       ))}
     </div>
   );

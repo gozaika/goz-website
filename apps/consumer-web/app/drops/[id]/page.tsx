@@ -1,5 +1,5 @@
-import { AllergenChips, Button, DietaryBadge, ProgressBar, ShellHeader } from "@gozaika/ui";
-import { formatPaise, formatPickupWindow } from "@gozaika/utils";
+import { AllergenChips, Button, DietaryBadge, DropShareActions, ProgressBar, ShellHeader } from "@gozaika/ui";
+import { createPublicDropUrl, formatPaise, formatPickupWindow, generateManualDropAlertText } from "@gozaika/utils";
 import { notFound } from "next/navigation";
 import { loadPublicDrop } from "@/lib/drops";
 
@@ -19,6 +19,8 @@ export default async function DropDetailPage({ params }: { readonly params: Prom
         ? `Serves ${drop.servesMin}`
         : `Serves ${drop.servesMin}-${drop.servesMax}`
       : "Serving guidance pending";
+  const publicDropUrl = createPublicDropUrl(drop.dropPk);
+  const alertText = generateManualDropAlertText(drop, publicDropUrl);
 
   return (
     <main>
@@ -90,6 +92,7 @@ export default async function DropDetailPage({ params }: { readonly params: Prom
           <Button disabled className="mt-5 w-full">
             Claim and payment arrive in Slice 4A
           </Button>
+          <DropShareActions publicUrl={publicDropUrl} shareText={alertText} className="mt-3" />
           <p className="mt-3 text-xs text-[#2D2D2D]/60">
             Slice 3 is discovery-only: no holds, payments, QR codes, or refunds are created from this page yet.
           </p>

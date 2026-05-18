@@ -1,5 +1,5 @@
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
-import type { PortalBagTemplate, PortalDrop } from "@gozaika/types";
+import type { PortalBagTemplate, PortalDrop, PublicDropCard } from "@gozaika/types";
 
 export type ActivePortalRestaurant = {
   readonly restaurantPk: string;
@@ -54,6 +54,60 @@ type TemplateRevisionRelation = {
   readonly allergen_summary_text: string | null;
   readonly included_item_hint_text: string | null;
 };
+
+type PublicDropRow = {
+  readonly drop_drop_pk: string;
+  readonly drop_title: string;
+  readonly drop_status_code: PublicDropCard["statusCode"];
+  readonly drop_type_code: string;
+  readonly quantity_total: number;
+  readonly computed_quantity_available: number;
+  readonly price_paise: number | string;
+  readonly pickup_start_at: string;
+  readonly pickup_end_at: string;
+  readonly restaurant_slug: string;
+  readonly restaurant_name: string;
+  readonly neighborhood_name: string | null;
+  readonly bag_display_name: string;
+  readonly bag_short_description: string | null;
+  readonly dietary_category_code: PublicDropCard["dietaryCategoryCode"];
+  readonly spice_level_code: PublicDropCard["spiceLevelCode"];
+  readonly serves_min: number | string | null;
+  readonly serves_max: number | string | null;
+  readonly max_holding_minutes: number | string | null;
+  readonly holding_guidance_text: string | null;
+  readonly min_menu_value_paise: number | string | null;
+  readonly allergen_summary_text: string | null;
+  readonly allergen_codes: readonly string[] | null;
+};
+
+function mapPublicDrop(row: PublicDropRow): PublicDropCard {
+  return {
+    dropPk: row.drop_drop_pk,
+    dropTitle: row.drop_title,
+    dropTypeCode: row.drop_type_code,
+    restaurantName: row.restaurant_name,
+    restaurantSlug: row.restaurant_slug,
+    neighborhoodName: row.neighborhood_name,
+    bagDisplayName: row.bag_display_name,
+    bagShortDescription: row.bag_short_description,
+    dietaryCategoryCode: row.dietary_category_code,
+    spiceLevelCode: row.spice_level_code,
+    servesMin: row.serves_min == null ? null : Number(row.serves_min),
+    servesMax: row.serves_max == null ? null : Number(row.serves_max),
+    maxHoldingMinutes: row.max_holding_minutes == null ? null : Number(row.max_holding_minutes),
+    holdingGuidanceText: row.holding_guidance_text,
+    minMenuValuePaise: row.min_menu_value_paise == null ? null : Number(row.min_menu_value_paise),
+    allergenSummaryText: row.allergen_summary_text,
+    allergenCodes: row.allergen_codes ?? [],
+    pricePaise: Number(row.price_paise),
+    pickupStartAt: row.pickup_start_at,
+    pickupEndAt: row.pickup_end_at,
+    quantityTotal: row.quantity_total,
+    quantityAvailable: row.computed_quantity_available,
+    statusCode: row.drop_status_code,
+  };
+}
 
 type TemplateRow = {
   readonly catalog_bag_template_pk: string;
@@ -154,4 +208,23 @@ export async function loadPortalDrops(restaurantPk: string): Promise<PortalDrop[
     pickupEndAt: drop.pickup_end_at,
     updatedAt: drop.updated_at,
   }));
+}
+
+export async function loadPublicDropsByDropPks(dropPks: readonly string[]): Promise<PublicDropCard[]> {
+  if (dropPks.length === 0) {
+    return [];
+  }
+
+  const service = createServiceRoleSupabaseClient();
+  const { data, error } = await service
+    .from("api_public_drop_card")
+    .select("*")
+    .in("drop_drop_pk", [...dropPks])
+    .order("pickup_start_at", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return ((data ?? []) as PublicDropRow[]).map(mapPublicDrop);
 }

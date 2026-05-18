@@ -3,6 +3,8 @@ import { Clock, MapPin, ShieldCheck } from "lucide-react";
 import type { PublicDropCard } from "@gozaika/types";
 import { cn, dietaryBadgeLabel, formatPaise, formatPickupWindow } from "@gozaika/utils";
 
+export { DropShareActions, LaunchCommsPanel } from "./launch-comms-actions";
+
 export const tokens = {
   colors: {
     saffron: "#FF6B35",
@@ -148,7 +150,15 @@ export function ProgressBar({ available, total }: { readonly available: number; 
   );
 }
 
-export function DropCard({ drop, className }: { readonly drop: PublicDropCard; readonly className?: string }) {
+export function DropCard({
+  drop,
+  className,
+  actions,
+}: {
+  readonly drop: PublicDropCard;
+  readonly className?: string;
+  readonly actions?: ReactNode;
+}) {
   const soldOut = drop.quantityAvailable <= 0 || drop.statusCode === "SOLD_OUT";
   const serves =
     drop.servesMin && drop.servesMax
@@ -211,6 +221,7 @@ export function DropCard({ drop, className }: { readonly drop: PublicDropCard; r
           {soldOut ? "Sold out" : "Claim opens next slice"}
         </Button>
       </div>
+      {actions ? <div className="mt-3">{actions}</div> : null}
     </article>
   );
 }

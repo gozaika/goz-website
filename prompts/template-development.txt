@@ -10,6 +10,18 @@ MODE
 - Preserve unrelated user changes.
 - Run verification before final response.
 
+Current git state:
+- Branch: main
+- Latest commit: xxxx
+- Expected state: all intended implementation changes are committed and pushed before this slice begins. prompts/impl_baseline_prompt.txt and prompts/template-development.txt will be dirty.
+- Codex must run `git status --short --branch` first and report any dirty files before editing.
+
+Remote migration state:
+- Remote Supabase migrations for prior slices have already been applied.
+- Local Supabase may lag behind remote.
+- Do not assume local DB is current unless verified.
+- If this slice adds a migration, document exactly how I should apply it remotely.
+
 SLICE
 - Slice name:
 - Slice number:

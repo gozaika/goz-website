@@ -1,7 +1,8 @@
 "use client";
 
-import type { PortalBagTemplate, PortalDrop } from "@gozaika/types";
-import { formatPaise, formatPickupWindow } from "@gozaika/utils";
+import type { PortalBagTemplate, PortalDrop, PublicDropCard } from "@gozaika/types";
+import { LaunchCommsPanel } from "@gozaika/ui";
+import { createPublicDropUrl, formatPaise, formatPickupWindow, generateManualDropAlertText } from "@gozaika/utils";
 import { Clock3, Pause, Play, Save, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState } from "react";
@@ -45,9 +46,13 @@ function toIsoDateTime(value: string): string {
 export function DropPublishingForm({
   templates,
   drops,
+  launchDrops,
+  restaurantName,
 }: {
   readonly templates: readonly PortalBagTemplate[];
   readonly drops: readonly PortalDrop[];
+  readonly launchDrops: readonly PublicDropCard[];
+  readonly restaurantName: string;
 }) {
   const router = useRouter();
   const activeTemplates = useMemo(
@@ -70,6 +75,8 @@ export function DropPublishingForm({
   const [pickupEndAt, setPickupEndAt] = useState(
     initialTemplate ? addMinutes(initialStart, initialTemplate.defaultPickupDurationMinutes) : "",
   );
+  const [successLaunchDrop, setSuccessLaunchDrop] = useState<PublicDropCard | null>(null);
+  const launchDropsByPk = useMemo(() => new Map(launchDrops.map((drop) => [drop.dropPk, drop])), [launchDrops]);
 
   function applyTemplateDefaults(template: PortalBagTemplate) {
     const start = nextRoundedStart(template.defaultPickupStartOffsetMinutes);
@@ -156,6 +163,11 @@ export function DropPublishingForm({
         body: JSON.stringify(payload),
       });
       const result = (await response.json().catch(() => ({}))) as {
+        readonly data?: {
+          readonly dropPk?: string;
+          readonly statusCode?: PublicDropCard["statusCode"];
+          readonly publicDrop?: PublicDropCard | null;
+        };
         readonly error?: string;
         readonly errors?: readonly string[];
       };
@@ -170,6 +182,38 @@ export function DropPublishingForm({
       }
 
       const template = selectedTemplate();
+      const publicDrop = result.data?.publicDrop ?? null;
+      const createdDropPk = result.data?.dropPk ?? null;
+      const createdStatusCode = result.data?.statusCode ?? (statusCode as PublicDropCard["statusCode"]);
+      if (publicDrop) {
+        setSuccessLaunchDrop(publicDrop);
+      } else if (createdDropPk && template) {
+        setSuccessLaunchDrop({
+          dropPk: createdDropPk,
+          dropTitle: payload.dropTitle || template.displayName || template.templateName,
+          dropTypeCode,
+          restaurantName,
+          restaurantSlug: "",
+          neighborhoodName: null,
+          bagDisplayName: template.displayName ?? template.templateName,
+          bagShortDescription: template.shortDescription,
+          dietaryCategoryCode: template.dietaryCategoryCode ?? "VEG",
+          spiceLevelCode: template.spiceLevelCode,
+          servesMin: template.servesMin,
+          servesMax: template.servesMax,
+          maxHoldingMinutes: template.maxHoldingMinutes,
+          holdingGuidanceText: template.holdingGuidanceText,
+          minMenuValuePaise: template.minMenuValuePaise,
+          allergenSummaryText: template.allergenSummaryText,
+          allergenCodes: template.allergenCodes,
+          pricePaise: payload.pricePaise,
+          pickupStartAt: payload.pickupStartAt,
+          pickupEndAt: payload.pickupEndAt,
+          quantityTotal: payload.quantityTotal,
+          quantityAvailable: payload.quantityTotal,
+          statusCode: createdStatusCode,
+        });
+      }
       if (template) applyTemplateDefaults(template);
       setFeedback({ kind: "success", text: "Drop saved. Consumer discovery will show it according to its status." });
       router.refresh();
@@ -232,6 +276,14 @@ export function DropPublishingForm({
               </ul>
             ) : null}
           </div>
+        ) : null}
+
+        {successLaunchDrop ? (
+          <LaunchCommsPanel
+            title="Published drop sharing"
+            publicUrl={createPublicDropUrl(successLaunchDrop.dropPk)}
+            alertText={generateManualDropAlertText(successLaunchDrop)}
+          />
         ) : null}
 
         <label className="grid gap-1 text-sm font-medium">
@@ -348,6 +400,26 @@ export function DropPublishingForm({
                     Close
                   </button>
                 </div>
+                {launchDropsByPk.has(drop.dropPk) ? (
+                  <div className="mt-3">
+                    {(() => {
+                      const launchDrop = launchDropsByPk.get(drop.dropPk);
+                      if (!launchDrop) return null;
+                      return (
+                        <LaunchCommsPanel
+                          compact
+                          title="Share this drop"
+                          publicUrl={createPublicDropUrl(launchDrop.dropPk)}
+                          alertText={generateManualDropAlertText(launchDrop)}
+                        />
+                      );
+                    })()}
+                  </div>
+                ) : (
+                  <p className="mt-3 rounded-md border border-dashed border-black/15 bg-black/[0.02] p-2 text-xs text-slate-500">
+                    Public sharing appears for active or scheduled public drops.
+                  </p>
+                )}
               </article>
             ))
           )}
