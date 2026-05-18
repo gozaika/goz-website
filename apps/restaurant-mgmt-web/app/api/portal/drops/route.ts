@@ -46,7 +46,13 @@ export async function POST(request: Request) {
     ? revision?.catalog_bag_template[0]
     : revision?.catalog_bag_template;
 
-  if (revisionError || !revision || template?.restaurant_fk !== restaurant.restaurantPk || template.template_status_code !== "ACTIVE") {
+  if (
+    revisionError ||
+    !revision ||
+    template?.restaurant_fk !== restaurant.restaurantPk ||
+    template.template_status_code !== "ACTIVE" ||
+    template.active_revision_fk !== parsed.data.templateRevisionPk
+  ) {
     return NextResponse.json({ ok: false, error: "Choose an active template for this restaurant." }, { status: 400 });
   }
 

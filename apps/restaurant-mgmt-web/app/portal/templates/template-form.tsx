@@ -2,7 +2,7 @@
 
 import type { PortalBagTemplate } from "@gozaika/types";
 import { formatPaise } from "@gozaika/utils";
-import { Save } from "lucide-react";
+import { CheckCircle2, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
@@ -27,6 +27,7 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [publishingTemplatePk, setPublishingTemplatePk] = useState<string | null>(null);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -66,6 +67,27 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
 
     event.currentTarget.reset();
     setMessage("Template published. You can now create a drop from it.");
+    router.refresh();
+  }
+
+  async function publishLatestRevision(templatePk: string) {
+    setPublishingTemplatePk(templatePk);
+    setMessage(null);
+
+    const response = await fetch(`/api/portal/templates/${templatePk}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ action: "publish_latest_revision" }),
+    });
+    const result = (await response.json().catch(() => ({}))) as { readonly error?: string };
+    setPublishingTemplatePk(null);
+
+    if (!response.ok) {
+      setMessage(result.error ?? "Could not publish this template.");
+      return;
+    }
+
+    setMessage("Template is active and ready for drops.");
     router.refresh();
   }
 
@@ -173,10 +195,24 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold">{template.displayName ?? template.templateName}</p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {template.activeRevisionPk ? "Ready for drops" : "Needs published revision"} - {template.templateStatusCode}
+                    </p>
                     <p className="mt-1 text-xs text-slate-500">{template.dietaryCategoryCode ?? "Draft"} · {template.allergenCodes.join(", ")}</p>
                   </div>
                   {template.suggestedPricePaise ? <p className="font-semibold">{formatPaise(template.suggestedPricePaise)}</p> : null}
                 </div>
+                {!template.activeRevisionPk ? (
+                  <button
+                    type="button"
+                    className="mt-3 inline-flex min-h-10 items-center gap-2 rounded-md border border-[#1A5C38]/30 px-3 text-sm font-semibold text-[#1A5C38] transition hover:border-[#1A5C38] hover:bg-[#EAF3DE] disabled:opacity-60"
+                    disabled={publishingTemplatePk === template.templatePk}
+                    onClick={() => publishLatestRevision(template.templatePk)}
+                  >
+                    <CheckCircle2 size={16} aria-hidden="true" />
+                    {publishingTemplatePk === template.templatePk ? "Publishing..." : "Publish existing revision"}
+                  </button>
+                ) : null}
               </article>
             ))
           )}

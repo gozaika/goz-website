@@ -272,3 +272,7 @@ limit 10;
 ```
 
 Canonical app columns remain available as `drop_drop_pk` and `computed_quantity_available`.
+
+### Template Activation Recovery
+
+If a template appears in the restaurant portal but is unavailable in the drop template selector, check whether `catalog_bag_template.active_revision_fk` is null. Apply migration `20260518000000_slice3_template_active_revision_repair.sql` to repair templates that already have a published revision. The portal also exposes a `Publish existing revision` action for templates with a published revision but no active pointer.

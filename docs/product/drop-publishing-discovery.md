@@ -17,6 +17,7 @@ An ACTIVE Hyderabad restaurant can publish a BAM Bag drop, and consumers can dis
 - Operator SQL checks can use `drop_id` and `available_quantity`; app code can continue using canonical `drop_drop_pk` and `computed_quantity_available`.
 - Realtime read path for inventory/status updates from `drop_drop`.
 - Basic restaurant operational controls: activate, pause, close.
+- Template library shows whether a template is ready for drops and can publish an existing revision if a template is stuck without `active_revision_fk`.
 
 ## Not Included Yet
 
