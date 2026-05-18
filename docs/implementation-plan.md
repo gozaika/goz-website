@@ -75,7 +75,7 @@ Use this order for a clean rebuild:
    Then apply Slice 3 SQL demo seed manually or through a script once added:
 
    ```powershell
-   supabase db execute --file supabase/seeds/demo/003_slice3_drop_publishing_demo.sql
+   npx supabase db query --local --file supabase/seeds/demo/003_slice3_drop_publishing_demo.sql
    ```
 
 6. Run verification:

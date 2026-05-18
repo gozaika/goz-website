@@ -118,7 +118,7 @@ Never use demo data in production.
 After Slice 1 auth users and Slice 2 restaurant onboarding records exist, apply:
 
 ```bash
-supabase db execute --file supabase/seeds/demo/003_slice3_drop_publishing_demo.sql
+npx supabase db query --local --file supabase/seeds/demo/003_slice3_drop_publishing_demo.sql
 ```
 
 The Slice 3 seed creates a published BAM Bag template and active public drop for the approved Biryani Baithak demo restaurant. It is designed to exercise consumer discovery and restaurant portal drop state without creating orders, payments, holds, pickup QR/OTP, or finance rows.
