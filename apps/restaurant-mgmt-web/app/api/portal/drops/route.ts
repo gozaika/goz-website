@@ -29,10 +29,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Only approved active restaurants can publish drops." }, { status: 403 });
   }
 
-  const parsed = createDropDraftSchema.safeParse(await request.json());
+  const json = await request.json().catch(() => ({}));
+  const parsed = createDropDraftSchema.safeParse(json);
 
   if (!parsed.success) {
-    return NextResponse.json({ ok: false, error: "Review the drop details and try again." }, { status: 400 });
+    const errors = parsed.error.issues.map((issue) => {
+      const field = issue.path.join(".");
+      return field ? `${field}: ${issue.message}` : issue.message;
+    });
+    return NextResponse.json(
+      { ok: false, error: "Review the highlighted drop details.", errors },
+      { status: 400 },
+    );
   }
 
   const service = createServiceRoleSupabaseClient();

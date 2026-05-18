@@ -52,6 +52,8 @@ After migrations and demo data:
 6. Open `http://localhost:3001/portal/drops/new` and publish a scheduled or active drop.
 7. Confirm consumer-web discovery updates after refresh; Realtime count updates require Supabase Realtime on `drop_drop`.
 
+The drop form should prefill from template defaults. If it shows a generic validation error, check the field-level details shown in the red error panel before inspecting server logs.
+
 Useful SQL smoke check:
 
 ```sql

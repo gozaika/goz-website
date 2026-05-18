@@ -47,6 +47,9 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
       holdingGuidanceText: String(form.get("holdingGuidanceText") ?? ""),
       minMenuValuePaise: Math.round(Number(form.get("minMenuValueRupees") ?? 0) * 100),
       suggestedPricePaise: Math.round(Number(form.get("suggestedPriceRupees") ?? 0) * 100),
+      defaultDropQuantity: Number(form.get("defaultDropQuantity") ?? 10),
+      defaultPickupStartOffsetMinutes: Number(form.get("defaultPickupStartOffsetMinutes") ?? 15),
+      defaultPickupDurationMinutes: Number(form.get("defaultPickupDurationMinutes") ?? 90),
       allergenCodes: form.getAll("allergenCodes").map(String),
       allergenSummaryText: String(form.get("allergenSummaryText") ?? ""),
       includedItemHintText: String(form.get("includedItemHintText") ?? ""),
@@ -158,6 +161,20 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
           Holding guidance
           <input name="holdingGuidanceText" defaultValue="Consume within 2 hours of pickup." className="min-h-11 rounded-md border border-black/10 px-3" />
         </label>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <label className="grid gap-1 text-sm font-medium">
+            Default bags
+            <input name="defaultDropQuantity" type="number" min="1" max="500" defaultValue="10" required className="min-h-11 rounded-md border border-black/10 px-3" />
+          </label>
+          <label className="grid gap-1 text-sm font-medium">
+            Start after minutes
+            <input name="defaultPickupStartOffsetMinutes" type="number" min="0" max="1440" defaultValue="15" required className="min-h-11 rounded-md border border-black/10 px-3" />
+          </label>
+          <label className="grid gap-1 text-sm font-medium">
+            Pickup duration
+            <input name="defaultPickupDurationMinutes" type="number" min="15" max="480" defaultValue="90" required className="min-h-11 rounded-md border border-black/10 px-3" />
+          </label>
+        </div>
         <div>
           <p className="text-sm font-medium">Allergen disclosure</p>
           <div className="mt-2 grid gap-2 sm:grid-cols-3">
@@ -202,6 +219,9 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
                   </div>
                   {template.suggestedPricePaise ? <p className="font-semibold">{formatPaise(template.suggestedPricePaise)}</p> : null}
                 </div>
+                <p className="mt-2 text-xs text-slate-500">
+                  Defaults: {template.defaultDropQuantity} bags, starts after {template.defaultPickupStartOffsetMinutes} min, {template.defaultPickupDurationMinutes} min window
+                </p>
                 {!template.activeRevisionPk ? (
                   <button
                     type="button"

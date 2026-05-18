@@ -52,6 +52,9 @@ type TemplateRow = {
   readonly template_name: string;
   readonly template_status_code: string;
   readonly active_revision_fk: string | null;
+  readonly default_drop_quantity: number | string | null;
+  readonly default_pickup_start_offset_minutes: number | string | null;
+  readonly default_pickup_duration_minutes: number | string | null;
   readonly updated_at: string;
   readonly catalog_bag_template_revision?: TemplateRevisionRelation | TemplateRevisionRelation[] | null;
 };
@@ -61,7 +64,7 @@ export async function loadPortalTemplates(restaurantPk: string): Promise<PortalB
   const { data: templates, error } = await service
     .from("catalog_bag_template")
     .select(
-      "catalog_bag_template_pk,template_name,template_status_code,active_revision_fk,updated_at,catalog_bag_template_revision!fk_catalog_bag_template_active_revision(catalog_bag_template_revision_pk,display_name,dietary_category_code,spice_level_code,suggested_price_paise)",
+      "catalog_bag_template_pk,template_name,template_status_code,active_revision_fk,default_drop_quantity,default_pickup_start_offset_minutes,default_pickup_duration_minutes,updated_at,catalog_bag_template_revision!fk_catalog_bag_template_active_revision(catalog_bag_template_revision_pk,display_name,dietary_category_code,spice_level_code,suggested_price_paise)",
     )
     .eq("restaurant_fk", restaurantPk)
     .order("updated_at", { ascending: false });
@@ -97,6 +100,9 @@ export async function loadPortalTemplates(restaurantPk: string): Promise<PortalB
       templateName: template.template_name,
       templateStatusCode: template.template_status_code,
       activeRevisionPk: template.active_revision_fk,
+      defaultDropQuantity: Number(template.default_drop_quantity ?? 10),
+      defaultPickupStartOffsetMinutes: Number(template.default_pickup_start_offset_minutes ?? 15),
+      defaultPickupDurationMinutes: Number(template.default_pickup_duration_minutes ?? 90),
       displayName: revision?.display_name ?? null,
       dietaryCategoryCode: revision?.dietary_category_code ?? null,
       spiceLevelCode: revision?.spice_level_code ?? null,

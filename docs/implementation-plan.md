@@ -276,3 +276,13 @@ Canonical app columns remain available as `drop_drop_pk` and `computed_quantity_
 ### Template Activation Recovery
 
 If a template appears in the restaurant portal but is unavailable in the drop template selector, check whether `catalog_bag_template.active_revision_fk` is null. Apply migration `20260518000000_slice3_template_active_revision_repair.sql` to repair templates that already have a published revision. The portal also exposes a `Publish existing revision` action for templates with a published revision but no active pointer.
+
+### One-Click Drop Publishing
+
+Apply migration `20260518001000_slice3_template_drop_preferences.sql` before deploying the matching restaurant portal code. Templates now store:
+
+- `default_drop_quantity`
+- `default_pickup_start_offset_minutes`
+- `default_pickup_duration_minutes`
+
+The restaurant drop form uses those defaults to preselect the template, quantity, price, pickup start, pickup end, type, and active status. Busy restaurant staff should be able to publish a standard drop with one confirmation click, while still having quick controls for start time and pickup duration.

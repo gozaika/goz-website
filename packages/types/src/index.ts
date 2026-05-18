@@ -299,6 +299,9 @@ export const createBagTemplateSchema = z
     holdingGuidanceText: z.preprocess(optionalString, z.string().trim().min(10).max(240).optional()),
     minMenuValuePaise: paiseSchema.min(100),
     suggestedPricePaise: paiseSchema.min(100),
+    defaultDropQuantity: z.number().int().min(1).max(500).default(10),
+    defaultPickupStartOffsetMinutes: z.number().int().min(0).max(1440).default(15),
+    defaultPickupDurationMinutes: z.number().int().min(15).max(480).default(90),
     allergenCodes: z.array(z.string().trim().toUpperCase().min(2).max(40)).min(1).max(14),
     allergenSummaryText: z.string().trim().min(8).max(300),
     includedItemHintText: z.preprocess(optionalString, z.string().trim().max(240).optional()),
@@ -357,6 +360,9 @@ export interface PortalBagTemplate {
   readonly dietaryCategoryCode: DietaryCategoryCode | null;
   readonly spiceLevelCode: SpiceLevelCode | null;
   readonly suggestedPricePaise: number | null;
+  readonly defaultDropQuantity: number;
+  readonly defaultPickupStartOffsetMinutes: number;
+  readonly defaultPickupDurationMinutes: number;
   readonly allergenCodes: readonly string[];
   readonly updatedAt: string;
 }
