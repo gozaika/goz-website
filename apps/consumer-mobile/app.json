@@ -5,7 +5,10 @@
     "scheme": "gozaika",
     "version": "0.1.0",
     "orientation": "portrait",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -15,10 +18,16 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#FFF8F0"
-      }
+      },
+      "package": "com.orbitwell.gozaikaconsumer"
     },
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3c14ae81-39e4-4c01-9214-7a15eb6f9a34"
+      }
+    }
   }
 }

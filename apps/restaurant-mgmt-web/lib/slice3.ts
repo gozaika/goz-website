@@ -1,0 +1,133 @@
+import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
+import type { PortalBagTemplate, PortalDrop } from "@gozaika/types";
+
+export type ActivePortalRestaurant = {
+  readonly restaurantPk: string;
+  readonly restaurantName: string;
+  readonly restaurantStatusCode: string;
+  readonly cityPk: string;
+  readonly neighborhoodPk: string | null;
+};
+
+export async function loadDefaultRestaurant(profilePk: string): Promise<ActivePortalRestaurant | null> {
+  const service = createServiceRoleSupabaseClient();
+  const { data: membership } = await service
+    .from("restaurant_team_membership")
+    .select(
+      "restaurant_fk,restaurant_restaurant(restaurant_restaurant_pk,restaurant_name,restaurant_status_code,geo_city_fk,geo_neighborhood_fk)",
+    )
+    .eq("iam_profile_fk", profilePk)
+    .eq("is_active", true)
+    .order("is_default", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const restaurant = Array.isArray(membership?.restaurant_restaurant)
+    ? membership?.restaurant_restaurant[0]
+    : membership?.restaurant_restaurant;
+
+  if (!restaurant?.restaurant_restaurant_pk || !restaurant.geo_city_fk) {
+    return null;
+  }
+
+  return {
+    restaurantPk: restaurant.restaurant_restaurant_pk,
+    restaurantName: restaurant.restaurant_name,
+    restaurantStatusCode: restaurant.restaurant_status_code,
+    cityPk: restaurant.geo_city_fk,
+    neighborhoodPk: restaurant.geo_neighborhood_fk ?? null,
+  };
+}
+
+type TemplateRevisionRelation = {
+  readonly catalog_bag_template_revision_pk: string;
+  readonly display_name: string;
+  readonly dietary_category_code: PortalBagTemplate["dietaryCategoryCode"];
+  readonly spice_level_code: PortalBagTemplate["spiceLevelCode"];
+  readonly suggested_price_paise: number | string | null;
+};
+
+type TemplateRow = {
+  readonly catalog_bag_template_pk: string;
+  readonly template_name: string;
+  readonly template_status_code: string;
+  readonly active_revision_fk: string | null;
+  readonly updated_at: string;
+  readonly catalog_bag_template_revision?: TemplateRevisionRelation | TemplateRevisionRelation[] | null;
+};
+
+export async function loadPortalTemplates(restaurantPk: string): Promise<PortalBagTemplate[]> {
+  const service = createServiceRoleSupabaseClient();
+  const { data: templates, error } = await service
+    .from("catalog_bag_template")
+    .select(
+      "catalog_bag_template_pk,template_name,template_status_code,active_revision_fk,updated_at,catalog_bag_template_revision!fk_catalog_bag_template_active_revision(catalog_bag_template_revision_pk,display_name,dietary_category_code,spice_level_code,suggested_price_paise)",
+    )
+    .eq("restaurant_fk", restaurantPk)
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  const revisionPks = (templates ?? []).map((template) => template.active_revision_fk).filter(Boolean) as string[];
+  const { data: allergens } = revisionPks.length
+    ? await service
+        .from("catalog_bag_template_allergen")
+        .select("catalog_bag_template_revision_fk,master_allergen(allergen_code)")
+        .in("catalog_bag_template_revision_fk", revisionPks)
+    : { data: [] };
+
+  const allergensByRevision = new Map<string, string[]>();
+  for (const row of allergens ?? []) {
+    const allergen = Array.isArray(row.master_allergen) ? row.master_allergen[0] : row.master_allergen;
+    if (!row.catalog_bag_template_revision_fk || !allergen?.allergen_code) continue;
+    allergensByRevision.set(row.catalog_bag_template_revision_fk, [
+      ...(allergensByRevision.get(row.catalog_bag_template_revision_fk) ?? []),
+      allergen.allergen_code,
+    ]);
+  }
+
+  return ((templates ?? []) as TemplateRow[]).map((template) => {
+    const revision = Array.isArray(template.catalog_bag_template_revision)
+      ? template.catalog_bag_template_revision[0]
+      : (template.catalog_bag_template_revision ?? null);
+    return {
+      templatePk: template.catalog_bag_template_pk,
+      templateName: template.template_name,
+      templateStatusCode: template.template_status_code,
+      activeRevisionPk: template.active_revision_fk,
+      displayName: revision?.display_name ?? null,
+      dietaryCategoryCode: revision?.dietary_category_code ?? null,
+      spiceLevelCode: revision?.spice_level_code ?? null,
+      suggestedPricePaise: revision?.suggested_price_paise == null ? null : Number(revision.suggested_price_paise),
+      allergenCodes: template.active_revision_fk ? (allergensByRevision.get(template.active_revision_fk) ?? []) : [],
+      updatedAt: template.updated_at,
+    };
+  });
+}
+
+export async function loadPortalDrops(restaurantPk: string): Promise<PortalDrop[]> {
+  const service = createServiceRoleSupabaseClient();
+  const { data, error } = await service
+    .from("drop_drop")
+    .select("drop_drop_pk,drop_title,drop_status_code,quantity_total,computed_quantity_available,price_paise,pickup_start_at,pickup_end_at,updated_at")
+    .eq("restaurant_fk", restaurantPk)
+    .order("pickup_start_at", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((drop) => ({
+    dropPk: drop.drop_drop_pk,
+    dropTitle: drop.drop_title,
+    statusCode: drop.drop_status_code,
+    quantityTotal: drop.quantity_total,
+    quantityAvailable: drop.computed_quantity_available,
+    pricePaise: Number(drop.price_paise),
+    pickupStartAt: drop.pickup_start_at,
+    pickupEndAt: drop.pickup_end_at,
+    updatedAt: drop.updated_at,
+  }));
+}

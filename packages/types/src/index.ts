@@ -277,12 +277,36 @@ export const consumerProfileUpdateSchema = z.object({
 
 export const createDropDraftSchema = z.object({
   templateRevisionPk: uuidSchema,
+  dropTitle: z.preprocess(optionalString, z.string().trim().min(3).max(120).optional()),
   quantityTotal: positiveQuantitySchema.max(500),
   pricePaise: paiseSchema.min(100),
   pickupStartAt: z.string().datetime(),
   pickupEndAt: z.string().datetime(),
   dropTypeCode: z.enum(["STANDARD", "SPOTLIGHT", "CHEF_SPECIAL"]).default("STANDARD"),
+  statusCode: z.enum(["DRAFT", "SCHEDULED", "ACTIVE"]).default("SCHEDULED"),
 });
+
+export const createBagTemplateSchema = z
+  .object({
+    templateName: z.string().trim().min(3).max(120),
+    displayName: z.string().trim().min(3).max(120),
+    shortDescription: z.preprocess(optionalString, z.string().trim().min(10).max(300).optional()),
+    dietaryCategoryCode: z.enum(dietaryCategoryCodes),
+    spiceLevelCode: z.preprocess(optionalString, z.enum(spiceLevelCodes).optional()),
+    servesMin: z.number().int().min(1).max(12),
+    servesMax: z.number().int().min(1).max(12),
+    maxHoldingMinutes: z.number().int().min(30).max(480),
+    holdingGuidanceText: z.preprocess(optionalString, z.string().trim().min(10).max(240).optional()),
+    minMenuValuePaise: paiseSchema.min(100),
+    suggestedPricePaise: paiseSchema.min(100),
+    allergenCodes: z.array(z.string().trim().toUpperCase().min(2).max(40)).min(1).max(14),
+    allergenSummaryText: z.string().trim().min(8).max(300),
+    includedItemHintText: z.preprocess(optionalString, z.string().trim().max(240).optional()),
+  })
+  .refine((value) => value.servesMin <= value.servesMax, {
+    message: "Minimum servings cannot exceed maximum servings.",
+    path: ["servesMin"],
+  });
 
 export interface ApiResponse<TData = unknown> {
   readonly ok: boolean;
@@ -300,9 +324,21 @@ export interface SiteRoute {
 
 export interface PublicDropCard {
   readonly dropPk: string;
+  readonly dropTitle: string;
+  readonly dropTypeCode: string;
   readonly restaurantName: string;
   readonly restaurantSlug: string;
+  readonly neighborhoodName: string | null;
+  readonly bagDisplayName: string;
+  readonly bagShortDescription: string | null;
   readonly dietaryCategoryCode: DietaryCategoryCode;
+  readonly spiceLevelCode: SpiceLevelCode | null;
+  readonly servesMin: number | null;
+  readonly servesMax: number | null;
+  readonly maxHoldingMinutes: number | null;
+  readonly holdingGuidanceText: string | null;
+  readonly minMenuValuePaise: number | null;
+  readonly allergenSummaryText: string | null;
   readonly allergenCodes: readonly string[];
   readonly pricePaise: number;
   readonly pickupStartAt: string;
@@ -310,4 +346,29 @@ export interface PublicDropCard {
   readonly quantityTotal: number;
   readonly quantityAvailable: number;
   readonly statusCode: DropStatusCode;
+}
+
+export interface PortalBagTemplate {
+  readonly templatePk: string;
+  readonly templateName: string;
+  readonly templateStatusCode: string;
+  readonly activeRevisionPk: string | null;
+  readonly displayName: string | null;
+  readonly dietaryCategoryCode: DietaryCategoryCode | null;
+  readonly spiceLevelCode: SpiceLevelCode | null;
+  readonly suggestedPricePaise: number | null;
+  readonly allergenCodes: readonly string[];
+  readonly updatedAt: string;
+}
+
+export interface PortalDrop {
+  readonly dropPk: string;
+  readonly dropTitle: string;
+  readonly statusCode: DropStatusCode;
+  readonly quantityTotal: number;
+  readonly quantityAvailable: number;
+  readonly pricePaise: number;
+  readonly pickupStartAt: string;
+  readonly pickupEndAt: string;
+  readonly updatedAt: string;
 }

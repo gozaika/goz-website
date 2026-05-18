@@ -1,3 +1,19 @@
+Slice 0, 1 and 2 are implemented and tested. I want to create a comprehensive prompt for slice 3. Below is the prompt for slice 2 for reference. Attached is implementation-plan.md detailing what was done in previous slices. Include following requests in the prmpt 
+1) Keep docs updated. 
+2) implementation-plan.md must allow me to reimplement all slices from grounds up with codex. Add slice 3 to implementation-plan.md.
+3) List follow-up activities i have to perform to make this slice completely functional 
+4) what can i expect to see in each app now after this release with slice 3.
+5) Current state of apps can be accessed on vercel at https://gozaika.in/, https://customer.gozaika.in/,  https://restaurant.gozaika.in/ and https://admin.gozaika.in/
+6) env.local now points to supabase remote. i will use that as primary.
+7) I notice restaurant and admin apps: no fav icon and title that appears on browser tab, 
+8) https://restaurant.gozaika.vercel.app/auth/login: Does not allow me to use email log in
+
+review goZaika_Technology_Specification_v2.docx for technology roadmap. claude_goZaika_Master_Business_Document_v3.docx is for business context. You may also refer to website https://gozaika.in/ for context
+
+
+===
+Implement slice 2
+
 You are working in the goZaika monorepo.
 
 Slice 0 and Slice 1 are complete. Do NOT rewrite them. Inspect the repo before changing anything.

@@ -34,7 +34,7 @@ supabase db reset
 
 Slice 1 reference consent purposes are in `supabase/seed.sql` and the Slice 1 migration.
 
-Run the optional SQL demo marker:
+Run the optional SQL demo data:
 
 ```bash
 npm run db:seed:demo
@@ -74,13 +74,13 @@ Restaurant demo emails include:
 
 ## Future Slices
 
-Add deterministic SQL fixtures in order:
+Deterministic SQL fixtures by slice:
 
-- `supabase/seeds/demo/002_slice2_restaurant_demo.sql`
-- `supabase/seeds/demo/003_slice3_bag_templates_drops.sql`
+- `supabase/seeds/demo/002_slice2_restaurant_onboarding_demo.sql`
+- `supabase/seeds/demo/003_slice3_drop_publishing_demo.sql`
 - `supabase/seeds/demo/004_slice4_checkout_payment.sql`
 
-Every future fixture must register owned rows in `dev_demo_seed_registry` and extend `delete_demo_data.sql` in FK-safe order. Do not seed payments, orders, drops, finance, or admin data in Slice 1.
+Every fixture must register owned rows in `dev_demo_seed_registry` and extend `delete_demo_data.sql` in FK-safe order. Do not seed payments, orders, finance, or admin data before the slice that owns those domains.
 
 ## Provider Follow-Ups
 
@@ -100,7 +100,7 @@ It creates deterministic fake restaurant onboarding rows for the five restaurant
 
 Future slices should add deterministic files in order:
 
-- `003_slice3_bag_templates_drops.sql`
+- `003_slice3_drop_publishing_demo.sql`
 - `004_slice4_checkout_payment.sql`
 - `005_slice5_pickup_staff.sql`
 
@@ -112,3 +112,13 @@ npm run demo:auth:delete
 ```
 
 Never use demo data in production.
+
+# Slice 3 Drop Publishing Demo Data
+
+After Slice 1 auth users and Slice 2 restaurant onboarding records exist, apply:
+
+```bash
+supabase db execute --file supabase/seeds/demo/003_slice3_drop_publishing_demo.sql
+```
+
+The Slice 3 seed creates a published BAM Bag template and active public drop for the approved Biryani Baithak demo restaurant. It is designed to exercise consumer discovery and restaurant portal drop state without creating orders, payments, holds, pickup QR/OTP, or finance rows.

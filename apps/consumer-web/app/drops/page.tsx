@@ -1,23 +1,12 @@
-import { DropCard, ShellHeader } from "@gozaika/ui";
-import type { PublicDropCard } from "@gozaika/types";
+import { ShellHeader } from "@gozaika/ui";
+import { DropDiscoveryClient } from "./drop-discovery-client";
+import { loadPublicDrops } from "@/lib/drops";
 
-const drops: PublicDropCard[] = [
-  {
-    dropPk: "33333333-3333-4333-8333-333333333333",
-    restaurantName: "Jubilee Hearth",
-    restaurantSlug: "jubilee-hearth",
-    dietaryCategoryCode: "JAIN",
-    allergenCodes: ["SESAME", "MUSTARD"],
-    pricePaise: 39900,
-    pickupStartAt: "2026-04-25T14:00:00.000Z",
-    pickupEndAt: "2026-04-25T15:30:00.000Z",
-    quantityTotal: 20,
-    quantityAvailable: 13,
-    statusCode: "ACTIVE",
-  },
-];
+export const dynamic = "force-dynamic";
 
-export default function DropsPage() {
+export default async function DropsPage() {
+  const drops = await loadPublicDrops();
+
   return (
     <main>
       <ShellHeader />
@@ -32,10 +21,8 @@ export default function DropsPage() {
             <button className="px-3 py-2">Map</button>
           </div>
         </div>
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {drops.map((drop) => (
-            <DropCard key={drop.dropPk} drop={drop} />
-          ))}
+        <div className="mt-6">
+          <DropDiscoveryClient initialDrops={drops} />
         </div>
       </section>
     </main>

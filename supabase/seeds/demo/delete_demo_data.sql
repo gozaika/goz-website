@@ -4,6 +4,29 @@
 with registered as (
   select entity_id
   from dev_demo_seed_registry
+  where slice = 'slice3_drop_publishing'
+    and entity_table = 'drop_drop'
+)
+delete from drop_drop d
+using registered r
+where d.drop_drop_pk = r.entity_id;
+
+with registered as (
+  select entity_id
+  from dev_demo_seed_registry
+  where slice = 'slice3_drop_publishing'
+    and entity_table = 'catalog_bag_template'
+)
+delete from catalog_bag_template t
+using registered r
+where t.catalog_bag_template_pk = r.entity_id;
+
+delete from dev_demo_seed_registry
+where slice = 'slice3_drop_publishing';
+
+with registered as (
+  select entity_id
+  from dev_demo_seed_registry
   where slice = 'slice2_restaurant_onboarding'
     and entity_table = 'restaurant_document'
 )

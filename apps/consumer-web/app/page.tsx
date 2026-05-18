@@ -1,24 +1,12 @@
 import Link from "next/link";
 import { DropCard, EmptyState, ShellHeader } from "@gozaika/ui";
-import type { PublicDropCard } from "@gozaika/types";
+import { loadPublicDrops } from "@/lib/drops";
 
-const previewDrops: PublicDropCard[] = [
-  {
-    dropPk: "11111111-1111-4111-8111-111111111111",
-    restaurantName: "Deccan Table",
-    restaurantSlug: "deccan-table",
-    dietaryCategoryCode: "NON_VEG",
-    allergenCodes: ["DAIRY", "WHEAT_GLUTEN"],
-    pricePaise: 44900,
-    pickupStartAt: "2026-04-25T13:30:00.000Z",
-    pickupEndAt: "2026-04-25T15:00:00.000Z",
-    quantityTotal: 24,
-    quantityAvailable: 7,
-    statusCode: "ACTIVE",
-  },
-];
+export const dynamic = "force-dynamic";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const previewDrops = (await loadPublicDrops()).slice(0, 3);
+
   return (
     <main>
       <ShellHeader>
@@ -48,9 +36,11 @@ export default function HomePage() {
           </div>
         </div>
         <div className="grid gap-4">
-          {previewDrops.map((drop) => (
-            <DropCard key={drop.dropPk} drop={drop} />
-          ))}
+          {previewDrops.length > 0 ? (
+            previewDrops.map((drop) => <DropCard key={drop.dropPk} drop={drop} />)
+          ) : (
+            <EmptyState title="First drops are being prepared" body="Approved Hyderabad partners will appear here as their BAM Bags go live." />
+          )}
         </div>
       </section>
       <section className="mx-auto max-w-7xl px-4 pb-12">

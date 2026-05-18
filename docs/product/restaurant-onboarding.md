@@ -17,3 +17,7 @@ Out of scope for Slice 2:
 - Finance settlement and invoice workflows.
 - Analytics and Zayka Pro insights.
 - OCR or external KYC provider integrations.
+
+## Handoff To Slice 3
+
+Slice 3 starts only after a restaurant is `ACTIVE`. Active restaurants can create BAM Bag templates and publish public drops; non-active restaurants should remain blocked from drop publishing. See `docs/product/drop-publishing-discovery.md` for the current Slice 3 product contract.

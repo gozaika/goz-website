@@ -20,6 +20,17 @@ Premium-access, pickup-only BAM Bag marketplace for India. Hyderabad first.
 - `supabase/migrations`: canonical Supabase PostgreSQL schema.
 - `supabase/functions`: webhooks and scheduled workers.
 
+## Current Deployed Surfaces
+
+| Surface | URL |
+| --- | --- |
+| Marketing website | `https://gozaika.in/` |
+| Consumer web | `https://customer.gozaika.in/` |
+| Restaurant portal | `https://restaurant.gozaika.in/` |
+| Admin portal | `https://admin.gozaika.in/` |
+
+Owned domains also include `gozaik.in` and `gozaika.com`.
+
 ## Start
 
 ```powershell
@@ -60,3 +71,7 @@ Application code should adapt to that schema. New migrations should be additive,
 - Money is bigint paise.
 - Inventory holds use `api_create_inventory_hold`.
 - Consent is purpose-based and append-only.
+
+## Current Slice
+
+Slices 0-3 are implemented. Slice 3 is **First Drop Publishing & Consumer Discovery**: ACTIVE restaurants can create BAM Bag templates and public drops, and consumer-web reads real Supabase drop discovery data. Claim/payment/pickup remain future slices.

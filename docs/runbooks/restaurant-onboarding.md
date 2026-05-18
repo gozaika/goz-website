@@ -61,3 +61,7 @@ Local phone OTP test config:
 - Full bank account numbers are not collected in Slice 2; only masked account numbers are accepted.
 - Restaurant owners cannot self-approve compliance or documents.
 - Remote demo deletion is blocked unless `DEMO_SEED_ALLOW_REMOTE=true` is explicitly set.
+
+## Slice 3 Handoff
+
+After admin activation, verify the restaurant status is `ACTIVE` before testing BAM Bag template and drop publishing. Slice 3 flows live in the restaurant portal at `/portal/templates` and `/portal/drops/new`; consumer discovery reads the resulting public drops at `/drops`.

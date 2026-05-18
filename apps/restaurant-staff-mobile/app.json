@@ -5,7 +5,10 @@
     "scheme": "gozaika-staff",
     "version": "0.1.0",
     "orientation": "portrait",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -13,12 +16,18 @@
       "supportsTablet": false
     },
     "android": {
+      "package": "com.orbitwell.gozaikastaff",
       "adaptiveIcon": {
         "backgroundColor": "#111827"
       }
     },
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "25d52d62-cc07-4e55-bba8-3c8e7c9a25e8"
+      }
+    }
   }
 }

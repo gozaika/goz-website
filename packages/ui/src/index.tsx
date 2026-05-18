@@ -150,6 +150,12 @@ export function ProgressBar({ available, total }: { readonly available: number; 
 
 export function DropCard({ drop, className }: { readonly drop: PublicDropCard; readonly className?: string }) {
   const soldOut = drop.quantityAvailable <= 0 || drop.statusCode === "SOLD_OUT";
+  const serves =
+    drop.servesMin && drop.servesMax
+      ? drop.servesMin === drop.servesMax
+        ? `Serves ${drop.servesMin}`
+        : `Serves ${drop.servesMin}-${drop.servesMax}`
+      : null;
 
   return (
     <article className={cn("relative overflow-hidden rounded-lg border border-black/10 bg-white p-4 shadow-sm", className)}>
@@ -161,7 +167,10 @@ export function DropCard({ drop, className }: { readonly drop: PublicDropCard; r
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-[#1A5C38]">{drop.restaurantName}</p>
-          <h3 className="mt-1 text-xl font-semibold text-[#2D2D2D]">Chef-curated BAM Bag</h3>
+          <h3 className="mt-1 text-xl font-semibold text-[#2D2D2D]">{drop.bagDisplayName}</h3>
+          {drop.bagShortDescription ? (
+            <p className="mt-1 line-clamp-2 text-sm text-[#2D2D2D]/70">{drop.bagShortDescription}</p>
+          ) : null}
         </div>
         <DietaryBadge code={drop.dietaryCategoryCode} />
       </div>
@@ -175,19 +184,32 @@ export function DropCard({ drop, className }: { readonly drop: PublicDropCard; r
         </div>
         <div className="flex items-center gap-2">
           <MapPin size={16} aria-hidden="true" />
-          Pickup only
+          {drop.neighborhoodName ? `${drop.neighborhoodName} pickup` : "Pickup only"}
         </div>
         <div className="flex items-center gap-2">
           <ShieldCheck size={16} aria-hidden="true" />
-          Allergens disclosed
+          {serves ? `${serves} · Allergens disclosed` : "Allergens disclosed"}
         </div>
       </div>
       <div className="mt-4">
         <ProgressBar available={drop.quantityAvailable} total={drop.quantityTotal} />
+        <p className="mt-2 text-xs font-semibold text-[#2D2D2D]/65">
+          {drop.quantityAvailable} of {drop.quantityTotal} bags remaining
+        </p>
       </div>
       <div className="mt-4 flex items-center justify-between">
         <span className="text-2xl font-bold text-[#2D2D2D]">{formatPaise(drop.pricePaise)}</span>
-        <Button disabled={soldOut}>{soldOut ? "Join waitlist" : "Claim"}</Button>
+        <a
+          href={`/drops/${drop.dropPk}`}
+          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[#1A5C38]/25 px-4 py-2 text-sm font-semibold text-[#1A5C38] transition hover:border-[#1A5C38]"
+        >
+          View
+        </a>
+      </div>
+      <div className="mt-3">
+        <Button disabled className="w-full">
+          {soldOut ? "Sold out" : "Claim opens next slice"}
+        </Button>
       </div>
     </article>
   );

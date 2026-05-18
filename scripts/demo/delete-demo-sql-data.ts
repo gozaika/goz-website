@@ -10,7 +10,7 @@ async function main() {
   const { data: registry, error } = await supabase
     .from("dev_demo_seed_registry")
     .select("dev_demo_seed_registry_pk,entity_table,entity_id")
-    .in("slice", ["slice2_restaurant_onboarding", "slice2_admin_auth"]);
+    .in("slice", ["slice3_drop_publishing", "slice2_restaurant_onboarding", "slice2_admin_auth"]);
   if (error) throw error;
 
   const idsByTable = new Map<string, string[]>();
@@ -19,6 +19,8 @@ async function main() {
   }
 
   const order = [
+    "drop_drop",
+    "catalog_bag_template",
     "restaurant_document",
     "restaurant_restaurant",
     "storage_object",
