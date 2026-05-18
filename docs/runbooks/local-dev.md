@@ -52,6 +52,21 @@ After migrations and demo data:
 6. Open `http://localhost:3001/portal/drops/new` and publish a scheduled or active drop.
 7. Confirm consumer-web discovery updates after refresh; Realtime count updates require Supabase Realtime on `drop_drop`.
 
+Useful SQL smoke check:
+
+```sql
+select
+  drop_id,
+  restaurant_name,
+  drop_title,
+  drop_status_code,
+  available_quantity,
+  price_paise
+from api_public_drop_card
+order by pickup_start_at desc
+limit 10;
+```
+
 ## Mobile Native Dependencies
 
 Use Expo's installer so SDK-compatible native versions are selected:

@@ -31,7 +31,7 @@ export function LoginForm() {
     if (!payload.ok) {
       throw new Error(payload.error ?? "We could not prepare your restaurant profile.");
     }
-    router.replace("/portal/onboarding");
+    router.replace("/");
     router.refresh();
   }
 

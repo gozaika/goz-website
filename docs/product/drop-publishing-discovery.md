@@ -14,6 +14,7 @@ An ACTIVE Hyderabad restaurant can publish a BAM Bag drop, and consumers can dis
 - Dietary category, spice level, serving count, minimum menu value, holding guidance, and allergen summary.
 - Drop creation with quantity, price in paise, pickup start/end, lifecycle status, and public visibility.
 - Consumer discovery cards and detail pages backed by `api_public_drop_card`.
+- Operator SQL checks can use `drop_id` and `available_quantity`; app code can continue using canonical `drop_drop_pk` and `computed_quantity_available`.
 - Realtime read path for inventory/status updates from `drop_drop`.
 - Basic restaurant operational controls: activate, pause, close.
 

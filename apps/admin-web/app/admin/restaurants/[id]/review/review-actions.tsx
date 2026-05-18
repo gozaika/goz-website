@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@gozaika/ui";
+import { safeErrorMessage } from "@gozaika/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -21,15 +22,26 @@ export function ReviewActions({
   async function post(url: string, body: Record<string, unknown>) {
     setBusy(url);
     setError("");
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const payload = (await response.json()) as { ok: boolean; error?: string };
-    if (!payload.ok) setError(payload.error ?? "Action failed.");
-    router.refresh();
-    setBusy("");
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const payload = (await response.json().catch(() => ({ ok: false, error: "Action failed." }))) as {
+        ok: boolean;
+        error?: string;
+      };
+      if (!response.ok || !payload.ok) {
+        setError(payload.error ?? "Action failed.");
+        return;
+      }
+      router.refresh();
+    } catch (caught) {
+      setError(safeErrorMessage(caught, "Action failed. Please try again."));
+    } finally {
+      setBusy("");
+    }
   }
 
   if (complianceMode) {

@@ -1,6 +1,7 @@
 import { ShellHeader } from "@gozaika/ui";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { PortalNav } from "../portal-nav";
 import { OnboardingClient } from "./onboarding-client";
 
 export default async function PortalOnboardingPage() {
@@ -16,9 +17,7 @@ export default async function PortalOnboardingPage() {
   return (
     <main>
       <ShellHeader>
-        <a className="text-sm font-semibold text-[#1A5C38]" href="/portal/onboarding">
-          Onboarding
-        </a>
+        <PortalNav />
       </ShellHeader>
       <OnboardingClient />
     </main>

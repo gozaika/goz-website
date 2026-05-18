@@ -253,3 +253,22 @@ These are operational/configuration steps needed after code merge/deploy:
 - Slice 2 demo seed requires Slice 1 auth users first.
 - Slice 3 production build for consumer-web must be run with env loaded, for example: `npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build`.
 - PowerShell may block `npm.ps1`; use `npm.cmd` on Windows when execution policy blocks npm scripts.
+
+### Public Drop SQL Smoke Query
+
+After applying Slice 3 migrations, this query should return consumer-visible drops:
+
+```sql
+select
+  drop_id,
+  restaurant_name,
+  drop_title,
+  drop_status_code,
+  available_quantity,
+  price_paise
+from api_public_drop_card
+order by pickup_start_at desc
+limit 10;
+```
+
+Canonical app columns remain available as `drop_drop_pk` and `computed_quantity_available`.
