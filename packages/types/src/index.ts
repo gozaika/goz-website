@@ -371,7 +371,7 @@ export interface ClaimIntent {
   readonly pricePaise: number;
   readonly pickupStartAt: string;
   readonly pickupEndAt: string;
-  readonly restaurantPk: string;
+  readonly restaurantPk: string | null;
   readonly restaurantName: string;
   readonly restaurantSlug: string;
   readonly neighborhoodName: string | null;

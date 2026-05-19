@@ -1,5 +1,7 @@
 import type { ClaimIntent } from "@gozaika/types";
+import type { PublicDropCard } from "@gozaika/types";
 import { createClient } from "@/lib/supabase/server";
+import { loadPublicDrop } from "@/lib/drops";
 
 export type ClaimIntentRow = {
   readonly hold_pk: string;
@@ -33,6 +35,17 @@ export type ClaimIntentRow = {
   readonly min_menu_value_paise: number | string | null;
   readonly allergen_summary_text: string | null;
   readonly allergen_codes: readonly string[] | null;
+};
+
+export type InventoryHoldRow = {
+  readonly drop_inventory_hold_pk: string;
+  readonly drop_fk: string;
+  readonly consumer_profile_fk: string;
+  readonly hold_status_code: ClaimIntent["statusCode"];
+  readonly quantity: number | string;
+  readonly expires_at: string;
+  readonly created_at: string;
+  readonly updated_at: string;
 };
 
 export function mapClaimIntent(row: ClaimIntentRow): ClaimIntent {
@@ -71,29 +84,92 @@ export function mapClaimIntent(row: ClaimIntentRow): ClaimIntent {
   };
 }
 
+export function mapHoldAndPublicDrop(row: InventoryHoldRow, drop: PublicDropCard): ClaimIntent {
+  return {
+    holdPk: row.drop_inventory_hold_pk,
+    dropPk: row.drop_fk,
+    consumerProfilePk: row.consumer_profile_fk,
+    statusCode: row.hold_status_code,
+    quantityHeld: Number(row.quantity),
+    expiresAt: row.expires_at,
+    holdCreatedAt: row.created_at,
+    holdUpdatedAt: row.updated_at,
+    dropTitle: drop.dropTitle,
+    dropStatusCode: drop.statusCode,
+    dropTypeCode: drop.dropTypeCode,
+    quantityTotal: drop.quantityTotal,
+    quantityAvailable: drop.quantityAvailable,
+    pricePaise: drop.pricePaise,
+    pickupStartAt: drop.pickupStartAt,
+    pickupEndAt: drop.pickupEndAt,
+    restaurantPk: null,
+    restaurantName: drop.restaurantName,
+    restaurantSlug: drop.restaurantSlug,
+    neighborhoodName: drop.neighborhoodName,
+    bagDisplayName: drop.bagDisplayName,
+    bagShortDescription: drop.bagShortDescription,
+    dietaryCategoryCode: drop.dietaryCategoryCode,
+    spiceLevelCode: drop.spiceLevelCode,
+    servesMin: drop.servesMin,
+    servesMax: drop.servesMax,
+    maxHoldingMinutes: drop.maxHoldingMinutes,
+    holdingGuidanceText: drop.holdingGuidanceText,
+    minMenuValuePaise: drop.minMenuValuePaise,
+    allergenSummaryText: drop.allergenSummaryText,
+    allergenCodes: drop.allergenCodes,
+  };
+}
+
 export async function loadClaimIntent(holdPk: string): Promise<ClaimIntent | null> {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("api_claim_hold_summary").select("*").eq("hold_pk", holdPk).maybeSingle();
+  const { data: hold, error: holdError } = await supabase
+    .from("drop_inventory_hold")
+    .select(
+      "drop_inventory_hold_pk,drop_fk,consumer_profile_fk,hold_status_code,quantity,expires_at,created_at,updated_at",
+    )
+    .eq("drop_inventory_hold_pk", holdPk)
+    .maybeSingle();
 
-  if (error) {
+  if (holdError) {
     throw new Error("Could not load this hold.");
   }
 
-  return data ? mapClaimIntent(data as ClaimIntentRow) : null;
+  if (!hold) {
+    return null;
+  }
+
+  const drop = await loadPublicDrop(hold.drop_fk);
+  if (!drop) {
+    const { data, error } = await supabase.from("api_claim_hold_summary").select("*").eq("hold_pk", holdPk).maybeSingle();
+    if (error) {
+      throw new Error("Could not load this hold.");
+    }
+    return data ? mapClaimIntent(data as ClaimIntentRow) : null;
+  }
+
+  return mapHoldAndPublicDrop(hold as InventoryHoldRow, drop);
 }
 
 export async function loadConsumerClaimIntents(): Promise<ClaimIntent[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("api_claim_hold_summary")
-    .select("*")
+    .from("drop_inventory_hold")
+    .select("drop_inventory_hold_pk,drop_fk,consumer_profile_fk,hold_status_code,quantity,expires_at,created_at,updated_at")
     .in("hold_status_code", ["ACTIVE", "EXPIRED", "RELEASED"])
-    .order("hold_created_at", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(12);
 
   if (error) {
     throw new Error("Could not load your current holds.");
   }
 
-  return ((data ?? []) as ClaimIntentRow[]).map(mapClaimIntent);
+  const claims: ClaimIntent[] = [];
+  for (const hold of (data ?? []) as InventoryHoldRow[]) {
+    const drop = await loadPublicDrop(hold.drop_fk);
+    if (drop) {
+      claims.push(mapHoldAndPublicDrop(hold, drop));
+    }
+  }
+
+  return claims;
 }

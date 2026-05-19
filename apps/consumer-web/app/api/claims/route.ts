@@ -1,7 +1,7 @@
 import { claimRequestSchema, type ApiResponse, type ClaimCreationResult } from "@gozaika/types";
 import { getDropClaimAvailability } from "@gozaika/utils";
 import { NextResponse } from "next/server";
-import { mapClaimIntent, type ClaimIntentRow } from "@/lib/claims";
+import { mapHoldAndPublicDrop, type InventoryHoldRow } from "@/lib/claims";
 import { loadPublicDrop } from "@/lib/drops";
 import { createClient } from "@/lib/supabase/server";
 
@@ -103,17 +103,18 @@ export async function POST(request: Request) {
 
   const nowIso = new Date().toISOString();
   const { data: existingHold, error: existingHoldError } = await supabase
-    .from("api_claim_hold_summary")
-    .select("*")
-    .eq("drop_pk", requestData.dropPk)
+    .from("drop_inventory_hold")
+    .select("drop_inventory_hold_pk,drop_fk,consumer_profile_fk,hold_status_code,quantity,expires_at,created_at,updated_at")
+    .eq("drop_fk", requestData.dropPk)
     .eq("consumer_profile_pk", consumerProfile.consumer_profile_pk)
     .eq("hold_status_code", "ACTIVE")
     .gt("expires_at", nowIso)
-    .order("hold_created_at", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
 
   if (existingHoldError) {
+    console.error("claim_existing_hold_check_failed", { code: existingHoldError.code });
     return NextResponse.json(
       { ok: false, error: "We could not check your current hold state." } satisfies ApiResponse,
       { status: 500 },
@@ -121,7 +122,7 @@ export async function POST(request: Request) {
   }
 
   if (existingHold) {
-    const claimIntent = mapClaimIntent(existingHold as ClaimIntentRow);
+    const claimIntent = mapHoldAndPublicDrop(existingHold as InventoryHoldRow, drop);
     const response: ApiResponse<ClaimCreationResult> = {
       ok: true,
       data: {
@@ -146,19 +147,20 @@ export async function POST(request: Request) {
   }
 
   const { data: createdHold, error: createdHoldError } = await supabase
-    .from("api_claim_hold_summary")
-    .select("*")
-    .eq("hold_pk", holdPk)
+    .from("drop_inventory_hold")
+    .select("drop_inventory_hold_pk,drop_fk,consumer_profile_fk,hold_status_code,quantity,expires_at,created_at,updated_at")
+    .eq("drop_inventory_hold_pk", holdPk)
     .maybeSingle();
 
   if (createdHoldError || !createdHold) {
+    console.error("claim_created_hold_lookup_failed", { code: createdHoldError?.code ?? "missing_hold" });
     return NextResponse.json(
       { ok: false, error: "Hold was created, but the confirmation is not ready yet." } satisfies ApiResponse,
       { status: 500 },
     );
   }
 
-  const claimIntent = mapClaimIntent(createdHold as ClaimIntentRow);
+  const claimIntent = mapHoldAndPublicDrop(createdHold as InventoryHoldRow, drop);
   const response: ApiResponse<ClaimCreationResult> = {
     ok: true,
     data: {
