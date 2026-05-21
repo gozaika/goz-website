@@ -106,7 +106,7 @@ export default async function DropDetailPage({
           <ClaimPanel drop={drop} isSignedIn={Boolean(user)} autoClaim={query?.claim === "1"} />
           <DropShareActions publicUrl={publicDropUrl} shareText={alertText} className="mt-3" />
           <p className="mt-3 text-xs text-[#2D2D2D]/60">
-            Holds are temporary payment intents only. Payment capture, confirmed orders, QR codes, and refunds arrive in later slices.
+            Holds are temporary inventory reservations. No charge is made in this slice, and expired holds return to availability.
           </p>
         </aside>
       </section>

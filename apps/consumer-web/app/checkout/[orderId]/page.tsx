@@ -42,10 +42,9 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
       <section className="mx-auto grid max-w-5xl gap-6 px-4 py-8 lg:grid-cols-[1fr_0.75fr]">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Hold created</p>
-          <h1 className="mt-2 text-3xl font-bold text-[#2D2D2D]">Your BAM Bag is reserved for payment setup</h1>
+          <h1 className="mt-2 text-3xl font-bold text-[#2D2D2D]">Your BAM Bag hold is active</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-[#2D2D2D]/70">
-            This is a temporary hold, not a paid or confirmed pickup order. Razorpay payment, confirmed orders, and pickup
-            QR/OTP arrive in the next slices.
+            This temporary hold reserves availability until the timer expires. No charge is made in Slice 4A.
           </p>
 
           <section className="mt-6 rounded-lg border border-black/10 bg-white p-5">
@@ -69,7 +68,7 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
                 <span className="font-semibold text-[#2D2D2D]">Quantity held:</span> {claim.quantityHeld}
               </p>
               <p>
-                <span className="font-semibold text-[#2D2D2D]">Price for payment slice:</span>{" "}
+                <span className="font-semibold text-[#2D2D2D]">Listed price:</span>{" "}
                 {formatPaise(claim.pricePaise)}
               </p>
               <p>
@@ -93,7 +92,7 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
 
         <aside className="h-fit rounded-lg border border-black/10 bg-white p-5">
           <p className="text-sm font-semibold text-[#2D2D2D]/60">Hold status</p>
-          <p className="mt-1 text-2xl font-bold text-[#2D2D2D]">{claim.statusCode === "ACTIVE" ? "Payment pending" : claim.statusCode}</p>
+          <p className="mt-1 text-2xl font-bold text-[#2D2D2D]">{claim.statusCode === "ACTIVE" ? "Hold active" : claim.statusCode}</p>
           <div className="mt-5 rounded-lg border border-[#1A5C38]/20 bg-[#F2F8EF] p-4 text-sm">
             <p>
               <HoldCountdown expiresAt={claim.expiresAt} />
@@ -101,8 +100,7 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
             <p className="mt-2 text-[#2D2D2D]/70">Expires at {expiresAtText} IST.</p>
           </div>
           <p className="mt-4 text-sm text-[#2D2D2D]/70">
-            If this hold expires before Slice 4B payment is available, operations can release expired holds and the bag
-            count will return to the drop.
+            If this hold expires, operations can release expired holds and the bag count will return to the drop.
           </p>
           <div className="mt-5 grid gap-2">
             <Link className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#1A5C38] px-4 text-sm font-semibold text-white" href={`/drops/${claim.dropPk}`}>

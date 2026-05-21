@@ -233,7 +233,7 @@ export function AccountClient({
 
       <section className="mt-6 rounded-lg border border-black/10 bg-white p-5 shadow-sm">
         <h2 className="text-xl font-bold text-[#2D2D2D]">Current holds</h2>
-        <p className="mt-1 text-sm text-[#2D2D2D]/65">Temporary BAM Bag holds awaiting the Slice 4B payment flow.</p>
+        <p className="mt-1 text-sm text-[#2D2D2D]/65">Temporary BAM Bag holds that reserve availability until they expire.</p>
         <div className="mt-4 grid gap-3">
           {initialClaimIntents.length === 0 ? (
             <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-[#2D2D2D]/60">
@@ -247,7 +247,7 @@ export function AccountClient({
                     <p className="text-sm font-semibold text-[#1A5C38]">{claim.restaurantName}</p>
                     <h3 className="mt-1 font-bold text-[#2D2D2D]">{claim.bagDisplayName}</h3>
                     <p className="mt-1 text-xs text-[#2D2D2D]/60">
-                      {claim.statusCode === "ACTIVE" ? "Payment pending hold" : claim.statusCode.toLowerCase()} -{" "}
+                      {claim.statusCode === "ACTIVE" ? "Active hold" : claim.statusCode.toLowerCase()} -{" "}
                       {formatPickupWindow(claim.pickupStartAt, claim.pickupEndAt)}
                     </p>
                   </div>

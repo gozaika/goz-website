@@ -96,11 +96,11 @@ export function ClaimPanel({
       <div className="rounded-lg border border-[#1A5C38]/20 bg-[#F2F8EF] p-3 text-sm text-[#2D2D2D]/75">
         <p className="flex items-start gap-2 font-semibold text-[#1A5C38]">
           <Clock className="mt-0.5 h-4 w-4" aria-hidden="true" />
-          A hold reserves 1 bag for payment setup. No payment is charged in Slice 4A.
+          A hold reserves 1 bag until the timer expires. No charge is made in Slice 4A.
         </p>
         <p className="mt-2">
-          Price shown for the next slice: <span className="font-semibold">{formatPaise(drop.pricePaise)}</span>. If the hold
-          expires before payment is available, the bag returns to remaining availability.
+          Listed price: <span className="font-semibold">{formatPaise(drop.pricePaise)}</span>. If the hold expires, the bag
+          returns to remaining availability.
         </p>
       </div>
     </div>

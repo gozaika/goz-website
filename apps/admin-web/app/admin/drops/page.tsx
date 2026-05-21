@@ -222,8 +222,7 @@ export default async function AdminDropsPage() {
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Claim holds</p>
             <h2 className="mt-2 text-2xl font-bold">Active and recent hold intents</h2>
             <p className="mt-2 max-w-3xl text-sm text-black/65">
-              These rows explain why inventory is reserved. They are not paid orders, confirmed pickups, QR codes, or
-              Razorpay payments.
+              These rows explain why inventory is reserved. They are temporary holds only and expire back into drop availability.
             </p>
           </div>
           <div className="mt-4 grid gap-3">
