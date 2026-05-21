@@ -5,7 +5,6 @@ import { createPublicDropUrl, formatPaise, formatPickupWindow, generateManualDro
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAdminActor } from "@/lib/admin-auth";
-import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +50,16 @@ type HoldSummaryRow = {
   readonly pickup_end_at: string;
 };
 
+type HoldRow = {
+  readonly drop_inventory_hold_pk: string;
+  readonly drop_fk: string;
+  readonly consumer_profile_fk: string;
+  readonly hold_status_code: string;
+  readonly quantity: number | string;
+  readonly expires_at: string;
+  readonly created_at: string;
+};
+
 function mapPublicDrop(row: PublicDropRow): PublicDropCard {
   return {
     dropPk: row.drop_drop_pk,
@@ -84,20 +93,17 @@ export default async function AdminDropsPage() {
   if (!actor) redirect("/auth/login");
 
   const service = createServiceRoleSupabaseClient();
-  const supabase = await createClient();
   const [{ data, error }, { data: holdsData, error: holdsError }] = await Promise.all([
     service
     .from("api_public_drop_card")
     .select("*")
     .in("drop_status_code", ["ACTIVE", "SCHEDULED"])
       .order("pickup_start_at", { ascending: true }),
-    supabase
-      .from("api_claim_hold_summary")
-      .select(
-        "hold_pk,drop_pk,consumer_profile_pk,hold_status_code,quantity_held,expires_at,hold_created_at,drop_title,restaurant_name,bag_display_name,price_paise,pickup_start_at,pickup_end_at",
-      )
+    service
+      .from("drop_inventory_hold")
+      .select("drop_inventory_hold_pk,drop_fk,consumer_profile_fk,hold_status_code,quantity,expires_at,created_at")
       .in("hold_status_code", ["ACTIVE", "EXPIRED", "RELEASED"])
-      .order("hold_created_at", { ascending: false })
+      .order("created_at", { ascending: false })
       .limit(25),
   ]);
 
@@ -109,7 +115,39 @@ export default async function AdminDropsPage() {
   }
 
   const drops = ((data ?? []) as PublicDropRow[]).map(mapPublicDrop);
-  const holds = (holdsData ?? []) as HoldSummaryRow[];
+  const dropsByPk = new Map(drops.map((drop) => [drop.dropPk, drop]));
+  const holdRows = (holdsData ?? []) as HoldRow[];
+  const missingHoldDropPks = [...new Set(holdRows.map((hold) => hold.drop_fk).filter((dropPk) => !dropsByPk.has(dropPk)))];
+  if (missingHoldDropPks.length) {
+    const { data: holdDropData } = await service
+      .from("api_public_drop_card")
+      .select("*")
+      .in("drop_drop_pk", missingHoldDropPks);
+    for (const drop of ((holdDropData ?? []) as PublicDropRow[]).map(mapPublicDrop)) {
+      dropsByPk.set(drop.dropPk, drop);
+    }
+  }
+  const holds: HoldSummaryRow[] = holdRows.flatMap((hold) => {
+    const drop = dropsByPk.get(hold.drop_fk);
+    if (!drop) return [];
+    return [
+      {
+        hold_pk: hold.drop_inventory_hold_pk,
+        drop_pk: hold.drop_fk,
+        consumer_profile_pk: hold.consumer_profile_fk,
+        hold_status_code: hold.hold_status_code,
+        quantity_held: hold.quantity,
+        expires_at: hold.expires_at,
+        hold_created_at: hold.created_at,
+        drop_title: drop.dropTitle,
+        restaurant_name: drop.restaurantName,
+        bag_display_name: drop.bagDisplayName,
+        price_paise: drop.pricePaise,
+        pickup_start_at: drop.pickupStartAt,
+        pickup_end_at: drop.pickupEndAt,
+      },
+    ];
+  });
 
   return (
     <main>

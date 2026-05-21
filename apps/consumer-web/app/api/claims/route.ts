@@ -106,7 +106,7 @@ export async function POST(request: Request) {
     .from("drop_inventory_hold")
     .select("drop_inventory_hold_pk,drop_fk,consumer_profile_fk,hold_status_code,quantity,expires_at,created_at,updated_at")
     .eq("drop_fk", requestData.dropPk)
-    .eq("consumer_profile_pk", consumerProfile.consumer_profile_pk)
+    .eq("consumer_profile_fk", consumerProfile.consumer_profile_pk)
     .eq("hold_status_code", "ACTIVE")
     .gt("expires_at", nowIso)
     .order("created_at", { ascending: false })
