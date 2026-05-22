@@ -277,7 +277,6 @@ export async function POST(request: Request) {
       amount: amountPaise,
       currency: "INR",
       receipt: `gz_${createdIntent.payment_order_intent_pk.replaceAll("-", "").slice(0, 32)}`,
-      payment_capture: 1,
       notes: {
         hold_pk: holdRow.drop_inventory_hold_pk,
         payment_order_intent_pk: createdIntent.payment_order_intent_pk,

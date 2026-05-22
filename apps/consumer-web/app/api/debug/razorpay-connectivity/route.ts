@@ -68,16 +68,13 @@ export async function GET(request: Request) {
   }
 
   const requestBody = {
-  amount: 100,
-  currency: "INR",
-  receipt: `gz_debug_${Date.now()}`,
-  payment_capture: 1,
-  notes: {
-    source: "gozaika_vercel_connectivity_test",
-  },
-};
-
-
+    amount: 100,
+    currency: "INR",
+    receipt: `gz_debug_${Date.now()}`,
+    notes: {
+      source: "gozaika_vercel_connectivity_test",
+    },
+  };
 
   try {
     const response = await fetch("https://api.razorpay.com/v1/orders", {
@@ -112,6 +109,7 @@ export async function GET(request: Request) {
           authUserMasked: mask(keyId),
           authSecretPresent: true,
         },
+        razorpayRequestId: response.headers.get("x-razorpay-request-id"),
         razorpayResponse: parsedBody,
       },
       { status: response.ok ? 200 : 502 },
