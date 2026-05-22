@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, GoZaikaLogo } from "@gozaika/ui";
-import { consentPurposeCodes, type ClaimIntent, type ConsentPurposeCode } from "@gozaika/types";
+import { consentPurposeCodes, type ClaimIntent, type ConsentPurposeCode, type ConsumerOrderSummary } from "@gozaika/types";
 import { formatPaise, formatPickupWindow, safeErrorMessage } from "@gozaika/utils";
 import { LogOut, ShieldCheck } from "lucide-react";
 import Link from "next/link";
@@ -29,10 +29,12 @@ export function AccountClient({
   initialProfile,
   initialConsents,
   initialClaimIntents,
+  initialOrders,
 }: {
   readonly initialProfile: AccountProfile;
   readonly initialConsents: readonly AccountConsent[];
   readonly initialClaimIntents: readonly ClaimIntent[];
+  readonly initialOrders: readonly ConsumerOrderSummary[];
 }) {
   const router = useRouter();
   const [profile, setProfile] = useState(initialProfile);
@@ -230,6 +232,42 @@ export function AccountClient({
           </div>
         </div>
       </div>
+
+      <section className="mt-6 rounded-lg border border-black/10 bg-white p-5 shadow-sm">
+        <h2 className="text-xl font-bold text-[#2D2D2D]">Paid orders</h2>
+        <p className="mt-1 text-sm text-[#2D2D2D]/65">Confirmed BAM Bag pickups paid through Razorpay.</p>
+        <div className="mt-4 grid gap-3">
+          {initialOrders.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-[#2D2D2D]/60">
+              You do not have paid orders yet.
+            </p>
+          ) : (
+            initialOrders.map((order) => (
+              <article key={order.orderPk} className="rounded-lg border border-black/10 p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-[#1A5C38]">{order.restaurantName}</p>
+                    <h3 className="mt-1 font-bold text-[#2D2D2D]">{order.bagDisplayName}</h3>
+                    <p className="mt-1 text-xs text-[#2D2D2D]/60">
+                      {order.orderNumber} - {formatPickupWindow(order.pickupWindowStartAt, order.pickupWindowEndAt)}
+                    </p>
+                  </div>
+                  <span className="rounded-full border border-[#1A5C38]/25 px-3 py-1 text-xs font-semibold text-[#1A5C38]">
+                    {order.orderStatusCode}
+                  </span>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-[#2D2D2D]/70">
+                  <span>{formatPaise(order.paidAmountPaise)}</span>
+                  <span>{order.quantity} bag</span>
+                  <Link className="font-semibold text-[#1A5C38]" href={`/orders/${order.orderPk}`}>
+                    View order
+                  </Link>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+      </section>
 
       <section className="mt-6 rounded-lg border border-black/10 bg-white p-5 shadow-sm">
         <h2 className="text-xl font-bold text-[#2D2D2D]">Current holds</h2>

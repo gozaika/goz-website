@@ -1,6 +1,6 @@
 # Claim Holds Runbook
 
-Slice 4A reserves inventory temporarily without charging payment.
+Slice 4A reserves inventory temporarily. Slice 4B can convert an active hold into a paid confirmed order after a verified Razorpay webhook.
 
 ## Remote Migration
 
@@ -66,10 +66,22 @@ order by hold_status_code;
 
 Availability returns when expired `ACTIVE` holds are marked `EXPIRED`, `drop_drop.quantity_reserved` is decremented, and a `HOLD_EXPIRED` row is appended to `drop_inventory_event`.
 
+## Hold To Paid Order Conversion
+
+Slice 4B does not release a hold from the browser callback. The flow is:
+
+1. Consumer starts payment from `/checkout/{holdPk}`.
+2. Server creates or reuses `payment_order_intent` and Razorpay order.
+3. Razorpay sends a signed `payment.captured` webhook.
+4. `api_convert_paid_hold_to_order` verifies the hold is still active/unexpired, amount and currency match, and the hold belongs to the payment intent.
+5. The RPC changes the hold to `CONVERTED`, links the order, decrements reserved inventory, increments sold inventory, and appends `HOLD_CONVERTED`.
+
+If the hold expires before a captured webhook is processed, conversion fails and the normal expired-hold release path should return availability. Failed or dismissed payment attempts do not convert or release the hold.
+
 ## Support Boundaries
 
-- Holds are temporary payment-pending intents.
-- A hold is not a paid order.
-- Do not tell consumers the bag is confirmed or ready for pickup.
+- Active holds are temporary payment-pending intents.
+- A converted hold points to a paid order and should not be released by the expiry job.
+- Do not tell consumers the bag is confirmed or ready for pickup until the verified webhook-backed order exists.
 - Do not manually edit `drop_drop.quantity_reserved`; use the release RPC/Edge Function.
 - Destructive admin cancellation is out of scope for Slice 4A.

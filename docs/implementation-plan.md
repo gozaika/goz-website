@@ -112,6 +112,14 @@ Use this order for a clean rebuild:
    - Use a signed-in consumer with operational consent to open a public active/scheduled drop and create one temporary hold.
    - Do not configure Razorpay, WATI, pickup QR/OTP, refunds, or settlement env vars for Slice 4A.
 
+10. Recreate Slice 4B Razorpay payment and order confirmation after Slice 4A is available:
+
+   - Apply migration `20260521000000_slice4b_razorpay_payment_order_confirmation.sql`.
+   - Configure `NEXT_PUBLIC_RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, and `PICKUP_CREDENTIAL_SECRET` in the target environments.
+   - Deploy `razorpay-webhook` after the migration so verified capture events can call `api_convert_paid_hold_to_order`.
+   - Redeploy `customer.gozaika.in`, `restaurant.gozaika.in`, and `admin.gozaika.in`.
+   - Create a Slice 4A hold, start Razorpay checkout from `/checkout/{holdPk}`, and confirm a captured webhook creates a paid order visible at `/orders/{orderPk}`.
+
 ## Slice 0: Foundation
 
 ### Goal
@@ -409,6 +417,79 @@ npm.cmd --workspace @gozaika/admin-web run build
 ### Out Of Scope
 
 No Razorpay order creation, Checkout.js, payment capture, payment verification, webhook processing, paid/confirmed order status, pickup QR/OTP, refunds, settlements, payouts, invoices, WATI/email/push sends, notification outbox processing, campaign management, Swaad Club, referrals, native mobile parity, or destructive admin hold cancellation.
+
+## Slice 4B: Razorpay Payment & Order Confirmation
+
+### Goal
+
+Convert an active Slice 4A BAM Bag hold into a Razorpay-paid, confirmed, pickup-ready order without oversell, duplicate payment/order creation, or trusting client-side callbacks.
+
+### Completed
+
+- [x] Add migration `20260521000000_slice4b_razorpay_payment_order_confirmation.sql`.
+- [x] Extend payment/order status constraints for Razorpay order-created and payment-pending/confirmed order states.
+- [x] Add service-role RPCs `api_convert_paid_hold_to_order` and `api_record_razorpay_payment_failed`.
+- [x] Add safe read models for consumer orders, restaurant paid order queue, admin payment/order state, and admin webhook state.
+- [x] Add consumer `POST /api/checkout/razorpay-order` that validates the authenticated hold, creates or reuses a payment intent, calls Razorpay Orders API server-side, and returns only Checkout-safe fields.
+- [x] Add consumer `/api/checkout/status` polling so the UI waits for webhook-backed confirmation.
+- [x] Update `razorpay-webhook` to verify raw-body signatures, insert idempotent webhook ledger rows, process captured/failed events, and mark processing status.
+- [x] Convert captured payment webhooks into `payment_transaction`, `order_order`, `order_item`, `order_status_transition`, `drop_inventory_event` (`HOLD_CONVERTED`), and converted hold rows atomically.
+- [x] Add consumer confirmed order detail with order number, pickup window, disclosures, paid amount, QR-style pickup proof, and OTP fallback. Raw QR nonce/OTP are never stored; only hashes are persisted.
+- [x] Add account paid order history separate from temporary holds.
+- [x] Add restaurant `/portal/orders` paid/confirmed order visibility.
+- [x] Extend admin `/admin/drops` with payment intent and webhook support sections.
+
+### Validation Gate
+
+A signed-in consumer can hold a public BAM Bag, proceed to Razorpay checkout, see a pending confirmation state, and reach a confirmed order page only after a verified captured webhook processes. Webhook replay returns idempotently without duplicate orders or payment transactions. Failed/dismissed payments do not convert holds. Expired unpaid holds continue to release through `api_release_expired_inventory_holds`.
+
+### Remote Migration Steps
+
+Apply this migration to the target Supabase project after all prior Slice 4A migrations:
+
+```powershell
+Get-Content -Raw supabase/migrations/20260521000000_slice4b_razorpay_payment_order_confirmation.sql
+```
+
+Review the SQL, then run it once in the Supabase Dashboard SQL editor or the approved remote migration path. Verify:
+
+```sql
+select to_regprocedure('public.api_convert_paid_hold_to_order(text,text,bigint,text,text,bigint,bigint,timestamp with time zone,uuid,jsonb)');
+select to_regclass('public.api_consumer_order_summary');
+select to_regclass('public.api_admin_payment_webhook_summary');
+```
+
+Deploy the webhook after migration:
+
+```powershell
+supabase functions deploy razorpay-webhook
+```
+
+### Environment
+
+- Consumer web: `NEXT_PUBLIC_RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `PICKUP_CREDENTIAL_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`.
+- Supabase Edge Function: `RAZORPAY_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`.
+- Razorpay dashboard webhook URL must point to the deployed `razorpay-webhook` function and include `payment.captured` and `payment.failed`.
+- `PICKUP_CREDENTIAL_SECRET` must be at least 32 random characters and shared by consumer web deployments that issue pickup proof. Raw QR nonce/OTP values are generated per order view and stored only as hashes.
+
+### Verification Commands
+
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+```
+
+### Out Of Scope
+
+No refunds, refund initiation, settlement runs, payouts, invoices, finance dashboards, Razorpay transfers, reconciliation exports, staff pickup verification, collected/no-show transitions, incident creation, WATI/email/push notifications, Swaad Club, referrals, subscriptions, native mobile parity, or destructive admin payment/order corrections.
 
 ## Slice 3 Follow-Up Activities Required For Complete Functionality
 

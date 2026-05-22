@@ -45,6 +45,8 @@ Owned domains also include `gozaik.in` and `gozaika.com`. Treat these as reserve
 - Consumer and restaurant projects must include Supabase Auth redirect URLs for their `/auth/callback` routes.
 - Slice 3 requires the `api_public_drop_card` view and `drop_drop` Realtime path to be deployed in the target Supabase environment.
 - Slice 4A requires migration `20260518002000_slice4a_claim_hold_order_intent.sql` and the existing `release-expired-holds` Edge Function path before enabling claim holds.
+- Slice 4B requires migration `20260521000000_slice4b_razorpay_payment_order_confirmation.sql`, consumer Razorpay env vars, `PICKUP_CREDENTIAL_SECRET`, and a deployed `razorpay-webhook` Edge Function before enabling payment checkout.
+- Razorpay dashboard webhooks should include `payment.captured` and `payment.failed` and point to the deployed Supabase function URL.
 
 ## Rollback procedure
 
@@ -52,3 +54,4 @@ Owned domains also include `gozaik.in` and `gozaika.com`. Treat these as reserve
 2. Promote last known-good deployment.
 3. Disable faulty branch/merge path.
 4. Patch and redeploy through normal CI path.
+5. For Slice 4B payment incidents, rollback app checkout first if needed; keep webhook ledger rows intact for replay/support investigation.

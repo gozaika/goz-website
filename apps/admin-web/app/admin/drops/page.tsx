@@ -60,6 +60,37 @@ type HoldRow = {
   readonly created_at: string;
 };
 
+type PaymentIntentRow = {
+  readonly payment_order_intent_pk: string;
+  readonly drop_inventory_hold_fk: string;
+  readonly order_fk: string | null;
+  readonly provider_order_ref: string | null;
+  readonly payment_intent_status_code: string;
+  readonly amount_paise: number | string;
+  readonly currency_code: string;
+  readonly created_at: string;
+  readonly updated_at: string;
+  readonly drop_inventory_hold:
+    | { readonly hold_status_code: string; readonly expires_at: string }
+    | { readonly hold_status_code: string; readonly expires_at: string }[]
+    | null;
+  readonly order_order:
+    | { readonly order_number: string; readonly order_status_code: string; readonly payment_status_code: string; readonly snapshot_restaurant_name: string; readonly snapshot_drop_title: string }
+    | { readonly order_number: string; readonly order_status_code: string; readonly payment_status_code: string; readonly snapshot_restaurant_name: string; readonly snapshot_drop_title: string }[]
+    | null;
+};
+
+type WebhookRow = {
+  readonly payment_webhook_event_pk: string;
+  readonly provider_event_id: string;
+  readonly event_type_code: string;
+  readonly signature_verified_flag: boolean;
+  readonly processing_status_code: string;
+  readonly processed_at: string | null;
+  readonly processing_error_text: string | null;
+  readonly received_at: string;
+};
+
 function mapPublicDrop(row: PublicDropRow): PublicDropCard {
   return {
     dropPk: row.drop_drop_pk,
@@ -88,12 +119,21 @@ function mapPublicDrop(row: PublicDropRow): PublicDropCard {
   };
 }
 
+function singleRelation<T>(value: T | T[] | null | undefined): T | null {
+  return Array.isArray(value) ? (value[0] ?? null) : (value ?? null);
+}
+
 export default async function AdminDropsPage() {
   const actor = await getAdminActor();
   if (!actor) redirect("/auth/login");
 
   const service = createServiceRoleSupabaseClient();
-  const [{ data, error }, { data: holdsData, error: holdsError }] = await Promise.all([
+  const [
+    { data, error },
+    { data: holdsData, error: holdsError },
+    { data: paymentData, error: paymentError },
+    { data: webhookData, error: webhookError },
+  ] = await Promise.all([
     service
     .from("api_public_drop_card")
     .select("*")
@@ -105,6 +145,16 @@ export default async function AdminDropsPage() {
       .in("hold_status_code", ["ACTIVE", "EXPIRED", "RELEASED"])
       .order("created_at", { ascending: false })
       .limit(25),
+    service
+      .from("payment_order_intent")
+      .select("payment_order_intent_pk,drop_inventory_hold_fk,order_fk,provider_order_ref,payment_intent_status_code,amount_paise,currency_code,created_at,updated_at,drop_inventory_hold(hold_status_code,expires_at),order_order(order_number,order_status_code,payment_status_code,snapshot_restaurant_name,snapshot_drop_title)")
+      .order("created_at", { ascending: false })
+      .limit(25),
+    service
+      .from("payment_webhook_event")
+      .select("payment_webhook_event_pk,provider_event_id,event_type_code,signature_verified_flag,processing_status_code,processed_at,processing_error_text,received_at")
+      .order("received_at", { ascending: false })
+      .limit(25),
   ]);
 
   if (error) {
@@ -112,6 +162,12 @@ export default async function AdminDropsPage() {
   }
   if (holdsError) {
     throw new Error("Could not load hold support summary.");
+  }
+  if (paymentError) {
+    throw new Error("Could not load payment support summary.");
+  }
+  if (webhookError) {
+    throw new Error("Could not load webhook support summary.");
   }
 
   const drops = ((data ?? []) as PublicDropRow[]).map(mapPublicDrop);
@@ -148,6 +204,8 @@ export default async function AdminDropsPage() {
       },
     ];
   });
+  const payments = (paymentData ?? []) as PaymentIntentRow[];
+  const webhooks = (webhookData ?? []) as WebhookRow[];
 
   return (
     <main>
@@ -261,6 +319,120 @@ export default async function AdminDropsPage() {
                     <div>
                       <dt className="font-semibold text-black">Expires</dt>
                       <dd>{new Date(hold.expires_at).toLocaleString("en-IN")}</dd>
+                    </div>
+                  </dl>
+                </article>
+              ))
+            )}
+          </div>
+        </section>
+
+        <section className="mt-8">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Payments</p>
+            <h2 className="mt-2 text-2xl font-bold">Recent payment and order state</h2>
+            <p className="mt-2 max-w-3xl text-sm text-black/65">
+              Support-safe status for answering whether a hold has a Razorpay order, captured payment, or confirmed order.
+              Raw provider payloads and pickup credential hashes are not shown.
+            </p>
+          </div>
+          <div className="mt-4 grid gap-3">
+            {payments.length === 0 ? (
+              <section className="rounded-lg border border-dashed border-black/15 bg-white p-6 text-sm text-black/60">
+                No payment intents are visible yet.
+              </section>
+            ) : (
+              payments.map((payment) => {
+                const order = singleRelation(payment.order_order);
+                const hold = singleRelation(payment.drop_inventory_hold);
+                return (
+                  <article key={payment.payment_order_intent_pk} className="rounded-lg border border-black/10 bg-white p-4">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-[#1A5C38]">
+                            {order?.order_number ?? payment.provider_order_ref ?? payment.payment_order_intent_pk.slice(0, 8)}
+                          </p>
+                          <h3 className="mt-1 font-bold">
+                            {order?.snapshot_restaurant_name ?? "Payment intent pending order"}
+                          </h3>
+                          <p className="mt-1 text-xs text-black/55">
+                            Hold {payment.drop_inventory_hold_fk.slice(0, 8)} - intent {payment.payment_order_intent_pk.slice(0, 8)}
+                          </p>
+                        </div>
+                        <span className="rounded-full border border-[#1A5C38]/25 px-3 py-1 text-xs font-semibold text-[#1A5C38]">
+                          {payment.payment_intent_status_code}
+                        </span>
+                      </div>
+                      <dl className="mt-3 grid gap-2 text-sm text-black/70 sm:grid-cols-5">
+                        <div>
+                          <dt className="font-semibold text-black">Amount</dt>
+                          <dd>{formatPaise(Number(payment.amount_paise))}</dd>
+                        </div>
+                        <div>
+                          <dt className="font-semibold text-black">Hold</dt>
+                          <dd>{hold?.hold_status_code ?? "Unknown"}</dd>
+                        </div>
+                        <div>
+                          <dt className="font-semibold text-black">Order</dt>
+                          <dd>{order?.order_status_code ?? "Not created"}</dd>
+                        </div>
+                        <div>
+                          <dt className="font-semibold text-black">Provider order</dt>
+                          <dd>{payment.provider_order_ref ? payment.provider_order_ref.slice(0, 18) : "Not created"}</dd>
+                        </div>
+                        <div>
+                          <dt className="font-semibold text-black">Updated</dt>
+                          <dd>{new Date(payment.updated_at).toLocaleString("en-IN")}</dd>
+                        </div>
+                      </dl>
+                  </article>
+                );
+              })
+            )}
+          </div>
+        </section>
+
+        <section className="mt-8">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Webhook ledger</p>
+            <h2 className="mt-2 text-2xl font-bold">Recent Razorpay webhooks</h2>
+            <p className="mt-2 max-w-3xl text-sm text-black/65">
+              Signature and processing status only. Provider payloads stay service-role only.
+            </p>
+          </div>
+          <div className="mt-4 grid gap-3">
+            {webhooks.length === 0 ? (
+              <section className="rounded-lg border border-dashed border-black/15 bg-white p-6 text-sm text-black/60">
+                No Razorpay webhook events are visible yet.
+              </section>
+            ) : (
+              webhooks.map((webhook) => (
+                <article key={webhook.payment_webhook_event_pk} className="rounded-lg border border-black/10 bg-white p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-[#1A5C38]">{webhook.event_type_code}</p>
+                      <h3 className="mt-1 font-bold">{webhook.provider_event_id}</h3>
+                    </div>
+                    <span className="rounded-full border border-[#1A5C38]/25 px-3 py-1 text-xs font-semibold text-[#1A5C38]">
+                      {webhook.processing_status_code}
+                    </span>
+                  </div>
+                  <dl className="mt-3 grid gap-2 text-sm text-black/70 sm:grid-cols-4">
+                    <div>
+                      <dt className="font-semibold text-black">Signature</dt>
+                      <dd>{webhook.signature_verified_flag ? "Verified" : "Not verified"}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-black">Received</dt>
+                      <dd>{new Date(webhook.received_at).toLocaleString("en-IN")}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-black">Processed</dt>
+                      <dd>{webhook.processed_at ? new Date(webhook.processed_at).toLocaleString("en-IN") : "Pending"}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-black">Error</dt>
+                      <dd>{webhook.processing_error_text ? webhook.processing_error_text.slice(0, 80) : "None"}</dd>
                     </div>
                   </dl>
                 </article>

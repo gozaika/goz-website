@@ -3,6 +3,7 @@ const links = [
   ["Onboarding", "/portal/onboarding"],
   ["Templates", "/portal/templates"],
   ["New drop", "/portal/drops/new"],
+  ["Orders", "/portal/orders"],
 ] as const;
 
 export function PortalNav() {

@@ -106,7 +106,7 @@ export default async function DropDetailPage({
           <ClaimPanel drop={drop} isSignedIn={Boolean(user)} autoClaim={query?.claim === "1"} />
           <DropShareActions publicUrl={publicDropUrl} shareText={alertText} className="mt-3" />
           <p className="mt-3 text-xs text-[#2D2D2D]/60">
-            Holds are temporary inventory reservations. No charge is made in this slice, and expired holds return to availability.
+            Holds are temporary inventory reservations. Pay from checkout before the timer expires to confirm pickup.
           </p>
         </aside>
       </section>

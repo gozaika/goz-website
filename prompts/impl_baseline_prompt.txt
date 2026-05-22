@@ -9,6 +9,293 @@ MODE
 
 Current git state:
 - Branch: main
+- Latest commit: a8dced9
+- Expected state: all intended implementation changes are committed and pushed before this slice begins. prompts/impl_baseline_prompt.txt and prompts/template-development.txt will be dirty.
+- Deployments done on remote supabase and vercel environments.
+- Codex must run `git status --short --branch` first and report any dirty files before editing.
+
+
+Remote migration state:
+- Remote Supabase migrations for prior slices have already been applied.
+- Local Supabase may lag behind remote.
+- Do not assume local DB is current unless verified.
+- If this slice adds a migration, document exactly how I should apply it remotely.
+
+SLICE
+- Slice name: Razorpay Payment & Order Confirmation
+- Slice number: 4B
+- Phase: Phase 1 - Pilot Marketplace Core
+- Business goal: Convert an active Slice 4A BAM Bag hold into a paid, confirmed, pickup-ready order through Razorpay without oversell, duplicate payment/order creation, or trusting client-side payment callbacks.
+- User-facing proof point: A signed-in consumer can hold a public BAM Bag, proceed to Razorpay checkout, complete payment, and see a confirmed order page with order number, pickup window, dietary/allergen disclosures, paid amount, and pickup QR/OTP proof.
+
+PROJECT CONTEXT
+- Current deployed surfaces:
+  - Website: https://gozaika.in/
+  - Consumer web: https://customer.gozaika.in/
+  - Restaurant portal: https://restaurant.gozaika.in/
+  - Admin portal: https://admin.gozaika.in/
+- Owned domains: gozaik.in, gozaika.com
+- Baseline roadmap: project docs/goZaika_Technology_Specification_v2.docx
+- Rebuild source of truth: docs/implementation-plan.md
+- Current completed slices:
+  - Slice 0: Foundation - monorepo, canonical schema, app shells, shared packages, Supabase client separation, UI baseline, CI shape.
+  - Slice 1: Auth/Profile/Consent - consumer auth, profile bootstrap, consent capture, account surface, Supabase SSR session refresh.
+  - Slice 2: Restaurant Onboarding - owner portal, onboarding/compliance, document upload, admin review/activation, active restaurant membership gate.
+  - Slice 3: First Drop Publishing & Consumer Discovery - active restaurants publish public drops, consumer discovery/detail reads safe public drop data, plus Slice 3.5 Manual Launch Comms Support and Slice 4A Claim Hold / Order Intent.
+- Migrations already applied: 20260425000000_gozaika_consolidated_schema.sql, 20260427000000_slice1_auth_profile_consent.sql, 20260502000000_slice2_restaurant_onboarding.sql, 20260502001000_slice2_restaurant_rls_hardening.sql, 20260513000000_slice3_drop_publishing_discovery.sql, 20260517000000_slice3_public_drop_aliases.sql, 20260518000000_slice3_template_active_revision_repair.sql, 20260518001000_slice3_template_drop_preferences.sql, 20260518002000_slice4a_claim_hold_order_intent.sql.
+- Known deployment/env state: Remote Supabase and Vercel are primary. Slice 4A release-expired-holds Edge Function is deployed and returns HTTP 200. Razorpay env vars may not exist yet and must be documented before deployment. No WATI/email/push/settlement env vars should be required for Slice 4B.
+
+ACCOUNTS FOR TESTING:
+Deployed apps: https://customer.gozaika.in/   https://restaurant.gozaika.in/ and https://admin.gozaika.in/admin
+Accounts that can be used for testing: resturant=919000100001/123456   customer=918106230860/123456  https://admin.gozaika.in/auth/login=admin.ops@gozaika.example/GozaikaDemo@123 
+
+
+EXPERTISE TO APPLY
+- Product manager: keep scope pilot-first and launch-useful.
+- Senior full-stack engineer: follow existing repo patterns and vertical-slice architecture.
+- Database/RLS engineer: protect tenancy, service-role boundaries, and public/private data separation.
+- UX designer: optimize for fast, obvious workflows with clear mobile/desktop layouts.
+- Food-safety/compliance reviewer: treat allergen, dietary, pickup, and restaurant identity as safety-critical.
+- Payments/security reviewer: apply only if this slice touches payment/auth/webhooks/RLS.
+- QA engineer: define validation gates and run focused checks.
+- Technical writer: update docs so future Codex can rebuild from ground zero.
+
+READ FIRST
+1. Run git status.
+2. Read docs/implementation-plan.md.
+3. Read relevant roadmap section in project docs/goZaika_Technology_Specification_v2.docx.
+4. Read these files before editing:
+   - packages/types/src/index.ts
+   - packages/types/src/index.test.ts
+   - packages/utils/src/index.ts
+   - packages/utils/src/index.test.ts
+   - packages/db/src/index.ts
+   - packages/supabase/src/index.ts
+   - packages/ui/src/index.tsx
+   - apps/consumer-web/lib/drops.ts
+   - apps/consumer-web/lib/claims.ts
+   - apps/consumer-web/lib/supabase/server.ts
+   - apps/consumer-web/lib/supabase/browser.ts
+   - apps/consumer-web/app/api/claims/route.ts
+   - apps/consumer-web/app/drops/[id]/page.tsx
+   - apps/consumer-web/app/drops/[id]/claim-panel.tsx
+   - apps/consumer-web/app/drops/drop-discovery-client.tsx
+   - apps/consumer-web/app/checkout/[orderId]/page.tsx
+   - apps/consumer-web/app/checkout/[orderId]/hold-countdown.tsx
+   - apps/consumer-web/app/account/page.tsx
+   - apps/consumer-web/app/account/account-client.tsx
+   - apps/restaurant-mgmt-web/app/portal/orders/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/drops/new/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/drops/new/drop-publishing-form.tsx
+   - apps/admin-web/app/admin/drops/page.tsx
+   - supabase/migrations/20260425000000_gozaika_consolidated_schema.sql
+   - supabase/migrations/20260518002000_slice4a_claim_hold_order_intent.sql
+   - supabase/functions/_shared/env.ts
+   - supabase/functions/_shared/http.ts
+   - supabase/functions/_shared/razorpay.ts
+   - supabase/functions/_shared/supabase.ts
+   - supabase/functions/razorpay-webhook/index.ts
+   - supabase/functions/release-expired-holds/index.ts
+   - docs/product/claim-hold-order-intent.md
+   - docs/runbooks/claim-holds.md
+   - docs/runbooks/payments.md
+   - docs/runbooks/demo-data.md
+   - docs/configuration-reference.md
+   - docs/deployment-pipeline.md
+5. Inspect existing patterns before adding abstractions.
+
+SCOPE / MUST INCLUDE
+- Add a Razorpay checkout path from an active Slice 4A hold, using server-side Razorpay order creation and client-side Checkout.js only after a valid authenticated hold is confirmed.
+- Add typed payment/order APIs and UI states so the consumer can move from `/checkout/[holdPk]` to a payment-pending state and then to a confirmed order page after webhook processing.
+- Implement verified Razorpay webhook processing that records webhook events idempotently, records payment transactions, converts the active hold into an order atomically, appends order status transitions, appends `HOLD_CONVERTED` inventory event, and prevents duplicate order/payment creation on webhook replay.
+- Generate pickup proof for paid confirmed orders: order number, QR payload, and 6-digit OTP fallback. Store only hashes/secrets in the database; never store raw QR nonce or raw OTP in plaintext.
+- Add consumer order summary/history so `/account` shows paid/confirmed orders separately from temporary holds.
+- Add smallest useful restaurant order visibility: paid/confirmed/ready-for-pickup orders for the restaurant with pickup window, order number, quantity, amount, status, and dietary/allergen safety context. No pickup verification yet.
+- Add smallest useful admin/operator visibility into payment/order status and webhook processing state for support without exposing raw provider payloads, private compliance docs, full PII, or secrets.
+- Preserve Slice 4A hold behavior: unpaid holds still expire/release through `api_release_expired_inventory_holds`.
+- Update docs and runbooks so Slice 4B can be recreated from ground zero after Slices 0, 1, 2, 3, 3.5, and 4A.
+
+OUT OF SCOPE / MUST NOT INCLUDE
+- Do not implement refunds, refund initiation, settlement runs, payouts, invoices, finance dashboards, Razorpay transfers, or reconciliation exports.
+- Do not implement staff pickup verification, COLLECTED transitions, no-show handling, incident creation, offline staff app, native mobile parity, camera scanning, or restaurant staff mobile.
+- Do not implement WATI, email, push notifications, notification outbox processing, Swaad Club, referrals, campaign management, subscriptions, or advanced analytics.
+- Do not trust client-side Razorpay success callbacks as proof of payment. Only verified webhooks may mark payment/order state as captured/paid/confirmed.
+- Do not expose service-role operations, Razorpay secret keys, webhook secrets, pickup credential secrets, raw webhook payloads, raw QR nonce, or raw OTP to browser/client code or logs.
+- Do not weaken public drop RLS, payment RLS, order RLS, private restaurant/compliance storage, or admin membership checks.
+
+USER FLOWS
+Consumer:
+- Signed-out consumer opens a public drop, taps Hold, signs in, returns to hold flow, creates an active hold, and lands on `/checkout/[holdPk]`.
+- Signed-in consumer with an active, unexpired hold taps a clear CTA such as `Proceed to payment`.
+- Server creates or reuses a Razorpay order/payment intent with idempotency; client opens Razorpay Checkout.js.
+- While Razorpay/webhook is pending, UI says payment is being confirmed and does not claim success until server state changes.
+- After verified capture webhook, consumer sees confirmed order details: restaurant, bag title, dietary category, allergen chips/summary, pickup window, listed/paid amount, quantity, order number, QR code, OTP fallback, and clear pickup instructions.
+- If payment is dismissed or fails, consumer sees a specific error and can retry while the hold is still active.
+- If the hold expires before payment starts, payment CTA is disabled and the consumer can return to the drop.
+- `/account` shows current temporary holds and paid/confirmed orders with links to order detail.
+
+Restaurant:
+- Approved restaurant user can open `/portal/orders` and see current paid/confirmed/ready-for-pickup orders for their own restaurant only.
+- Restaurant can view order number, pickup window, quantity, amount, status, BAM Bag title, dietary/allergen disclosures, and payment-captured support status.
+- Restaurant cannot create consumer payments, mark orders collected, trigger refunds, or manually override payment status in this slice.
+
+Admin/Ops:
+- Admin can open `/admin/drops` or a narrow admin orders/payments support surface and see active/recent payment intents, paid orders, webhook processing status, and support-safe metadata.
+- Admin can answer “did this customer pay / did the webhook arrive / why is inventory reserved or sold?” without querying the database directly.
+- Admin destructive actions, refunds, data correction, and manual order status overrides remain out of scope unless implemented with explicit audit and human-review gates.
+
+Mobile:
+- No native mobile implementation. Consumer web/PWA payment and order confirmation surfaces must be mobile-friendly because WhatsApp links and Razorpay checkout will usually be opened on phones.
+
+DATA / DATABASE REQUIREMENTS
+- Prefer additive migrations.
+- Do not edit historical migrations unless fixing idempotency.
+- RLS and service-role usage must be reviewed.
+- Public views must expose only safe fields.
+- Tables/views/RPCs/functions likely involved:
+  - drop_drop
+  - drop_inventory_hold
+  - drop_inventory_event
+  - order_order
+  - order_item
+  - order_status_transition
+  - order_pickup_verification_event only for future compatibility; do not write verification events in 4B
+  - payment_order_intent
+  - payment_transaction
+  - payment_webhook_event
+  - consumer_profile
+  - iam_profile
+  - restaurant_restaurant
+  - restaurant_team_membership
+  - iam_platform_membership
+  - catalog_bag_template_revision
+  - api_public_drop_card
+  - api_claim_hold_summary
+  - api_create_inventory_hold
+  - api_release_expired_inventory_holds
+  - new safe read models such as api_consumer_order_summary, api_restaurant_order_summary, api_admin_payment_order_summary if current RLS-safe reads are insufficient
+  - new RPCs for atomic conversion such as api_convert_paid_hold_to_order and/or api_record_razorpay_payment_capture
+  - optional RPC/API for pickup credential issuance that stores only hashes and returns raw QR/OTP only to the authenticated order owner
+- Migration naming convention:
+  - supabase/migrations/20260521000000_slice4b_razorpay_payment_order_confirmation.sql
+
+API REQUIREMENTS
+- Add a consumer route handler such as `POST /api/checkout/razorpay-order` that requires an authenticated consumer, validates a typed schema, verifies the hold belongs to that consumer and is active/unexpired, creates or reuses `payment_order_intent`, calls Razorpay Orders API server-side, and returns a minimal typed checkout payload.
+- Add consumer read route/server loader for paid order detail such as `/orders/[orderId]` or reuse `/checkout/[id]` carefully without confusing hold PK and order PK. It must show confirmed order data only to the owning consumer.
+- Update `supabase/functions/razorpay-webhook` from ledger-only to verified processing: verify raw-body signature, insert webhook ledger idempotently, process captured/failed events, update processing status, and never trust browser callbacks.
+- Add typed response/request models in `@gozaika/types` for payment intent creation, checkout payload, payment/order summary, webhook processing result if needed, and pickup QR payload.
+- Razorpay server calls must use secret env vars only on server/Edge. Browser must receive only `NEXT_PUBLIC_RAZORPAY_KEY_ID`, amount/currency/order id, and safe display fields.
+- Idempotency must protect: repeated payment intent creation, repeated Razorpay order creation where practical, repeated browser clicks, repeated webhooks, and repeated order conversion.
+- API errors must be specific: login required, hold not found, hold expired, hold already converted, drop unavailable, amount mismatch, Razorpay unavailable, payment failed, webhook signature invalid, duplicate webhook, internal error.
+- Do not create refund APIs, settlement APIs, payout APIs, pickup verification APIs, or notification APIs in this slice.
+
+UI / UX REQUIREMENTS
+- Maintain production-quality layout.
+- Buttons must be visible, labeled, accessible, and responsive.
+- Avoid dead-end screens.
+- Errors must explain what to correct.
+- Success states must be clear.
+- Primary workflow should be fast for the target user.
+- Use existing design tokens/components where possible.
+- Do not add marketing/landing-page fluff inside operational apps.
+- Payment CTA must be prominent but precise, for example `Proceed to payment`; after capture, it is acceptable to say paid/confirmed because Slice 4B owns that state.
+- Do not say payment succeeded until the server has verified webhook-backed captured state.
+- Show clear pending state after Razorpay returns but before webhook confirmation, with refresh/poll behavior that does not spam.
+- Confirmed order page must show QR/OTP pickup proof with strong mobile layout, readable OTP, and pickup instructions.
+- Preserve allergen and dietary disclosures directly in the payment and confirmation flow.
+- Disabled payment states must explain whether the hold expired, was already converted, or needs a new hold.
+- Restaurant/admin screens should be operational and compact, not campaign/order-manager sprawl.
+
+SECURITY / COMPLIANCE REQUIREMENTS
+- No service-role key in client code.
+- No private docs/media exposed publicly.
+- No PII in logs.
+- RLS/tenant checks required for:
+  - Consumer can only read and pay their own holds/orders/payment summaries.
+  - Restaurant users can only read orders/payment summaries for restaurants where they have active membership.
+  - Admin users must be verified through existing platform membership before viewing payment/order support metadata.
+  - Payment tables with raw provider payloads remain service-role/admin-safe only; browser clients must use safe views/routes.
+  - Webhook processing can only mutate payment/order state after Razorpay signature verification.
+  - Hold conversion must verify hold ownership, active status, expiry, amount, drop, quantity, and idempotency.
+  - Pickup QR/OTP raw values must never be stored plaintext or logged; hashes/secrets only.
+- Human review required for:
+  - auth
+  - payment webhook
+  - RLS
+  - refund/financial mutation
+  - destructive admin action
+  - pickup credential generation/hash design
+  - Razorpay production env and webhook secret configuration
+
+DOCS REQUIREMENTS
+Update docs in the same implementation:
+1. docs/implementation-plan.md
+   - Add/update slice section.
+   - Include goal, completed items, validation gate, out-of-scope, verification commands.
+   - Keep it usable to recreate all slices from ground zero.
+2. Product/runbook docs:
+   - Update docs/runbooks/payments.md with Slice 4B Razorpay order creation, webhook verification, idempotency, deployment, smoke test, and rollback notes.
+   - Create docs/product/razorpay-payment-order-confirmation.md or equivalent if cleaner, covering consumer, restaurant, admin, and compliance behavior.
+   - Update docs/runbooks/claim-holds.md to explain hold-to-paid-order conversion and what happens to expired unpaid holds.
+   - Update docs/runbooks/demo-data.md if demo paid-order/payment rows or smoke SQL are added.
+3. Configuration/deployment docs if env/domain/migration behavior changes:
+   - docs/configuration-reference.md
+   - docs/deployment-pipeline.md
+4. Update DOCX roadmap only if roadmap/scope materially changes:
+   - project docs/goZaika_Technology_Specification_v2.docx
+   - If editing DOCX, use Documents skill and render/visually verify.
+
+DEMO / SEED REQUIREMENTS
+- Add deterministic demo data if needed.
+- Register demo rows in dev_demo_seed_registry where applicable.
+- Update cleanup scripts if demo rows are added.
+- Do not seed production data.
+- Add/update smoke SQL if useful.
+- Prefer not to seed real payment provider references in production. If local/staging demo rows are needed, use fake clearly-marked provider refs such as `rzp_demo_*`.
+- If adding a demo SQL file, use `supabase/seeds/demo/005_slice4b_payment_order_confirmation_demo.sql` and make it safe for local/staging only.
+- If demo rows touch `payment_webhook_event`, `payment_transaction`, `payment_order_intent`, `order_status_transition`, `order_item`, `order_order`, `drop_inventory_hold`, or `drop_inventory_event`, cleanup must remove them in FK-safe order.
+
+
+Codex is allowed to use http://localhost:3000 for local smoke testing.
+
+VALIDATION GATE
+This slice is complete only when:
+- A signed-in consumer can create or reuse an active hold, start Razorpay checkout from it, and see a payment pending state that does not claim success before webhook confirmation.
+- A verified Razorpay captured webhook idempotently creates/updates payment transaction state, converts the hold to an order, appends order status transitions, appends `HOLD_CONVERTED`, and prevents duplicate order creation on replay.
+- The consumer can see a confirmed paid order with restaurant, bag title, dietary/allergen disclosures, pickup window, price/paid amount, quantity, order number, QR, OTP, and pickup instructions.
+- Failed/dismissed payment attempts do not convert the hold; expired holds cannot start payment and still release through the documented expired-hold path.
+- Restaurant and admin surfaces show enough order/payment state for launch support without exposing provider secrets, raw webhook payloads, private compliance data, or unauthorized tenant data.
+- Public/private boundaries remain safe: no service-role browser use, no Razorpay secret in client bundles, no raw QR/OTP in DB/logs, and own-row/tenant RLS assumptions are preserved.
+- docs/implementation-plan.md explains how to rebuild Slice 4B from scratch after Slices 0, 1, 2, 3, 3.5, and 4A.
+- Payment/product/runbook/config/deployment/demo docs are updated.
+- Focused typecheck, lint, builds, migration SQL review, Edge Function deploy instructions, and manual/browser smoke tests pass or external blockers are documented.
+
+VERIFICATION COMMANDS
+Run focused checks:
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+
+====
+You are Codex working in C:\venkat\limca\gozaika\sourcecode.
+
+MODE
+- This is an implementation task.
+- Make code changes unless blocked.
+- Do not stop at a proposal.
+- Preserve unrelated user changes.
+- Run verification before final response.
+
+Current git state:
+- Branch: main
 - Latest commit: cd22d7f
 - Expected state: all intended implementation changes are committed and pushed before this slice begins. prompts/impl_baseline_prompt.txt and prompts/template-development.txt will be dirty.
 - Codex must run `git status --short --branch` first and report any dirty files before editing.

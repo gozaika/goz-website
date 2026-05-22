@@ -102,7 +102,8 @@ Future slices should add deterministic files in order:
 
 - `003_slice3_drop_publishing_demo.sql`
 - `004_slice4a_claim_hold_order_intent_demo.sql`
-- `005_slice5_pickup_staff.sql`
+- `005_slice4b_payment_order_confirmation_demo.sql`
+- `006_slice5_pickup_staff.sql`
 
 Delete demo data safely:
 
@@ -128,3 +129,9 @@ The Slice 3 seed creates a published BAM Bag template and active public drop for
 No deterministic hold seed is added for Slice 4A. Holds expire quickly and make demos brittle. Use the Slice 3 public demo drop plus a demo consumer login to create a real hold through the consumer UI.
 
 If a future demo seed adds rows to `drop_inventory_hold`, `drop_inventory_event`, `order_order`, `order_item`, or `order_status_transition`, it must register rows in `dev_demo_seed_registry` and delete them in FK-safe order before auth users are removed.
+
+# Slice 4B Razorpay Payment And Order Confirmation Demo Data
+
+No deterministic Slice 4B payment/order seed is added. Payment rows should usually be produced through Razorpay test mode plus the verified webhook path so idempotency and hold conversion are exercised realistically.
+
+If a local/staging-only seed is later needed, use `supabase/seeds/demo/005_slice4b_payment_order_confirmation_demo.sql` with clearly fake provider refs such as `rzp_demo_*`. The seed must register every row in `dev_demo_seed_registry` and update cleanup for `payment_webhook_event`, `payment_transaction`, `payment_order_intent`, `order_status_transition`, `order_item`, `order_order`, `drop_inventory_hold`, and `drop_inventory_event` in FK-safe order. Never seed real payment provider references in production.

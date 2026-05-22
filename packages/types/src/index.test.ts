@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   claimIntentStatusCodes,
   claimRequestSchema,
+  razorpayCheckoutOrderRequestSchema,
   dropStatusCodes,
   restaurantBasicsUpdateSchema,
   restaurantComplianceUpdateSchema,
@@ -19,6 +20,7 @@ describe("goZaika status constants", () => {
   });
 
   it("keeps pickup-ready and collected order states available", () => {
+    expect(orderStatusCodes).toContain("CREATED");
     expect(orderStatusCodes).toContain("READY_FOR_PICKUP");
     expect(orderStatusCodes).toContain("COLLECTED");
   });
@@ -42,6 +44,15 @@ describe("API schemas", () => {
       dropPk: "11111111-1111-4111-8111-111111111111",
       idempotencyKey: "claim-111111111111",
       quantity: 1,
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("validates Razorpay checkout order requests", () => {
+    const result = razorpayCheckoutOrderRequestSchema.safeParse({
+      holdPk: "11111111-1111-4111-8111-111111111111",
+      idempotencyKey: "checkout-111111111111",
     });
 
     expect(result.success).toBe(true);

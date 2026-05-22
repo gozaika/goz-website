@@ -15,11 +15,13 @@ export const dropStatusCodes = [
 ] as const;
 
 export const orderStatusCodes = [
+  "CREATED",
   "PAYMENT_PENDING",
   "PAID",
   "CONFIRMED",
   "READY_FOR_PICKUP",
   "COLLECTED",
+  "PICKUP_EXPIRED",
   "CANCELLED",
   "REFUND_PENDING",
   "REFUNDED",
@@ -136,6 +138,11 @@ export const claimRequestSchema = z.object({
   quantity: positiveQuantitySchema.default(1),
 });
 
+export const razorpayCheckoutOrderRequestSchema = z.object({
+  holdPk: uuidSchema,
+  idempotencyKey: z.string().min(16).max(128),
+});
+
 export const claimIntentStatusCodes = ["ACTIVE", "EXPIRED", "RELEASED", "CONVERTED"] as const;
 export type ClaimIntentStatusCode = (typeof claimIntentStatusCodes)[number];
 
@@ -154,6 +161,45 @@ export const pickupQrPayloadSchema = z.object({
   restaurantPk: uuidSchema,
   issuedAt: z.string().datetime(),
 });
+
+export interface RazorpayCheckoutOrderRequest {
+  readonly holdPk: string;
+  readonly idempotencyKey: string;
+}
+
+export interface RazorpayCheckoutPayload {
+  readonly keyId: string;
+  readonly providerOrderRef: string;
+  readonly paymentOrderIntentPk: string;
+  readonly holdPk: string;
+  readonly amountPaise: number;
+  readonly currencyCode: "INR";
+  readonly restaurantName: string;
+  readonly bagDisplayName: string;
+  readonly description: string;
+  readonly prefill: {
+    readonly name?: string;
+    readonly email?: string;
+    readonly contact?: string;
+  };
+  readonly status: "RAZORPAY_ORDER_CREATED" | "CAPTURED";
+  readonly orderHref?: string;
+}
+
+export interface CheckoutStatus {
+  readonly holdPk: string;
+  readonly holdStatusCode: ClaimIntentStatusCode;
+  readonly paymentIntentStatusCode: PaymentIntentStatusCode | null;
+  readonly orderPk: string | null;
+  readonly orderStatusCode: OrderStatusCode | null;
+  readonly orderHref: string | null;
+}
+
+export interface PickupProof {
+  readonly qrPayload: string;
+  readonly otp: string;
+  readonly issuedAt: string;
+}
 
 export const pickupVerificationRequestSchema = z
   .object({
@@ -386,6 +432,96 @@ export interface ClaimIntent {
   readonly minMenuValuePaise: number | null;
   readonly allergenSummaryText: string | null;
   readonly allergenCodes: readonly string[];
+}
+
+export interface ConsumerOrderSummary {
+  readonly orderPk: string;
+  readonly orderNumber: string;
+  readonly holdPk: string | null;
+  readonly consumerProfilePk: string;
+  readonly restaurantPk: string;
+  readonly dropPk: string;
+  readonly orderStatusCode: OrderStatusCode;
+  readonly paymentStatusCode: string;
+  readonly restaurantName: string;
+  readonly restaurantSlug: string;
+  readonly dropTitle: string;
+  readonly bagDisplayName: string;
+  readonly dietaryCategoryCode: DietaryCategoryCode;
+  readonly spiceLevelCode: SpiceLevelCode | null;
+  readonly allergenSummaryText: string | null;
+  readonly allergenCodes: readonly string[];
+  readonly servesText: string | null;
+  readonly pickupInstructions: string | null;
+  readonly quantity: number;
+  readonly unitPricePaise: number;
+  readonly paidAmountPaise: number;
+  readonly currencyCode: string;
+  readonly pickupWindowStartAt: string;
+  readonly pickupWindowEndAt: string;
+  readonly paymentIntentStatusCode: PaymentIntentStatusCode | null;
+  readonly paymentCapturedAt: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
+
+export interface RestaurantOrderSummary {
+  readonly orderPk: string;
+  readonly orderNumber: string;
+  readonly restaurantPk: string;
+  readonly dropPk: string;
+  readonly orderStatusCode: OrderStatusCode;
+  readonly paymentStatusCode: string;
+  readonly restaurantName: string;
+  readonly dropTitle: string;
+  readonly bagDisplayName: string;
+  readonly dietaryCategoryCode: DietaryCategoryCode;
+  readonly spiceLevelCode: SpiceLevelCode | null;
+  readonly allergenSummaryText: string | null;
+  readonly allergenCodes: readonly string[];
+  readonly quantity: number;
+  readonly paidAmountPaise: number;
+  readonly currencyCode: string;
+  readonly pickupWindowStartAt: string;
+  readonly pickupWindowEndAt: string;
+  readonly paymentIntentStatusCode: PaymentIntentStatusCode | null;
+  readonly paymentCapturedAt: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
+
+export interface AdminPaymentOrderSummary {
+  readonly paymentOrderIntentPk: string;
+  readonly holdPk: string;
+  readonly orderPk: string | null;
+  readonly orderNumber: string | null;
+  readonly providerCode: "RAZORPAY";
+  readonly providerOrderRef: string | null;
+  readonly paymentIntentStatusCode: PaymentIntentStatusCode;
+  readonly amountPaise: number;
+  readonly currencyCode: string;
+  readonly orderStatusCode: OrderStatusCode | null;
+  readonly paymentStatusCode: string | null;
+  readonly restaurantName: string | null;
+  readonly dropTitle: string | null;
+  readonly holdStatusCode: ClaimIntentStatusCode;
+  readonly holdExpiresAt: string;
+  readonly paymentCapturedAt: string | null;
+  readonly transactionCount: number;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
+
+export interface AdminPaymentWebhookSummary {
+  readonly paymentWebhookEventPk: string;
+  readonly providerCode: "RAZORPAY";
+  readonly providerEventId: string;
+  readonly eventTypeCode: string;
+  readonly signatureVerified: boolean;
+  readonly processingStatusCode: "RECEIVED" | "PROCESSING" | "PROCESSED" | "FAILED" | "IGNORED";
+  readonly processedAt: string | null;
+  readonly processingErrorText: string | null;
+  readonly receivedAt: string;
 }
 
 export interface ClaimCreationResult {

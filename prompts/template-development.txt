@@ -23,7 +23,9 @@ Current git state:
 - Branch: main
 - Latest commit: xxxx
 - Expected state: all intended implementation changes are committed and pushed before this slice begins. prompts/impl_baseline_prompt.txt and prompts/template-development.txt will be dirty.
+- Deployments done on remote supabase and vercel environments.
 - Codex must run `git status --short --branch` first and report any dirty files before editing.
+
 
 Remote migration state:
 - Remote Supabase migrations for prior slices have already been applied.
@@ -54,6 +56,11 @@ PROJECT CONTEXT
   - Slice 3:
 - Migrations already applied:
 - Known deployment/env state:
+
+ACCOUNTS FOR TESTING:
+Deployed apps: https://customer.gozaika.in/   https://restaurant.gozaika.in/ and https://admin.gozaika.in/admin
+Accounts that can be used for testing: resturant=919000100001/123456   customer=918106230860/123456  https://admin.gozaika.in/auth/login=admin.ops@gozaika.example/GozaikaDemo@123 
+
 
 EXPERTISE TO APPLY
 - Product manager: keep scope pilot-first and launch-useful.

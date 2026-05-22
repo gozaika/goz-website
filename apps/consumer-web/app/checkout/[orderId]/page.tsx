@@ -3,8 +3,10 @@ import { formatPaise, formatPickupWindow } from "@gozaika/utils";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { loadClaimIntent } from "@/lib/claims";
+import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { createClient } from "@/lib/supabase/server";
 import { HoldCountdown } from "./hold-countdown";
+import { RazorpayCheckoutPanel } from "./razorpay-checkout-panel";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +26,18 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
     notFound();
   }
 
+  if (claim.statusCode === "CONVERTED") {
+    const service = createServiceRoleSupabaseClient();
+    const { data: order } = await service
+      .from("order_order")
+      .select("order_order_pk")
+      .eq("drop_inventory_hold_fk", claim.holdPk)
+      .maybeSingle();
+    if (order?.order_order_pk) {
+      redirect(`/orders/${order.order_order_pk}`);
+    }
+  }
+
   const expiresAtText = new Intl.DateTimeFormat("en-IN", {
     dateStyle: "medium",
     timeStyle: "short",
@@ -35,16 +49,23 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
         ? `Serves ${claim.servesMin}`
         : `Serves ${claim.servesMin}-${claim.servesMax}`
       : "Serving guidance pending";
+  const paymentDisabledReason =
+    claim.statusCode !== "ACTIVE"
+      ? claim.statusCode === "CONVERTED"
+        ? "This hold has already been converted to an order."
+        : "This hold is no longer active. Return to the drop to create a new hold."
+      : undefined;
 
   return (
     <main>
       <ShellHeader />
       <section className="mx-auto grid max-w-5xl gap-6 px-4 py-8 lg:grid-cols-[1fr_0.75fr]">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Hold created</p>
-          <h1 className="mt-2 text-3xl font-bold text-[#2D2D2D]">Your BAM Bag hold is active</h1>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Checkout</p>
+          <h1 className="mt-2 text-3xl font-bold text-[#2D2D2D]">Pay for your held BAM Bag</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-[#2D2D2D]/70">
-            This temporary hold reserves availability until the timer expires. No charge is made in Slice 4A.
+            Your hold reserves availability until the timer expires. The order becomes confirmed only after Razorpay sends a
+            verified payment webhook to goZaika.
           </p>
 
           <section className="mt-6 rounded-lg border border-black/10 bg-white p-5">
@@ -100,8 +121,14 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
             <p className="mt-2 text-[#2D2D2D]/70">Expires at {expiresAtText} IST.</p>
           </div>
           <p className="mt-4 text-sm text-[#2D2D2D]/70">
-            If this hold expires, operations can release expired holds and the bag count will return to the drop.
+            If this hold expires before payment is confirmed, the release job returns the bag to the drop.
           </p>
+          <RazorpayCheckoutPanel
+            holdPk={claim.holdPk}
+            expiresAt={claim.expiresAt}
+            amountPaise={claim.pricePaise * claim.quantityHeld}
+            disabledReason={paymentDisabledReason}
+          />
           <div className="mt-5 grid gap-2">
             <Link className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#1A5C38] px-4 text-sm font-semibold text-white" href={`/drops/${claim.dropPk}`}>
               Back to drop

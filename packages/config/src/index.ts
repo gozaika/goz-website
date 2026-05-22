@@ -43,9 +43,10 @@ export const ENV_KEYS = {
   expoSupabaseUrl: "EXPO_PUBLIC_SUPABASE_URL",
   expoSupabaseAnonKey: "EXPO_PUBLIC_SUPABASE_ANON_KEY",
   serviceRoleKey: "SUPABASE_SERVICE_ROLE_KEY",
-  razorpayKeyId: "RAZORPAY_KEY_ID",
+  publicRazorpayKeyId: "NEXT_PUBLIC_RAZORPAY_KEY_ID",
   razorpayKeySecret: "RAZORPAY_KEY_SECRET",
   razorpayWebhookSecret: "RAZORPAY_WEBHOOK_SECRET",
+  pickupCredentialSecret: "PICKUP_CREDENTIAL_SECRET",
 } as const;
 
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://gozaika.vercel.app";
