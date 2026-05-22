@@ -3,10 +3,20 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const CHECKOUT_CURRENCY_CODE = "INR";
+
 function mask(value: string | undefined) {
   if (!value) return null;
   if (value.length <= 10) return `${value.slice(0, 2)}...`;
   return `${value.slice(0, 8)}...${value.slice(-4)}`;
+}
+
+function razorpayCurrencyConfigError(keyId: string, currencyCode: string) {
+  if (currencyCode === "INR" && /^rzp_(?:test|live)_us_/i.test(keyId)) {
+    return "The configured Razorpay key appears to be a US account key, but goZaika checkout creates INR orders. Use an India Razorpay payment gateway key for INR checkout.";
+  }
+
+  return null;
 }
 
 function envSnapshot() {
@@ -67,9 +77,23 @@ export async function GET(request: Request) {
     );
   }
 
+  const currencyConfigError = razorpayCurrencyConfigError(keyId, CHECKOUT_CURRENCY_CODE);
+  if (currencyConfigError) {
+    return NextResponse.json(
+      {
+        ok: false,
+        stage: "env_validation",
+        error: currencyConfigError,
+        env,
+        configuredCurrencyCode: CHECKOUT_CURRENCY_CODE,
+      },
+      { status: 500 },
+    );
+  }
+
   const requestBody = {
-    amount: 100,
-    currency: "INR",
+    amount: 5000,
+    currency: CHECKOUT_CURRENCY_CODE,
     receipt: `gz_debug_${Date.now()}`,
     notes: {
       source: "gozaika_vercel_connectivity_test",

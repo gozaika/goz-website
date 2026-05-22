@@ -43,6 +43,8 @@ PICKUP_CREDENTIAL_SECRET
 SUPABASE_SERVICE_ROLE_KEY
 ```
 
+Consumer checkout creates INR orders. Configure India Razorpay payment gateway keys for this flow; keys that look like `rzp_test_us_...` or `rzp_live_us_...` are for a US account and will not work with INR checkout.
+
 Supabase Edge Function:
 
 ```text

@@ -25,6 +25,7 @@
 - `TURNSTILE_SECRET_KEY`
 - `NEXT_PUBLIC_RAZORPAY_KEY_ID` for consumer Checkout.js.
 - `RAZORPAY_KEY_SECRET` for server-side Razorpay Orders API calls.
+- Consumer checkout creates INR Razorpay orders. Use India payment gateway API keys for INR checkout; keys that look like `rzp_test_us_...` or `rzp_live_us_...` are not valid for this INR flow.
 - `RAZORPAY_WEBHOOK_SECRET` for Supabase `razorpay-webhook` signature verification.
 - `PICKUP_CREDENTIAL_SECRET` for hashing pickup QR nonce and OTP proof. Use at least 32 random characters.
 

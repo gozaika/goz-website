@@ -37,8 +37,18 @@ type IntentRow = {
   readonly currency_code: string;
 };
 
+const CHECKOUT_CURRENCY_CODE = "INR";
+
 function razorpayKeyId() {
   return process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? process.env.RAZORPAY_KEY_ID ?? "";
+}
+
+function razorpayCurrencyConfigError(keyId: string, currencyCode: string) {
+  if (currencyCode === "INR" && /^rzp_(?:test|live)_us_/i.test(keyId)) {
+    return "Razorpay checkout is configured with a US account key, but this checkout creates INR orders. Please configure an India Razorpay key.";
+  }
+
+  return null;
 }
 
 async function currentConsumerProfilePk() {
@@ -104,7 +114,7 @@ function checkoutPayload(input: {
       paymentOrderIntentPk: input.intent.payment_order_intent_pk,
       holdPk: input.hold.drop_inventory_hold_pk,
       amountPaise: Number(input.intent.amount_paise),
-      currencyCode: "INR",
+      currencyCode: CHECKOUT_CURRENCY_CODE,
       restaurantName: input.restaurantName,
       bagDisplayName: input.bagDisplayName,
       description: input.description,
@@ -141,6 +151,10 @@ export async function POST(request: Request) {
       { ok: false, error: "Razorpay server credentials are not configured yet." } satisfies ApiResponse,
       { status: 503 },
     );
+  }
+  const currencyConfigError = razorpayCurrencyConfigError(keyId, CHECKOUT_CURRENCY_CODE);
+  if (currencyConfigError) {
+    return NextResponse.json({ ok: false, error: currencyConfigError } satisfies ApiResponse, { status: 503 });
   }
 
   const actor = await currentConsumerProfilePk();
@@ -253,7 +267,7 @@ export async function POST(request: Request) {
       provider_code: "RAZORPAY",
       payment_intent_status_code: "CREATED",
       amount_paise: amountPaise,
-      currency_code: "INR",
+      currency_code: CHECKOUT_CURRENCY_CODE,
       idempotency_key: parsed.data.idempotencyKey,
       expires_at: holdRow.expires_at,
     })
@@ -275,7 +289,7 @@ export async function POST(request: Request) {
     },
     body: JSON.stringify({
       amount: amountPaise,
-      currency: "INR",
+      currency: CHECKOUT_CURRENCY_CODE,
       receipt: `gz_${createdIntent.payment_order_intent_pk.replaceAll("-", "").slice(0, 32)}`,
       notes: {
         hold_pk: holdRow.drop_inventory_hold_pk,
