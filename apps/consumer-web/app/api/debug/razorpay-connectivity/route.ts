@@ -94,6 +94,7 @@ export async function GET(request: Request) {
   const requestBody = {
     amount: 5000,
     currency: CHECKOUT_CURRENCY_CODE,
+    payment_capture: 1,
     receipt: `gz_debug_${Date.now()}`,
     notes: {
       source: "gozaika_vercel_connectivity_test",

@@ -290,6 +290,7 @@ export async function POST(request: Request) {
     body: JSON.stringify({
       amount: amountPaise,
       currency: CHECKOUT_CURRENCY_CODE,
+      payment_capture: 1,
       receipt: `gz_${createdIntent.payment_order_intent_pk.replaceAll("-", "").slice(0, 32)}`,
       notes: {
         hold_pk: holdRow.drop_inventory_hold_pk,
