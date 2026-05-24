@@ -246,8 +246,8 @@ export function DropPublishingForm({
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-      <form onSubmit={onSubmit} className="grid gap-4 rounded-lg border border-black/10 bg-white p-5">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)] lg:items-start">
+      <form onSubmit={onSubmit} className="grid h-fit gap-4 rounded-lg border border-black/10 bg-white p-4 sm:p-5">
         <div>
           <h2 className="text-lg font-semibold">Quick publish drop</h2>
           <p className="mt-1 text-sm text-slate-600">Defaults come from the template. Confirm the count and pickup window, then publish.</p>
@@ -367,7 +367,7 @@ export function DropPublishingForm({
         </button>
       </form>
 
-      <section className="h-fit rounded-lg border border-black/10 bg-white p-5">
+      <section className="rounded-lg border border-black/10 bg-white p-4 sm:p-5 lg:max-h-[calc(100vh-170px)] lg:overflow-y-auto">
         <h2 className="text-lg font-semibold">Recent drops</h2>
         <div className="mt-4 grid gap-3">
           {drops.length === 0 ? (

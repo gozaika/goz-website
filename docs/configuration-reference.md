@@ -19,6 +19,7 @@
 - `WAITLIST_TO_EMAIL`
 - `CONTACT_TO_EMAIL`
 - `PARTNERS_TO_EMAIL`
+- `CAREERS_TO_EMAIL`
 - `UPSTASH_REDIS_REST_URL`
 - `UPSTASH_REDIS_REST_TOKEN`
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
@@ -28,6 +29,7 @@
 - Consumer checkout creates INR Razorpay orders. Use India payment gateway API keys for INR checkout; keys that look like `rzp_test_us_...` or `rzp_live_us_...` are not valid for this INR flow.
 - `RAZORPAY_WEBHOOK_SECRET` for Supabase `razorpay-webhook` signature verification.
 - `PICKUP_CREDENTIAL_SECRET` for hashing pickup QR nonce and OTP proof. Use at least 32 random characters.
+- Approved public mailbox mapping: general `contact@gozaika.in`, partners `partners@gozaika.in`, waitlist `waitlist@gozaika.in`, billing/refund finance `billing@gozaika.in`, careers `careers@gozaika.in`, and technical/security/platform `tech@gozaika.in`.
 
 ## Current base URLs
 
@@ -53,6 +55,7 @@ Owned but not necessarily routed domains: `gozaik.in`, `gozaika.com`.
 - Apply Slice 3 migration `20260513000000_slice3_drop_publishing_discovery.sql` before relying on consumer discovery.
 - Apply Slice 4A migration `20260518002000_slice4a_claim_hold_order_intent.sql` before deploying claim holds.
 - Apply Slice 4B migration `20260521000000_slice4b_razorpay_payment_order_confirmation.sql` before enabling Razorpay checkout or deploying the updated `razorpay-webhook`.
+- Apply Slice 5 migration `20260525000000_slice5_pickup_verification_incidents.sql` before enabling restaurant pickup verification, no-show, or incident creation UI.
 - Grant anon/authenticated read to `api_public_drop_card`.
 - Grant authenticated read to `api_claim_hold_summary`.
 - Enable Realtime for `drop_drop` inventory/status updates if live client updates are required in the target environment.

@@ -148,7 +148,7 @@ export default function PartnerPortalPage(): React.ReactElement {
                 Partnership enquiries: <strong>partners@gozaika.in</strong>
               </p>
               <p>
-                Investor and strategic conversations: <strong>hello@gozaika.in</strong>
+                Investor and strategic conversations: <strong>contact@gozaika.in</strong>
               </p>
               <p>
                 Company: <strong>goZaika Technologies Pvt. Ltd.</strong>

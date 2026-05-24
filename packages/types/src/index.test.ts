@@ -10,6 +10,7 @@ import {
   restaurantDocumentUploadRequestSchema,
   restaurantStatusCodes,
   orderStatusCodes,
+  orderIncidentCreateSchema,
   pickupVerificationRequestSchema,
 } from "./index";
 
@@ -60,13 +61,29 @@ describe("API schemas", () => {
 
   it("requires exactly one pickup credential", () => {
     const result = pickupVerificationRequestSchema.safeParse({
-      restaurantPk: "11111111-1111-4111-8111-111111111111",
       deviceLabel: "Counter 1",
       otp: "123456",
-      nonce: "n".repeat(40),
+      qrPayload: JSON.stringify({
+        version: 1,
+        orderPk: "11111111-1111-4111-8111-111111111111",
+        restaurantPk: "11111111-1111-4111-8111-111111111111",
+        nonce: "n".repeat(40),
+        issuedAt: "2026-05-24T00:00:00.000Z",
+      }),
     });
 
     expect(result.success).toBe(false);
+  });
+
+  it("validates pilot incident creation inputs", () => {
+    const result = orderIncidentCreateSchema.safeParse({
+      typeCode: "FOOD_SAFETY",
+      severityCode: "P1",
+      descriptionText: "Customer reported a possible contamination issue at pickup.",
+      internalNoteText: "Escalated to ops lead.",
+    });
+
+    expect(result.success).toBe(true);
   });
 
   it("validates restaurant onboarding basics", () => {

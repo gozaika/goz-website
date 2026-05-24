@@ -84,7 +84,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   try {
     await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL ?? 'goZaika <onboarding@resend.dev>',
-      to: process.env.CONTACT_TO_EMAIL ?? 'hello@gozaika.in',
+      to: process.env.CONTACT_TO_EMAIL ?? 'contact@gozaika.in',
       subject: `Contact form: ${payload.subject_code}`,
       text: `Name: ${payload.full_name}\nEmail: ${payload.email}\nSubject: ${payload.subject_code}\n\n${payload.message}`,
     });

@@ -84,6 +84,34 @@ export const consentPurposeCodes = [
 ] as const;
 
 export const consentStateCodes = ["GRANTED", "REVOKED"] as const;
+export const pickupVerificationMethodCodes = ["OTP_ENTRY", "QR_SCAN"] as const;
+export const pickupVerificationResultCodes = [
+  "SUCCESS",
+  "INVALID_CODE",
+  "WRONG_RESTAURANT",
+  "ALREADY_COLLECTED",
+  "EXPIRED_WINDOW",
+  "ORDER_NOT_READY",
+] as const;
+export const incidentTypeCodes = [
+  "DIETARY_MISMATCH",
+  "FOOD_SAFETY",
+  "PACKAGING_BREACH",
+  "PICKUP_NOT_HONORED",
+  "MISSING_ORDER",
+  "QUALITY_ISSUE",
+  "PLATFORM_ERROR",
+] as const;
+export const incidentSeverityCodes = ["P1", "P2", "P3", "P4"] as const;
+export const incidentStatusCodes = [
+  "OPEN",
+  "TRIAGED",
+  "INVESTIGATING",
+  "MERCHANT_ACTION_REQUIRED",
+  "RESOLVED",
+  "CLOSED",
+  "REJECTED",
+] as const;
 
 export type DietaryCategoryCode = (typeof dietaryCategoryCodes)[number];
 export type SpiceLevelCode = (typeof spiceLevelCodes)[number];
@@ -91,6 +119,11 @@ export type DropStatusCode = (typeof dropStatusCodes)[number];
 export type OrderStatusCode = (typeof orderStatusCodes)[number];
 export type HoldStatusCode = (typeof holdStatusCodes)[number];
 export type PaymentIntentStatusCode = (typeof paymentIntentStatusCodes)[number];
+export type PickupVerificationMethodCode = (typeof pickupVerificationMethodCodes)[number];
+export type PickupVerificationResultCode = (typeof pickupVerificationResultCodes)[number];
+export type IncidentTypeCode = (typeof incidentTypeCodes)[number];
+export type IncidentSeverityCode = (typeof incidentSeverityCodes)[number];
+export type IncidentStatusCode = (typeof incidentStatusCodes)[number];
 export type PlatformRoleCode = (typeof platformRoleCodes)[number];
 export type RestaurantStatusCode = (typeof restaurantStatusCodes)[number];
 export type RestaurantTeamRoleCode = (typeof restaurantTeamRoleCodes)[number];
@@ -203,15 +236,61 @@ export interface PickupProof {
 
 export const pickupVerificationRequestSchema = z
   .object({
-    restaurantPk: uuidSchema,
-    deviceLabel: z.string().min(1).max(80),
-    nonce: z.string().min(32).max(256).optional(),
-    otp: z.string().regex(/^\d{6}$/).optional(),
+    otp: z.preprocess(optionalString, z.string().regex(/^\d{6}$/, "Enter the 6-digit pickup OTP.").optional()),
+    qrPayload: z.preprocess(optionalString, z.string().min(20).max(2000).optional()),
+    deviceLabel: z.preprocess(optionalString, z.string().max(80).default("Restaurant portal")),
+    idempotencyKey: z.preprocess(optionalString, z.string().min(16).max(128).optional()),
   })
-  .refine((value) => Boolean(value.nonce) !== Boolean(value.otp), {
-    message: "Provide exactly one pickup credential: nonce or OTP.",
-    path: ["nonce"],
+  .refine((value) => Boolean(value.otp) !== Boolean(value.qrPayload), {
+    message: "Provide exactly one pickup credential: QR payload or OTP.",
+    path: ["otp"],
   });
+
+export const noShowRequestSchema = z.object({
+  reasonText: z.string().trim().min(8).max(600),
+  idempotencyKey: z.preprocess(optionalString, z.string().min(16).max(128).optional()),
+});
+
+export const orderIncidentCreateSchema = z.object({
+  typeCode: z.enum(incidentTypeCodes),
+  severityCode: z.enum(incidentSeverityCodes).default("P3"),
+  descriptionText: z.string().trim().min(10).max(1200),
+  internalNoteText: z.preprocess(optionalString, z.string().trim().max(1200).optional()),
+});
+
+export interface PickupVerificationResult {
+  readonly orderPk: string;
+  readonly orderNumber: string;
+  readonly resultCode: PickupVerificationResultCode;
+  readonly orderStatusCode: OrderStatusCode;
+  readonly collectedAt: string | null;
+  readonly message: string;
+}
+
+export interface NoShowResult {
+  readonly orderPk: string;
+  readonly orderNumber: string;
+  readonly orderStatusCode: OrderStatusCode;
+  readonly message: string;
+}
+
+export interface OrderIncidentSummary {
+  readonly incidentPk: string;
+  readonly orderPk: string | null;
+  readonly orderNumber: string | null;
+  readonly restaurantPk: string | null;
+  readonly restaurantName: string | null;
+  readonly typeCode: IncidentTypeCode;
+  readonly typeName: string;
+  readonly severityCode: IncidentSeverityCode;
+  readonly statusCode: IncidentStatusCode;
+  readonly titleText: string;
+  readonly descriptionText: string | null;
+  readonly reportedByProfilePk: string | null;
+  readonly occurredAt: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
 
 export const consentCaptureSchema = z.object({
   purposeCode: z.enum(consentPurposeCodes),
@@ -461,6 +540,7 @@ export interface ConsumerOrderSummary {
   readonly pickupWindowEndAt: string;
   readonly paymentIntentStatusCode: PaymentIntentStatusCode | null;
   readonly paymentCapturedAt: string | null;
+  readonly collectedAt: string | null;
   readonly createdAt: string;
   readonly updatedAt: string;
 }
@@ -486,8 +566,21 @@ export interface RestaurantOrderSummary {
   readonly pickupWindowEndAt: string;
   readonly paymentIntentStatusCode: PaymentIntentStatusCode | null;
   readonly paymentCapturedAt: string | null;
+  readonly collectedAt: string | null;
+  readonly pickupVerificationAttemptCount?: number;
+  readonly lastPickupVerificationResultCode?: PickupVerificationResultCode | null;
+  readonly lastPickupVerificationAt?: string | null;
+  readonly incidentCount?: number;
   readonly createdAt: string;
   readonly updatedAt: string;
+}
+
+export interface AdminPickupOrderSummary extends RestaurantOrderSummary {
+  readonly consumerProfilePk: string;
+  readonly holdPk: string | null;
+  readonly providerOrderRef: string | null;
+  readonly webhookProcessedAt: string | null;
+  readonly webhookProcessingStatusCode: string | null;
 }
 
 export interface AdminPaymentOrderSummary {

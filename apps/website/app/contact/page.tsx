@@ -41,7 +41,7 @@ export default function ContactPage(): React.ReactElement {
             <ContactForm />
           </Reveal>
           <p className="mt-4 text-sm text-gray700">
-            hello@gozaika.in {' · '} We aim to respond within 24 hours
+            contact@gozaika.in {' · '} We aim to respond within 24 hours
           </p>
         </div>
       </section>

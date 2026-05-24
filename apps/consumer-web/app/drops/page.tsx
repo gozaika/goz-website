@@ -22,7 +22,7 @@ export default async function DropsPage() {
           </div>
         </div>
         <div className="mt-6">
-          <DropDiscoveryClient initialDrops={drops} />
+          <DropDiscoveryClient initialDrops={drops} generatedAt={new Date().toISOString()} />
         </div>
       </section>
     </main>

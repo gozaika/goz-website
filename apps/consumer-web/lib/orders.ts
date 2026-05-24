@@ -37,6 +37,7 @@ type ConsumerOrderSummaryRow = {
   readonly pickup_window_end_at: string;
   readonly payment_intent_status_code: ConsumerOrderSummary["paymentIntentStatusCode"];
   readonly payment_captured_at: string | null;
+  readonly collected_at: string | null;
   readonly created_at: string;
   readonly updated_at: string;
 };
@@ -62,6 +63,7 @@ type RestaurantOrderSummaryRow = {
   readonly pickup_window_end_at: string;
   readonly payment_intent_status_code: RestaurantOrderSummary["paymentIntentStatusCode"];
   readonly payment_captured_at: string | null;
+  readonly collected_at: string | null;
   readonly created_at: string;
   readonly updated_at: string;
 };
@@ -140,6 +142,7 @@ export function mapConsumerOrder(row: ConsumerOrderSummaryRow): ConsumerOrderSum
     pickupWindowEndAt: row.pickup_window_end_at,
     paymentIntentStatusCode: row.payment_intent_status_code,
     paymentCapturedAt: row.payment_captured_at,
+    collectedAt: row.collected_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -167,6 +170,7 @@ export function mapRestaurantOrder(row: RestaurantOrderSummaryRow): RestaurantOr
     pickupWindowEndAt: row.pickup_window_end_at,
     paymentIntentStatusCode: row.payment_intent_status_code,
     paymentCapturedAt: row.payment_captured_at,
+    collectedAt: row.collected_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

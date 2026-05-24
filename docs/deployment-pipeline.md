@@ -47,6 +47,8 @@ Owned domains also include `gozaik.in` and `gozaika.com`. Treat these as reserve
 - Slice 4A requires migration `20260518002000_slice4a_claim_hold_order_intent.sql` and the existing `release-expired-holds` Edge Function path before enabling claim holds.
 - Slice 4B requires migration `20260521000000_slice4b_razorpay_payment_order_confirmation.sql`, consumer Razorpay env vars, `PICKUP_CREDENTIAL_SECRET`, and a deployed `razorpay-webhook` Edge Function before enabling payment checkout.
 - Razorpay dashboard webhooks should include `payment.captured` and `payment.failed` and point to the deployed Supabase function URL.
+- Slice 5 requires migration `20260525000000_slice5_pickup_verification_incidents.sql` before deploying pickup/no-show/incident UI. No WATI, email, refund, settlement, payout, or finance env vars are added.
+- Website deployments should use the approved mailbox mapping: `contact@gozaika.in`, `partners@gozaika.in`, `waitlist@gozaika.in`, `billing@gozaika.in`, `careers@gozaika.in`, and `tech@gozaika.in`.
 
 ## Rollback procedure
 
@@ -55,3 +57,4 @@ Owned domains also include `gozaik.in` and `gozaika.com`. Treat these as reserve
 3. Disable faulty branch/merge path.
 4. Patch and redeploy through normal CI path.
 5. For Slice 4B payment incidents, rollback app checkout first if needed; keep webhook ledger rows intact for replay/support investigation.
+6. For Slice 5 pickup incidents, rollback restaurant/admin/consumer deployments first; keep pickup verification, status transition, inventory event, and incident audit rows intact.

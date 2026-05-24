@@ -9,6 +9,357 @@ MODE
 
 Current git state:
 - Branch: main
+- Latest commit: d31d2e8
+- Expected state: all intended implementation changes are committed and pushed before this slice begins. prompts/impl_baseline_prompt.txt and prompts/template-development.txt will be dirty.
+- Deployments done on remote supabase and vercel environments.
+- Codex must run `git status --short --branch` first and report any dirty files before editing.
+
+
+Remote migration state:
+- Remote Supabase migrations for prior slices have already been applied.
+- Local Supabase may lag behind remote.
+- Do not assume local DB is current unless verified.
+- If this slice adds a migration, document exactly how I should apply it remotely.
+
+SLICE
+- Slice name: Pickup Verification, Incident Basics & Pilot UX Polish
+- Slice number: 5
+- Phase: Phase 1 - Pilot Marketplace Core
+- Business goal: Let restaurants verify paid pickup-ready orders at the counter, transition them to collected without duplicate collection, mark true no-shows after pickup windows, log minimal launch incidents, and polish high-friction pilot web UX before broader launch.
+- User-facing proof point: A consumer with a confirmed paid order can show QR/OTP at pickup; restaurant staff can verify it from the restaurant portal; consumer/restaurant/admin surfaces show collected/no-show/incident state clearly; current drop, account, admin, and website UX no longer clutter users with stale or misplaced information.
+
+PROJECT CONTEXT
+- Current deployed surfaces:
+  - Website: https://gozaika.in/
+  - Consumer web: https://customer.gozaika.in/
+  - Restaurant portal: https://restaurant.gozaika.in/
+  - Admin portal: https://admin.gozaika.in/
+- Owned domains: gozaik.in, gozaika.com
+- Baseline roadmap: project docs/goZaika_Technology_Specification_v2.docx
+- Rebuild source of truth: docs/implementation-plan.md
+- Current completed slices:
+  - Slice 0: Foundation - monorepo, canonical schema, app shells, shared packages, Supabase client separation, UI baseline, CI shape.
+  - Slice 1: Auth/Profile/Consent - consumer auth, profile bootstrap, consent capture, account surface, Supabase SSR session refresh.
+  - Slice 2: Restaurant Onboarding - owner portal, onboarding/compliance, private document upload, admin review/activation, active restaurant membership gate.
+  - Slice 3: First Drop Publishing & Consumer Discovery - active restaurants publish public drops, consumer discovery/detail reads safe public drop data.
+  - Slice 3.5: Manual Launch Comms Support - public drop links, WhatsApp-safe copy, restaurant/admin copy surfaces.
+  - Slice 4A: Claim Hold / Order Intent - signed-in consumer temporary holds, checkout hold page, expired-hold release path.
+  - Slice 4B: Razorpay Payment & Order Confirmation - server-created Razorpay orders, verified webhook conversion, paid order page with QR/OTP pickup proof, restaurant/admin order visibility.
+- Migrations already applied: 20260425000000_gozaika_consolidated_schema.sql, 20260427000000_slice1_auth_profile_consent.sql, 20260502000000_slice2_restaurant_onboarding.sql, 20260502001000_slice2_restaurant_rls_hardening.sql, 20260513000000_slice3_drop_publishing_discovery.sql, 20260517000000_slice3_public_drop_aliases.sql, 20260518000000_slice3_template_active_revision_repair.sql, 20260518001000_slice3_template_drop_preferences.sql, 20260518002000_slice4a_claim_hold_order_intent.sql, 20260521000000_slice4b_razorpay_payment_order_confirmation.sql, 20260522000000_slice4b_payment_rpc_returning_repair.sql, 20260524000000_payment_webhook_event_processing_updates.sql, 20260524001000_slice4b_payment_rpc_variable_conflict_repair.sql.
+- Known deployment/env state: Remote Supabase and Vercel are primary. Slice 4B payment smoke has passed. `release-expired-holds` and `razorpay-webhook` are deployed. Razorpay env vars and `PICKUP_CREDENTIAL_SECRET` are configured. Website is deployed at https://gozaika.in/. No WATI/email/push/refund/settlement env vars should be required for Slice 5.
+
+ACCOUNTS FOR TESTING:
+Deployed apps: https://customer.gozaika.in/   https://restaurant.gozaika.in/ and https://admin.gozaika.in/admin
+Accounts that can be used for testing: resturant=919000100001/123456   customer=918106230860/123456  https://admin.gozaika.in/auth/login=admin.ops@gozaika.example/GozaikaDemo@123 
+
+
+EXPERTISE TO APPLY
+- Product manager: keep scope pilot-first and launch-useful.
+- Senior full-stack engineer: follow existing repo patterns and vertical-slice architecture.
+- Database/RLS engineer: protect tenancy, service-role boundaries, and public/private data separation.
+- UX designer: optimize for fast, obvious workflows with clear mobile/desktop layouts.
+- Food-safety/compliance reviewer: treat allergen, dietary, pickup, and restaurant identity as safety-critical.
+- Payments/security reviewer: apply only if this slice touches payment/auth/webhooks/RLS.
+- QA engineer: define validation gates and run focused checks.
+- Technical writer: update docs so future Codex can rebuild from ground zero.
+
+READ FIRST
+1. Run git status.
+2. Read docs/implementation-plan.md.
+3. Read relevant roadmap section in project docs/goZaika_Technology_Specification_v2.docx.
+4. Read these files before editing:
+   - packages/types/src/index.ts
+   - packages/types/src/index.test.ts
+   - packages/utils/src/index.ts
+   - packages/utils/src/index.test.ts
+   - packages/db/src/index.ts
+   - packages/supabase/src/index.ts
+   - packages/ui/src/index.tsx
+   - apps/consumer-web/lib/drops.ts
+   - apps/consumer-web/lib/claims.ts
+   - apps/consumer-web/lib/orders.ts
+   - apps/consumer-web/app/drops/page.tsx
+   - apps/consumer-web/app/drops/drop-discovery-client.tsx
+   - apps/consumer-web/app/drops/[id]/page.tsx
+   - apps/consumer-web/app/drops/[id]/claim-panel.tsx
+   - apps/consumer-web/app/orders/[orderId]/page.tsx
+   - apps/consumer-web/app/orders/[orderId]/pickup-proof-card.tsx
+   - apps/consumer-web/app/account/page.tsx
+   - apps/consumer-web/app/account/account-client.tsx
+   - apps/restaurant-mgmt-web/lib/supabase/server.ts
+   - apps/restaurant-mgmt-web/lib/supabase/browser.ts
+   - apps/restaurant-mgmt-web/app/portal/orders/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/drops/new/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/drops/new/drop-publishing-form.tsx
+   - apps/admin-web/app/admin/drops/page.tsx
+   - apps/website/lib/company.ts
+   - apps/website/lib/content.ts
+   - apps/website/lib/legal.ts
+   - apps/website/lib/navigation.ts
+   - apps/website/components/layout/Footer.tsx
+   - apps/website/components/forms/WaitlistForm.tsx
+   - apps/website/components/forms/PartnerInterestForm.tsx
+   - apps/website/components/forms/ContactForm.tsx
+   - apps/website/components/forms/CareerApplicationForm.tsx
+   - apps/website/app/privacy-policy/page.tsx
+   - apps/website/app/terms-of-service/page.tsx
+   - apps/website/app/refund-policy/page.tsx
+   - apps/website/app/grievance-redressal/page.tsx
+   - apps/website/app/food-safety-policy/page.tsx
+   - supabase/migrations/20260425000000_gozaika_consolidated_schema.sql
+   - supabase/migrations/20260518002000_slice4a_claim_hold_order_intent.sql
+   - supabase/migrations/20260521000000_slice4b_razorpay_payment_order_confirmation.sql
+   - supabase/migrations/20260522000000_slice4b_payment_rpc_returning_repair.sql
+   - supabase/migrations/20260524000000_payment_webhook_event_processing_updates.sql
+   - supabase/migrations/20260524001000_slice4b_payment_rpc_variable_conflict_repair.sql
+   - supabase/functions/release-expired-holds/index.ts
+   - supabase/functions/razorpay-webhook/index.ts
+   - docs/product/razorpay-payment-order-confirmation.md
+   - docs/runbooks/payments.md
+   - docs/runbooks/claim-holds.md
+   - docs/runbooks/demo-data.md
+   - docs/configuration-reference.md
+   - docs/deployment-pipeline.md
+5. Inspect existing patterns before adding abstractions.
+
+SCOPE / MUST INCLUDE
+- Add a web-first pickup verification MVP in the restaurant portal for current paid/confirmed/ready-for-pickup orders. Prioritize OTP entry and support QR payload entry/paste if the current QR proof exposes a nonce payload; native camera scanning can wait.
+- Add server-side pickup verification that accepts exactly one credential, verifies against stored hashes using `PICKUP_CREDENTIAL_SECRET`, confirms restaurant tenancy and order state, records `order_pickup_verification_event`, transitions eligible orders to `COLLECTED`, appends `order_status_transition`, and appends `drop_inventory_event` with `PICKUP_COLLECTED`.
+- Add duplicate/idempotency protection so repeated verify clicks, page refreshes, or retries cannot create multiple collection transitions.
+- Add clear failure handling for invalid OTP/QR, wrong restaurant, already collected, expired pickup window, order not ready, missing credential, and unauthorized staff/owner.
+- Add no-show basics: restaurant/admin can mark an uncollected order as `NO_SHOW` only after the pickup window closes; transition and audit must be recorded. Do not refund automatically.
+- Add minimal incident creation from restaurant order context and admin support context for pilot-safe categories: `DIETARY_MISMATCH`, `FOOD_SAFETY`, `PACKAGING_BREACH`, `PICKUP_NOT_HONORED`, `MISSING_ORDER`, `QUALITY_ISSUE`, `PLATFORM_ERROR`.
+- Add admin/operator visibility for pickup verification attempts, collected/no-show state, and incidents without exposing raw QR nonce, raw OTP, hashes, payment provider payloads, private docs, or unnecessary PII.
+- Update consumer order detail/account history so collected and no-show states are understandable and the pickup proof is no longer presented as usable after collection/no-show.
+- Redesign `https://restaurant.gozaika.in/portal/drops/new` so the left-side “Quick publish drop” form does not stretch vertically as recent drops grow. Make the page mobile-first, with a stable publish form and recent drops in a separate responsive section or constrained panel.
+- Fix `https://customer.gozaika.in/drops` ordering so the latest/current drops appear first.
+- Move drops whose pickup window has closed into a separate “What you missed” section on `https://customer.gozaika.in/drops` so stale read-only “Pickup window closed” cards do not clutter the actionable “Hold this BAM Bag” experience.
+- Improve `https://customer.gozaika.in/account` so “Current holds” visually distinguishes active holds from expired/released/converted holds, and stale unimportant data does not clutter actionable active holds.
+- Improve `https://admin.gozaika.in/admin/drops` for launch support: make active/current drops, closed/missed drops, payment/order state, pickup state, and webhook/support metadata easier to scan without exposing unsafe details.
+- Update the deployed website content to use these real goZaika emails where appropriate: `billing@gozaika.in`, `careers@gozaika.in`, `contact@gozaika.in`, `partners@gozaika.in`, `tech@gozaika.in`, `waitlist@gozaika.in`.
+- Preserve Slice 4B payment behavior: only verified Razorpay webhooks create paid orders; pickup verification must never create payments, orders, refunds, or settlements.
+
+OUT OF SCOPE / MUST NOT INCLUDE
+- Do not build native restaurant staff mobile, native camera scanning, offline pickup cache, background sync, sound/haptics, or app-store work in this slice.
+- Do not implement refunds, refund initiation, settlement runs, payouts, invoices, finance dashboards, Razorpay transfers, reconciliation exports, or automated compensation.
+- Do not implement WATI, email, push notifications, notification outbox processing, pickup reminders, Swaad Club, referrals, campaign management, subscriptions, loyalty/passport updates, reviews, or advanced analytics.
+- Do not implement destructive admin correction flows, second-admin approval, full support ticketing, root-cause workflow, restaurant suspension, or refund-linked incident resolution.
+- Do not store raw QR nonce or raw OTP, log credentials, expose hashes, or accept client-side claims as verification proof.
+- Do not weaken payment/order/restaurant/admin RLS, public drop RLS, private document storage, or service-role boundaries.
+- Do not redesign the whole marketing website. Only plug the provided email addresses into appropriate existing website/legal/form/footer/contact copy.
+- Do not add new email-sending infrastructure or change form delivery providers as part of the website email update unless an existing form already expects that mapping.
+
+USER FLOWS
+Consumer:
+- Consumer pays for a held BAM Bag through Slice 4B and opens `/orders/{orderPk}`.
+- Confirmed order shows restaurant, bag title, dietary/allergen disclosures, pickup window, paid amount, order number, pickup QR/OTP, and pickup instructions until collection/no-show.
+- After restaurant verifies pickup, consumer order detail and account history show `COLLECTED`, collection time if available, and no longer imply the proof can be reused.
+- If the pickup window expires and restaurant marks no-show, consumer sees `NO_SHOW`/pickup missed copy and no automatic refund promise.
+- Consumer opens `/drops` and sees active/latest actionable drops first; closed pickup windows are grouped separately under “What you missed”.
+- Consumer opens `/account` and can immediately distinguish active holds from expired/released/converted history.
+
+Restaurant:
+- Approved restaurant user opens `/portal/orders` and sees paid/confirmed/ready-for-pickup orders for their own restaurant only.
+- Restaurant can open or expand an order and verify pickup by entering the 6-digit OTP shown by the customer; if QR payload entry is supported, it must use the same server verification path.
+- Successful verification gives an obvious collected success state, updates the order row, and prevents duplicate collection.
+- Invalid OTP/QR, already collected, wrong restaurant, expired window, and order-not-ready cases show specific non-technical messages.
+- After pickup window closes, restaurant can mark an uncollected order as no-show with a required reason. No refund is created.
+- Restaurant can create a minimal incident linked to the order/drop/restaurant with type, severity, short description, and optional internal notes suitable for launch support.
+- Restaurant opens `/portal/drops/new` on mobile or desktop and sees a stable quick publish form that does not stretch awkwardly when recent drops grow.
+
+Admin/Ops:
+- Admin can open `/admin/drops` or a narrow admin order/pickup/incident support surface and see current pickup status, verification attempts, no-shows, and incident summaries.
+- Admin can answer “was this order paid, ready, collected, no-show, blocked by invalid pickup proof, or stuck in webhook/pickup support?” without querying the database.
+- Admin can create/view pilot incidents with support-safe order/restaurant metadata.
+- Admin cannot trigger refunds, settlements, payout corrections, destructive order edits, or manual collection overrides unless a tightly audited override is explicitly implemented and human-reviewed.
+
+Website:
+- Public website pages and footer/legal/contact/form copy use the right mailbox for the right intent:
+  - General contact: `contact@gozaika.in`
+  - Partner/restaurant inquiries: `partners@gozaika.in`
+  - Waitlist/community: `waitlist@gozaika.in`
+  - Billing/payment/refund finance contact: `billing@gozaika.in`
+  - Careers: `careers@gozaika.in`
+  - Technical/security/platform contact: `tech@gozaika.in`
+- Existing website visual design and page structure should remain intact.
+
+Mobile:
+- No native mobile implementation. Consumer web/PWA pickup proof, drop discovery, account holds, and restaurant portal verification/publishing must be mobile-friendly.
+- Do not add Expo camera/offline work in this slice. Keep the UX large, clear, and usable on small screens.
+
+DATA / DATABASE REQUIREMENTS
+- Prefer additive migrations.
+- Do not edit historical migrations unless fixing idempotency.
+- RLS and service-role usage must be reviewed.
+- Public views must expose only safe fields.
+- Tables/views/RPCs/functions likely involved:
+  - order_order
+  - order_item
+  - order_status_transition
+  - order_pickup_verification_event
+  - drop_drop
+  - drop_inventory_hold
+  - drop_inventory_event
+  - payment_order_intent
+  - payment_transaction
+  - payment_webhook_event
+  - consumer_profile
+  - iam_profile
+  - restaurant_restaurant
+  - restaurant_team_membership
+  - iam_platform_membership
+  - incident_incident
+  - incident_event
+  - master_incident_type
+  - master_incident_status
+  - master_incident_severity
+  - api_public_drop_card
+  - api_claim_hold_summary
+  - api_consumer_order_summary
+  - api_restaurant_order_summary
+  - api_admin_payment_order_summary
+  - api_admin_payment_webhook_summary
+  - new safe read models such as api_restaurant_pickup_order_summary, api_admin_pickup_order_summary, api_admin_incident_summary if existing views are insufficient
+  - new service-role RPCs such as api_verify_order_pickup, api_mark_order_no_show, api_create_order_incident, and optional api_admin_create_order_incident
+- Migration naming convention:
+  - supabase/migrations/20260525000000_slice5_pickup_verification_incidents.sql
+
+API REQUIREMENTS
+- Add typed request/response models in `@gozaika/types` for pickup verification, no-show marking, incident creation, pickup verification result, incident summary, and any revised drop/account grouping models.
+- Add restaurant portal route handler such as `POST /api/portal/orders/[orderId]/pickup/verify` that requires an authenticated active restaurant member, validates typed input, and calls a service-role RPC only after tenant checks pass.
+- Add restaurant portal route handler such as `POST /api/portal/orders/[orderId]/no-show` that only works after pickup window end, requires a reason, and records transition/audit.
+- Add restaurant portal route handler such as `POST /api/portal/orders/[orderId]/incidents` for minimal incident creation scoped to the restaurant’s own order.
+- Add admin route/server loader support for pickup verification attempts and incident summaries, guarded by existing platform membership checks.
+- Pickup verification must accept exactly one credential: QR nonce payload or 6-digit OTP. Reject empty input, both inputs, malformed OTP, malformed QR payload, and credentials for another order.
+- Hash comparison must happen server-side only using `PICKUP_CREDENTIAL_SECRET`. Do not expose raw credential, hash, or secret to browser/client code.
+- Drop discovery API/UI must sort active/actionable drops by latest first and separate pickup-window-closed drops into “What you missed”.
+- Account hold API/UI must separate active holds from expired/released/converted hold history.
+- API errors must be specific: login required, restaurant access required, order not found, order not ready, already collected, pickup window expired, wrong restaurant, invalid credential, no-show not allowed yet, incident type invalid, internal error.
+- Do not add refund APIs, settlement APIs, payout APIs, notification APIs, or native mobile APIs in this slice.
+
+UI / UX REQUIREMENTS
+- Maintain production-quality layout.
+- Buttons must be visible, labeled, accessible, and responsive.
+- Avoid dead-end screens.
+- Errors must explain what to correct.
+- Success states must be clear.
+- Primary workflow should be fast for the target user.
+- Use existing design tokens/components where possible.
+- Do not add marketing/landing-page fluff inside operational apps.
+- Restaurant pickup UI must be counter-friendly: compact order queue, large OTP input, clear verify CTA, obvious collected/no-show badges, and safety disclosures visible near verification.
+- Restaurant order rows must show order number, pickup window, bag title, quantity, paid amount, status, dietary category, allergen chips/summary, and payment captured support status.
+- Consumer order page must keep QR/OTP readable before pickup, then clearly show collected/no-show terminal state without exposing raw credential reuse after terminal state.
+- `/portal/drops/new` must be redesigned mobile-first so “Quick publish drop” has stable height/placement and recent drops do not stretch the form column. Prefer stacked mobile sections and a desktop grid where the form and recent drops have independent scroll/height behavior.
+- `/drops` must prioritize live/latest claimable drops first and move pickup-window-closed drops to a clearly labeled “What you missed” section.
+- `/account` must keep active holds visually prominent and move expired/released/converted holds into a secondary/history area.
+- `/admin/drops` must be compact and operational, with clear grouping/status badges for active drops, closed/missed drops, payment/webhook state, pickup state, and incident state.
+- Website email updates must fit existing copy and not create visual clutter or dead links.
+- Admin surfaces should be operational and compact, not a full ticketing/CRM rebuild.
+- Incident form must be short and structured: type, severity default, description, optional internal note. Food safety and dietary mismatch copy must make escalation seriousness clear.
+
+SECURITY / COMPLIANCE REQUIREMENTS
+- No service-role key in client code.
+- No private docs/media exposed publicly.
+- No PII in logs.
+- RLS/tenant checks required for:
+  - Consumer can only read their own orders, hold state, and pickup status.
+  - Restaurant users can only read/verify/no-show/create incidents for orders belonging to restaurants where they have active membership.
+  - Admin users must be verified through existing platform membership before viewing pickup/incident/payment/webhook support metadata.
+  - Pickup verification events remain scoped and support-safe; raw credentials, hashes, and secrets are never exposed.
+  - Incident rows must not expose private compliance docs, full consumer PII, raw payment payloads, or secrets.
+  - Service-role route handlers must perform explicit authenticated actor checks before calling mutation RPCs.
+  - Duplicate verification/no-show attempts must be idempotent and auditable.
+  - Website email changes must not expose private operational addresses beyond the approved list in this prompt.
+- Human review required for:
+  - auth
+  - payment webhook
+  - RLS
+  - refund/financial mutation
+  - destructive admin action
+  - pickup credential verification/hash design
+  - no-show transition rules
+  - incident severity/type mapping, especially food safety and dietary mismatch
+
+DOCS REQUIREMENTS
+Update docs in the same implementation:
+1. docs/implementation-plan.md
+   - Add/update slice section.
+   - Include goal, completed items, validation gate, out-of-scope, verification commands.
+   - Keep it usable to recreate all slices from ground zero.
+   - Include the pilot UX polish and website email updates as part of Slice 5 completed scope.
+2. Product/runbook docs:
+   - Create docs/product/pickup-verification-incident-basics.md covering consumer, restaurant, admin, compliance, support behavior, no-show handling, incident basics, and the pilot UX polish rules.
+   - Create or update docs/runbooks/pickup-operations.md with counter verification, invalid OTP/QR handling, collected/no-show rules, incident logging, rollback notes, and smoke test steps.
+   - Update docs/runbooks/payments.md to clarify payment remains webhook-owned and pickup verification never proves payment.
+   - Update docs/runbooks/claim-holds.md only if pickup/no-show changes the hold/order lifecycle explanation.
+   - Update docs/runbooks/demo-data.md if demo paid orders, pickup events, no-show rows, incidents, or UX smoke data are added.
+   - Update website/product docs if they list support/contact emails.
+3. Configuration/deployment docs if env/domain/migration behavior changes:
+   - docs/configuration-reference.md
+   - docs/deployment-pipeline.md
+4. Update DOCX roadmap only if roadmap/scope materially changes:
+   - project docs/goZaika_Technology_Specification_v2.docx
+   - If editing DOCX, use Documents skill and render/visually verify.
+
+DEMO / SEED REQUIREMENTS
+- Add deterministic demo data if needed.
+- Register demo rows in dev_demo_seed_registry where applicable.
+- Update cleanup scripts if demo rows are added.
+- Do not seed production data.
+- Add/update smoke SQL if useful.
+- Prefer not to seed real payment provider references in production. If local/staging demo rows are needed, use fake clearly-marked provider refs such as `rzp_demo_*`.
+- If adding a demo SQL file, use `supabase/seeds/demo/006_slice5_pickup_verification_incidents_demo.sql` and make it safe for local/staging only.
+- If demo rows touch `order_pickup_verification_event`, `incident_event`, `incident_incident`, `order_status_transition`, `order_order`, `order_item`, `payment_transaction`, `payment_order_intent`, `drop_inventory_hold`, or `drop_inventory_event`, cleanup must remove them in FK-safe order.
+
+
+Codex is allowed to use http://localhost:3000 for local smoke testing.
+
+VALIDATION GATE
+This slice is complete only when:
+- A paid confirmed/ready-for-pickup order from Slice 4B can be verified by an authorized restaurant user using OTP, transitions exactly once to `COLLECTED`, records pickup verification, status transition, and `PICKUP_COLLECTED` inventory event, and rejects replay without duplicate side effects.
+- Invalid OTP/QR, wrong restaurant, already collected, expired pickup window, and order-not-ready cases return specific failures and record support-safe verification attempts where appropriate without changing order state.
+- Restaurant can mark an uncollected order as `NO_SHOW` only after pickup window closes, with required reason and audit/status transition, and no refund/payment mutation is created.
+- Restaurant/admin can create and view minimal incidents linked to an order/restaurant with type, severity, description, and event timeline; food-safety/dietary mismatch are clearly visible for ops escalation.
+- Consumer order detail/account reflect collected/no-show states clearly and do not expose reusable pickup proof after terminal pickup states.
+- Restaurant `/portal/orders` and admin support surfaces show pickup/incident status without exposing raw QR nonce, raw OTP, hashes, provider payloads, private compliance data, or unauthorized tenant data.
+- Restaurant `/portal/drops/new` no longer stretches the quick publish form when recent drops increase; it works cleanly on mobile and desktop.
+- Consumer `/drops` shows latest/actionable drops first and moves closed pickup-window drops into a “What you missed” section.
+- Consumer `/account` separates active/current holds from stale expired/released/converted hold history.
+- Admin `/admin/drops` is easier to scan for active/recent drops, payment/webhook state, pickup state, and incidents.
+- Website uses the approved goZaika email addresses in appropriate existing locations: `billing@gozaika.in`, `careers@gozaika.in`, `contact@gozaika.in`, `partners@gozaika.in`, `tech@gozaika.in`, `waitlist@gozaika.in`.
+- docs/implementation-plan.md explains how to rebuild Slice 5 from scratch after Slices 0, 1, 2, 3, 3.5, 4A, and 4B.
+- Product/runbook/config/deployment/demo docs are updated.
+- Focused typecheck, lint, builds, migration SQL review, and manual/browser smoke tests pass or external blockers are documented.
+
+VERIFICATION COMMANDS
+Run focused checks:
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/website run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npm.cmd --workspace @gozaika/website run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+npm.cmd --workspace @gozaika/website run build
+
+===
+You are Codex working in C:\venkat\limca\gozaika\sourcecode.
+
+MODE
+- This is an implementation task.
+- Make code changes unless blocked.
+- Do not stop at a proposal.
+- Preserve unrelated user changes.
+- Run verification before final response.
+
+Current git state:
+- Branch: main
 - Latest commit: a8dced9
 - Expected state: all intended implementation changes are committed and pushed before this slice begins. prompts/impl_baseline_prompt.txt and prompts/template-development.txt will be dirty.
 - Deployments done on remote supabase and vercel environments.

@@ -38,12 +38,32 @@ export function Footer(): React.ReactElement {
           <FooterColumn heading="Legal" links={footerColumns.legal} />
         </div>
 
+        <div className="mt-8 grid gap-2 border-t border-[var(--color-forest-border)] pt-6 text-sm text-forest-light/80 md:grid-cols-3">
+          <FooterEmail label="Contact" email="contact@gozaika.in" />
+          <FooterEmail label="Partners" email="partners@gozaika.in" />
+          <FooterEmail label="Waitlist" email="waitlist@gozaika.in" />
+          <FooterEmail label="Billing" email="billing@gozaika.in" />
+          <FooterEmail label="Careers" email="careers@gozaika.in" />
+          <FooterEmail label="Platform" email="tech@gozaika.in" />
+        </div>
+
         <div className="mt-8 flex flex-wrap justify-between gap-4 border-t border-[var(--color-forest-border)] pt-6 text-sm text-forest-light/80">
           <p>© 2025 GoZaika Technologies Pvt. Ltd.</p>
           <p>Made with care in Hyderabad</p>
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterEmail({ email, label }: { email: string; label: string }): React.ReactElement {
+  return (
+    <p>
+      <span className="font-semibold text-forest-light">{label}: </span>
+      <Link href={`mailto:${email}`} className="transition-colors hover:text-white">
+        {email}
+      </Link>
+    </p>
   );
 }
 

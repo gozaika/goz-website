@@ -60,7 +60,7 @@ export async function loadPublicDrops(): Promise<PublicDropCard[]> {
   const { data, error } = await supabase
     .from("api_public_drop_card")
     .select("*")
-    .order("pickup_start_at", { ascending: true });
+    .order("pickup_start_at", { ascending: false });
 
   if (error) {
     throw new Error("Could not load public drops.");

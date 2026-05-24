@@ -12,8 +12,15 @@ type DropInventoryPayload = {
   readonly drop_status_code?: PublicDropCard["statusCode"];
 };
 
-export function DropDiscoveryClient({ initialDrops }: { readonly initialDrops: readonly PublicDropCard[] }) {
+export function DropDiscoveryClient({
+  generatedAt,
+  initialDrops,
+}: {
+  readonly generatedAt: string;
+  readonly initialDrops: readonly PublicDropCard[];
+}) {
   const [drops, setDrops] = useState<PublicDropCard[]>([...initialDrops]);
+  const generatedAtMs = useMemo(() => Date.parse(generatedAt), [generatedAt]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -46,12 +53,15 @@ export function DropDiscoveryClient({ initialDrops }: { readonly initialDrops: r
     };
   }, []);
 
-  const sortedDrops = useMemo(
-    () => [...drops].sort((a, b) => Date.parse(a.pickupStartAt) - Date.parse(b.pickupStartAt)),
-    [drops],
-  );
+  const groupedDrops = useMemo(() => {
+    const sorted = [...drops].sort((a, b) => Date.parse(b.pickupStartAt) - Date.parse(a.pickupStartAt));
+    return {
+      current: sorted.filter((drop) => Date.parse(drop.pickupEndAt) > generatedAtMs),
+      missed: sorted.filter((drop) => Date.parse(drop.pickupEndAt) <= generatedAtMs),
+    };
+  }, [drops, generatedAtMs]);
 
-  if (sortedDrops.length === 0) {
+  if (groupedDrops.current.length === 0 && groupedDrops.missed.length === 0) {
     return (
       <EmptyState
         title="No Hyderabad drops are live yet"
@@ -61,20 +71,42 @@ export function DropDiscoveryClient({ initialDrops }: { readonly initialDrops: r
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {sortedDrops.map((drop) => (
-        <DropCard
-          key={drop.dropPk}
-          drop={drop}
-          actions={
-            <DropShareActions
-              publicUrl={createPublicDropUrl(drop.dropPk)}
-              shareText={generateManualDropAlertText(drop)}
-              className="justify-end"
-            />
-          }
-        />
-      ))}
+    <div className="grid gap-8">
+      <section>
+        {groupedDrops.current.length === 0 ? (
+          <EmptyState title="No claimable drops right now" body="Recent closed drops are below. New active drops appear here first." />
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {groupedDrops.current.map((drop) => (
+              <DropCard
+                key={drop.dropPk}
+                drop={drop}
+                actions={
+                  <DropShareActions
+                    publicUrl={createPublicDropUrl(drop.dropPk)}
+                    shareText={generateManualDropAlertText(drop)}
+                    className="justify-end"
+                  />
+                }
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {groupedDrops.missed.length ? (
+        <section>
+          <div className="mb-3">
+            <h2 className="text-2xl font-bold text-[#2D2D2D]">What you missed</h2>
+            <p className="mt-1 text-sm text-[#2D2D2D]/65">Pickup windows that have closed are read-only and kept separate from active holds.</p>
+          </div>
+          <div className="grid gap-4 opacity-80 md:grid-cols-2 xl:grid-cols-3">
+            {groupedDrops.missed.map((drop) => (
+              <DropCard key={drop.dropPk} drop={drop} />
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

@@ -30,11 +30,13 @@ export function AccountClient({
   initialConsents,
   initialClaimIntents,
   initialOrders,
+  generatedAt,
 }: {
   readonly initialProfile: AccountProfile;
   readonly initialConsents: readonly AccountConsent[];
   readonly initialClaimIntents: readonly ClaimIntent[];
   readonly initialOrders: readonly ConsumerOrderSummary[];
+  readonly generatedAt: string;
 }) {
   const router = useRouter();
   const [profile, setProfile] = useState(initialProfile);
@@ -44,6 +46,9 @@ export function AccountClient({
   const [language, setLanguage] = useState(initialProfile.preferredLanguageCode);
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
+  const generatedAtMs = Date.parse(generatedAt);
+  const activeClaims = initialClaimIntents.filter((claim) => claim.statusCode === "ACTIVE" && new Date(claim.expiresAt).getTime() > generatedAtMs);
+  const holdHistory = initialClaimIntents.filter((claim) => !activeClaims.some((active) => active.holdPk === claim.holdPk));
 
   async function saveProfile() {
     setSaving(true);
@@ -253,12 +258,13 @@ export function AccountClient({
                     </p>
                   </div>
                   <span className="rounded-full border border-[#1A5C38]/25 px-3 py-1 text-xs font-semibold text-[#1A5C38]">
-                    {order.orderStatusCode}
+                    {order.orderStatusCode.replaceAll("_", " ")}
                   </span>
                 </div>
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-[#2D2D2D]/70">
                   <span>{formatPaise(order.paidAmountPaise)}</span>
                   <span>{order.quantity} bag</span>
+                  {order.collectedAt ? <span>Collected {new Date(order.collectedAt).toLocaleString("en-IN")}</span> : null}
                   <Link className="font-semibold text-[#1A5C38]" href={`/orders/${order.orderPk}`}>
                     View order
                   </Link>
@@ -271,15 +277,15 @@ export function AccountClient({
 
       <section className="mt-6 rounded-lg border border-black/10 bg-white p-5 shadow-sm">
         <h2 className="text-xl font-bold text-[#2D2D2D]">Current holds</h2>
-        <p className="mt-1 text-sm text-[#2D2D2D]/65">Temporary BAM Bag holds that reserve availability until they expire.</p>
+        <p className="mt-1 text-sm text-[#2D2D2D]/65">Active payment-pending holds that still reserve availability.</p>
         <div className="mt-4 grid gap-3">
-          {initialClaimIntents.length === 0 ? (
+          {activeClaims.length === 0 ? (
             <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-[#2D2D2D]/60">
-              You do not have active or recent claim holds yet.
+              You do not have active claim holds right now.
             </p>
           ) : (
-            initialClaimIntents.map((claim) => (
-              <article key={claim.holdPk} className="rounded-lg border border-black/10 p-4">
+            activeClaims.map((claim) => (
+              <article key={claim.holdPk} className="rounded-lg border border-[#1A5C38]/25 bg-[#F2F8EF] p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-[#1A5C38]">{claim.restaurantName}</p>
@@ -299,6 +305,39 @@ export function AccountClient({
                   <Link className="font-semibold text-[#1A5C38]" href={`/checkout/${claim.holdPk}`}>
                     View hold
                   </Link>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+      </section>
+
+      <section className="mt-6 rounded-lg border border-black/10 bg-white p-5 shadow-sm">
+        <h2 className="text-xl font-bold text-[#2D2D2D]">Hold history</h2>
+        <p className="mt-1 text-sm text-[#2D2D2D]/65">Expired, released, or converted holds are kept here so active holds stay easy to find.</p>
+        <div className="mt-4 grid gap-3">
+          {holdHistory.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-[#2D2D2D]/60">
+              No older holds yet.
+            </p>
+          ) : (
+            holdHistory.map((claim) => (
+              <article key={claim.holdPk} className="rounded-lg border border-black/10 bg-black/[0.02] p-4 opacity-85">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-[#2D2D2D]/70">{claim.restaurantName}</p>
+                    <h3 className="mt-1 font-bold text-[#2D2D2D]">{claim.bagDisplayName}</h3>
+                    <p className="mt-1 text-xs text-[#2D2D2D]/60">
+                      {claim.statusCode.toLowerCase()} - {formatPickupWindow(claim.pickupStartAt, claim.pickupEndAt)}
+                    </p>
+                  </div>
+                  <span className="rounded-full border border-black/15 px-3 py-1 text-xs font-semibold text-[#2D2D2D]/70">
+                    {claim.statusCode}
+                  </span>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-[#2D2D2D]/60">
+                  <span>{formatPaise(claim.pricePaise)}</span>
+                  <span>Expired {new Date(claim.expiresAt).toLocaleString("en-IN")}</span>
                 </div>
               </article>
             ))

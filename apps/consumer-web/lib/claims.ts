@@ -155,7 +155,7 @@ export async function loadConsumerClaimIntents(): Promise<ClaimIntent[]> {
   const { data, error } = await supabase
     .from("drop_inventory_hold")
     .select("drop_inventory_hold_pk,drop_fk,consumer_profile_fk,hold_status_code,quantity,expires_at,created_at,updated_at")
-    .in("hold_status_code", ["ACTIVE", "EXPIRED", "RELEASED"])
+    .in("hold_status_code", ["ACTIVE", "EXPIRED", "RELEASED", "CONVERTED"])
     .order("created_at", { ascending: false })
     .limit(12);
 

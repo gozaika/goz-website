@@ -24,7 +24,8 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
     notFound();
   }
 
-  const proof = await issuePickupProof(order);
+  const pickupTerminal = order.orderStatusCode === "COLLECTED" || order.orderStatusCode === "NO_SHOW";
+  const proof = pickupTerminal ? null : await issuePickupProof(order);
   const capturedAtText = order.paymentCapturedAt
     ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }).format(
         new Date(order.paymentCapturedAt),
@@ -37,11 +38,20 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
       <section className="mx-auto grid max-w-5xl gap-6 px-4 py-8 lg:grid-cols-[1fr_0.75fr]">
         <div className="grid gap-5">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Order confirmed</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">
+              {order.orderStatusCode === "COLLECTED"
+                ? "Order collected"
+                : order.orderStatusCode === "NO_SHOW"
+                  ? "Pickup missed"
+                  : "Order confirmed"}
+            </p>
             <h1 className="mt-2 text-3xl font-bold text-[#2D2D2D]">{order.orderNumber}</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-[#2D2D2D]/70">
-              Payment is captured and your BAM Bag is confirmed for pickup. Keep the dietary and allergen details visible
-              before heading to the restaurant.
+              {order.orderStatusCode === "COLLECTED"
+                ? "This BAM Bag was collected at the restaurant. Pickup proof is now closed."
+                : order.orderStatusCode === "NO_SHOW"
+                  ? "This pickup was marked no-show after the pickup window closed. No automatic refund is promised from this state."
+                  : "Payment is captured and your BAM Bag is confirmed for pickup. Keep the dietary and allergen details visible before heading to the restaurant."}
             </p>
           </div>
 
@@ -84,6 +94,12 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
                 <dt className="font-semibold text-[#2D2D2D]">Status</dt>
                 <dd>{order.orderStatusCode.replaceAll("_", " ")}</dd>
               </div>
+              {order.collectedAt ? (
+                <div>
+                  <dt className="font-semibold text-[#2D2D2D]">Collected</dt>
+                  <dd>{new Date(order.collectedAt).toLocaleString("en-IN")}</dd>
+                </div>
+              ) : null}
             </dl>
 
             <div className="mt-5">
@@ -97,7 +113,16 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
             </div>
           </section>
 
-          <PickupProofCard proof={proof} />
+          {proof ? (
+            <PickupProofCard proof={proof} />
+          ) : (
+            <section className="rounded-lg border border-[#1A5C38]/20 bg-white p-5 shadow-sm">
+              <p className="text-sm font-semibold text-[#1A5C38]">Pickup proof closed</p>
+              <p className="mt-2 text-sm leading-6 text-[#2D2D2D]/70">
+                QR and OTP pickup proof are no longer usable after an order is collected or marked no-show.
+              </p>
+            </section>
+          )}
         </div>
 
         <aside className="h-fit rounded-lg border border-black/10 bg-white p-5">

@@ -120,6 +120,15 @@ Use this order for a clean rebuild:
    - Redeploy `customer.gozaika.in`, `restaurant.gozaika.in`, and `admin.gozaika.in`.
    - Create a Slice 4A hold, start Razorpay checkout from `/checkout/{holdPk}`, and confirm a captured webhook creates a paid order visible at `/orders/{orderPk}`.
 
+11. Recreate Slice 5 pickup verification and incident basics after Slice 4B is available:
+
+   - Apply migration `20260525000000_slice5_pickup_verification_incidents.sql`.
+   - Keep `PICKUP_CREDENTIAL_SECRET` configured for consumer and restaurant/admin server routes.
+   - Redeploy `customer.gozaika.in`, `restaurant.gozaika.in`, `admin.gozaika.in`, and `gozaika.in`.
+   - Use a webhook-confirmed paid order to verify OTP pickup from `/portal/orders`.
+   - Confirm duplicate verify attempts do not create duplicate collection transitions.
+   - Confirm no-show works only after pickup window close and incident creation is visible to restaurant/admin support.
+
 ## Slice 0: Foundation
 
 ### Goal
@@ -490,6 +499,75 @@ npm.cmd --workspace @gozaika/admin-web run build
 ### Out Of Scope
 
 No refunds, refund initiation, settlement runs, payouts, invoices, finance dashboards, Razorpay transfers, reconciliation exports, staff pickup verification, collected/no-show transitions, incident creation, WATI/email/push notifications, Swaad Club, referrals, subscriptions, native mobile parity, or destructive admin payment/order corrections.
+
+## Slice 5: Pickup Verification, Incident Basics & Pilot UX Polish
+
+### Goal
+
+Let restaurants verify paid pickup-ready orders at the counter, transition them to collected exactly once, mark true no-shows after pickup windows, log minimal launch incidents, and remove high-friction pilot UX clutter before broader launch.
+
+### Completed
+
+- [x] Add migration `20260525000000_slice5_pickup_verification_incidents.sql`.
+- [x] Add service-role RPCs `api_verify_order_pickup`, `api_mark_order_no_show`, and `api_create_order_incident`.
+- [x] Verify pickup with server-side hashes derived from `PICKUP_CREDENTIAL_SECRET`; raw OTP, QR nonce, hashes, and secrets are never exposed in browser-safe views.
+- [x] Record `order_pickup_verification_event`, `order_status_transition`, and `drop_inventory_event` with `PICKUP_COLLECTED` for successful collection.
+- [x] Prevent duplicate collection transitions on retries, refreshes, and replay attempts.
+- [x] Add no-show transition after pickup window close with required reason and no refund/payment mutation.
+- [x] Add restaurant and admin incident creation for the pilot incident categories.
+- [x] Add safe restaurant/admin pickup and incident read models.
+- [x] Update consumer order detail and account history for collected/no-show terminal states.
+- [x] Update restaurant `/portal/orders` with OTP-first verification, QR payload paste, no-show, and incident logging.
+- [x] Redesign restaurant `/portal/drops/new` so the publish form height is stable and recent drops scroll independently.
+- [x] Update consumer `/drops` latest/current ordering and separate closed windows into `What you missed`.
+- [x] Update consumer `/account` to separate active holds from expired/released/converted history.
+- [x] Update admin `/admin/drops` for active/closed drops, payment/webhook state, pickup state, and incident scanning.
+- [x] Update website copy/footer/legal/form fallbacks to the approved goZaika mailboxes.
+
+### Validation Gate
+
+A paid confirmed or ready-for-pickup order can be verified by an authorized restaurant user using OTP, moves once to `COLLECTED`, and records pickup verification, status transition, and inventory audit. Invalid OTP/QR, wrong restaurant, already collected, expired window, and not-ready cases return specific failures. No-show works only after pickup window close, with audit and no payment/refund mutation. Restaurant/admin can create and view minimal incidents. Consumer, restaurant, admin, and website UX reflect Slice 5 states without exposing unsafe data.
+
+### Remote Migration Steps
+
+Apply this migration after all Slice 4B migrations:
+
+```powershell
+Get-Content -Raw supabase/migrations/20260525000000_slice5_pickup_verification_incidents.sql
+```
+
+Review the SQL, then run it once in the Supabase Dashboard SQL editor or approved remote migration path. Verify:
+
+```sql
+select to_regprocedure('public.api_verify_order_pickup(uuid,uuid,uuid,text,text,text,text)');
+select to_regprocedure('public.api_mark_order_no_show(uuid,uuid,uuid,text,text)');
+select to_regprocedure('public.api_create_order_incident(uuid,uuid,uuid,text,text,text,text,text)');
+select to_regclass('public.api_restaurant_pickup_order_summary');
+select to_regclass('public.api_admin_pickup_order_summary');
+select to_regclass('public.api_admin_incident_summary');
+```
+
+### Verification Commands
+
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/website run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npm.cmd --workspace @gozaika/website run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+npm.cmd --workspace @gozaika/website run build
+```
+
+### Out Of Scope
+
+No native mobile camera scanning, offline pickup cache, refunds, settlements, payouts, finance dashboards, WATI/email/push notifications, full support ticketing, destructive admin correction flows, loyalty/referrals, reviews, campaign management, or advanced analytics.
 
 ## Slice 3 Follow-Up Activities Required For Complete Functionality
 

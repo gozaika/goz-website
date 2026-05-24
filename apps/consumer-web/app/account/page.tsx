@@ -68,6 +68,7 @@ export default async function AccountPage() {
         initialConsents={(consents ?? []) as AccountConsent[]}
         initialClaimIntents={claimIntents}
         initialOrders={orders}
+        generatedAt={new Date().toISOString()}
       />
     </main>
   );

@@ -1,14 +1,15 @@
 Do not modify source code. This is only a planning exercise.
 
-Now i want to focus on constructing a comprehensive prompt for next development iteration.
+I have completed all 4B activities and successfully smoke tested them. Now i want to focus on constructing a comprehensive prompt for next development iteration.
 
-Review \project docs\goZaika_Technology_Specification_v2.docx and determine scope for next implementation. Construct a comprehensive prompt using template below that I can use in codex next chat on this project. The prompt should be comprehensive such that i can apply this at a later time if I need to recreate entire project from grounds up. Construct the prompt such that it makes codex most efficient and precise in implementing it.
 
-Ensure your prompt addresses documents update. Execially implementation-plan.doc, which will be used to recreate entire imeplementation from grounds up on codex again.
+Review \project docs\goZaika_Technology_Specification_v2.docx and determine scope for next implementation.  Review project docs\claude_goZaika_Master_Business_Document_v3.docx for ovreall project context. Construct a comprehensive prompt using template below that I can use in codex next chat on this project. The prompt should be comprehensive such that i can apply this at a later time if I need to recreate entire project from grounds up. Construct the prompt such that it makes codex most efficient and precise in implementing it.
 
-All migrations have been applied. All changes in got have been comited and pushed.
+Ensure your prompt addresses documents update. Especially implementation-plan.doc, which will be used to recreate entire implementation from grounds up on codex again.
 
-Fill only the blanks in template and keep the rest. Template is to reduces ambiguity, and keeps codeex from drifting into “generic feature build” mode.
+All migrations have been applied. All changes in got have been committed and pushed.
+
+Fill only the blanks in template and keep the rest. Template is to reduces ambiguity, and keeps codex from drifting into “generic feature build” mode.
 ====TEMPLATE
 You are Codex working in C:\venkat\limca\gozaika\sourcecode.
 

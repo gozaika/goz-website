@@ -1,6 +1,7 @@
 # Claim Holds Runbook
 
 Slice 4A reserves inventory temporarily. Slice 4B can convert an active hold into a paid confirmed order after a verified Razorpay webhook.
+Slice 5 keeps converted holds as history while pickup verification changes only the paid order state to `COLLECTED` or `NO_SHOW`.
 
 ## Remote Migration
 
@@ -77,6 +78,10 @@ Slice 4B does not release a hold from the browser callback. The flow is:
 5. The RPC changes the hold to `CONVERTED`, links the order, decrements reserved inventory, increments sold inventory, and appends `HOLD_CONVERTED`.
 
 If the hold expires before a captured webhook is processed, conversion fails and the normal expired-hold release path should return availability. Failed or dismissed payment attempts do not convert or release the hold.
+
+## After Paid Order Creation
+
+Once a hold is `CONVERTED`, it is no longer actionable as a hold. Consumer account shows it in hold history, while the order appears in paid order history. Pickup verification and no-show handling happen on `order_order`; they do not release or reconvert holds.
 
 ## Support Boundaries
 

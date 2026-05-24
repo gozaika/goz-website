@@ -14,7 +14,7 @@ export function LegalPage({ sections, title }: LegalPageProps): React.ReactEleme
           <p key={paragraph}>{paragraph}</p>
         ))}
       </div>
-      <p className="mt-6 text-xs text-gray500">For legal questions, contact hello@gozaika.in.</p>
+      <p className="mt-6 text-xs text-gray500">For legal questions, contact contact@gozaika.in.</p>
     </div>
   );
 }

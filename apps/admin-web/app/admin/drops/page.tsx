@@ -1,10 +1,12 @@
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
-import type { PublicDropCard } from "@gozaika/types";
+import type { AdminPickupOrderSummary, OrderIncidentSummary, PublicDropCard } from "@gozaika/types";
 import { LaunchCommsPanel, ShellHeader } from "@gozaika/ui";
 import { createPublicDropUrl, formatPaise, formatPickupWindow, generateManualDropAlertText } from "@gozaika/utils";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAdminActor } from "@/lib/admin-auth";
+import { createClient } from "@/lib/supabase/server";
+import { AdminIncidentForm } from "./admin-incident-form";
 
 export const dynamic = "force-dynamic";
 
@@ -91,6 +93,59 @@ type WebhookRow = {
   readonly received_at: string;
 };
 
+type AdminPickupOrderRow = {
+  readonly order_pk: string;
+  readonly order_number: string;
+  readonly restaurant_fk: string;
+  readonly drop_fk: string;
+  readonly order_status_code: AdminPickupOrderSummary["orderStatusCode"];
+  readonly payment_status_code: string;
+  readonly restaurant_name: string;
+  readonly drop_title: string;
+  readonly bag_display_name: string;
+  readonly dietary_category_code: AdminPickupOrderSummary["dietaryCategoryCode"];
+  readonly spice_level_code: AdminPickupOrderSummary["spiceLevelCode"];
+  readonly allergen_summary_text: string | null;
+  readonly allergen_codes: readonly string[] | null;
+  readonly quantity: number | string | null;
+  readonly paid_amount_paise: number | string;
+  readonly currency_code: string;
+  readonly pickup_window_start_at: string;
+  readonly pickup_window_end_at: string;
+  readonly payment_intent_status_code: AdminPickupOrderSummary["paymentIntentStatusCode"];
+  readonly payment_captured_at: string | null;
+  readonly collected_at: string | null;
+  readonly pickup_verification_attempt_count: number | string;
+  readonly last_pickup_verification_result_code: AdminPickupOrderSummary["lastPickupVerificationResultCode"];
+  readonly last_pickup_verification_at: string | null;
+  readonly incident_count: number | string;
+  readonly created_at: string;
+  readonly updated_at: string;
+  readonly consumer_profile_fk: string;
+  readonly hold_pk: string | null;
+  readonly provider_order_ref: string | null;
+  readonly webhook_processed_at: string | null;
+  readonly webhook_processing_status_code: string | null;
+};
+
+type IncidentRow = {
+  readonly incident_pk: string;
+  readonly order_pk: string | null;
+  readonly order_number: string | null;
+  readonly restaurant_fk: string | null;
+  readonly restaurant_name: string | null;
+  readonly type_code: OrderIncidentSummary["typeCode"];
+  readonly type_name: string;
+  readonly severity_code: OrderIncidentSummary["severityCode"];
+  readonly status_code: OrderIncidentSummary["statusCode"];
+  readonly title_text: string;
+  readonly description_text: string | null;
+  readonly reported_by_profile_fk: string | null;
+  readonly occurred_at: string | null;
+  readonly created_at: string;
+  readonly updated_at: string;
+};
+
 function mapPublicDrop(row: PublicDropRow): PublicDropCard {
   return {
     dropPk: row.drop_drop_pk,
@@ -128,17 +183,20 @@ export default async function AdminDropsPage() {
   if (!actor) redirect("/auth/login");
 
   const service = createServiceRoleSupabaseClient();
+  const supabase = await createClient();
   const [
     { data, error },
     { data: holdsData, error: holdsError },
     { data: paymentData, error: paymentError },
     { data: webhookData, error: webhookError },
+    { data: pickupData, error: pickupError },
+    { data: incidentData, error: incidentError },
   ] = await Promise.all([
     service
     .from("api_public_drop_card")
     .select("*")
-    .in("drop_status_code", ["ACTIVE", "SCHEDULED"])
-      .order("pickup_start_at", { ascending: true }),
+      .order("pickup_start_at", { ascending: false })
+      .limit(80),
     service
       .from("drop_inventory_hold")
       .select("drop_inventory_hold_pk,drop_fk,consumer_profile_fk,hold_status_code,quantity,expires_at,created_at")
@@ -155,6 +213,16 @@ export default async function AdminDropsPage() {
       .select("payment_webhook_event_pk,provider_event_id,event_type_code,signature_verified_flag,processing_status_code,processed_at,processing_error_text,received_at")
       .order("received_at", { ascending: false })
       .limit(25),
+    supabase
+      .from("api_admin_pickup_order_summary")
+      .select("*")
+      .order("pickup_window_start_at", { ascending: false })
+      .limit(40),
+    supabase
+      .from("api_admin_incident_summary")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(30),
   ]);
 
   if (error) {
@@ -169,8 +237,17 @@ export default async function AdminDropsPage() {
   if (webhookError) {
     throw new Error("Could not load webhook support summary.");
   }
+  if (pickupError) {
+    throw new Error("Could not load pickup support summary.");
+  }
+  if (incidentError) {
+    throw new Error("Could not load incident support summary.");
+  }
 
   const drops = ((data ?? []) as PublicDropRow[]).map(mapPublicDrop);
+  const requestNowMs = new Date().getTime();
+  const activeDrops = drops.filter((drop) => Date.parse(drop.pickupEndAt) > requestNowMs);
+  const missedDrops = drops.filter((drop) => Date.parse(drop.pickupEndAt) <= requestNowMs);
   const dropsByPk = new Map(drops.map((drop) => [drop.dropPk, drop]));
   const holdRows = (holdsData ?? []) as HoldRow[];
   const missingHoldDropPks = [...new Set(holdRows.map((hold) => hold.drop_fk).filter((dropPk) => !dropsByPk.has(dropPk)))];
@@ -206,6 +283,8 @@ export default async function AdminDropsPage() {
   });
   const payments = (paymentData ?? []) as PaymentIntentRow[];
   const webhooks = (webhookData ?? []) as WebhookRow[];
+  const pickupOrders = (pickupData ?? []) as AdminPickupOrderRow[];
+  const incidents = (incidentData ?? []) as IncidentRow[];
 
   return (
     <main>
@@ -223,9 +302,9 @@ export default async function AdminDropsPage() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Launch ops</p>
-            <h1 className="mt-2 text-3xl font-bold">Manual drop comms</h1>
+            <h1 className="mt-2 text-3xl font-bold">Drop, payment, pickup support</h1>
             <p className="mt-2 max-w-3xl text-sm text-black/65">
-              Copy the public consumer link and the same WhatsApp-safe alert text restaurants see for active or scheduled public drops.
+              Scan active drops, closed pickup windows, payment/webhook state, pickup state, and pilot incidents without exposing raw credentials or provider payloads.
             </p>
           </div>
           <Link className="min-h-11 rounded-lg border border-[#1A5C38]/25 px-4 py-3 text-sm font-semibold text-[#1A5C38]" href="/admin">
@@ -234,12 +313,12 @@ export default async function AdminDropsPage() {
         </div>
 
         <div className="mt-6 grid gap-4">
-          {drops.length === 0 ? (
+          {activeDrops.length === 0 ? (
             <section className="rounded-lg border border-dashed border-black/15 bg-white p-6 text-sm text-black/60">
               No active or scheduled public drops are ready for manual launch comms.
             </section>
           ) : (
-            drops.map((drop) => {
+            activeDrops.map((drop) => {
               const publicUrl = createPublicDropUrl(drop.dropPk);
               const alertText = generateManualDropAlertText(drop, publicUrl);
               return (
@@ -274,6 +353,48 @@ export default async function AdminDropsPage() {
             })
           )}
         </div>
+
+        {missedDrops.length ? (
+          <section className="mt-8">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Closed windows</p>
+              <h2 className="mt-2 text-2xl font-bold">Missed or closed drops</h2>
+              <p className="mt-2 max-w-3xl text-sm text-black/65">
+                These drops are no longer actionable for consumers and should be reviewed for pickup completion and no-show follow-up.
+              </p>
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {missedDrops.slice(0, 12).map((drop) => (
+                <article key={drop.dropPk} className="rounded-lg border border-black/10 bg-white p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-[#1A5C38]">{drop.restaurantName}</p>
+                      <h3 className="mt-1 font-bold">{drop.dropTitle || drop.bagDisplayName}</h3>
+                      <p className="mt-1 text-xs text-black/55">{formatPickupWindow(drop.pickupStartAt, drop.pickupEndAt)}</p>
+                    </div>
+                    <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">
+                      {drop.statusCode}
+                    </span>
+                  </div>
+                  <dl className="mt-3 grid gap-2 text-sm text-black/70 sm:grid-cols-3">
+                    <div>
+                      <dt className="font-semibold text-black">Available</dt>
+                      <dd>{drop.quantityAvailable} / {drop.quantityTotal}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-black">Price</dt>
+                      <dd>{formatPaise(drop.pricePaise)}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-black">Drop id</dt>
+                      <dd>{drop.dropPk.slice(0, 8)}</dd>
+                    </div>
+                  </dl>
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section className="mt-8">
           <div>
@@ -388,6 +509,107 @@ export default async function AdminDropsPage() {
                   </article>
                 );
               })
+            )}
+          </div>
+        </section>
+
+        <section className="mt-8">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Pickup support</p>
+            <h2 className="mt-2 text-2xl font-bold">Collected, no-show, and verification attempts</h2>
+            <p className="mt-2 max-w-3xl text-sm text-black/65">
+              Support-safe pickup state for recent paid orders. OTP, QR nonce, hashes, and consumer contact details are not shown.
+            </p>
+          </div>
+          <div className="mt-4 grid gap-3">
+            {pickupOrders.length === 0 ? (
+              <section className="rounded-lg border border-dashed border-black/15 bg-white p-6 text-sm text-black/60">
+                No pickup orders are visible yet.
+              </section>
+            ) : (
+              pickupOrders.map((order) => (
+                <article key={order.order_pk} className="rounded-lg border border-black/10 bg-white p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-[#1A5C38]">{order.order_number}</p>
+                      <h3 className="mt-1 font-bold">{order.restaurant_name}</h3>
+                      <p className="mt-1 text-xs text-black/55">
+                        {order.bag_display_name} - consumer {order.consumer_profile_fk.slice(0, 8)}
+                      </p>
+                    </div>
+                    <span className="rounded-full border border-[#1A5C38]/25 px-3 py-1 text-xs font-semibold text-[#1A5C38]">
+                      {order.order_status_code}
+                    </span>
+                  </div>
+                  <dl className="mt-3 grid gap-2 text-sm text-black/70 sm:grid-cols-5">
+                    <div>
+                      <dt className="font-semibold text-black">Pickup</dt>
+                      <dd>{formatPickupWindow(order.pickup_window_start_at, order.pickup_window_end_at)}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-black">Payment</dt>
+                      <dd>{order.payment_intent_status_code ?? order.payment_status_code}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-black">Pickup attempts</dt>
+                      <dd>
+                        {Number(order.pickup_verification_attempt_count)}{" "}
+                        {order.last_pickup_verification_result_code ? `(${order.last_pickup_verification_result_code})` : ""}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-black">Collected</dt>
+                      <dd>{order.collected_at ? new Date(order.collected_at).toLocaleString("en-IN") : "Not collected"}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-black">Incidents</dt>
+                      <dd>{Number(order.incident_count)}</dd>
+                    </div>
+                  </dl>
+                  <AdminIncidentForm orderPk={order.order_pk} />
+                </article>
+              ))
+            )}
+          </div>
+        </section>
+
+        <section className="mt-8">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Incidents</p>
+            <h2 className="mt-2 text-2xl font-bold">Recent pilot incidents</h2>
+            <p className="mt-2 max-w-3xl text-sm text-black/65">
+              Food safety and dietary mismatch incidents should be treated as escalation-sensitive.
+            </p>
+          </div>
+          <div className="mt-4 grid gap-3">
+            {incidents.length === 0 ? (
+              <section className="rounded-lg border border-dashed border-black/15 bg-white p-6 text-sm text-black/60">
+                No incidents logged yet.
+              </section>
+            ) : (
+              incidents.map((incident) => (
+                <article key={incident.incident_pk} className="rounded-lg border border-black/10 bg-white p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-[#1A5C38]">{incident.restaurant_name ?? "Platform"}</p>
+                      <h3 className="mt-1 font-bold">{incident.title_text}</h3>
+                      <p className="mt-1 text-xs text-black/55">
+                        {incident.order_number ?? "No order"} - incident {incident.incident_pk.slice(0, 8)}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">
+                        {incident.severity_code}
+                      </span>
+                      <span className="rounded-full border border-[#1A5C38]/25 px-3 py-1 text-xs font-semibold text-[#1A5C38]">
+                        {incident.status_code}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-sm text-black/70">{incident.description_text ?? "No description provided."}</p>
+                  <p className="mt-2 text-xs text-black/50">Created {new Date(incident.created_at).toLocaleString("en-IN")}</p>
+                </article>
+              ))
             )}
           </div>
         </section>

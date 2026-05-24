@@ -86,7 +86,7 @@ export default function InvestorsPage(): React.ReactElement {
           <article className="rounded-2xl bg-white p-6 shadow-[0_10px_30px_rgba(26,92,56,0.08)]">
             <h3 className="text-lg font-semibold text-gray900">How to request materials</h3>
             <p className="mt-3 text-sm leading-relaxed text-gray700">
-              Email <strong>hello@gozaika.in</strong> with the subject line “Investor Enquiry”.
+              Email <strong>contact@gozaika.in</strong> with the subject line “Investor Enquiry”.
               We will share a one-pager or deck in the context of a serious conversation.
             </p>
           </article>

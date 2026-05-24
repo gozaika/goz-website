@@ -7,9 +7,9 @@ export const legalCopy = {
   privacyPolicy: [
     'GoZaika Technologies Pvt. Ltd. operates goZaika and processes data in line with the Digital Personal Data Protection Act, 2023.',
     'We collect only data required to operate waitlist, contact, and partner workflows: name, email, mobile (where applicable), city, and submitted message fields.',
-    'We do not sell personal data. You may request access, correction, or erasure by emailing privacy@gozaika.in.',
+    'We do not sell personal data. You may request access, correction, or erasure by emailing contact@gozaika.in.',
     'Waitlist and enquiry records are retained only for operational follow-up windows and legal obligations.',
-    'For privacy concerns or grievance escalation related to personal data, contact grievance@gozaika.in.',
+    'For privacy concerns or grievance escalation related to personal data, contact contact@gozaika.in.',
   ],
   termsOfService: [
     'You must be 18 years or older to use the platform.',
@@ -21,7 +21,7 @@ export const legalCopy = {
   refundPolicy: [
     'Orders are non-cancellable once placed because partner kitchens are notified immediately.',
     'Refunds are considered when the restaurant cannot fulfill during pickup window, is unavailable, or a duplicate technical charge occurs.',
-    'To request a refund, email refund@gozaika.in within 24 hours with order details and incident context.',
+    'To request a refund, email billing@gozaika.in within 24 hours with order details and incident context.',
     'Eligible refunds are processed to the original payment source within standard banking timelines.',
   ],
   foodSafetyPolicy: [
@@ -29,11 +29,11 @@ export const legalCopy = {
     'Only FSSAI-licensed restaurants are onboarded as partners.',
     'Each listing discloses relevant allergen categories before checkout.',
     'The platform is pickup-only and does not manage delivery transport.',
-    'Report concerns to safety@gozaika.in for review and incident workflow.',
+    'Report concerns to contact@gozaika.in for review and incident workflow.',
   ],
   grievanceRedressal: [
     'A grievance workflow is maintained under applicable Indian intermediary and DPDP provisions.',
-    'Email grievance@gozaika.in with subject "Grievance - [Your Name]".',
+    'Email contact@gozaika.in with subject "Grievance - [Your Name]".',
     'Acknowledgement is targeted within 48 hours and resolution within 30 days.',
     'Data-related grievance requests are prioritized under the DPDP response obligations.',
   ],

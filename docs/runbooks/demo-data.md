@@ -102,6 +102,7 @@ Future slices should add deterministic files in order:
 
 - `003_slice3_drop_publishing_demo.sql`
 - `004_slice4a_claim_hold_order_intent_demo.sql`
+- `006_slice5_pickup_verification_incidents_demo.sql`
 - `005_slice4b_payment_order_confirmation_demo.sql`
 - `006_slice5_pickup_staff.sql`
 
@@ -135,3 +136,9 @@ If a future demo seed adds rows to `drop_inventory_hold`, `drop_inventory_event`
 No deterministic Slice 4B payment/order seed is added. Payment rows should usually be produced through Razorpay test mode plus the verified webhook path so idempotency and hold conversion are exercised realistically.
 
 If a local/staging-only seed is later needed, use `supabase/seeds/demo/005_slice4b_payment_order_confirmation_demo.sql` with clearly fake provider refs such as `rzp_demo_*`. The seed must register every row in `dev_demo_seed_registry` and update cleanup for `payment_webhook_event`, `payment_transaction`, `payment_order_intent`, `order_status_transition`, `order_item`, `order_order`, `drop_inventory_hold`, and `drop_inventory_event` in FK-safe order. Never seed real payment provider references in production.
+
+# Slice 5 Pickup Verification And Incident Demo Data
+
+No deterministic Slice 5 demo seed is added in this slice. Pickup events, no-show rows, and incidents should usually be produced through the restaurant/admin UI against a real local or staging paid test order so idempotency and audit behavior are exercised.
+
+If a future seed adds `006_slice5_pickup_verification_incidents_demo.sql`, keep it local/staging-only, use fake provider references inherited from Slice 4B demo rows, register rows in `dev_demo_seed_registry`, and delete in FK-safe order for `incident_event`, `incident_incident`, `order_pickup_verification_event`, `drop_inventory_event`, `order_status_transition`, `order_item`, `order_order`, `payment_transaction`, `payment_order_intent`, and `drop_inventory_hold`.
