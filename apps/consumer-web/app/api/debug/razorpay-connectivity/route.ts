@@ -681,6 +681,15 @@ async function queryLocalLifecycleState(service: ReturnType<typeof createService
     },
   });
 
+  const hold = holdResult.data as { readonly expires_at?: string; readonly hold_status_code?: string } | null;
+  if (hold?.expires_at) {
+    append(logs, "supabase.hold.expiry_check", {
+      holdStatusCode: hold.hold_status_code ?? null,
+      expiresAt: hold.expires_at,
+      isExpiredByClock: Date.parse(hold.expires_at) <= Date.now(),
+    });
+  }
+
   return {
     hold: holdResult.data,
     order: orderResult.data,
@@ -731,6 +740,19 @@ async function runPoll(request: Request, logs: string[]) {
   });
 
   const localState = await queryLocalLifecycleState(service, intent, logs);
+  const supportPacket = {
+    summary:
+      "Razorpay Orders API succeeds and returns a valid INR order, but Checkout standard_checkout/preferences returns 500 before any payment attempt is created.",
+    keyIdMasked: mask(keyId),
+    providerOrderRef: intent.provider_order_ref,
+    amountPaise: Number(intent.amount_paise),
+    currencyCode: intent.currency_code,
+    razorpayOrderStatus: summarizeRazorpayOrder(orderResponse.body).status,
+    razorpayOrderAttempts: summarizeRazorpayOrder(orderResponse.body).attempts,
+    razorpayPaymentsCount: payments.length,
+    localPaymentOrderIntentPk: intent.payment_order_intent_pk,
+    localHoldPk: intent.drop_inventory_hold_fk,
+  };
   if (capturedPayment && localState.webhookEventsForOrder.length === 0) {
     append(logs, "diagnosis.webhook_missing", {
       message:
@@ -758,6 +780,7 @@ async function runPoll(request: Request, logs: string[]) {
       razorpayOrder: summarizeRazorpayOrder(orderResponse.body),
       razorpayPayments: payments.map(summarizePayment),
       localState,
+      supportPacket,
       commands: capturedPayment
         ? {
             replayWebhook: `curl -H "Authorization: Bearer $DEBUG_RAZORPAY_CONNECTIVITY_TOKEN" "${currentOrigin(request)}/api/debug/razorpay-connectivity?action=replay-webhook&paymentOrderIntentPk=${intent.payment_order_intent_pk}&paymentId=${capturedPayment.id}"`,

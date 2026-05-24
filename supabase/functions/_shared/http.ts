@@ -9,7 +9,6 @@ export function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
-export function safeLog(message: string, meta: Record<string, string | number | boolean | null> = {}): void {
+export function safeLog(message: string, meta: Record<string, unknown> = {}): void {
   console.log(JSON.stringify({ message, meta, timestamp: new Date().toISOString() }));
 }
-

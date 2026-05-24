@@ -15,6 +15,32 @@ type RazorpayPaymentEntity = {
   readonly captured_at?: number;
 };
 
+function errorDetails(error: unknown) {
+  if (error instanceof Error) {
+    return {
+      name: error.name,
+      message: error.message,
+      stack: error.stack?.slice(0, 1000) ?? null,
+    };
+  }
+
+  if (error && typeof error === "object") {
+    const record = error as Record<string, unknown>;
+    return {
+      name: typeof record.name === "string" ? record.name : null,
+      message: typeof record.message === "string" ? record.message : JSON.stringify(record).slice(0, 500),
+      code: record.code ?? null,
+      details: record.details ?? null,
+      hint: record.hint ?? null,
+    };
+  }
+
+  return {
+    name: null,
+    message: String(error),
+  };
+}
+
 function paymentEntity(payload: Record<string, unknown>): RazorpayPaymentEntity | null {
   const outerPayload = payload.payload;
   if (!outerPayload || typeof outerPayload !== "object") return null;
@@ -67,18 +93,35 @@ Deno.serve(async (request) => {
   }
 
   if (insertError) {
-    safeLog("razorpay_webhook_insert_failed", { eventType });
+    safeLog("razorpay_webhook_insert_failed", { eventType, error: errorDetails(insertError) });
     return jsonResponse({ ok: false, error: "Webhook ledger insert failed." }, 500);
   }
 
   const webhookPk = insertedEvent?.payment_webhook_event_pk;
-  await supabase
+  const { error: processingUpdateError } = await supabase
     .from("payment_webhook_event")
     .update({ processing_status_code: "PROCESSING" })
     .eq("payment_webhook_event_pk", webhookPk);
+  if (processingUpdateError) {
+    safeLog("razorpay_webhook_processing_status_update_failed", {
+      eventType,
+      webhookPk,
+      error: errorDetails(processingUpdateError),
+    });
+    return jsonResponse({ ok: false, error: "Webhook status update failed." }, 500);
+  }
 
   try {
     const entity = paymentEntity(payload);
+    safeLog("razorpay_webhook_processing_started", {
+      eventType,
+      webhookPk,
+      providerOrderRef: entity?.order_id ?? null,
+      providerPaymentRef: entity?.id ?? null,
+      amount: entity?.amount ?? null,
+      currency: entity?.currency ?? null,
+    });
+
     if ((eventType === "payment.captured" || eventType === "order.paid") && entity?.order_id && entity.id) {
       const { data, error } = await supabase.rpc("api_convert_paid_hold_to_order", {
         p_provider_order_ref: entity.order_id,
@@ -94,6 +137,13 @@ Deno.serve(async (request) => {
       });
 
       if (error) {
+        safeLog("razorpay_webhook_convert_rpc_failed", {
+          eventType,
+          webhookPk,
+          providerOrderRef: entity.order_id,
+          providerPaymentRef: entity.id,
+          error: errorDetails(error),
+        });
         throw error;
       }
 
@@ -117,6 +167,13 @@ Deno.serve(async (request) => {
       });
 
       if (error) {
+        safeLog("razorpay_webhook_failed_rpc_failed", {
+          eventType,
+          webhookPk,
+          providerOrderRef: entity.order_id,
+          providerPaymentRef: entity.id ?? null,
+          error: errorDetails(error),
+        });
         throw error;
       }
 
@@ -135,8 +192,9 @@ Deno.serve(async (request) => {
     safeLog("razorpay_webhook_ignored", { eventType });
     return jsonResponse({ ok: true, ignored: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message.slice(0, 500) : "Webhook processing failed.";
-    await supabase
+    const details = errorDetails(error);
+    const message = typeof details.message === "string" ? details.message.slice(0, 500) : "Webhook processing failed.";
+    const { error: failureUpdateError } = await supabase
       .from("payment_webhook_event")
       .update({
         processing_status_code: "FAILED",
@@ -144,7 +202,12 @@ Deno.serve(async (request) => {
         processed_at: new Date().toISOString(),
       })
       .eq("payment_webhook_event_pk", webhookPk);
-    safeLog("razorpay_webhook_processing_failed", { eventType });
-    return jsonResponse({ ok: false, error: "Webhook processing failed." }, 500);
+    safeLog("razorpay_webhook_processing_failed", {
+      eventType,
+      webhookPk,
+      error: details,
+      failureUpdateError: failureUpdateError ? errorDetails(failureUpdateError) : null,
+    });
+    return jsonResponse({ ok: false, error: "Webhook processing failed.", detail: message }, 500);
   }
 });
