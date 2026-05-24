@@ -57,6 +57,14 @@ export async function POST(request: Request, { params }: { readonly params: Prom
       qrPayload: parsed.data.qrPayload,
     });
   } catch (caught) {
+    if (caught instanceof Error && caught.message.includes("PICKUP_CREDENTIAL_SECRET")) {
+      console.error("pickup_verification_secret_missing");
+      return NextResponse.json(
+        { ok: false, error: "Pickup verification is not configured for this environment yet." } satisfies ApiResponse,
+        { status: 503 },
+      );
+    }
+
     return NextResponse.json(
       { ok: false, error: caught instanceof Error ? caught.message : "Invalid pickup proof." } satisfies ApiResponse,
       { status: 400 },

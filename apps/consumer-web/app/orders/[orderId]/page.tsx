@@ -25,7 +25,21 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
   }
 
   const pickupTerminal = order.orderStatusCode === "COLLECTED" || order.orderStatusCode === "NO_SHOW";
-  const proof = pickupTerminal ? null : await issuePickupProof(order);
+  let proof = null;
+  let proofUnavailableMessage = "";
+  if (!pickupTerminal) {
+    try {
+      proof = await issuePickupProof(order);
+    } catch (caught) {
+      console.error("pickup_proof_issue_failed", {
+        reason: caught instanceof Error && caught.message.includes("PICKUP_CREDENTIAL_SECRET") ? "missing_secret" : "issue_failed",
+      });
+      proofUnavailableMessage =
+        caught instanceof Error && caught.message.includes("PICKUP_CREDENTIAL_SECRET")
+          ? "Pickup proof is not configured for this environment yet. Please contact goZaika support before heading to pickup."
+          : "Pickup proof is not ready yet. Refresh this page or contact goZaika support before heading to pickup.";
+    }
+  }
   const capturedAtText = order.paymentCapturedAt
     ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }).format(
         new Date(order.paymentCapturedAt),
@@ -117,9 +131,13 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
             <PickupProofCard proof={proof} />
           ) : (
             <section className="rounded-lg border border-[#1A5C38]/20 bg-white p-5 shadow-sm">
-              <p className="text-sm font-semibold text-[#1A5C38]">Pickup proof closed</p>
+              <p className="text-sm font-semibold text-[#1A5C38]">
+                {pickupTerminal ? "Pickup proof closed" : "Pickup proof unavailable"}
+              </p>
               <p className="mt-2 text-sm leading-6 text-[#2D2D2D]/70">
-                QR and OTP pickup proof are no longer usable after an order is collected or marked no-show.
+                {pickupTerminal
+                  ? "QR and OTP pickup proof are no longer usable after an order is collected or marked no-show."
+                  : proofUnavailableMessage}
               </p>
             </section>
           )}
