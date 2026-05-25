@@ -2,7 +2,7 @@
 
 import { AllergenChips, Button, DietaryBadge } from "@gozaika/ui";
 import type { ApiResponse, NoShowResult, OrderIncidentSummary, PickupVerificationResult, RestaurantOrderSummary } from "@gozaika/types";
-import { formatPaise, formatPickupWindow, safeErrorMessage } from "@gozaika/utils";
+import { formatPaise, formatPickupWindow, notificationStatusLabel, safeErrorMessage } from "@gozaika/utils";
 import { AlertTriangle, CheckCircle2, ClipboardCheck, PackageX } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -192,6 +192,22 @@ export function OrdersClient({ initialOrders }: { readonly initialOrders: readon
                 <p className="mt-2 text-sm text-slate-500">No allergen summary was snapshotted for this order.</p>
               )}
             </div>
+
+            {order.notifications?.length ? (
+              <details className="mt-4 rounded-lg border border-black/10 bg-white p-3">
+                <summary className="cursor-pointer text-sm font-semibold text-slate-950">Notification history</summary>
+                <div className="mt-3 grid gap-2">
+                  {order.notifications.slice(0, 6).map((notification) => (
+                    <div key={notification.notificationOutboxPk} className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-black/[0.03] px-3 py-2 text-xs">
+                      <span className="font-semibold">
+                        {notification.templateCode.replaceAll("_", " ").toLowerCase()} / {notification.channelCode.toLowerCase()}
+                      </span>
+                      <span>{notificationStatusLabel(notification.sendStatusCode, notification.deliveryReasonCode)}</span>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            ) : null}
 
             {messages[order.orderPk] ? (
               <p className="mt-4 rounded-lg border border-[#D4A017]/40 bg-[#FFF8E6] p-3 text-sm font-medium text-slate-800">

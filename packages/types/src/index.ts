@@ -113,6 +113,19 @@ export const incidentStatusCodes = [
   "REJECTED",
 ] as const;
 
+export const notificationChannelCodes = ["EMAIL", "WHATSAPP", "SMS", "PUSH"] as const;
+export const notificationStatusCodes = ["QUEUED", "SENDING", "SENT", "FAILED", "CANCELLED", "SUPPRESSED"] as const;
+export const notificationAttemptStatusCodes = ["SENT", "FAILED", "RETRYING", "DROPPED"] as const;
+export const notificationProviderCodes = ["WATI", "RESEND", "DRY_RUN", "MANUAL", "SYSTEM"] as const;
+export const notificationTemplateCodes = [
+  "ORDER_CONFIRMATION",
+  "PICKUP_REMINDER",
+  "RESTAURANT_NEW_ORDER_ALERT",
+  "RESTAURANT_PICKUP_ALERT",
+  "INCIDENT_HIGH_SEVERITY_ALERT",
+] as const;
+export const notificationAudienceCodes = ["CONSUMER", "RESTAURANT", "ADMIN"] as const;
+
 export type DietaryCategoryCode = (typeof dietaryCategoryCodes)[number];
 export type SpiceLevelCode = (typeof spiceLevelCodes)[number];
 export type DropStatusCode = (typeof dropStatusCodes)[number];
@@ -124,6 +137,12 @@ export type PickupVerificationResultCode = (typeof pickupVerificationResultCodes
 export type IncidentTypeCode = (typeof incidentTypeCodes)[number];
 export type IncidentSeverityCode = (typeof incidentSeverityCodes)[number];
 export type IncidentStatusCode = (typeof incidentStatusCodes)[number];
+export type NotificationChannelCode = (typeof notificationChannelCodes)[number];
+export type NotificationStatusCode = (typeof notificationStatusCodes)[number];
+export type NotificationAttemptStatusCode = (typeof notificationAttemptStatusCodes)[number];
+export type NotificationProviderCode = (typeof notificationProviderCodes)[number];
+export type NotificationTemplateCode = (typeof notificationTemplateCodes)[number];
+export type NotificationAudienceCode = (typeof notificationAudienceCodes)[number];
 export type PlatformRoleCode = (typeof platformRoleCodes)[number];
 export type RestaurantStatusCode = (typeof restaurantStatusCodes)[number];
 export type RestaurantTeamRoleCode = (typeof restaurantTeamRoleCodes)[number];
@@ -258,6 +277,14 @@ export const orderIncidentCreateSchema = z.object({
   internalNoteText: z.preprocess(optionalString, z.string().trim().max(1200).optional()),
 });
 
+export const notificationRetryRequestSchema = z.object({
+  reasonText: z.string().trim().min(8).max(600),
+});
+
+export const notificationSuppressRequestSchema = z.object({
+  reasonText: z.string().trim().min(8).max(600),
+});
+
 export interface PickupVerificationResult {
   readonly orderPk: string;
   readonly orderNumber: string;
@@ -290,6 +317,65 @@ export interface OrderIncidentSummary {
   readonly occurredAt: string | null;
   readonly createdAt: string;
   readonly updatedAt: string;
+}
+
+export interface NotificationSummary {
+  readonly notificationOutboxPk: string;
+  readonly orderPk: string | null;
+  readonly orderNumber: string | null;
+  readonly restaurantPk: string | null;
+  readonly restaurantName: string | null;
+  readonly templateCode: NotificationTemplateCode | string;
+  readonly audienceCode: NotificationAudienceCode | string;
+  readonly channelCode: NotificationChannelCode;
+  readonly sendStatusCode: NotificationStatusCode;
+  readonly providerCode: NotificationProviderCode | string | null;
+  readonly deliveryReasonCode: string | null;
+  readonly scheduledAt: string;
+  readonly sentAt: string | null;
+  readonly nextAttemptAt: string | null;
+  readonly retryCount: number;
+  readonly maxAttempts: number;
+  readonly lastAttemptStatusCode: NotificationAttemptStatusCode | null;
+  readonly lastAttemptAt: string | null;
+  readonly lastErrorCode: string | null;
+  readonly lastErrorText: string | null;
+  readonly manualFallbackText: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
+
+export interface AdminNotificationDeliverySummary extends NotificationSummary {
+  readonly businessContextTypeCode: string | null;
+  readonly providerMessageRef: string | null;
+  readonly destinationMaskedText: string;
+}
+
+export interface NotificationDeliveryAttemptSummary {
+  readonly notificationDeliveryAttemptPk: string;
+  readonly notificationOutboxPk: string;
+  readonly providerCode: NotificationProviderCode | string | null;
+  readonly providerMessageRef: string | null;
+  readonly attemptStatusCode: NotificationAttemptStatusCode;
+  readonly attemptNumber: number;
+  readonly errorCode: string | null;
+  readonly errorText: string | null;
+  readonly attemptedAt: string;
+  readonly createdAt: string;
+}
+
+export interface NotificationActionResult {
+  readonly notificationOutboxPk: string;
+  readonly sendStatusCode: NotificationStatusCode;
+  readonly message: string;
+}
+
+export interface NotificationFallbackCopy {
+  readonly notificationOutboxPk: string;
+  readonly templateCode: NotificationTemplateCode | string;
+  readonly channelCode: NotificationChannelCode;
+  readonly fallbackText: string;
+  readonly warningText: string;
 }
 
 export const consentCaptureSchema = z.object({
@@ -571,6 +657,7 @@ export interface RestaurantOrderSummary {
   readonly lastPickupVerificationResultCode?: PickupVerificationResultCode | null;
   readonly lastPickupVerificationAt?: string | null;
   readonly incidentCount?: number;
+  readonly notifications?: readonly NotificationSummary[];
   readonly createdAt: string;
   readonly updatedAt: string;
 }

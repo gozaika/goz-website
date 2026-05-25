@@ -8,6 +8,8 @@ import {
   generateManualDropAlertText,
   getDropClaimAvailability,
   normalizeIndianPhone,
+  notificationStatusLabel,
+  notificationStatusTone,
   resolveLatestConsent,
   slugifyRestaurantName,
 } from "./index";
@@ -77,6 +79,15 @@ describe("manual drop launch comms", () => {
 
     expect(message).toContain("Availability: Not available to claim right now");
     expect(message).toContain("Status: Sold out");
+  });
+});
+
+describe("notification status helpers", () => {
+  it("keeps provider and consent states plain-language", () => {
+    expect(notificationStatusLabel("FAILED", "PROVIDER_NOT_CONFIGURED")).toBe("Delivery unavailable");
+    expect(notificationStatusLabel("SUPPRESSED", "CONSENT_NOT_GRANTED")).toBe("Unavailable by consent");
+    expect(notificationStatusTone("FAILED")).toBe("danger");
+    expect(notificationStatusTone("SENT")).toBe("success");
   });
 });
 

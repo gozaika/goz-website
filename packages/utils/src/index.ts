@@ -258,6 +258,31 @@ export function generateManualDropAlertText(drop: ManualDropAlertInput, publicDr
   return lines.join("\n");
 }
 
+export function notificationStatusLabel(statusCode: string, reasonCode?: string | null): string {
+  if (statusCode === "SENT") return "Sent";
+  if (statusCode === "QUEUED") return "Queued";
+  if (statusCode === "SENDING") return "Sending";
+  if (statusCode === "FAILED") {
+    if (reasonCode === "PROVIDER_NOT_CONFIGURED") return "Delivery unavailable";
+    return "Delivery failed";
+  }
+  if (statusCode === "SUPPRESSED") {
+    if (reasonCode === "CONSENT_NOT_GRANTED") return "Unavailable by consent";
+    if (reasonCode === "PREFERENCE_DISABLED") return "Turned off in preferences";
+    if (reasonCode === "DESTINATION_MISSING") return "Destination missing";
+    return "Not sent";
+  }
+  if (statusCode === "CANCELLED") return "Cancelled";
+  return statusCode.replaceAll("_", " ").toLowerCase();
+}
+
+export function notificationStatusTone(statusCode: string): "success" | "warning" | "danger" | "neutral" {
+  if (statusCode === "SENT") return "success";
+  if (statusCode === "QUEUED" || statusCode === "SENDING") return "warning";
+  if (statusCode === "FAILED") return "danger";
+  return "neutral";
+}
+
 export interface ConsentEventLike {
   readonly purposeCode: string;
   readonly state?: "GRANTED" | "REVOKED";

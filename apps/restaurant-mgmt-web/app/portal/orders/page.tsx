@@ -1,5 +1,5 @@
 import { ShellHeader } from "@gozaika/ui";
-import type { RestaurantOrderSummary } from "@gozaika/types";
+import type { NotificationSummary, RestaurantOrderSummary } from "@gozaika/types";
 import { redirect } from "next/navigation";
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { getPortalActor } from "@/lib/portal-auth";
@@ -34,6 +34,32 @@ type PickupOrderRow = {
   readonly last_pickup_verification_result_code: RestaurantOrderSummary["lastPickupVerificationResultCode"];
   readonly last_pickup_verification_at: string | null;
   readonly incident_count: number | string;
+  readonly created_at: string;
+  readonly updated_at: string;
+};
+
+type NotificationSummaryRow = {
+  readonly notification_outbox_pk: string;
+  readonly order_pk: string | null;
+  readonly order_number: string | null;
+  readonly restaurant_fk: string | null;
+  readonly restaurant_name: string | null;
+  readonly template_code: string;
+  readonly audience_code: string;
+  readonly channel_code: NotificationSummary["channelCode"];
+  readonly send_status_code: NotificationSummary["sendStatusCode"];
+  readonly provider_code: string | null;
+  readonly delivery_reason_code: string | null;
+  readonly scheduled_at: string;
+  readonly sent_at: string | null;
+  readonly next_attempt_at: string | null;
+  readonly retry_count: number | string;
+  readonly max_attempts: number | string;
+  readonly last_attempt_status_code: NotificationSummary["lastAttemptStatusCode"];
+  readonly last_attempt_at: string | null;
+  readonly last_error_code: string | null;
+  readonly last_error_text: string | null;
+  readonly manual_fallback_text: string | null;
   readonly created_at: string;
   readonly updated_at: string;
 };
@@ -136,6 +162,34 @@ function mapLegacyOrder(row: LegacyOrderRow): RestaurantOrderSummary {
   };
 }
 
+function mapNotification(row: NotificationSummaryRow): NotificationSummary {
+  return {
+    notificationOutboxPk: row.notification_outbox_pk,
+    orderPk: row.order_pk,
+    orderNumber: row.order_number,
+    restaurantPk: row.restaurant_fk,
+    restaurantName: row.restaurant_name,
+    templateCode: row.template_code,
+    audienceCode: row.audience_code,
+    channelCode: row.channel_code,
+    sendStatusCode: row.send_status_code,
+    providerCode: row.provider_code,
+    deliveryReasonCode: row.delivery_reason_code,
+    scheduledAt: row.scheduled_at,
+    sentAt: row.sent_at,
+    nextAttemptAt: row.next_attempt_at,
+    retryCount: Number(row.retry_count),
+    maxAttempts: Number(row.max_attempts),
+    lastAttemptStatusCode: row.last_attempt_status_code,
+    lastAttemptAt: row.last_attempt_at,
+    lastErrorCode: row.last_error_code,
+    lastErrorText: row.last_error_text,
+    manualFallbackText: row.manual_fallback_text,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function OrdersPage() {
@@ -190,6 +244,27 @@ export default async function OrdersPage() {
     orders = ((legacyData ?? []) as LegacyOrderRow[]).map(mapLegacyOrder);
   } else {
     orders = ((data ?? []) as PickupOrderRow[]).map(mapPickupOrder);
+  }
+
+  const orderPks = orders.map((order) => order.orderPk);
+  if (orderPks.length > 0) {
+    const { data: notificationData, error: notificationError } = await supabase
+      .from("api_restaurant_notification_summary")
+      .select("*")
+      .in("order_pk", orderPks)
+      .order("created_at", { ascending: false });
+
+    if (!notificationError) {
+      const notificationsByOrder = new Map<string, NotificationSummary[]>();
+      for (const notification of ((notificationData ?? []) as NotificationSummaryRow[]).map(mapNotification)) {
+        if (!notification.orderPk) continue;
+        notificationsByOrder.set(notification.orderPk, [...(notificationsByOrder.get(notification.orderPk) ?? []), notification]);
+      }
+      orders = orders.map((order) => ({
+        ...order,
+        notifications: notificationsByOrder.get(order.orderPk) ?? [],
+      }));
+    }
   }
 
   return (

@@ -147,6 +147,20 @@ Deno.serve(async (request) => {
         throw error;
       }
 
+      const convertedRows = Array.isArray(data) ? (data as { readonly order_pk?: unknown }[]) : [];
+      const orderPk = typeof convertedRows[0]?.order_pk === "string" ? convertedRows[0].order_pk : null;
+      if (orderPk) {
+        const { error: enqueueError } = await supabase.rpc("api_enqueue_order_notifications", {
+          p_order_pk: orderPk,
+        });
+        if (enqueueError) {
+          safeLog("razorpay_webhook_notification_enqueue_failed", {
+            webhookPk,
+            orderPk,
+          });
+        }
+      }
+
       await supabase
         .from("payment_webhook_event")
         .update({ processing_status_code: "PROCESSED", processed_at: new Date().toISOString() })

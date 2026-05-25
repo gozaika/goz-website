@@ -3,6 +3,7 @@ import type {
   AdminPaymentOrderSummary,
   AdminPaymentWebhookSummary,
   ConsumerOrderSummary,
+  NotificationSummary,
   PickupProof,
   RestaurantOrderSummary,
 } from "@gozaika/types";
@@ -38,6 +39,32 @@ type ConsumerOrderSummaryRow = {
   readonly payment_intent_status_code: ConsumerOrderSummary["paymentIntentStatusCode"];
   readonly payment_captured_at: string | null;
   readonly collected_at: string | null;
+  readonly created_at: string;
+  readonly updated_at: string;
+};
+
+type NotificationSummaryRow = {
+  readonly notification_outbox_pk: string;
+  readonly order_pk: string | null;
+  readonly order_number: string | null;
+  readonly restaurant_fk: string | null;
+  readonly restaurant_name: string | null;
+  readonly template_code: string;
+  readonly audience_code: string;
+  readonly channel_code: NotificationSummary["channelCode"];
+  readonly send_status_code: NotificationSummary["sendStatusCode"];
+  readonly provider_code: string | null;
+  readonly delivery_reason_code: string | null;
+  readonly scheduled_at: string;
+  readonly sent_at: string | null;
+  readonly next_attempt_at: string | null;
+  readonly retry_count: number | string;
+  readonly max_attempts: number | string;
+  readonly last_attempt_status_code: NotificationSummary["lastAttemptStatusCode"];
+  readonly last_attempt_at: string | null;
+  readonly last_error_code: string | null;
+  readonly last_error_text: string | null;
+  readonly manual_fallback_text: string | null;
   readonly created_at: string;
   readonly updated_at: string;
 };
@@ -214,6 +241,34 @@ export function mapAdminWebhook(row: AdminPaymentWebhookSummaryRow): AdminPaymen
   };
 }
 
+export function mapNotificationSummary(row: NotificationSummaryRow): NotificationSummary {
+  return {
+    notificationOutboxPk: row.notification_outbox_pk,
+    orderPk: row.order_pk,
+    orderNumber: row.order_number,
+    restaurantPk: row.restaurant_fk,
+    restaurantName: row.restaurant_name,
+    templateCode: row.template_code,
+    audienceCode: row.audience_code,
+    channelCode: row.channel_code,
+    sendStatusCode: row.send_status_code,
+    providerCode: row.provider_code,
+    deliveryReasonCode: row.delivery_reason_code,
+    scheduledAt: row.scheduled_at,
+    sentAt: row.sent_at,
+    nextAttemptAt: row.next_attempt_at,
+    retryCount: Number(row.retry_count),
+    maxAttempts: Number(row.max_attempts),
+    lastAttemptStatusCode: row.last_attempt_status_code,
+    lastAttemptAt: row.last_attempt_at,
+    lastErrorCode: row.last_error_code,
+    lastErrorText: row.last_error_text,
+    manualFallbackText: row.manual_fallback_text,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
 export async function loadConsumerOrders(): Promise<ConsumerOrderSummary[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -227,6 +282,26 @@ export async function loadConsumerOrders(): Promise<ConsumerOrderSummary[]> {
   }
 
   return ((data ?? []) as ConsumerOrderSummaryRow[]).map(mapConsumerOrder);
+}
+
+export async function loadConsumerNotifications(orderPk?: string): Promise<NotificationSummary[]> {
+  const supabase = await createClient();
+  let query = supabase
+    .from("api_consumer_notification_summary")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if (orderPk) {
+    query = query.eq("order_pk", orderPk);
+  }
+
+  const { data, error } = await query;
+  if (error) {
+    throw new Error("Could not load notification status.");
+  }
+
+  return ((data ?? []) as NotificationSummaryRow[]).map(mapNotificationSummary);
 }
 
 export async function loadConsumerOrder(orderPk: string): Promise<ConsumerOrderSummary | null> {

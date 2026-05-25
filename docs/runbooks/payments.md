@@ -30,14 +30,21 @@ No payment provider is contacted in Slice 4A.
 4. `supabase/functions/razorpay-webhook` verifies signature.
 5. Verified captured payments call `api_convert_paid_hold_to_order`.
 6. The RPC records `payment_transaction`, creates `order_order` and `order_item`, appends `PAID` and `CONFIRMED` transitions, appends `HOLD_CONVERTED`, moves reserved inventory to sold inventory, and marks the hold `CONVERTED`.
-7. Failed payments call `api_record_razorpay_payment_failed`; the hold remains unpaid and can be retried while active.
-8. Expired unpaid holds still release through `api_release_expired_inventory_holds`.
+7. Slice 6 enqueues order confirmation and restaurant alert rows through `api_enqueue_order_notifications`.
+8. Failed payments call `api_record_razorpay_payment_failed`; the hold remains unpaid and can be retried while active.
+9. Expired unpaid holds still release through `api_release_expired_inventory_holds`.
 
 ## Slice 5 Pickup Boundary
 
 Slice 5 verifies pickup after a webhook-confirmed order already exists. Restaurant OTP/QR verification compares server-side credential hashes and can only move eligible orders to `COLLECTED`. No-show can only move eligible uncollected orders to `NO_SHOW` after the pickup window closes.
 
 Neither path mutates `payment_order_intent`, `payment_transaction`, `payment_webhook_event`, refunds, settlements, payouts, or finance tables.
+
+## Slice 6 Notification Boundary
+
+Slice 6 notifications are post-conversion side effects. Verified Razorpay webhooks still own payment capture and order creation. If notification enqueue fails after conversion, webhook processing logs a support-safe event and does not roll back the paid order.
+
+Notification workers never create payments, orders, refunds, settlements, payouts, pickup transitions, or compensation.
 
 ## Required Environment
 

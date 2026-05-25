@@ -24,6 +24,10 @@ export default async function AdminPage() {
             <h2 className="text-xl font-bold">Drop and hold ops</h2>
             <p className="mt-2 text-sm text-black/65">Copy launch alerts and inspect temporary claim holds for active or scheduled drops.</p>
           </Link>
+          <Link className="rounded-lg border border-black/10 bg-white p-5 transition hover:border-[#1A5C38]" href="/admin/notifications">
+            <h2 className="text-xl font-bold">Notification delivery</h2>
+            <p className="mt-2 text-sm text-black/65">Review transactional message state, retry failed sends, suppress queued rows, and copy fallback text.</p>
+          </Link>
         </div>
       </section>
     </main>

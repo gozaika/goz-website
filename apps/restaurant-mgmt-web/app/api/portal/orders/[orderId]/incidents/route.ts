@@ -84,6 +84,15 @@ export async function POST(request: Request, { params }: { readonly params: Prom
     return NextResponse.json({ ok: false, error: "Incident was not created." } satisfies ApiResponse, { status: 500 });
   }
 
+  if (row.severity_code === "P1" || row.severity_code === "P2") {
+    const { error: enqueueError } = await service.rpc("api_enqueue_incident_alerts", {
+      p_incident_pk: row.incident_pk,
+    });
+    if (enqueueError) {
+      console.error("incident_notification_enqueue_failed", { incidentPk: row.incident_pk });
+    }
+  }
+
   return NextResponse.json(
     {
       ok: true,

@@ -10,6 +10,9 @@ import {
   restaurantDocumentUploadRequestSchema,
   restaurantStatusCodes,
   orderStatusCodes,
+  notificationRetryRequestSchema,
+  notificationStatusCodes,
+  notificationTemplateCodes,
   orderIncidentCreateSchema,
   pickupVerificationRequestSchema,
 } from "./index";
@@ -24,6 +27,11 @@ describe("goZaika status constants", () => {
     expect(orderStatusCodes).toContain("CREATED");
     expect(orderStatusCodes).toContain("READY_FOR_PICKUP");
     expect(orderStatusCodes).toContain("COLLECTED");
+  });
+
+  it("keeps transactional notification states and templates available", () => {
+    expect(notificationStatusCodes).toEqual(expect.arrayContaining(["QUEUED", "SENT", "FAILED", "SUPPRESSED"]));
+    expect(notificationTemplateCodes).toEqual(expect.arrayContaining(["ORDER_CONFIRMATION", "PICKUP_REMINDER", "RESTAURANT_NEW_ORDER_ALERT"]));
   });
 
   it("keeps claim hold intent states separate from paid order states", () => {
@@ -84,6 +92,11 @@ describe("API schemas", () => {
     });
 
     expect(result.success).toBe(true);
+  });
+
+  it("validates notification retry reasons", () => {
+    expect(notificationRetryRequestSchema.safeParse({ reasonText: "Provider credentials were restored." }).success).toBe(true);
+    expect(notificationRetryRequestSchema.safeParse({ reasonText: "retry" }).success).toBe(false);
   });
 
   it("validates restaurant onboarding basics", () => {

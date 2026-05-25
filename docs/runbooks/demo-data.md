@@ -142,3 +142,9 @@ If a local/staging-only seed is later needed, use `supabase/seeds/demo/005_slice
 No deterministic Slice 5 demo seed is added in this slice. Pickup events, no-show rows, and incidents should usually be produced through the restaurant/admin UI against a real local or staging paid test order so idempotency and audit behavior are exercised.
 
 If a future seed adds `006_slice5_pickup_verification_incidents_demo.sql`, keep it local/staging-only, use fake provider references inherited from Slice 4B demo rows, register rows in `dev_demo_seed_registry`, and delete in FK-safe order for `incident_event`, `incident_incident`, `order_pickup_verification_event`, `drop_inventory_event`, `order_status_transition`, `order_item`, `order_order`, `payment_transaction`, `payment_order_intent`, and `drop_inventory_hold`.
+
+# Slice 6 Transactional Notifications Demo Data
+
+No deterministic Slice 6 demo seed is added. Notification rows should usually be produced from a real local or staging paid order so webhook enqueue, pickup reminder idempotency, consent suppression, and worker delivery attempts are exercised together.
+
+If a future seed adds `007_slice6_transactional_notifications_demo.sql`, keep it local/staging-only, use fake provider refs such as `wati_demo_*` and `resend_demo_*`, register rows in `dev_demo_seed_registry`, and delete in FK-safe order for `notification_delivery_attempt` before `notification_outbox`. Do not seed real provider references in production.

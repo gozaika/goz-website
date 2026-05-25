@@ -1,8 +1,8 @@
 "use client";
 
 import { Button, GoZaikaLogo } from "@gozaika/ui";
-import { consentPurposeCodes, type ClaimIntent, type ConsentPurposeCode, type ConsumerOrderSummary } from "@gozaika/types";
-import { formatPaise, formatPickupWindow, safeErrorMessage } from "@gozaika/utils";
+import { consentPurposeCodes, type ClaimIntent, type ConsentPurposeCode, type ConsumerOrderSummary, type NotificationSummary } from "@gozaika/types";
+import { formatPaise, formatPickupWindow, notificationStatusLabel, safeErrorMessage } from "@gozaika/utils";
 import { LogOut, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,12 +30,14 @@ export function AccountClient({
   initialConsents,
   initialClaimIntents,
   initialOrders,
+  initialNotifications,
   generatedAt,
 }: {
   readonly initialProfile: AccountProfile;
   readonly initialConsents: readonly AccountConsent[];
   readonly initialClaimIntents: readonly ClaimIntent[];
   readonly initialOrders: readonly ConsumerOrderSummary[];
+  readonly initialNotifications: readonly NotificationSummary[];
   readonly generatedAt: string;
 }) {
   const router = useRouter();
@@ -49,6 +51,11 @@ export function AccountClient({
   const generatedAtMs = Date.parse(generatedAt);
   const activeClaims = initialClaimIntents.filter((claim) => claim.statusCode === "ACTIVE" && new Date(claim.expiresAt).getTime() > generatedAtMs);
   const holdHistory = initialClaimIntents.filter((claim) => !activeClaims.some((active) => active.holdPk === claim.holdPk));
+  const notificationsByOrder = new Map<string, NotificationSummary[]>();
+  for (const notification of initialNotifications) {
+    if (!notification.orderPk) continue;
+    notificationsByOrder.set(notification.orderPk, [...(notificationsByOrder.get(notification.orderPk) ?? []), notification]);
+  }
 
   async function saveProfile() {
     setSaving(true);
@@ -195,6 +202,9 @@ export function AccountClient({
             <ShieldCheck className="text-[#1A5C38]" aria-hidden="true" />
             <h2 className="text-xl font-bold text-[#2D2D2D]">Consent settings</h2>
           </div>
+          <p className="mt-2 text-sm text-[#2D2D2D]/65">
+            Operational service messages cover orders and pickup. Marketing purposes stay separate and are not used for this pickup loop.
+          </p>
           <div className="mt-5 grid gap-3">
             {consents.map((consent) => {
               const checked = consent.consent_state_code === "GRANTED" || consent.is_required_for_service;
@@ -269,6 +279,16 @@ export function AccountClient({
                     View order
                   </Link>
                 </div>
+                {notificationsByOrder.get(order.orderPk)?.length ? (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {notificationsByOrder.get(order.orderPk)!.slice(0, 3).map((notification) => (
+                      <span key={notification.notificationOutboxPk} className="rounded-full border border-black/10 px-2.5 py-1 text-xs font-semibold text-[#2D2D2D]/70">
+                        {notification.templateCode.replaceAll("_", " ").toLowerCase()}:{" "}
+                        {notificationStatusLabel(notification.sendStatusCode, notification.deliveryReasonCode)}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
               </article>
             ))
           )}

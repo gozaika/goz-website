@@ -129,6 +129,15 @@ Use this order for a clean rebuild:
    - Confirm duplicate verify attempts do not create duplicate collection transitions.
    - Confirm no-show works only after pickup window close and incident creation is visible to restaurant/admin support.
 
+12. Recreate Slice 6 transactional notifications after Slice 5 is available:
+
+   - Apply migration `20260526000000_slice6_transactional_notifications.sql`.
+   - Configure `NOTIFICATION_DRY_RUN=true` for local/staging, or configure WATI/Resend env vars for production sends.
+   - Deploy `notification-outbox-worker`, `pickup-reminder-cron`, and `razorpay-webhook`.
+   - Use a webhook-confirmed paid order to verify confirmation and restaurant alert rows.
+   - Run pickup reminder cron for an eligible paid, uncollected order and verify no duplicate reminders on rerun.
+   - Run the worker and verify delivery attempts move rows to sent, failed, suppressed, or retryable queued states.
+
 ## Slice 0: Foundation
 
 ### Goal
@@ -569,6 +578,104 @@ npm.cmd --workspace @gozaika/website run build
 
 No native mobile camera scanning, offline pickup cache, refunds, settlements, payouts, finance dashboards, WATI/email/push notifications, full support ticketing, destructive admin correction flows, loyalty/referrals, reviews, campaign management, or advanced analytics.
 
+## Slice 6: Transactional Notifications & Delivery Logs
+
+### Goal
+
+Automate pilot-critical transactional communications after the webhook-confirmed paid pickup loop: consumer order confirmations, pickup reminders, restaurant operational alerts, delivery attempts, and support-safe fallback visibility.
+
+### Completed
+
+- [x] Add migration `20260526000000_slice6_transactional_notifications.sql`.
+- [x] Harden existing `notification_template`, `notification_outbox`, and `notification_delivery_attempt` with idempotency keys, worker claim metadata, retry/suppression metadata, provider tracking, and safe fallback copy.
+- [x] Seed pilot transactional templates for order confirmation, pickup reminder, restaurant order/pickup alerts, and high-severity incident email alerts.
+- [x] Add service-role RPCs `api_enqueue_order_notifications`, `api_enqueue_pickup_reminders`, `api_enqueue_incident_alerts`, `api_claim_notification_batch`, `api_record_notification_delivery_attempt`, `api_retry_notification`, and `api_suppress_notification`.
+- [x] Update `razorpay-webhook` so verified paid order conversion enqueues notifications as post-conversion side effects only.
+- [x] Replace `pickup-reminder-cron` scaffold with a real idempotent reminder enqueue path.
+- [x] Add `notification-outbox-worker` with WATI/Resend adapters, explicit dry-run mode, provider-not-configured failure state, and delivery attempt logging.
+- [x] Add consumer order/account notification status visibility.
+- [x] Add restaurant own-order notification history on `/portal/orders`.
+- [x] Add admin `/admin/notifications` for filters, provider refs, masked destinations, attempts, retry, suppress, and fallback copy.
+- [x] Document product behavior, runbook operations, config, deployment, payment boundary, pickup reminders, manual fallback boundary, and demo-data policy.
+
+### Validation Gate
+
+A verified Razorpay captured webhook creates a paid order and enqueues order confirmation plus restaurant alert rows without changing payment/order correctness. Pickup reminder cron enqueues exactly one reminder per eligible order/channel/template window and is safe to rerun. The worker processes queued rows through WATI/Resend or `NOTIFICATION_DRY_RUN`, records delivery attempts, and transitions rows to sent, failed, suppressed, or retryable queued states. Consent/preference failures are visible as suppressed rows. Consumer, restaurant, and admin surfaces show support-safe notification state without raw provider payloads, OTPs, QR nonces, hashes, secrets, private docs, or unnecessary PII.
+
+### Remote Migration Steps
+
+Apply this migration after all Slice 5 migrations:
+
+```powershell
+Get-Content -Raw supabase/migrations/20260526000000_slice6_transactional_notifications.sql
+```
+
+Review the SQL, then run it once in the Supabase Dashboard SQL editor or the approved remote migration path. Verify:
+
+```sql
+select to_regprocedure('public.api_enqueue_order_notifications(uuid)');
+select to_regprocedure('public.api_enqueue_pickup_reminders(integer,integer)');
+select to_regprocedure('public.api_claim_notification_batch(integer)');
+select to_regprocedure('public.api_record_notification_delivery_attempt(uuid,text,text,text,text,text,text,integer)');
+select to_regclass('public.api_admin_notification_delivery_summary');
+```
+
+### Environment And Deploy
+
+Local/staging can use dry run:
+
+```text
+NOTIFICATION_DRY_RUN=true
+SUPABASE_SERVICE_ROLE_KEY
+```
+
+Production provider delivery requires explicit configuration:
+
+```text
+RESEND_API_KEY
+NOTIFICATION_RESEND_FROM_EMAIL or RESEND_FROM_EMAIL
+WATI_API_BASE_URL
+WATI_API_TOKEN
+WATI_BROADCAST_NAME
+```
+
+Deploy Edge Functions after migration:
+
+```powershell
+supabase functions deploy notification-outbox-worker
+supabase functions deploy pickup-reminder-cron
+supabase functions deploy razorpay-webhook
+```
+
+### Verification Commands
+
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+```
+
+### Smoke Test Flow
+
+1. Complete a Razorpay test payment so `razorpay-webhook` converts the hold.
+2. Confirm `notification_outbox` has idempotent `ORDER_CONFIRMATION` and `RESTAURANT_NEW_ORDER_ALERT` rows.
+3. Open `/orders/{orderPk}` and `/account`; confirm plain notification state appears.
+4. Run `pickup-reminder-cron` for an eligible paid, uncollected order; rerun and confirm no duplicate reminder rows.
+5. Run `notification-outbox-worker` with `NOTIFICATION_DRY_RUN=true`; confirm attempts are recorded and rows become `SENT`.
+6. Revoke `WHATSAPP_TRANSACTIONAL` consent or disable WhatsApp preference and confirm a `SUPPRESSED` support-visible row.
+7. Open restaurant `/portal/orders` and admin `/admin/notifications`; confirm own-order scoping, masked destinations, provider refs, retry/suppress, and fallback copy.
+
+### Out Of Scope
+
+No native mobile push, Expo token registration, marketing automation, bulk broadcasting, waitlist drip campaigns, referrals, loyalty, refunds, settlements, payouts, finance dashboards, destructive order correction, or native app parity.
+
 ## Slice 3 Follow-Up Activities Required For Complete Functionality
 
 These are operational/configuration steps needed after code merge/deploy:
@@ -606,7 +713,6 @@ These are operational/configuration steps needed after code merge/deploy:
 | --- | --- | --- | --- |
 | 4B | Razorpay Payment & Order Confirmation | Razorpay order creation, verified webhook, paid/confirmed order, QR/OTP. | Consumer pays and sees confirmed pickup proof. |
 | 5 | Pickup Verification & Incident Basics | Staff verification MVP, collected status, no-show path, minimal incident creation. | Restaurant verifies pickup and can log launch incidents. |
-| 6 | Transactional Notifications | WhatsApp/email outbox, confirmations, pickup reminders, merchant alerts. | Confirmation and reminder messages are delivered. |
 | 7 | Pilot Finance & Settlement | Settlement runs, payout entries, invoices, restaurant payout view. | Admin creates/locks settlement and restaurant sees payout. |
 | 8A | Pilot ROI Reports | Weekly partner report: listed/sold, sell-through, GMV, estimated net, pickup completion, no-shows, incidents. | Restaurant sees ROI within 7 days. |
 | 8B | Admin Ops Hardening | Suspend/pause, config flags, refund support, audit trail, incident/support queue. | Ops can manage first 10 partners safely. |

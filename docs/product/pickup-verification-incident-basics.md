@@ -1,6 +1,6 @@
 # Slice 5 Product Notes: Pickup Verification, Incident Basics & Pilot UX Polish
 
-Slice 5 closes the paid pickup loop for the Hyderabad pilot without adding refunds, settlements, notifications, or native mobile work.
+Slice 5 closes the paid pickup loop for the Hyderabad pilot without adding refunds, settlements, notifications, or native mobile work. Slice 6 later adds transactional notification outbox support as a non-blocking side effect.
 
 ## Consumer Behavior
 

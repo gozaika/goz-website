@@ -1,8 +1,8 @@
 import { AllergenChips, DietaryBadge, ShellHeader } from "@gozaika/ui";
-import { formatPaise, formatPickupWindow } from "@gozaika/utils";
+import { formatPaise, formatPickupWindow, notificationStatusLabel } from "@gozaika/utils";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { issuePickupProof, loadConsumerOrder } from "@/lib/orders";
+import { issuePickupProof, loadConsumerNotifications, loadConsumerOrder } from "@/lib/orders";
 import { createClient } from "@/lib/supabase/server";
 import { PickupProofCard } from "./pickup-proof-card";
 
@@ -23,6 +23,7 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
   if (!order) {
     notFound();
   }
+  const notifications = await loadConsumerNotifications(order.orderPk).catch(() => []);
 
   const pickupTerminal = order.orderStatusCode === "COLLECTED" || order.orderStatusCode === "NO_SHOW";
   let proof = null;
@@ -141,6 +142,28 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
               </p>
             </section>
           )}
+
+          <section className="rounded-lg border border-black/10 bg-white p-5">
+            <p className="text-sm font-semibold text-[#1A5C38]">Order messages</p>
+            <div className="mt-3 grid gap-2">
+              {notifications.length === 0 ? (
+                <p className="text-sm text-[#2D2D2D]/65">
+                  Message status is not available yet. Your payment and pickup proof still work normally.
+                </p>
+              ) : (
+                notifications.map((notification) => (
+                  <div key={notification.notificationOutboxPk} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-black/10 px-3 py-2 text-sm">
+                    <span className="font-medium text-[#2D2D2D]">
+                      {notification.templateCode.replaceAll("_", " ").toLowerCase()} via {notification.channelCode.toLowerCase()}
+                    </span>
+                    <span className="rounded-full border border-[#1A5C38]/20 px-2.5 py-1 text-xs font-semibold text-[#1A5C38]">
+                      {notificationStatusLabel(notification.sendStatusCode, notification.deliveryReasonCode)}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
         </div>
 
         <aside className="h-fit rounded-lg border border-black/10 bg-white p-5">

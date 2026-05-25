@@ -2,6 +2,8 @@
 
 Slice 3.5 supports Hyderabad pilot promotion without notification automation. Operators and restaurant staff copy public drop links and WhatsApp-ready text manually.
 
+Slice 6 adds transactional notification fallback for paid orders and pickup reminders. Keep these separate: manual launch comms promote public drops; transactional fallback helps support a specific paid order or restaurant alert after the payment/pickup loop exists.
+
 ## What This Does
 
 - Uses the existing safe public discovery view, `api_public_drop_card`.
@@ -16,6 +18,10 @@ Slice 3.5 supports Hyderabad pilot promotion without notification automation. Op
 - No scheduled/background sends.
 - No campaign manager.
 - No payment, claim hold, order, QR, refund, or settlement logic.
+
+## Transactional Fallback Boundary
+
+Use `/admin/notifications` for Slice 6 fallback copy tied to order confirmations, pickup reminders, restaurant order alerts, or high-severity incident alerts. That copy must not be used as promotional drop sharing and must not include OTPs, QR payloads, hashes, provider payloads, secrets, or private documents.
 
 ## Restaurant Smoke Test
 

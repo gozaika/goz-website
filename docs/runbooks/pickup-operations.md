@@ -41,6 +41,17 @@ Successful verification marks the order `COLLECTED`, records a verification even
 - No-show changes order state to `NO_SHOW` and appends audit transition metadata.
 - No refund, compensation, settlement, or payout mutation is created.
 
+## Pickup Reminders
+
+Slice 6 schedules pickup reminder notifications through `pickup-reminder-cron`, which calls `api_enqueue_pickup_reminders`. The cron is idempotent: repeated runs should not create duplicate reminder rows for the same order, channel, and template.
+
+If reminders fail or provider configuration is missing:
+
+- Continue normal counter verification with OTP or QR payload.
+- Ask the customer to open `/orders/{orderPk}` for pickup proof.
+- Use admin `/admin/notifications` to inspect failed/suppressed rows and copy fallback text when support follow-up is needed.
+- Do not create refunds, payment changes, or pickup overrides because a reminder failed.
+
 ## Incident Logging
 
 Use the short incident form from restaurant or admin order context.

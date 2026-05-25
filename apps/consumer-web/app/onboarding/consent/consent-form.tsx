@@ -135,7 +135,8 @@ export function ConsentForm({ nextPath = "/account" }: { readonly nextPath?: str
           <div>
             <h1 className="text-3xl font-bold text-[#2D2D2D]">Your DPDP consent</h1>
             <p className="mt-2 text-sm leading-6 text-[#2D2D2D]/70">
-              goZaika records consent purpose-by-purpose. Operational consent is required for pickup-only BAM Bag claims.
+              goZaika records consent purpose-by-purpose. Operational service messages support orders and pickup; marketing
+              consent is separate and is not used for transactional pickup updates.
             </p>
           </div>
         </div>

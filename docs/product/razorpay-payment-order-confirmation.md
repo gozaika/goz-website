@@ -34,4 +34,4 @@ Slice 4B turns a temporary BAM Bag hold into a paid, confirmed pickup order.
 
 ## Not Included
 
-Refunds, settlements, payouts, invoices, reconciliation exports, staff pickup verification, collected/no-show handling, incidents, WATI/email/push notifications, subscriptions, referrals, campaign management, and native mobile parity remain out of scope.
+Refunds, settlements, payouts, invoices, reconciliation exports, subscriptions, referrals, campaign management, and native mobile parity remain out of scope for the payment slice. Slice 5 adds pickup verification/incidents, and Slice 6 adds post-conversion WhatsApp/email outbox notifications without changing payment ownership.
