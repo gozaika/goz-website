@@ -84,6 +84,7 @@ export async function PATCH(request: Request) {
   const { error } = await supabase.rpc("api_update_consumer_profile", {
     p_full_name: parsed.data.fullName ?? null,
     p_phone_e164: parsed.data.phoneE164 ?? null,
+    p_email_address: parsed.data.emailAddress ?? null,
     p_preferred_language_code: parsed.data.preferredLanguageCode ?? null,
     p_default_city_code: parsed.data.defaultCityCode ?? null,
   });

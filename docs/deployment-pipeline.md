@@ -48,7 +48,7 @@ Owned domains also include `gozaik.in` and `gozaika.com`. Treat these as reserve
 - Slice 4B requires migration `20260521000000_slice4b_razorpay_payment_order_confirmation.sql`, consumer Razorpay env vars, `PICKUP_CREDENTIAL_SECRET`, and a deployed `razorpay-webhook` Edge Function before enabling payment checkout.
 - Razorpay dashboard webhooks should include `payment.captured` and `payment.failed` and point to the deployed Supabase function URL.
 - Slice 5 requires migration `20260525000000_slice5_pickup_verification_incidents.sql` before deploying pickup/no-show/incident UI. No WATI, email, refund, settlement, payout, or finance env vars are added.
-- Slice 6 requires migration `20260526000000_slice6_transactional_notifications.sql`, deployed `notification-outbox-worker`, redeployed `pickup-reminder-cron` and `razorpay-webhook`, and notification env vars or `NOTIFICATION_DRY_RUN=true` for non-production smoke tests.
+- Slice 6 requires migration `20260526000000_slice6_transactional_notifications.sql`, deployed `notification-outbox-worker`, redeployed `pickup-reminder-cron` and `razorpay-webhook`, and notification env vars or `NOTIFICATION_DRY_RUN=true` for non-provider smoke tests. WhatsApp defaults to Meta Cloud API with WATI left as a later provider switch.
 - Website deployments should use the approved mailbox mapping: `contact@gozaika.in`, `partners@gozaika.in`, `waitlist@gozaika.in`, `billing@gozaika.in`, `careers@gozaika.in`, and `tech@gozaika.in`.
 
 ## Rollback procedure

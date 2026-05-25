@@ -32,7 +32,9 @@
 - Slice 6 transactional notifications:
   - `NOTIFICATION_DRY_RUN=true` for local/staging worker tests without provider sends.
   - `RESEND_API_KEY` and `NOTIFICATION_RESEND_FROM_EMAIL` or `RESEND_FROM_EMAIL` for email delivery.
-  - `WATI_API_BASE_URL`, `WATI_API_TOKEN`, and optional `WATI_BROADCAST_NAME` for WhatsApp/WATI delivery.
+  - `NOTIFICATION_WHATSAPP_PROVIDER=META` by default for WhatsApp delivery through Meta Cloud API.
+  - `META_WHATSAPP_ACCESS_TOKEN`, `META_WHATSAPP_PHONE_NUMBER_ID`, optional `META_WHATSAPP_GRAPH_VERSION`, `META_WHATSAPP_TEMPLATE_LANGUAGE`, `META_WHATSAPP_TEMPLATE_OVERRIDE`, `META_WHATSAPP_TEMPLATE_PARAM_ORDER`, and `META_WHATSAPP_SEND_MODE` for Meta WhatsApp sandbox or direct Cloud API delivery.
+  - `WATI_API_BASE_URL`, `WATI_API_TOKEN`, and optional `WATI_BROADCAST_NAME` for a future WhatsApp/WATI switch with `NOTIFICATION_WHATSAPP_PROVIDER=WATI`.
 - Approved public mailbox mapping: general `contact@gozaika.in`, partners `partners@gozaika.in`, waitlist `waitlist@gozaika.in`, billing/refund finance `billing@gozaika.in`, careers `careers@gozaika.in`, and technical/security/platform `tech@gozaika.in`.
 
 ## Current base URLs

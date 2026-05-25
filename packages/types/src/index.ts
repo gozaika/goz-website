@@ -116,7 +116,7 @@ export const incidentStatusCodes = [
 export const notificationChannelCodes = ["EMAIL", "WHATSAPP", "SMS", "PUSH"] as const;
 export const notificationStatusCodes = ["QUEUED", "SENDING", "SENT", "FAILED", "CANCELLED", "SUPPRESSED"] as const;
 export const notificationAttemptStatusCodes = ["SENT", "FAILED", "RETRYING", "DROPPED"] as const;
-export const notificationProviderCodes = ["WATI", "RESEND", "DRY_RUN", "MANUAL", "SYSTEM"] as const;
+export const notificationProviderCodes = ["META_WHATSAPP", "WATI", "RESEND", "DRY_RUN", "MANUAL", "SYSTEM"] as const;
 export const notificationTemplateCodes = [
   "ORDER_CONFIRMATION",
   "PICKUP_REMINDER",
@@ -485,8 +485,23 @@ export const consumerProfileUpdateSchema = z.object({
     optionalIndianPhoneE164,
     z.string().trim().regex(/^\+[1-9]\d{7,14}$/).optional(),
   ),
+  emailAddress: z.preprocess(optionalString, z.string().trim().email().optional()),
   preferredLanguageCode: z.preprocess(optionalString, z.string().trim().min(2).max(12).optional()),
   defaultCityCode: z.preprocess(optionalString, z.string().trim().min(2).max(16).optional()),
+});
+
+export const restaurantPortalProfileUpdateSchema = z.object({
+  restaurantPk: uuidSchema,
+  staffEmailAddress: z.preprocess(optionalString, z.string().trim().email().optional()),
+  staffPhoneE164: z.preprocess(
+    optionalIndianPhoneE164,
+    z.string().trim().regex(/^\+[1-9]\d{7,14}$/).optional(),
+  ),
+  primaryContactEmail: z.preprocess(optionalString, z.string().trim().email().optional()),
+  primaryContactPhoneE164: z.preprocess(
+    optionalIndianPhoneE164,
+    z.string().trim().regex(/^\+[1-9]\d{7,14}$/).optional(),
+  ),
 });
 
 export const createDropDraftSchema = z.object({

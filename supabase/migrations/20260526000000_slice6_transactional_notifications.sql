@@ -44,6 +44,64 @@ comment on column notification_outbox.idempotency_key is
 comment on column notification_outbox.manual_fallback_text is
   'Support-safe manual fallback copy. Must not include raw pickup OTP, QR nonce, hashes, provider secrets, or raw provider payloads.';
 
+create or replace function public.api_update_consumer_profile(
+  p_full_name text default null,
+  p_phone_e164 text default null,
+  p_email_address citext default null,
+  p_preferred_language_code text default null,
+  p_default_city_code text default null
+)
+returns table (
+  iam_profile_pk uuid,
+  consumer_profile_pk uuid
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_profile_pk uuid := public.rls_current_profile_pk();
+  v_consumer_profile_pk uuid := public.rls_current_consumer_profile_pk();
+  v_city_pk uuid;
+  v_first_name text;
+  v_last_name text;
+begin
+  if v_profile_pk is null or v_consumer_profile_pk is null then
+    raise exception 'PROFILE_REQUIRED' using errcode = '28000';
+  end if;
+
+  if p_default_city_code is not null then
+    select geo_city_pk into v_city_pk
+    from geo_city
+    where city_code = p_default_city_code
+    limit 1;
+  end if;
+
+  update iam_profile
+  set display_name = coalesce(nullif(p_full_name, ''), display_name),
+      phone_e164 = coalesce(nullif(p_phone_e164, ''), phone_e164),
+      email_address = coalesce(nullif(p_email_address, ''), email_address),
+      default_city_fk = coalesce(v_city_pk, default_city_fk),
+      updated_at = now()
+  where iam_profile.iam_profile_pk = v_profile_pk;
+
+  v_first_name := nullif(split_part(coalesce(p_full_name, ''), ' ', 1), '');
+  v_last_name := nullif(trim(both ' ' from regexp_replace(coalesce(p_full_name, ''), '^\S+\s*', '')), '');
+
+  update consumer_profile
+  set first_name = coalesce(v_first_name, first_name),
+      last_name = coalesce(v_last_name, last_name),
+      preferred_language_code = coalesce(nullif(p_preferred_language_code, ''), preferred_language_code),
+      updated_at = now()
+  where consumer_profile.consumer_profile_pk = v_consumer_profile_pk;
+
+  return query select v_profile_pk, v_consumer_profile_pk;
+end;
+$$;
+
+comment on function public.api_update_consumer_profile(text, text, citext, text, text) is
+  'Updates safe consumer profile fields, including notification email, for the authenticated user. SECURITY DEFINER but scoped to rls_current_profile_pk().';
+
 insert into notification_template
   (template_code, channel_code, locale_code, subject_template, body_template, provider_template_ref, is_active)
 values
@@ -327,7 +385,7 @@ begin
   limit 1;
 
   v_provider_code := case
-    when p_channel_code = 'WHATSAPP' then 'WATI'
+    when p_channel_code = 'WHATSAPP' then 'META_WHATSAPP'
     when p_channel_code = 'EMAIL' then 'RESEND'
     else 'SYSTEM'
   end;
@@ -849,7 +907,7 @@ as $$
     c.notification_outbox_pk,
     coalesce(c.template_code, t.template_code) as template_code,
     c.channel_code,
-    coalesce(c.provider_code, case when c.channel_code = 'WHATSAPP' then 'WATI' when c.channel_code = 'EMAIL' then 'RESEND' else 'SYSTEM' end) as provider_code,
+    coalesce(c.provider_code, case when c.channel_code = 'WHATSAPP' then 'META_WHATSAPP' when c.channel_code = 'EMAIL' then 'RESEND' else 'SYSTEM' end) as provider_code,
     c.resolved_destination_text,
     t.subject_template,
     t.body_template,

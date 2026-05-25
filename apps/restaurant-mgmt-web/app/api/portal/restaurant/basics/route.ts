@@ -40,6 +40,36 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ ok: false, error: "Could not save restaurant basics." }, { status: 500 });
   }
 
+  const { data: existingContact } = await service
+    .from("restaurant_contact")
+    .select("restaurant_contact_pk")
+    .eq("restaurant_fk", parsed.data.restaurantPk)
+    .in("contact_type_code", ["PICKUP", "MANAGER", "OWNER", "SUPPORT"])
+    .order("is_primary", { ascending: false })
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  const contactPayload = {
+    contact_type_code: "MANAGER",
+    contact_name: `${parsed.data.restaurantName} operations`,
+    email_address: parsed.data.primaryContactEmail,
+    phone_e164: parsed.data.primaryContactPhoneE164,
+    is_primary: true,
+    updated_at: new Date().toISOString(),
+  };
+  const { error: contactError } = existingContact
+    ? await service.from("restaurant_contact").update(contactPayload).eq("restaurant_contact_pk", existingContact.restaurant_contact_pk)
+    : await service.from("restaurant_contact").insert({
+        ...contactPayload,
+        restaurant_fk: parsed.data.restaurantPk,
+        created_at: new Date().toISOString(),
+      });
+
+  if (contactError) {
+    return NextResponse.json({ ok: false, error: "Could not save restaurant contact." }, { status: 500 });
+  }
+
   await service
     .from("restaurant_public_profile")
     .upsert(

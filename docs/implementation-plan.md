@@ -132,7 +132,7 @@ Use this order for a clean rebuild:
 12. Recreate Slice 6 transactional notifications after Slice 5 is available:
 
    - Apply migration `20260526000000_slice6_transactional_notifications.sql`.
-   - Configure `NOTIFICATION_DRY_RUN=true` for local/staging, or configure WATI/Resend env vars for production sends.
+   - Configure `NOTIFICATION_DRY_RUN=true` for local/staging non-provider tests, or configure Meta Cloud API sandbox/Resend env vars for provider sends.
    - Deploy `notification-outbox-worker`, `pickup-reminder-cron`, and `razorpay-webhook`.
    - Use a webhook-confirmed paid order to verify confirmation and restaurant alert rows.
    - Run pickup reminder cron for an eligible paid, uncollected order and verify no duplicate reminders on rerun.
@@ -592,15 +592,16 @@ Automate pilot-critical transactional communications after the webhook-confirmed
 - [x] Add service-role RPCs `api_enqueue_order_notifications`, `api_enqueue_pickup_reminders`, `api_enqueue_incident_alerts`, `api_claim_notification_batch`, `api_record_notification_delivery_attempt`, `api_retry_notification`, and `api_suppress_notification`.
 - [x] Update `razorpay-webhook` so verified paid order conversion enqueues notifications as post-conversion side effects only.
 - [x] Replace `pickup-reminder-cron` scaffold with a real idempotent reminder enqueue path.
-- [x] Add `notification-outbox-worker` with WATI/Resend adapters, explicit dry-run mode, provider-not-configured failure state, and delivery attempt logging.
+- [x] Add `notification-outbox-worker` with Meta WhatsApp, WATI, and Resend adapters, explicit dry-run mode, provider-not-configured failure state, and delivery attempt logging.
 - [x] Add consumer order/account notification status visibility.
 - [x] Add restaurant own-order notification history on `/portal/orders`.
+- [x] Add consumer and restaurant profile email/contact editing so notification destinations can be corrected before provider smoke tests.
 - [x] Add admin `/admin/notifications` for filters, provider refs, masked destinations, attempts, retry, suppress, and fallback copy.
 - [x] Document product behavior, runbook operations, config, deployment, payment boundary, pickup reminders, manual fallback boundary, and demo-data policy.
 
 ### Validation Gate
 
-A verified Razorpay captured webhook creates a paid order and enqueues order confirmation plus restaurant alert rows without changing payment/order correctness. Pickup reminder cron enqueues exactly one reminder per eligible order/channel/template window and is safe to rerun. The worker processes queued rows through WATI/Resend or `NOTIFICATION_DRY_RUN`, records delivery attempts, and transitions rows to sent, failed, suppressed, or retryable queued states. Consent/preference failures are visible as suppressed rows. Consumer, restaurant, and admin surfaces show support-safe notification state without raw provider payloads, OTPs, QR nonces, hashes, secrets, private docs, or unnecessary PII.
+A verified Razorpay captured webhook creates a paid order and enqueues order confirmation plus restaurant alert rows without changing payment/order correctness. Pickup reminder cron enqueues exactly one reminder per eligible order/channel/template window and is safe to rerun. The worker processes queued rows through Meta WhatsApp, WATI, Resend, or `NOTIFICATION_DRY_RUN`, records delivery attempts, and transitions rows to sent, failed, suppressed, or retryable queued states. Consent/preference failures are visible as suppressed rows. Consumer, restaurant, and admin surfaces show support-safe notification state without raw provider payloads, OTPs, QR nonces, hashes, secrets, private docs, or unnecessary PII.
 
 ### Remote Migration Steps
 
@@ -634,10 +635,17 @@ Production provider delivery requires explicit configuration:
 ```text
 RESEND_API_KEY
 NOTIFICATION_RESEND_FROM_EMAIL or RESEND_FROM_EMAIL
-WATI_API_BASE_URL
-WATI_API_TOKEN
-WATI_BROADCAST_NAME
+NOTIFICATION_WHATSAPP_PROVIDER=META
+META_WHATSAPP_ACCESS_TOKEN
+META_WHATSAPP_PHONE_NUMBER_ID
+META_WHATSAPP_GRAPH_VERSION
+META_WHATSAPP_TEMPLATE_LANGUAGE
+META_WHATSAPP_TEMPLATE_OVERRIDE
+META_WHATSAPP_TEMPLATE_PARAM_ORDER
+META_WHATSAPP_SEND_MODE
 ```
+
+WATI remains available for a later switch with `NOTIFICATION_WHATSAPP_PROVIDER=WATI`, `WATI_API_BASE_URL`, `WATI_API_TOKEN`, and optional `WATI_BROADCAST_NAME`.
 
 Deploy Edge Functions after migration:
 
@@ -669,8 +677,9 @@ npm.cmd --workspace @gozaika/admin-web run build
 3. Open `/orders/{orderPk}` and `/account`; confirm plain notification state appears.
 4. Run `pickup-reminder-cron` for an eligible paid, uncollected order; rerun and confirm no duplicate reminder rows.
 5. Run `notification-outbox-worker` with `NOTIFICATION_DRY_RUN=true`; confirm attempts are recorded and rows become `SENT`.
-6. Revoke `WHATSAPP_TRANSACTIONAL` consent or disable WhatsApp preference and confirm a `SUPPRESSED` support-visible row.
-7. Open restaurant `/portal/orders` and admin `/admin/notifications`; confirm own-order scoping, masked destinations, provider refs, retry/suppress, and fallback copy.
+6. Queue a fresh WhatsApp row, configure Meta sandbox env, set `NOTIFICATION_DRY_RUN=false`, and run `notification-outbox-worker`; confirm a Meta provider attempt is recorded.
+7. Revoke `WHATSAPP_TRANSACTIONAL` consent or disable WhatsApp preference and confirm a `SUPPRESSED` support-visible row.
+8. Open restaurant `/portal/orders` and admin `/admin/notifications`; confirm own-order scoping, masked destinations, provider refs, retry/suppress, and fallback copy.
 
 ### Out Of Scope
 

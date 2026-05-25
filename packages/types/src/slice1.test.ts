@@ -56,4 +56,11 @@ describe("Slice 1 auth/profile schemas", () => {
   it("rejects unsafe profile phone updates", () => {
     expect(() => consumerProfileUpdateSchema.parse({ phoneE164: "9100" })).toThrow();
   });
+
+  it("validates optional profile email updates", () => {
+    expect(consumerProfileUpdateSchema.parse({ emailAddress: "demo@gozaika.example" }).emailAddress).toBe(
+      "demo@gozaika.example",
+    );
+    expect(() => consumerProfileUpdateSchema.parse({ emailAddress: "not-email" })).toThrow();
+  });
 });

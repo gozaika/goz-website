@@ -45,6 +45,7 @@ export function AccountClient({
   const [consents, setConsents] = useState(initialConsents);
   const [fullName, setFullName] = useState(initialProfile.fullName ?? "");
   const [phone, setPhone] = useState(initialProfile.phone ?? "");
+  const [email, setEmail] = useState(initialProfile.email ?? "");
   const [language, setLanguage] = useState(initialProfile.preferredLanguageCode);
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
@@ -68,6 +69,7 @@ export function AccountClient({
         body: JSON.stringify({
           fullName,
           phoneE164: phone || undefined,
+          emailAddress: email || undefined,
           preferredLanguageCode: language,
         }),
       });
@@ -78,6 +80,10 @@ export function AccountClient({
       }
 
       setProfile(payload.data);
+      setEmail(payload.data.email ?? "");
+      setPhone(payload.data.phone ?? "");
+      setFullName(payload.data.fullName ?? "");
+      setLanguage(payload.data.preferredLanguageCode);
       setStatus("Profile updated.");
     } catch (caught) {
       setStatus(safeErrorMessage(caught, "We could not update your profile."));
@@ -172,6 +178,16 @@ export function AccountClient({
               />
             </label>
             <label className="grid gap-2 text-sm font-semibold">
+              Email
+              <input
+                className="min-h-11 rounded-lg border border-black/20 px-3"
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="name@example.com"
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-semibold">
               Language
               <select
                 className="min-h-11 rounded-lg border border-black/20 px-3"
@@ -183,10 +199,6 @@ export function AccountClient({
                 <option value="te">Telugu</option>
               </select>
             </label>
-            <div className="rounded-lg bg-[#FFF8F0] p-3 text-sm">
-              <p className="font-semibold text-[#2D2D2D]">Email</p>
-              <p className="mt-1 text-[#2D2D2D]/70">{profile.email ?? "Not added"}</p>
-            </div>
             <div className="rounded-lg bg-[#FFF8F0] p-3 text-sm">
               <p className="font-semibold text-[#2D2D2D]">Referral code</p>
               <p className="mt-1 text-[#2D2D2D]/70">{profile.referralCode ?? "Generating after first login"}</p>

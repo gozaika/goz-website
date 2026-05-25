@@ -30,10 +30,12 @@ Slice 6 adds a durable notification outbox for pilot-critical transactional mess
 
 ## Provider And Dry Run Behavior
 
-- WhatsApp delivery uses WATI only when WATI env vars and a provider template ref are configured.
+- WhatsApp delivery defaults to Meta Cloud API so the pilot can use Meta's native sandbox/test number for development and early traction testing.
+- WATI remains a selectable provider for a later scale-up phase by setting `NOTIFICATION_WHATSAPP_PROVIDER=WATI` and configuring WATI env vars.
 - Email delivery uses Resend only when Resend env vars are configured.
-- `NOTIFICATION_DRY_RUN=true` records successful dry-run attempts without contacting WATI or Resend.
+- `NOTIFICATION_DRY_RUN=true` records successful dry-run attempts without contacting Meta, WATI, or Resend.
 - Missing provider configuration records `PROVIDER_NOT_CONFIGURED` and leaves a manual fallback path.
+- Meta sandbox testing still requires real tester-owned WhatsApp recipient accounts added to the Meta test recipient allowlist. Fake or non-WhatsApp phone numbers cannot receive WhatsApp messages.
 
 ## Not Included
 

@@ -24,6 +24,8 @@ type SendResult = {
   readonly retryAfterSeconds?: number | null;
 };
 
+type WhatsAppProvider = "META" | "WATI";
+
 function optionalEnv(name: string): string | null {
   const value = Deno.env.get(name);
   return value && value.trim() ? value.trim() : null;
@@ -47,6 +49,29 @@ function templateParameters(payload: Record<string, unknown> | null): { name: st
   return Object.entries(payload ?? {}).map(([name, value]) => ({
     name,
     value: value == null ? "" : String(value),
+  }));
+}
+
+function whatsappProvider(): WhatsAppProvider {
+  const configured = (optionalEnv("NOTIFICATION_WHATSAPP_PROVIDER") ?? optionalEnv("WHATSAPP_PROVIDER") ?? "META")
+    .toUpperCase();
+
+  return configured === "WATI" ? "WATI" : "META";
+}
+
+function metaTemplateParameters(payload: Record<string, unknown> | null): { type: "text"; text: string }[] {
+  const values = payload ?? {};
+  const configuredOrder = optionalEnv("META_WHATSAPP_TEMPLATE_PARAM_ORDER")
+    ?.split(",")
+    .map((key) => key.trim())
+    .filter(Boolean);
+  const entries = configuredOrder?.length
+    ? configuredOrder.map((key) => [key, values[key]] as const)
+    : Object.entries(values);
+
+  return entries.map(([_name, value]) => ({
+    type: "text",
+    text: value == null ? "" : String(value),
   }));
 }
 
@@ -100,11 +125,7 @@ async function sendEmail(row: NotificationRow): Promise<SendResult> {
   };
 }
 
-async function sendWhatsApp(row: NotificationRow): Promise<SendResult> {
-  if (dryRunEnabled()) {
-    return { ok: true, providerCode: "DRY_RUN", providerMessageRef: `dry_run_${row.notification_outbox_pk}` };
-  }
-
+async function sendWatiWhatsApp(row: NotificationRow): Promise<SendResult> {
   const apiBaseUrl = optionalEnv("WATI_API_BASE_URL");
   const apiToken = optionalEnv("WATI_API_TOKEN");
   const broadcastName = optionalEnv("WATI_BROADCAST_NAME") ?? "gozaika_transactional";
@@ -156,6 +177,99 @@ async function sendWhatsApp(row: NotificationRow): Promise<SendResult> {
     providerMessageRef: payload.messageId ?? payload.id ?? null,
     providerStatusCode: String(response.status),
   };
+}
+
+async function sendMetaWhatsApp(row: NotificationRow): Promise<SendResult> {
+  const accessToken = optionalEnv("META_WHATSAPP_ACCESS_TOKEN");
+  const phoneNumberId = optionalEnv("META_WHATSAPP_PHONE_NUMBER_ID");
+  const graphVersion = optionalEnv("META_WHATSAPP_GRAPH_VERSION") ?? "v20.0";
+  const sendMode = (optionalEnv("META_WHATSAPP_SEND_MODE") ?? "template").toLowerCase();
+  if (!accessToken || !phoneNumberId) {
+    return {
+      ok: false,
+      providerCode: "META_WHATSAPP",
+      errorCode: "PROVIDER_NOT_CONFIGURED",
+      errorText: "Meta WhatsApp environment variables are not configured.",
+    };
+  }
+
+  const phone = row.resolved_destination_text.replace(/^\+/, "");
+  const endpoint = `https://graph.facebook.com/${encodeURIComponent(graphVersion)}/${encodeURIComponent(phoneNumberId)}/messages`;
+  const text = renderTemplate(row.body_template, row.payload_json) || row.manual_fallback_text || "goZaika update.";
+  const templateName = optionalEnv("META_WHATSAPP_TEMPLATE_OVERRIDE") ?? row.provider_template_ref;
+  const languageCode = optionalEnv("META_WHATSAPP_TEMPLATE_LANGUAGE") ?? "en_US";
+
+  if (sendMode !== "text" && !templateName) {
+    return {
+      ok: false,
+      providerCode: "META_WHATSAPP",
+      errorCode: "PROVIDER_NOT_CONFIGURED",
+      errorText: "Meta WhatsApp template mapping is not configured.",
+    };
+  }
+
+  const resolvedTemplateName = templateName ?? "";
+  const body = sendMode === "text"
+    ? {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: phone,
+      type: "text",
+      text: { preview_url: false, body: text },
+    }
+    : {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: phone,
+      type: "template",
+      template: {
+        name: resolvedTemplateName,
+        language: { code: languageCode },
+        ...(resolvedTemplateName === "hello_world"
+          ? {}
+          : { components: [{ type: "body", parameters: metaTemplateParameters(row.payload_json) }] }),
+      },
+    };
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  const payload = await response.json().catch(() => ({})) as {
+    messages?: { id?: string }[];
+    error?: { message?: string; code?: number | string; type?: string };
+  };
+  const providerMessageRef = payload.messages?.[0]?.id ?? null;
+  if (!response.ok || !providerMessageRef) {
+    return {
+      ok: false,
+      providerCode: "META_WHATSAPP",
+      providerStatusCode: String(response.status),
+      errorCode: payload.error?.code == null ? "PROVIDER_SEND_FAILED" : `META_${payload.error.code}`,
+      errorText: payload.error?.message ?? payload.error?.type ?? "Meta WhatsApp send failed.",
+      retryAfterSeconds: response.status >= 500 || response.status === 429 ? 300 : null,
+    };
+  }
+
+  return {
+    ok: true,
+    providerCode: "META_WHATSAPP",
+    providerMessageRef,
+    providerStatusCode: String(response.status),
+  };
+}
+
+async function sendWhatsApp(row: NotificationRow): Promise<SendResult> {
+  if (dryRunEnabled()) {
+    return { ok: true, providerCode: "DRY_RUN", providerMessageRef: `dry_run_${row.notification_outbox_pk}` };
+  }
+
+  return whatsappProvider() === "WATI" ? sendWatiWhatsApp(row) : sendMetaWhatsApp(row);
 }
 
 async function sendNotification(row: NotificationRow): Promise<SendResult> {
