@@ -3,7 +3,8 @@ import type { RestaurantOrderSummary } from "@gozaika/types";
 import { redirect } from "next/navigation";
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { getPortalActor } from "@/lib/portal-auth";
-import { loadDefaultRestaurant } from "@/lib/slice3";
+import { loadActiveRestaurantsForProfile } from "@/lib/slice3";
+import { createClient } from "@/lib/supabase/server";
 import { PortalNav } from "../portal-nav";
 import { OrdersClient } from "./orders-client";
 
@@ -141,30 +142,35 @@ export default async function OrdersPage() {
   const actor = await getPortalActor();
   if (!actor) redirect("/auth/login");
 
-  const restaurant = await loadDefaultRestaurant(actor.profilePk);
-  if (!restaurant || restaurant.restaurantStatusCode !== "ACTIVE") redirect("/portal/onboarding");
+  const restaurants = await loadActiveRestaurantsForProfile(actor.profilePk);
+  if (restaurants.length === 0) redirect("/portal/onboarding");
+  const restaurantPks = restaurants.map((restaurant) => restaurant.restaurantPk);
 
-  const service = createServiceRoleSupabaseClient();
-  const { data, error } = await service
+  const supabase = await createClient();
+  const { data, error } = await supabase
     .from("api_restaurant_pickup_order_summary")
     .select("*")
-    .eq("restaurant_fk", restaurant.restaurantPk)
+    .in("restaurant_fk", restaurantPks)
     .order("pickup_window_start_at", { ascending: false })
     .limit(60);
 
   let orders: RestaurantOrderSummary[];
-  if (error) {
-    console.error("restaurant_pickup_order_summary_load_failed", {
-      code: error.code,
-      message: error.message,
-    });
+  if (error || (data ?? []).length === 0) {
+    const service = createServiceRoleSupabaseClient();
+
+    if (error) {
+      console.error("restaurant_pickup_order_summary_load_failed", {
+        code: error.code,
+        message: error.message,
+      });
+    }
 
     const { data: legacyData, error: legacyError } = await service
       .from("order_order")
       .select(
         "order_order_pk,order_number,restaurant_fk,drop_fk,order_status_code,payment_status_code,snapshot_restaurant_name,snapshot_drop_title,snapshot_bag_display_name,snapshot_dietary_category_code,snapshot_spice_level_code,snapshot_allergen_summary_text,total_paise,currency_code,pickup_window_start_at,pickup_window_end_at,collected_at,created_at,updated_at,order_item(quantity),payment_order_intent(payment_intent_status_code)",
       )
-      .eq("restaurant_fk", restaurant.restaurantPk)
+      .in("restaurant_fk", restaurantPks)
       .in("order_status_code", ["PAID", "CONFIRMED", "READY_FOR_PICKUP", "COLLECTED", "NO_SHOW"])
       .order("pickup_window_start_at", { ascending: false })
       .limit(60);
@@ -175,6 +181,10 @@ export default async function OrdersPage() {
         message: legacyError.message,
       });
       throw new Error("Could not load restaurant pickup orders.");
+    }
+
+    if (!error && (legacyData ?? []).length > 0) {
+      console.warn("restaurant_pickup_order_summary_empty_used_tenant_fallback");
     }
 
     orders = ((legacyData ?? []) as LegacyOrderRow[]).map(mapLegacyOrder);

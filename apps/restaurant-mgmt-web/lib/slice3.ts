@@ -39,6 +39,42 @@ export async function loadDefaultRestaurant(profilePk: string): Promise<ActivePo
   };
 }
 
+export async function loadActiveRestaurantsForProfile(profilePk: string): Promise<ActivePortalRestaurant[]> {
+  const service = createServiceRoleSupabaseClient();
+  const { data, error } = await service
+    .from("restaurant_team_membership")
+    .select(
+      "restaurant_fk,is_default,restaurant_restaurant(restaurant_restaurant_pk,restaurant_name,restaurant_status_code,geo_city_fk,geo_neighborhood_fk)",
+    )
+    .eq("iam_profile_fk", profilePk)
+    .eq("is_active", true)
+    .order("is_default", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).flatMap((membership) => {
+    const restaurant = Array.isArray(membership.restaurant_restaurant)
+      ? membership.restaurant_restaurant[0]
+      : membership.restaurant_restaurant;
+
+    if (!restaurant?.restaurant_restaurant_pk || !restaurant.geo_city_fk || restaurant.restaurant_status_code !== "ACTIVE") {
+      return [];
+    }
+
+    return [
+      {
+        restaurantPk: restaurant.restaurant_restaurant_pk,
+        restaurantName: restaurant.restaurant_name,
+        restaurantStatusCode: restaurant.restaurant_status_code,
+        cityPk: restaurant.geo_city_fk,
+        neighborhoodPk: restaurant.geo_neighborhood_fk ?? null,
+      },
+    ];
+  });
+}
+
 type TemplateRevisionRelation = {
   readonly catalog_bag_template_revision_pk: string;
   readonly display_name: string;

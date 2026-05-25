@@ -3,7 +3,7 @@ import { orderIncidentCreateSchema, type ApiResponse, type OrderIncidentSummary 
 import { NextResponse } from "next/server";
 import { getPortalActor } from "@/lib/portal-auth";
 import { pickupRpcErrorMessage } from "@/lib/pickup-verification";
-import { loadDefaultRestaurant } from "@/lib/slice3";
+import { loadActiveRestaurantsForProfile } from "@/lib/slice3";
 
 type IncidentRpcRow = {
   readonly incident_pk: string;
@@ -16,21 +16,45 @@ type IncidentRpcRow = {
   readonly created_at: string;
 };
 
+type OrderRestaurantRow = {
+  readonly restaurant_fk: string;
+};
+
 export async function POST(request: Request, { params }: { readonly params: Promise<{ readonly orderId: string }> }) {
   const actor = await getPortalActor();
   if (!actor) {
     return NextResponse.json({ ok: false, error: "Please sign in to continue." } satisfies ApiResponse, { status: 401 });
   }
 
-  const restaurant = await loadDefaultRestaurant(actor.profilePk);
-  if (!restaurant || restaurant.restaurantStatusCode !== "ACTIVE") {
+  const { orderId } = await params;
+  const service = createServiceRoleSupabaseClient();
+  const { data: order, error: orderError } = await service
+    .from("order_order")
+    .select("restaurant_fk")
+    .eq("order_order_pk", orderId)
+    .maybeSingle<OrderRestaurantRow>();
+
+  if (orderError) {
+    console.error("incident_order_tenant_lookup_failed", orderError.message);
     return NextResponse.json(
-      { ok: false, error: "Restaurant access is required to log an incident." } satisfies ApiResponse,
+      { ok: false, error: "Could not check this order. Please try again." } satisfies ApiResponse,
+      { status: 500 },
+    );
+  }
+
+  if (!order) {
+    return NextResponse.json({ ok: false, error: "Order not found." } satisfies ApiResponse, { status: 404 });
+  }
+
+  const restaurants = await loadActiveRestaurantsForProfile(actor.profilePk);
+  const restaurant = restaurants.find((activeRestaurant) => activeRestaurant.restaurantPk === order.restaurant_fk);
+  if (!restaurant) {
+    return NextResponse.json(
+      { ok: false, error: "This order belongs to another restaurant." } satisfies ApiResponse,
       { status: 403 },
     );
   }
 
-  const { orderId } = await params;
   const parsed = orderIncidentCreateSchema.safeParse(await request.json().catch(() => ({})));
   if (!parsed.success) {
     return NextResponse.json(
@@ -39,7 +63,6 @@ export async function POST(request: Request, { params }: { readonly params: Prom
     );
   }
 
-  const service = createServiceRoleSupabaseClient();
   const { data, error } = await service.rpc("api_create_order_incident", {
     p_order_pk: orderId,
     p_restaurant_pk: restaurant.restaurantPk,
