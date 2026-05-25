@@ -113,6 +113,20 @@ describe("API schemas", () => {
     expect(result.success).toBe(true);
   });
 
+  it("allows restaurant contact edits before all onboarding basics are complete", () => {
+    const result = restaurantBasicsUpdateSchema.safeParse({
+      restaurantPk: "11111111-1111-4111-8111-111111111111",
+      restaurantName: "Biryani Baithak",
+      restaurantSlug: "biryani-baithak",
+      legalEntityName: "",
+      primaryContactEmail: "owner@gozaika.example",
+      primaryContactPhoneE164: "",
+      pickupInstructions: "",
+    });
+
+    expect(result.success).toBe(true);
+  });
+
   it("rejects unsafe compliance and document inputs", () => {
     expect(
       restaurantComplianceUpdateSchema.safeParse({

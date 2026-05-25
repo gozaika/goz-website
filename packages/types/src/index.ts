@@ -424,17 +424,17 @@ export const restaurantBasicsUpdateSchema = z.object({
   restaurantPk: uuidSchema,
   restaurantName: z.string().trim().min(2).max(140),
   restaurantSlug: restaurantSlugSchema,
-  legalEntityName: z.string().trim().min(2).max(180),
+  legalEntityName: z.preprocess(optionalString, z.string().trim().min(2).max(180).optional()),
   primaryContactEmail: z.string().trim().email(),
   primaryContactPhoneE164: z.preprocess(
     optionalIndianPhoneE164,
-    z.string().trim().regex(/^\+[1-9]\d{7,14}$/),
+    z.string().trim().regex(/^\+[1-9]\d{7,14}$/).optional(),
   ),
-  pickupInstructions: z.string().trim().min(10).max(1200),
+  pickupInstructions: z.preprocess(optionalString, z.string().trim().min(10).max(1200).optional()),
   cityPk: uuidSchema.optional().nullable(),
   neighborhoodPk: uuidSchema.optional().nullable(),
-  headline: z.string().trim().min(8).max(160).optional(),
-  storyMarkdown: z.string().trim().max(2000).optional(),
+  headline: z.preprocess(optionalString, z.string().trim().min(8).max(160).optional()),
+  storyMarkdown: z.preprocess(optionalString, z.string().trim().max(2000).optional()),
 });
 
 export const restaurantComplianceUpdateSchema = z.object({

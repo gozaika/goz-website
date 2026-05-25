@@ -12,7 +12,16 @@ export async function PATCH(request: Request) {
   const json = (await request.json().catch(() => ({}))) as Record<string, unknown>;
   const parsed = restaurantBasicsUpdateSchema.safeParse(json);
   if (!parsed.success) {
-    return NextResponse.json({ ok: false, error: "Check restaurant basics and try again." }, { status: 400 });
+    const firstIssue = parsed.error.issues[0];
+    return NextResponse.json(
+      {
+        ok: false,
+        error: firstIssue?.path.length
+          ? `Check ${firstIssue.path.join(".")}: ${firstIssue.message}`
+          : "Check restaurant basics and try again.",
+      },
+      { status: 400 },
+    );
   }
 
   const allowed = await assertRestaurantAccess(parsed.data.restaurantPk, actor.profilePk);
@@ -26,12 +35,12 @@ export async function PATCH(request: Request) {
     .update({
       restaurant_name: parsed.data.restaurantName,
       restaurant_slug: parsed.data.restaurantSlug,
-      legal_entity_name: parsed.data.legalEntityName,
+      legal_entity_name: parsed.data.legalEntityName ?? null,
       geo_city_fk: parsed.data.cityPk ?? null,
       geo_neighborhood_fk: parsed.data.neighborhoodPk ?? null,
       primary_contact_email: parsed.data.primaryContactEmail,
-      primary_contact_phone_e164: parsed.data.primaryContactPhoneE164,
-      pickup_instructions: parsed.data.pickupInstructions,
+      primary_contact_phone_e164: parsed.data.primaryContactPhoneE164 ?? null,
+      pickup_instructions: parsed.data.pickupInstructions ?? null,
       updated_at: new Date().toISOString(),
     })
     .eq("restaurant_restaurant_pk", parsed.data.restaurantPk);
@@ -54,7 +63,7 @@ export async function PATCH(request: Request) {
     contact_type_code: "MANAGER",
     contact_name: `${parsed.data.restaurantName} operations`,
     email_address: parsed.data.primaryContactEmail,
-    phone_e164: parsed.data.primaryContactPhoneE164,
+    phone_e164: parsed.data.primaryContactPhoneE164 ?? null,
     is_primary: true,
     updated_at: new Date().toISOString(),
   };
