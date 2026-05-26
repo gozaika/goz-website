@@ -92,7 +92,7 @@ export function AdminOpsClient({
   const visible = useMemo(() => {
     const openStatuses = new Set(["OPEN", "IN_PROGRESS", "TRIAGED", "INVESTIGATING", "MERCHANT_ACTION_REQUIRED", "REQUESTED", "OPS_REVIEW", "FINANCE_REVIEW"]);
     return {
-      restaurants: restaurants.filter((row) => restaurantMatches(row.restaurantPk) && dateMatches(row.updatedAt)),
+      restaurants: restaurants.filter((row) => restaurantMatches(row.restaurantPk)),
       drops: drops.filter((row) => restaurantMatches(row.restaurantPk) && (statusFilter === "ALL" || row.statusCode === statusFilter || (statusFilter === "OPEN" && row.statusCode !== "PICKUP_CLOSED")) && dateMatches(row.updatedAt)),
       incidents: incidents.filter((row) => restaurantMatches(row.restaurantPk) && (statusFilter === "ALL" || row.statusCode === statusFilter || (statusFilter === "OPEN" && openStatuses.has(row.statusCode))) && dateMatches(row.updatedAt)),
       support: supportTickets.filter((row) => restaurantMatches(row.restaurantPk) && (statusFilter === "ALL" || row.statusCode === statusFilter || (statusFilter === "OPEN" && openStatuses.has(row.statusCode))) && dateMatches(row.updatedAt)),
