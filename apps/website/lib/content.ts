@@ -56,14 +56,14 @@ export const homeContent = {
   bamBag: {
     eyebrow: 'What is a BAM Bag?',
     heading: 'Not a deal. A discovery.',
-    body: "Every BAM Bag is a chef-curated to-go selection from a partner restaurant. The dishes are a surprise — but every allergen, dietary category, spice level, and pickup window is disclosed before you buy. You don't know what's inside. You always know it's safe for you.",
+    body: "Every BAM Bag is a chef-curated to-go selection from a partner restaurant. The dishes are a surprise — but every allergen, dietary category, spice level, and pickup window is disclosed before you buy. You don't know what's inside. You do see the key trust details before you decide.",
     callout:
       "goZaika is not a discount app, a rescue app, or a leftover platform. It is a controlled-access, off-menu discovery layer for people who want great food without the algorithm.",
   },
   restaurantTeaser: {
     eyebrow: 'For Restaurants',
-    heading: 'Recover cost, not reputation.',
-    body: "A zero-friction channel for your kitchen's intentional releases. You design the bag. We surface it to the right people.",
+    heading: 'Create demand, protect reputation.',
+    body: "A direct pickup-demand channel for your kitchen's intentional releases. You design the bag. We surface it to the right people.",
     stats: [
       { value: '12%', label: 'Commission — lowest in category' },
       { value: '0%', label: 'First 30 days free' },
@@ -163,9 +163,9 @@ export const howItWorksContent = {
 } as const;
 
 export const forRestaurantsContent = {
-  title: "The lowest-friction revenue channel you've never had.",
+  title: 'The direct-demand channel for premium restaurant pickup drops.',
   subtitle:
-    "12% commission. Zero delivery riders. Your restaurant name always front and centre. The only platform built to protect what you've spent years building.",
+    "Planned, limited, chef-curated BAM Bag drops that create pickup demand without delivery riders, upfront ad spend, or public discounting.",
   kitchenFlow: [
     {
       title: 'You control the bag',
@@ -232,7 +232,7 @@ export const forRestaurantsContent = {
     },
     {
       title: 'Commission that stays lean',
-      body: 'The economics are designed to recover cost without creating delivery drag.',
+      body: 'The economics are designed to create incremental demand without delivery drag.',
     },
     {
       title: 'Pickup keeps operations simple',
@@ -294,8 +294,8 @@ export const forRestaurantsContent = {
   ],
   brandProtection: [
     "You control the bag. We never specify contents — that's your chef's decision.",
-    'No public discounting. goZaika is access-controlled, not listed on Zomato or Google.',
-    'Direct payouts. T+1 settlement via Razorpay. No intermediary hold.',
+    'No discount-led framing. BAM Bag drops are positioned as curated discovery, not clearance.',
+    'Clear settlement visibility tied to completed pickups, without exposing sensitive customer or payment data.',
     'Your name, front and centre. Every bag shows your restaurant brand to the customer.',
   ],
 } as const;

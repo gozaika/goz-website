@@ -12,17 +12,17 @@ import { canonical, openGraphFor, twitterFor } from '@/lib/metadata';
 export const metadata: Metadata = {
   title: 'Partner With goZaika | For Restaurants',
   description:
-    'A controlled-access discovery platform for restaurants: 12% pilot commission and zero delivery operations.',
+    'A direct-demand platform for planned, chef-curated restaurant pickup drops: lean pilot commission, no delivery riders, and no upfront ad spend.',
   ...canonical('/for-restaurants'),
   openGraph: openGraphFor(
     '/for-restaurants',
     'Partner With goZaika',
-    'Own the customer, recover margin, and preserve your brand.',
+    'Create pickup demand, protect margin, and preserve your brand.',
     '/images/social/og-home-v1.svg',
   ),
   twitter: twitterFor(
     'Partner With goZaika',
-    'Own the customer, recover margin, and preserve your brand.',
+    'Create pickup demand, protect margin, and preserve your brand.',
     '/images/social/og-home-v1.svg',
   ),
 };

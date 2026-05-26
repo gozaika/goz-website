@@ -10,7 +10,7 @@ import { canonical, openGraphFor, twitterFor } from '@/lib/metadata';
 export const metadata: Metadata = {
   title: 'Frequently Asked Questions | goZaika',
   description:
-    'Everything you need to know about BAM Bags, pickup, trust details, and partner onboarding.',
+    'What goZaika is, how BAM Bags work, and what restaurants and diners need to know about pickup, trust details, and partner onboarding.',
   ...canonical('/faq'),
   openGraph: openGraphFor(
     '/faq',

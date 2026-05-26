@@ -12,6 +12,20 @@ export interface FaqItem {
 
 export const faqs: ReadonlyArray<FaqItem> = [
   {
+    id: 'gozaika-definition',
+    question: 'What is goZaika?',
+    answer:
+      'goZaika is a pickup-first restaurant discovery platform. Restaurants publish limited, chef-curated BAM Bag drops, and diners claim them for pickup with price, allergens, dietary details, and pickup window shown before purchase.',
+    category: 'consumer',
+  },
+  {
+    id: 'restaurant-value',
+    question: 'How does goZaika help restaurants?',
+    answer:
+      'goZaika gives restaurants a direct-demand channel for intentional pickup drops. Partners control the food, timing, disclosures, and brand presentation while goZaika handles discovery, payment flow, pickup verification, and settlement visibility.',
+    category: 'restaurant',
+  },
+  {
     id: 'bam-bag-definition',
     question: 'What exactly is a BAM Bag?',
     answer:
