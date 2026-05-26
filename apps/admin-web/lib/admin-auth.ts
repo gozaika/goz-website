@@ -6,6 +6,7 @@ export interface AdminActor {
   readonly authUserId: string;
   readonly profilePk: string;
   readonly roleCode: string;
+  readonly roleCodes: readonly string[];
 }
 
 export async function getAdminActor(): Promise<AdminActor | null> {
@@ -23,20 +24,30 @@ export async function getAdminActor(): Promise<AdminActor | null> {
     .maybeSingle();
   if (!profile) return null;
 
-  const { data: membership } = await service
+  const { data: memberships } = await service
     .from("iam_platform_membership")
     .select("iam_platform_role(role_code)")
     .eq("iam_profile_fk", profile.iam_profile_pk)
-    .eq("is_active", true)
-    .limit(1)
-    .maybeSingle();
+    .eq("is_active", true);
 
-  const role = Array.isArray(membership?.iam_platform_role)
-    ? membership?.iam_platform_role[0]
-    : membership?.iam_platform_role;
+  const roleCodes =
+    memberships
+      ?.flatMap((membership) => {
+        const roles = Array.isArray(membership.iam_platform_role)
+          ? membership.iam_platform_role
+          : [membership.iam_platform_role];
+        return roles.map((role) => role?.role_code).filter((roleCode): roleCode is string => Boolean(roleCode));
+      })
+      .sort((a, b) => {
+        const priority = ["SUPER_ADMIN", "FINANCE_ADMIN", "OPS_ADMIN", "SUPPORT_ADMIN"];
+        const aPriority = priority.indexOf(a);
+        const bPriority = priority.indexOf(b);
+        return (aPriority === -1 ? priority.length : aPriority) - (bPriority === -1 ? priority.length : bPriority);
+      }) ?? [];
 
-  if (!role?.role_code) return null;
-  return { authUserId: user.id, profilePk: profile.iam_profile_pk, roleCode: role.role_code };
+  const primaryRoleCode = roleCodes[0];
+  if (!primaryRoleCode) return null;
+  return { authUserId: user.id, profilePk: profile.iam_profile_pk, roleCode: primaryRoleCode, roleCodes };
 }
 
 export async function requireAdminActor(): Promise<AdminActor | NextResponse> {
@@ -51,7 +62,7 @@ export async function requireFinanceAdminActor(): Promise<AdminActor | NextRespo
   const actor = await requireAdminActor();
   if (actor instanceof NextResponse) return actor;
 
-  if (!["SUPER_ADMIN", "FINANCE_ADMIN"].includes(actor.roleCode)) {
+  if (!actor.roleCodes.some((roleCode) => ["SUPER_ADMIN", "FINANCE_ADMIN"].includes(roleCode))) {
     return NextResponse.json({ ok: false, error: "Finance admin access is required." }, { status: 403 });
   }
 
