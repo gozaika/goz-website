@@ -58,7 +58,6 @@ Email sends use Resend with both plain text and branded HTML. Configure the send
 RESEND_API_KEY=...
 RESEND_FROM_EMAIL=goZaika <noreply@gozaika.in>
 NOTIFICATION_REPLY_TO_EMAIL=support@gozaika.in
-NOTIFICATION_EMAIL_LOGO_URL=https://gozaika.in/logos/gozaika-logo-horizontal.svg
 ```
 
 For deliverability, verify SPF/DKIM records from Resend, add a DMARC record for the sending domain, and avoid using unverified or mismatched `From` domains. During early smoke tests, Gmail may place new-domain transactional mail in spam until domain authentication and reputation warm up.

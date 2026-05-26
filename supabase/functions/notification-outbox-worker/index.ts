@@ -63,7 +63,6 @@ function renderNotificationEmailHtml(row: NotificationRow): string {
   const payload = row.payload_json ?? {};
   const subject = renderTemplate(row.subject_template, payload) || "goZaika notification";
   const body = renderTemplate(row.body_template, payload) || row.manual_fallback_text || "goZaika update.";
-  const logoUrl = optionalEnv("NOTIFICATION_EMAIL_LOGO_URL") ?? "https://gozaika.in/logos/gozaika-logo-horizontal.svg";
   const orderNumber = payloadValue(payload, "order_number");
   const restaurantName = payloadValue(payload, "restaurant_name");
   const bagDisplayName = payloadValue(payload, "bag_display_name");
@@ -109,7 +108,7 @@ function renderNotificationEmailHtml(row: NotificationRow): string {
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;background:#ffffff;border:1px solid #eadfca;border-radius:14px;overflow:hidden;">
             <tr>
               <td style="padding:28px 32px 18px 32px;">
-                <img src="${escapeHtml(logoUrl)}" width="150" alt="goZaika" style="display:block;width:150px;max-width:150px;height:auto;border:0;outline:none;text-decoration:none;">
+                <div style="font-size:13px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#1A5C38;">goZaika</div>
                 <h1 style="margin:14px 0 0 0;font-size:28px;line-height:34px;color:#2D2D2D;">${escapeHtml(subject)}</h1>
                 <p style="margin:14px 0 0 0;font-size:16px;line-height:24px;color:#374151;">${escapeHtml(body)}</p>
               </td>
