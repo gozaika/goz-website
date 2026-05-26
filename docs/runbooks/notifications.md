@@ -44,7 +44,24 @@ WATI_BROADCAST_NAME
 
 WhatsApp defaults to Meta Cloud API. Set `NOTIFICATION_WHATSAPP_PROVIDER=WATI` only when switching the worker to WATI later.
 
+If delivery attempts show `provider_code=WATI` or `WATI notification environment variables...` while testing Meta, check Supabase function secrets for `NOTIFICATION_WHATSAPP_PROVIDER=WATI` or `WHATSAPP_PROVIDER=WATI`, remove/change them to `META`, then redeploy `notification-outbox-worker`. Older queued rows may still show `provider_code=WATI`, but the updated worker chooses the provider from function env at send time.
+
+The worker response includes `whatsAppProvider`, `configuredWhatsAppProvider`, and `legacyWhatsAppProvider`. If `whatsAppProvider` is still `WATI` after setting `NOTIFICATION_WHATSAPP_PROVIDER=META`, the secret is not set on the same Supabase project/function runtime or `WHATSAPP_PROVIDER=WATI` is still present. If the response does not include these fields, the deployed worker code is old and must be redeployed.
+
 Set `NOTIFICATION_DRY_RUN=true` in local or staging when provider delivery should not happen. For provider smoke tests, set `NOTIFICATION_DRY_RUN=false` and configure Meta sandbox credentials instead.
+
+## Email Delivery And Spam Checks
+
+Email sends use Resend with both plain text and branded HTML. Configure the sender from a verified domain:
+
+```text
+RESEND_API_KEY=...
+RESEND_FROM_EMAIL=goZaika <noreply@gozaika.in>
+NOTIFICATION_REPLY_TO_EMAIL=support@gozaika.in
+NOTIFICATION_EMAIL_LOGO_URL=https://gozaika.in/logos/gozaika-logo-horizontal.svg
+```
+
+For deliverability, verify SPF/DKIM records from Resend, add a DMARC record for the sending domain, and avoid using unverified or mismatched `From` domains. During early smoke tests, Gmail may place new-domain transactional mail in spam until domain authentication and reputation warm up.
 
 ## Deploy And Schedule
 

@@ -245,6 +245,98 @@ No Razorpay, payment capture, inventory hold, order confirmation, pickup QR/OTP,
 - `npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build`
 - `npm.cmd --workspace @gozaika/restaurant-mgmt-web run build`
 
+
+
+## Slice 3 Follow-Up Activities Required For Complete Functionality
+
+These are operational/configuration steps needed after code merge/deploy:
+
+1. Apply migration `20260513000000_slice3_drop_publishing_discovery.sql` to the target Supabase environment.
+2. Seed or create at least one `ACTIVE` restaurant in the target environment.
+3. Create at least one approved restaurant owner auth user and active restaurant membership.
+4. Seed or manually create one published BAM Bag template and active public drop.
+5. Enable Supabase Realtime publication for `drop_drop` if it is not already enabled in the target project.
+6. Confirm anon/authenticated `select` on `api_public_drop_card` works without exposing internal columns.
+7. Review RLS and service-role usage around restaurant template/drop writes.
+8. Confirm `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set for `customer.gozaika.in` and `restaurant.gozaika.in`.
+9. Confirm restaurant and customer Vercel projects point to the correct workspaces/build commands.
+10. Configure Supabase Auth redirect allow-list for `https://customer.gozaika.in/auth/callback` and `https://restaurant.gozaika.in/auth/callback`.
+11. Smoke test consumer discovery after deployment: home page, `/drops`, `/drops/[id]`, and `/api/discovery/drops`.
+12. Smoke test restaurant portal after deployment: login, `/portal/templates`, `/portal/drops/new`, status update controls.
+13. Decide whether demo seed `003_slice3_drop_publishing_demo.sql` is local/staging-only or whether production drops will be created manually.
+14. Add a scripted `db:seed:demo:slice3` npm command if repeated local/staging rebuilds need one-command Slice 3 data setup.
+15. Add Playwright smoke coverage for consumer discovery and restaurant drop publishing once stable test credentials exist.
+
+## Expected App State After Slice 3
+
+| App | What you should see now |
+| --- | --- |
+| `apps/website` / `https://gozaika.in/` | No functional Slice 3 changes. It remains the public marketing site and brand/config baseline. |
+| `apps/consumer-web` / `https://customer.gozaika.in/` | Home and `/drops` read real public drops from Supabase. Drop cards show restaurant, BAM Bag name, dietary badge, allergen chips, pickup window, price, and remaining quantity. `/drops/[id]` shows a disclosure/detail page. Claim/payment buttons are intentionally disabled/coming-next. |
+| `apps/restaurant-mgmt-web` / `https://restaurant.gozaika.in/` | Active restaurant owners can create published BAM Bag templates at `/portal/templates`, create scheduled/active drops at `/portal/drops/new`, and activate/pause/close recent drops. Non-active restaurants should be blocked from publishing. |
+| `apps/admin-web` / `https://admin.gozaika.in/` | Existing Slice 2 onboarding/admin review remains available. Slice 3 does not add a full admin drop moderation console yet. |
+| `apps/consumer-mobile` | No Slice 3 parity yet. Mobile remains scaffold/deferred until the web paid pickup loop proves traction. |
+| `apps/restaurant-staff-mobile` | No Slice 3 pickup flow yet. Staff app remains scaffold/deferred until Slice 5. |
+
+## Next Pilot-First Slices
+
+| Slice | Revised Name | Scope | Gate |
+| --- | --- | --- | --- |
+| 4B | Razorpay Payment & Order Confirmation | Razorpay order creation, verified webhook, paid/confirmed order, QR/OTP. | Consumer pays and sees confirmed pickup proof. |
+| 5 | Pickup Verification & Incident Basics | Staff verification MVP, collected status, no-show path, minimal incident creation. | Restaurant verifies pickup and can log launch incidents. |
+| 7 | Pilot Finance & Settlement | Settlement runs, payout entries, invoices, restaurant payout view. | Admin creates/locks settlement and restaurant sees payout. |
+| 8A | Pilot ROI Reports | Weekly partner report: listed/sold, sell-through, GMV, estimated net, pickup completion, no-shows, incidents. | Restaurant sees ROI within 7 days. |
+| 8B | Admin Ops Hardening | Suspend/pause, config flags, refund support, audit trail, incident/support queue. | Ops can manage first 10 partners safely. |
+
+## Historical Verification Notes
+
+- Slice 0 `npm run ci` completed successfully across lint, typecheck, tests, and builds in a configured environment.
+- Slice 1 migration/demo SQL were not applied in the earlier shell because local Supabase CLI/env was unavailable.
+- Slice 2 demo seed requires Slice 1 auth users first.
+- Slice 3 production build for consumer-web must be run with env loaded, for example: `npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build`.
+- PowerShell may block `npm.ps1`; use `npm.cmd` on Windows when execution policy blocks npm scripts.
+
+### Public Drop SQL Smoke Query
+
+After applying Slice 3 migrations, this query should return consumer-visible drops:
+
+```sql
+select
+  drop_id,
+  restaurant_name,
+  drop_title,
+  drop_status_code,
+  available_quantity,
+  price_paise
+from api_public_drop_card
+order by pickup_start_at desc
+limit 10;
+```
+
+Canonical app columns remain available as `drop_drop_pk` and `computed_quantity_available`.
+
+### Template Activation Recovery
+
+If a template appears in the restaurant portal but is unavailable in the drop template selector, check whether `catalog_bag_template.active_revision_fk` is null. Apply migration `20260518000000_slice3_template_active_revision_repair.sql` to repair templates that already have a published revision. The portal also exposes a `Publish existing revision` action for templates with a published revision but no active pointer.
+
+### One-Click Drop Publishing
+
+Apply migration `20260518001000_slice3_template_drop_preferences.sql` before deploying the matching restaurant portal code. Templates now store:
+
+- `default_drop_quantity`
+- `default_pickup_start_offset_minutes`
+- `default_pickup_duration_minutes`
+
+The restaurant drop form uses those defaults to preselect the template, quantity, price, pickup start, pickup end, type, and active status. Busy restaurant staff should be able to publish a standard drop with one confirmation click, while still having quick controls for start time and pickup duration.
+
+### Template Revision Rules
+
+- Editing a template creates a new published revision and points `active_revision_fk` at it.
+- Existing drops continue to reference the revision they were created from.
+- Deleting a template means archiving it (`template_status_code = 'ARCHIVED'`), not hard-deleting rows.
+- Duplicating a template copies the active revision and allergen map into a new active template.
+
+
 ## Slice 3.5: Manual Launch Comms Support
 
 ### Goal
@@ -684,92 +776,3 @@ npm.cmd --workspace @gozaika/admin-web run build
 ### Out Of Scope
 
 No native mobile push, Expo token registration, marketing automation, bulk broadcasting, waitlist drip campaigns, referrals, loyalty, refunds, settlements, payouts, finance dashboards, destructive order correction, or native app parity.
-
-## Slice 3 Follow-Up Activities Required For Complete Functionality
-
-These are operational/configuration steps needed after code merge/deploy:
-
-1. Apply migration `20260513000000_slice3_drop_publishing_discovery.sql` to the target Supabase environment.
-2. Seed or create at least one `ACTIVE` restaurant in the target environment.
-3. Create at least one approved restaurant owner auth user and active restaurant membership.
-4. Seed or manually create one published BAM Bag template and active public drop.
-5. Enable Supabase Realtime publication for `drop_drop` if it is not already enabled in the target project.
-6. Confirm anon/authenticated `select` on `api_public_drop_card` works without exposing internal columns.
-7. Review RLS and service-role usage around restaurant template/drop writes.
-8. Confirm `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set for `customer.gozaika.in` and `restaurant.gozaika.in`.
-9. Confirm restaurant and customer Vercel projects point to the correct workspaces/build commands.
-10. Configure Supabase Auth redirect allow-list for `https://customer.gozaika.in/auth/callback` and `https://restaurant.gozaika.in/auth/callback`.
-11. Smoke test consumer discovery after deployment: home page, `/drops`, `/drops/[id]`, and `/api/discovery/drops`.
-12. Smoke test restaurant portal after deployment: login, `/portal/templates`, `/portal/drops/new`, status update controls.
-13. Decide whether demo seed `003_slice3_drop_publishing_demo.sql` is local/staging-only or whether production drops will be created manually.
-14. Add a scripted `db:seed:demo:slice3` npm command if repeated local/staging rebuilds need one-command Slice 3 data setup.
-15. Add Playwright smoke coverage for consumer discovery and restaurant drop publishing once stable test credentials exist.
-
-## Expected App State After Slice 3
-
-| App | What you should see now |
-| --- | --- |
-| `apps/website` / `https://gozaika.in/` | No functional Slice 3 changes. It remains the public marketing site and brand/config baseline. |
-| `apps/consumer-web` / `https://customer.gozaika.in/` | Home and `/drops` read real public drops from Supabase. Drop cards show restaurant, BAM Bag name, dietary badge, allergen chips, pickup window, price, and remaining quantity. `/drops/[id]` shows a disclosure/detail page. Claim/payment buttons are intentionally disabled/coming-next. |
-| `apps/restaurant-mgmt-web` / `https://restaurant.gozaika.in/` | Active restaurant owners can create published BAM Bag templates at `/portal/templates`, create scheduled/active drops at `/portal/drops/new`, and activate/pause/close recent drops. Non-active restaurants should be blocked from publishing. |
-| `apps/admin-web` / `https://admin.gozaika.in/` | Existing Slice 2 onboarding/admin review remains available. Slice 3 does not add a full admin drop moderation console yet. |
-| `apps/consumer-mobile` | No Slice 3 parity yet. Mobile remains scaffold/deferred until the web paid pickup loop proves traction. |
-| `apps/restaurant-staff-mobile` | No Slice 3 pickup flow yet. Staff app remains scaffold/deferred until Slice 5. |
-
-## Next Pilot-First Slices
-
-| Slice | Revised Name | Scope | Gate |
-| --- | --- | --- | --- |
-| 4B | Razorpay Payment & Order Confirmation | Razorpay order creation, verified webhook, paid/confirmed order, QR/OTP. | Consumer pays and sees confirmed pickup proof. |
-| 5 | Pickup Verification & Incident Basics | Staff verification MVP, collected status, no-show path, minimal incident creation. | Restaurant verifies pickup and can log launch incidents. |
-| 7 | Pilot Finance & Settlement | Settlement runs, payout entries, invoices, restaurant payout view. | Admin creates/locks settlement and restaurant sees payout. |
-| 8A | Pilot ROI Reports | Weekly partner report: listed/sold, sell-through, GMV, estimated net, pickup completion, no-shows, incidents. | Restaurant sees ROI within 7 days. |
-| 8B | Admin Ops Hardening | Suspend/pause, config flags, refund support, audit trail, incident/support queue. | Ops can manage first 10 partners safely. |
-
-## Historical Verification Notes
-
-- Slice 0 `npm run ci` completed successfully across lint, typecheck, tests, and builds in a configured environment.
-- Slice 1 migration/demo SQL were not applied in the earlier shell because local Supabase CLI/env was unavailable.
-- Slice 2 demo seed requires Slice 1 auth users first.
-- Slice 3 production build for consumer-web must be run with env loaded, for example: `npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build`.
-- PowerShell may block `npm.ps1`; use `npm.cmd` on Windows when execution policy blocks npm scripts.
-
-### Public Drop SQL Smoke Query
-
-After applying Slice 3 migrations, this query should return consumer-visible drops:
-
-```sql
-select
-  drop_id,
-  restaurant_name,
-  drop_title,
-  drop_status_code,
-  available_quantity,
-  price_paise
-from api_public_drop_card
-order by pickup_start_at desc
-limit 10;
-```
-
-Canonical app columns remain available as `drop_drop_pk` and `computed_quantity_available`.
-
-### Template Activation Recovery
-
-If a template appears in the restaurant portal but is unavailable in the drop template selector, check whether `catalog_bag_template.active_revision_fk` is null. Apply migration `20260518000000_slice3_template_active_revision_repair.sql` to repair templates that already have a published revision. The portal also exposes a `Publish existing revision` action for templates with a published revision but no active pointer.
-
-### One-Click Drop Publishing
-
-Apply migration `20260518001000_slice3_template_drop_preferences.sql` before deploying the matching restaurant portal code. Templates now store:
-
-- `default_drop_quantity`
-- `default_pickup_start_offset_minutes`
-- `default_pickup_duration_minutes`
-
-The restaurant drop form uses those defaults to preselect the template, quantity, price, pickup start, pickup end, type, and active status. Busy restaurant staff should be able to publish a standard drop with one confirmation click, while still having quick controls for start time and pickup duration.
-
-### Template Revision Rules
-
-- Editing a template creates a new published revision and points `active_revision_fk` at it.
-- Existing drops continue to reference the revision they were created from.
-- Deleting a template means archiving it (`template_status_code = 'ARCHIVED'`), not hard-deleting rows.
-- Duplicating a template copies the active revision and allergen map into a new active template.
