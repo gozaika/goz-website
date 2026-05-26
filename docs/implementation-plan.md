@@ -138,6 +138,16 @@ Use this order for a clean rebuild:
    - Run pickup reminder cron for an eligible paid, uncollected order and verify no duplicate reminders on rerun.
    - Run the worker and verify delivery attempts move rows to sent, failed, suppressed, or retryable queued states.
 
+13. Recreate Slice 7 pilot finance settlements after Slice 6 is available:
+
+   - Apply migration `20260527000000_slice7_pilot_finance_settlement.sql`.
+   - Deploy `settlement-run-worker`. Leave `SETTLEMENT_WORKER_ACTOR_PROFILE_PK` unset unless ops intentionally wants worker-created draft settlements.
+   - Redeploy `restaurant.gozaika.in` and `admin.gozaika.in`.
+   - Use a webhook-confirmed captured order whose pickup window has closed and whose status is `COLLECTED` or `NO_SHOW`.
+   - Open `/admin/finance`, preview the restaurant/period, create/recalculate one draft, lock it, issue invoice metadata, and manually mark payout status.
+   - Open `/portal/finance` as the restaurant owner and confirm only own settlement summaries/details are visible.
+   - Do not configure Razorpay transfer, payout, refund, fund-account, invoice-generation, or accounting integration env vars for Slice 7.
+
 ## Slice 0: Foundation
 
 ### Goal
@@ -776,3 +786,99 @@ npm.cmd --workspace @gozaika/admin-web run build
 ### Out Of Scope
 
 No native mobile push, Expo token registration, marketing automation, bulk broadcasting, waitlist drip campaigns, referrals, loyalty, refunds, settlements, payouts, finance dashboards, destructive order correction, or native app parity.
+
+## Slice 7: Pilot Finance & Settlement
+
+### Goal
+
+Give pilot operators and restaurant partners a trustworthy, auditable manual settlement workflow for completed paid pickup orders without initiating live money movement.
+
+### Completed
+
+- [x] Add additive migration `20260527000000_slice7_pilot_finance_settlement.sql`.
+- [x] Harden existing finance tables with active-run idempotency, locked-run immutability, manual notes, invoice metadata, masked account read models, and audit logging.
+- [x] Add settlement RPCs for preview, create/recalculate draft, manual adjustment, lock, invoice metadata, and manual payout status progression.
+- [x] Calculate settlements from webhook-confirmed captured orders whose pickup windows have closed and whose order status is `COLLECTED` or `NO_SHOW`.
+- [x] Exclude non-captured, open-window, non-terminal, and already-settled orders with explicit reasons.
+- [x] Add admin `/admin/finance` for restaurant/period preview, draft/recalc, lock, adjustment, invoice metadata, status marking, and line-entry inspection.
+- [x] Replace restaurant `/portal/finance` placeholder with own-restaurant settlement summaries/details.
+- [x] Harden `settlement-run-worker` as a bounded preview/draft-refresh worker with `livePayoutsEnabled=false`.
+- [x] Add typed finance request/response models and money/status helpers.
+- [x] Add product and runbook docs for pilot finance settlement.
+
+### Validation Gate
+
+Admin can preview eligible captured paid orders for a restaurant/period, create or recalculate one draft idempotently, inspect line entries, and lock it without duplicate entries or floating-point money defects. Restaurant users can open `/portal/finance` and see only their own settlement summaries/details with gross, deductions, refunds/debits, adjustments, net payout, invoice status, payout status, and masked payout account state. Locked runs reject recalculation and line-entry mutation; status progression remains manual and auditable.
+
+### Remote Migration Steps
+
+Apply this migration after all Slice 6 migrations:
+
+```powershell
+Get-Content -Raw supabase/migrations/20260527000000_slice7_pilot_finance_settlement.sql
+```
+
+Review the SQL, then run it once in the Supabase Dashboard SQL editor or the approved remote migration path. Verify:
+
+```sql
+select to_regprocedure('public.api_preview_restaurant_settlement(uuid,timestamp with time zone,timestamp with time zone,uuid)');
+select to_regprocedure('public.api_create_or_recalculate_settlement_run(uuid,timestamp with time zone,timestamp with time zone,uuid,text)');
+select to_regprocedure('public.api_lock_settlement_run(uuid,uuid,text)');
+select to_regprocedure('public.api_mark_settlement_status(uuid,uuid,text,text,text)');
+select to_regclass('public.api_admin_finance_settlement_summary');
+select to_regclass('public.api_restaurant_finance_settlement_summary');
+```
+
+Deploy Edge Function after migration:
+
+```powershell
+supabase functions deploy settlement-run-worker
+```
+
+### Environment
+
+Required:
+
+```text
+SUPABASE_SERVICE_ROLE_KEY
+```
+
+Optional:
+
+```text
+SETTLEMENT_WORKER_ACTOR_PROFILE_PK
+```
+
+No Razorpay transfer, payout, refund, fund-account, invoice-generation, Tally/Zoho/QuickBooks, or CA workflow env vars are introduced in Slice 7.
+
+### Smoke Test Flow
+
+1. Complete a Razorpay test payment and let the verified webhook create a captured order.
+2. Verify pickup as `COLLECTED`, or after pickup window close mark `NO_SHOW`.
+3. Open `/admin/finance`, select the restaurant and period, and preview eligibility.
+4. Create/recalculate draft twice and confirm only one active settlement exists for the period.
+5. Inspect gross, commission, payment fee/tax, refund/debit, adjustment, and net payout entries.
+6. Add a manual adjustment before lock.
+7. Lock the settlement and confirm recalculation/adjustment paths are blocked.
+8. Issue invoice metadata and mark `SENT`, `PAID`, `RECONCILED` manually.
+9. Open `/portal/finance` as the restaurant owner and confirm own-tenant read-only visibility.
+10. Confirm no Razorpay transfer/refund/payment/order/pickup mutation was created by finance actions.
+
+### Verification Commands
+
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+```
+
+### Out Of Scope
+
+No live Razorpay payouts, transfers, fund-account creation, refund initiation, GST-compliant final invoice legal automation, CA workflows, reconciliation exports, accounting integrations, native mobile finance screens, ROI reports, broad correction tooling, restaurant suspension, or marketing-site redesign.

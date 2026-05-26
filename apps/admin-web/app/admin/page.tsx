@@ -28,6 +28,10 @@ export default async function AdminPage() {
             <h2 className="text-xl font-bold">Notification delivery</h2>
             <p className="mt-2 text-sm text-black/65">Review transactional message state, retry failed sends, suppress queued rows, and copy fallback text.</p>
           </Link>
+          <Link className="rounded-lg border border-black/10 bg-white p-5 transition hover:border-[#1A5C38]" href="/admin/finance">
+            <h2 className="text-xl font-bold">Finance settlements</h2>
+            <p className="mt-2 text-sm text-black/65">Preview eligible paid pickup orders, lock settlement runs, and track manual payout status.</p>
+          </Link>
         </div>
       </section>
     </main>

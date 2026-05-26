@@ -41,6 +41,12 @@ Successful verification marks the order `COLLECTED`, records a verification even
 - No-show changes order state to `NO_SHOW` and appends audit transition metadata.
 - No refund, compensation, settlement, or payout mutation is created.
 
+## Settlement Eligibility Handoff
+
+Slice 7 finance uses pickup completion as an input only. A captured paid order becomes settlement-eligible after its pickup window closes and the order is `COLLECTED` or `NO_SHOW`. Pickup verification and no-show flows do not create finance rows directly; admin finance preview/draft creation reads the terminal pickup state later.
+
+Do not mark pickup state just to force settlement. Use the real counter outcome and leave finance corrections to manual adjustments in the settlement workflow.
+
 ## Pickup Reminders
 
 Slice 6 schedules pickup reminder notifications through `pickup-reminder-cron`, which calls `api_enqueue_pickup_reminders`. The cron is idempotent: repeated runs should not create duplicate reminder rows for the same order, channel, and template.

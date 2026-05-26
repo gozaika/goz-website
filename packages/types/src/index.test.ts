@@ -15,6 +15,13 @@ import {
   notificationTemplateCodes,
   orderIncidentCreateSchema,
   pickupVerificationRequestSchema,
+  financeSettlementStatusCodes,
+  financePayoutEntryTypeCodes,
+  settlementAdjustmentRequestSchema,
+  settlementCreateRequestSchema,
+  settlementInvoiceIssueRequestSchema,
+  settlementLockRequestSchema,
+  settlementStatusUpdateRequestSchema,
 } from "./index";
 
 describe("goZaika status constants", () => {
@@ -32,6 +39,11 @@ describe("goZaika status constants", () => {
   it("keeps transactional notification states and templates available", () => {
     expect(notificationStatusCodes).toEqual(expect.arrayContaining(["QUEUED", "SENT", "FAILED", "SUPPRESSED"]));
     expect(notificationTemplateCodes).toEqual(expect.arrayContaining(["ORDER_CONFIRMATION", "PICKUP_REMINDER", "RESTAURANT_NEW_ORDER_ALERT"]));
+  });
+
+  it("keeps pilot finance settlement states and payout entry types available", () => {
+    expect(financeSettlementStatusCodes).toEqual(expect.arrayContaining(["DRAFT", "LOCKED", "SENT", "PAID", "RECONCILED", "CANCELLED"]));
+    expect(financePayoutEntryTypeCodes).toEqual(expect.arrayContaining(["ORDER_GROSS", "COMMISSION", "PAYMENT_FEE", "TAX", "REFUND", "ADJUSTMENT"]));
   });
 
   it("keeps claim hold intent states separate from paid order states", () => {
@@ -97,6 +109,26 @@ describe("API schemas", () => {
   it("validates notification retry reasons", () => {
     expect(notificationRetryRequestSchema.safeParse({ reasonText: "Provider credentials were restored." }).success).toBe(true);
     expect(notificationRetryRequestSchema.safeParse({ reasonText: "retry" }).success).toBe(false);
+  });
+
+  it("validates settlement operation requests", () => {
+    expect(
+      settlementCreateRequestSchema.safeParse({
+        restaurantPk: "11111111-1111-4111-8111-111111111111",
+        periodStartAt: "2026-05-01T00:00:00.000Z",
+        periodEndAt: "2026-05-08T00:00:00.000Z",
+        noteText: "Pilot weekly settlement.",
+      }).success,
+    ).toBe(true);
+    expect(settlementCreateRequestSchema.safeParse({
+      restaurantPk: "11111111-1111-4111-8111-111111111111",
+      periodStartAt: "2026-05-08T00:00:00.000Z",
+      periodEndAt: "2026-05-01T00:00:00.000Z",
+    }).success).toBe(false);
+    expect(settlementLockRequestSchema.safeParse({ reasonText: "Finance reviewed order-level totals." }).success).toBe(true);
+    expect(settlementStatusUpdateRequestSchema.safeParse({ statusCode: "PAID", noteText: "Manual UTR received from bank statement.", providerReferenceText: "settlement_demo_utr" }).success).toBe(true);
+    expect(settlementAdjustmentRequestSchema.safeParse({ amountPaise: -1250, descriptionText: "Manual debit for prior overpayment." }).success).toBe(true);
+    expect(settlementInvoiceIssueRequestSchema.safeParse({ invoiceNumber: "invoice_demo_001", metadata: { reviewer: "pilot" } }).success).toBe(true);
   });
 
   it("validates restaurant onboarding basics", () => {

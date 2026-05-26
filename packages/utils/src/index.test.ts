@@ -3,8 +3,11 @@ import {
   createPublicDropUrl,
   createIdempotencyKey,
   createPickupQrPayload,
+  financeSettlementStatusLabel,
+  financeSettlementStatusTone,
   formatPaise,
   formatPickupWindow,
+  formatSignedPaise,
   generateManualDropAlertText,
   getDropClaimAvailability,
   normalizeIndianPhone,
@@ -18,6 +21,12 @@ describe("money formatting", () => {
   it("formats bigint paise without floating point arithmetic", () => {
     expect(formatPaise(129900n)).toBe("\u20B91,299");
     expect(formatPaise(129955n)).toBe("\u20B91,299.55");
+  });
+
+  it("formats signed settlement line items without floating point arithmetic", () => {
+    expect(formatSignedPaise(-129955n)).toBe("-\u00A0\u20B91,299.55");
+    expect(formatSignedPaise(5000n)).toBe("+\u00A0\u20B950");
+    expect(formatSignedPaise(0n)).toBe("\u20B90");
   });
 });
 
@@ -88,6 +97,14 @@ describe("notification status helpers", () => {
     expect(notificationStatusLabel("SUPPRESSED", "CONSENT_NOT_GRANTED")).toBe("Unavailable by consent");
     expect(notificationStatusTone("FAILED")).toBe("danger");
     expect(notificationStatusTone("SENT")).toBe("success");
+  });
+});
+
+describe("finance status helpers", () => {
+  it("labels and tones settlement states", () => {
+    expect(financeSettlementStatusLabel("SENT")).toBe("Payout sent");
+    expect(financeSettlementStatusTone("RECONCILED")).toBe("success");
+    expect(financeSettlementStatusTone("CANCELLED")).toBe("danger");
   });
 });
 

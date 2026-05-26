@@ -46,6 +46,12 @@ Slice 6 notifications are post-conversion side effects. Verified Razorpay webhoo
 
 Notification workers never create payments, orders, refunds, settlements, payouts, pickup transitions, or compensation.
 
+## Slice 7 Settlement Boundary
+
+Slice 7 settlements are downstream of webhook-confirmed captured payments. Settlement previews and draft runs read `order_order`, `payment_order_intent`, `payment_transaction`, and any existing `payment_refund` rows to calculate accounting entries.
+
+Settlement logic never creates payment intents, payment transactions, orders, pickup transitions, refunds, Razorpay transfers, or provider payout calls. `SENT`, `PAID`, and `RECONCILED` are manual accounting states only.
+
 ## Required Environment
 
 Consumer web:

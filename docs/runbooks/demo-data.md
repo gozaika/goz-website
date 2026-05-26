@@ -148,3 +148,9 @@ If a future seed adds `006_slice5_pickup_verification_incidents_demo.sql`, keep 
 No deterministic Slice 6 demo seed is added. Notification rows should usually be produced from a real local or staging paid order so webhook enqueue, pickup reminder idempotency, consent suppression, and worker delivery attempts are exercised together.
 
 If a future seed adds `007_slice6_transactional_notifications_demo.sql`, keep it local/staging-only, use fake provider refs such as `wati_demo_*` and `resend_demo_*`, register rows in `dev_demo_seed_registry`, and delete in FK-safe order for `notification_delivery_attempt` before `notification_outbox`. Do not seed real provider references in production.
+
+# Slice 7 Pilot Finance Settlement Demo Data
+
+No deterministic Slice 7 demo seed is added. Settlements should usually be produced from a real local or staging paid order after webhook conversion and pickup terminal state so finance eligibility, idempotency, and line-entry math are exercised together.
+
+If a future seed adds `supabase/seeds/demo/008_slice7_pilot_finance_settlement_demo.sql`, keep it local/staging-only, use fake references such as `settlement_demo_*` and `invoice_demo_*`, register rows in `dev_demo_seed_registry`, and delete in FK-safe order for `finance_invoice`, `finance_restaurant_payout_entry`, `finance_settlement_run`, `payment_refund`, and any related demo order/payment rows. Never seed real bank account numbers, UTRs, provider payout refs, or production finance rows.

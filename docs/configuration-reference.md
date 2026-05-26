@@ -35,6 +35,9 @@
   - `NOTIFICATION_WHATSAPP_PROVIDER=META` by default for WhatsApp delivery through Meta Cloud API.
   - `META_WHATSAPP_ACCESS_TOKEN`, `META_WHATSAPP_PHONE_NUMBER_ID`, optional `META_WHATSAPP_GRAPH_VERSION`, `META_WHATSAPP_TEMPLATE_LANGUAGE`, `META_WHATSAPP_TEMPLATE_OVERRIDE`, `META_WHATSAPP_TEMPLATE_PARAM_ORDER`, and `META_WHATSAPP_SEND_MODE` for Meta WhatsApp sandbox or direct Cloud API delivery.
   - `WATI_API_BASE_URL`, `WATI_API_TOKEN`, and optional `WATI_BROADCAST_NAME` for a future WhatsApp/WATI switch with `NOTIFICATION_WHATSAPP_PROVIDER=WATI`.
+- Slice 7 pilot finance settlements:
+  - No live payout, Razorpay transfer, refund, fund-account, invoice-generation, or accounting integration env vars are required.
+  - Optional `SETTLEMENT_WORKER_ACTOR_PROFILE_PK` lets `settlement-run-worker` refresh draft runs for a configured `FINANCE_ADMIN`/`SUPER_ADMIN` profile. Leave it unset unless ops intentionally enables worker-created drafts.
 - Approved public mailbox mapping: general `contact@gozaika.in`, partners `partners@gozaika.in`, waitlist `waitlist@gozaika.in`, billing/refund finance `billing@gozaika.in`, careers `careers@gozaika.in`, and technical/security/platform `tech@gozaika.in`.
 
 ## Current base URLs
@@ -63,12 +66,14 @@ Owned but not necessarily routed domains: `gozaik.in`, `gozaika.com`.
 - Apply Slice 4B migration `20260521000000_slice4b_razorpay_payment_order_confirmation.sql` before enabling Razorpay checkout or deploying the updated `razorpay-webhook`.
 - Apply Slice 5 migration `20260525000000_slice5_pickup_verification_incidents.sql` before enabling restaurant pickup verification, no-show, or incident creation UI.
 - Apply Slice 6 migration `20260526000000_slice6_transactional_notifications.sql` before deploying notification UI or notification workers.
+- Apply Slice 7 migration `20260527000000_slice7_pilot_finance_settlement.sql` before deploying `/admin/finance`, `/portal/finance`, or the hardened `settlement-run-worker`.
 - Grant anon/authenticated read to `api_public_drop_card`.
 - Grant authenticated read to `api_claim_hold_summary`.
 - Enable Realtime for `drop_drop` inventory/status updates if live client updates are required in the target environment.
 - Deploy or schedule the `release-expired-holds` Supabase Edge Function so expired Slice 4A holds return availability.
 - Deploy `razorpay-webhook` with `RAZORPAY_WEBHOOK_SECRET` after Slice 4B migration is applied.
 - Deploy `notification-outbox-worker` and redeploy `pickup-reminder-cron` after Slice 6 migration is applied.
+- Deploy `settlement-run-worker` after Slice 7 migration is applied. The worker is bounded and reports `livePayoutsEnabled=false`.
 - Add Supabase Auth redirect URLs for:
   - `https://customer.gozaika.in/auth/callback`
   - `https://restaurant.gozaika.in/auth/callback`

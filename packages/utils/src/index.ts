@@ -22,6 +22,17 @@ export function formatPaise(amountPaise: number | bigint, locale = "en-IN"): str
   return `\u20B9${rupeeText}.${remainder.toString().padStart(2, "0")}`;
 }
 
+export function formatSignedPaise(amountPaise: number | bigint, locale = "en-IN"): string {
+  const paise = typeof amountPaise === "bigint" ? amountPaise : BigInt(amountPaise);
+  if (paise < 0n) {
+    return `-\u00A0${formatPaise(-paise, locale)}`;
+  }
+  if (paise > 0n) {
+    return `+\u00A0${formatPaise(paise, locale)}`;
+  }
+  return formatPaise(0, locale);
+}
+
 export function formatPickupWindow(
   pickupStartAt: string | Date,
   pickupEndAt: string | Date,
@@ -280,6 +291,26 @@ export function notificationStatusTone(statusCode: string): "success" | "warning
   if (statusCode === "SENT") return "success";
   if (statusCode === "QUEUED" || statusCode === "SENDING") return "warning";
   if (statusCode === "FAILED") return "danger";
+  return "neutral";
+}
+
+export function financeSettlementStatusLabel(statusCode: string): string {
+  const labels: Record<string, string> = {
+    DRAFT: "Draft",
+    OPEN: "Open review",
+    LOCKED: "Locked",
+    SENT: "Payout sent",
+    PAID: "Paid",
+    RECONCILED: "Reconciled",
+    CANCELLED: "Cancelled",
+  };
+  return labels[statusCode] ?? statusCode.replaceAll("_", " ").toLowerCase();
+}
+
+export function financeSettlementStatusTone(statusCode: string): "success" | "warning" | "danger" | "neutral" {
+  if (statusCode === "PAID" || statusCode === "RECONCILED") return "success";
+  if (statusCode === "DRAFT" || statusCode === "OPEN" || statusCode === "LOCKED" || statusCode === "SENT") return "warning";
+  if (statusCode === "CANCELLED") return "danger";
   return "neutral";
 }
 

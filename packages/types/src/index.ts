@@ -125,6 +125,26 @@ export const notificationTemplateCodes = [
   "INCIDENT_HIGH_SEVERITY_ALERT",
 ] as const;
 export const notificationAudienceCodes = ["CONSUMER", "RESTAURANT", "ADMIN"] as const;
+export const financeSettlementStatusCodes = [
+  "DRAFT",
+  "OPEN",
+  "LOCKED",
+  "SENT",
+  "PAID",
+  "RECONCILED",
+  "CANCELLED",
+] as const;
+export const financeInvoiceStatusCodes = ["DRAFT", "ISSUED", "PAID", "VOID"] as const;
+export const financePayoutEntryTypeCodes = [
+  "ORDER_GROSS",
+  "COMMISSION",
+  "PAYMENT_FEE",
+  "TAX",
+  "REFUND",
+  "ADJUSTMENT",
+  "PAYOUT",
+] as const;
+export const financeOrderEligibilityStatusCodes = ["ELIGIBLE", "EXCLUDED"] as const;
 
 export type DietaryCategoryCode = (typeof dietaryCategoryCodes)[number];
 export type SpiceLevelCode = (typeof spiceLevelCodes)[number];
@@ -143,6 +163,10 @@ export type NotificationAttemptStatusCode = (typeof notificationAttemptStatusCod
 export type NotificationProviderCode = (typeof notificationProviderCodes)[number];
 export type NotificationTemplateCode = (typeof notificationTemplateCodes)[number];
 export type NotificationAudienceCode = (typeof notificationAudienceCodes)[number];
+export type FinanceSettlementStatusCode = (typeof financeSettlementStatusCodes)[number];
+export type FinanceInvoiceStatusCode = (typeof financeInvoiceStatusCodes)[number];
+export type FinancePayoutEntryTypeCode = (typeof financePayoutEntryTypeCodes)[number];
+export type FinanceOrderEligibilityStatusCode = (typeof financeOrderEligibilityStatusCodes)[number];
 export type PlatformRoleCode = (typeof platformRoleCodes)[number];
 export type RestaurantStatusCode = (typeof restaurantStatusCodes)[number];
 export type RestaurantTeamRoleCode = (typeof restaurantTeamRoleCodes)[number];
@@ -156,6 +180,7 @@ export type ConsentStateCode = (typeof consentStateCodes)[number];
 
 export const uuidSchema = z.string().uuid();
 export const paiseSchema = z.number().int().nonnegative().safe();
+export const signedPaiseSchema = z.number().int().safe();
 export const positiveQuantitySchema = z.number().int().min(1).max(99);
 const optionalString = (value: unknown) => {
   if (typeof value !== "string") {
@@ -285,6 +310,39 @@ export const notificationSuppressRequestSchema = z.object({
   reasonText: z.string().trim().min(8).max(600),
 });
 
+const financePeriodSchema = z
+  .object({
+    restaurantPk: uuidSchema,
+    periodStartAt: z.string().datetime(),
+    periodEndAt: z.string().datetime(),
+  })
+  .refine((value) => Date.parse(value.periodEndAt) > Date.parse(value.periodStartAt), {
+    message: "Settlement period end must be after the start.",
+    path: ["periodEndAt"],
+  });
+
+export const settlementPreviewRequestSchema = financePeriodSchema;
+export const settlementCreateRequestSchema = financePeriodSchema.extend({
+  noteText: z.preprocess(optionalString, z.string().trim().max(1000).optional()),
+});
+export const settlementLockRequestSchema = z.object({
+  reasonText: z.string().trim().min(8).max(1000),
+});
+export const settlementStatusUpdateRequestSchema = z.object({
+  statusCode: z.enum(["SENT", "PAID", "RECONCILED", "CANCELLED"]),
+  noteText: z.string().trim().min(8).max(1000),
+  providerReferenceText: z.preprocess(optionalString, z.string().trim().max(160).optional()),
+});
+export const settlementAdjustmentRequestSchema = z.object({
+  amountPaise: signedPaiseSchema.refine((value) => value !== 0, "Adjustment amount cannot be zero."),
+  descriptionText: z.string().trim().min(8).max(1000),
+});
+export const settlementInvoiceIssueRequestSchema = z.object({
+  invoiceNumber: z.string().trim().min(4).max(80),
+  externalDocumentRef: z.preprocess(optionalString, z.string().trim().max(240).optional()),
+  metadata: z.record(z.string(), z.unknown()).default({}),
+});
+
 export interface PickupVerificationResult {
   readonly orderPk: string;
   readonly orderNumber: string;
@@ -367,6 +425,106 @@ export interface NotificationDeliveryAttemptSummary {
 export interface NotificationActionResult {
   readonly notificationOutboxPk: string;
   readonly sendStatusCode: NotificationStatusCode;
+  readonly message: string;
+}
+
+export interface FinanceInvoiceSummary {
+  readonly invoicePk: string | null;
+  readonly invoiceNumber: string | null;
+  readonly invoiceStatusCode: FinanceInvoiceStatusCode | null;
+  readonly invoiceAmountPaise: number | null;
+  readonly invoiceIssuedAt: string | null;
+  readonly downloadSafeFilename: string | null;
+  readonly externalDocumentRef?: string | null;
+}
+
+export interface FinanceSettlementSummary {
+  readonly settlementRunPk: string;
+  readonly restaurantPk: string;
+  readonly restaurantName: string;
+  readonly periodStartAt: string;
+  readonly periodEndAt: string;
+  readonly settlementStatusCode: FinanceSettlementStatusCode;
+  readonly orderCount: number;
+  readonly excludedOrderCount: number;
+  readonly grossSalesPaise: number;
+  readonly refundPaise: number;
+  readonly commissionPaise: number;
+  readonly paymentFeePaise: number;
+  readonly taxPaise: number;
+  readonly adjustmentPaise: number;
+  readonly netPayoutPaise: number;
+  readonly lockedAt: string | null;
+  readonly paidAt: string | null;
+  readonly reconciledAt: string | null;
+  readonly cancelledAt: string | null;
+  readonly statusNoteText: string | null;
+  readonly payoutProviderReferenceText: string | null;
+  readonly payoutAccountStatusCode: string | null;
+  readonly maskedPayoutAccount: string | null;
+  readonly invoice: FinanceInvoiceSummary;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
+
+export interface FinanceSettlementDetailRow {
+  readonly payoutEntryPk: string;
+  readonly settlementRunPk: string;
+  readonly restaurantPk: string;
+  readonly orderPk: string | null;
+  readonly orderNumber: string | null;
+  readonly paymentRefundPk: string | null;
+  readonly entryTypeCode: FinancePayoutEntryTypeCode;
+  readonly amountPaise: number;
+  readonly descriptionText: string | null;
+  readonly commissionBps: number | null;
+  readonly commissionPlanCode: string | null;
+  readonly sourceStatusCode: string | null;
+  readonly pickupWindowEndAt: string | null;
+  readonly bagDisplayName: string | null;
+  readonly orderTotalPaise: number | null;
+  readonly createdAt: string;
+}
+
+export interface FinancePayoutEntrySummary extends FinanceSettlementDetailRow {}
+
+export interface FinanceEligibleOrderPreview {
+  readonly orderPk: string;
+  readonly orderNumber: string;
+  readonly pickupWindowEndAt: string;
+  readonly orderStatusCode: OrderStatusCode | string;
+  readonly paymentStatusCode: string;
+  readonly paidAmountPaise: number;
+  readonly paymentFeePaise: number;
+  readonly paymentTaxPaise: number;
+  readonly refundPaise: number;
+  readonly commissionBps: number;
+  readonly commissionPlanCode: string | null;
+  readonly commissionPaise: number;
+  readonly netPayoutPaise: number;
+  readonly eligibilityStatusCode: FinanceOrderEligibilityStatusCode;
+  readonly exclusionReasonCode: string | null;
+  readonly exclusionReasonText: string | null;
+}
+
+export interface FinanceSettlementActionResult {
+  readonly settlementRunPk: string;
+  readonly settlementStatusCode: FinanceSettlementStatusCode;
+  readonly message: string;
+  readonly orderCount?: number;
+  readonly grossSalesPaise?: number;
+  readonly refundPaise?: number;
+  readonly commissionPaise?: number;
+  readonly paymentFeePaise?: number;
+  readonly taxPaise?: number;
+  readonly adjustmentPaise?: number;
+  readonly netPayoutPaise?: number;
+}
+
+export interface FinanceAdjustmentResult {
+  readonly payoutEntryPk: string;
+  readonly settlementRunPk: string;
+  readonly amountPaise: number;
   readonly message: string;
 }
 

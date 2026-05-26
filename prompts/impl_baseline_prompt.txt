@@ -9,6 +9,319 @@ MODE
 
 Current git state:
 - Branch: main
+- Latest commit: e272205
+- Expected state: all intended implementation changes are committed and pushed before this slice begins. prompts/impl_baseline_prompt.txt and prompts/template-development.txt will be dirty.
+- Deployments done on remote supabase and vercel environments.
+- Codex must run `git status --short --branch` first and report any dirty files before editing.
+
+
+Remote migration state:
+- Remote Supabase migrations for prior slices have already been applied.
+- Local Supabase may lag behind remote.
+- Do not assume local DB is current unless verified.
+- If this slice adds a migration, document exactly how I should apply it remotely.
+
+SLICE
+- Slice name: Pilot Finance & Settlement
+- Slice number: 7
+- Phase: Phase 2 - Restaurant Trust, Reporting, and Money Movement
+- Business goal: Give pilot operators and restaurant partners a trustworthy, auditable settlement workflow for completed paid pickup orders: calculate gross sales, commission, tax/fee deductions, refund/debit visibility, net payout, invoice metadata, payout status, and restaurant-facing finance transparency without initiating real money movement automatically.
+- User-facing proof point: Admin can create and lock a settlement for a restaurant/period from webhook-confirmed paid pickup orders; restaurant owner can open `/portal/finance` and see the settlement total, line entries, commission/tax deductions, net payout, payout status, and invoice/download-safe details.
+
+PROJECT CONTEXT
+- Current deployed surfaces:
+  - Website: https://gozaika.in/
+  - Consumer web: https://customer.gozaika.in/
+  - Restaurant portal: https://restaurant.gozaika.in/
+  - Admin portal: https://admin.gozaika.in/
+- Owned domains: gozaik.in, gozaika.com
+- Baseline roadmap: project docs/goZaika_Technology_Specification_v2.docx
+- Rebuild source of truth: docs/implementation-plan.md
+- Current completed slices:
+  - Slice 0: Foundation - monorepo, canonical schema, app shells, shared packages, Supabase client separation, UI baseline, CI shape.
+  - Slice 1: Auth/Profile/Consent - consumer auth, profile bootstrap, DPDP consent capture, account surface, Supabase SSR session refresh.
+  - Slice 2: Restaurant Onboarding - owner portal, onboarding/compliance, private document upload, admin review/activation, active restaurant membership gate.
+  - Slice 3: First Drop Publishing & Consumer Discovery - active restaurants publish public drops, consumer discovery/detail reads safe public drop data.
+  - Slice 3.5: Manual Launch Comms Support - public drop links, WhatsApp-safe copy, restaurant/admin copy surfaces.
+  - Slice 4A: Claim Hold / Order Intent - signed-in consumer temporary holds, checkout hold page, expired-hold release path.
+  - Slice 4B: Razorpay Payment & Order Confirmation - server-created Razorpay orders, verified webhook conversion, paid order page with QR/OTP pickup proof, restaurant/admin order visibility.
+  - Slice 5: Pickup Verification, Incident Basics & Pilot UX Polish - restaurant OTP/QR pickup verification, collected/no-show states, minimal incidents, UX cleanup.
+  - Slice 6: Transactional Notifications & Delivery Logs - durable notification outbox, Meta WhatsApp/Resend worker, pickup reminders, admin delivery logs, fallback copy, notification status on consumer/restaurant surfaces.
+- Migrations already applied: 20260425000000_gozaika_consolidated_schema.sql, 20260427000000_slice1_auth_profile_consent.sql, 20260502000000_slice2_restaurant_onboarding.sql, 20260502001000_slice2_restaurant_rls_hardening.sql, 20260513000000_slice3_drop_publishing_discovery.sql, 20260517000000_slice3_public_drop_aliases.sql, 20260518000000_slice3_template_active_revision_repair.sql, 20260518001000_slice3_template_drop_preferences.sql, 20260518002000_slice4a_claim_hold_order_intent.sql, 20260521000000_slice4b_razorpay_payment_order_confirmation.sql, 20260522000000_slice4b_payment_rpc_returning_repair.sql, 20260524000000_payment_webhook_event_processing_updates.sql, 20260524001000_slice4b_payment_rpc_variable_conflict_repair.sql, 20260525000000_slice5_pickup_verification_incidents.sql, 20260526000000_slice6_transactional_notifications.sql.
+- Known deployment/env state: Remote Supabase and Vercel are primary. Slice 6 smoke tests passed end-to-end. `release-expired-holds`, `razorpay-webhook`, `pickup-reminder-cron`, and `notification-outbox-worker` are deployed. Razorpay, pickup credential, Meta WhatsApp, Resend, and notification env vars are configured for current pilot testing. No finance, payout-transfer, settlement automation, or invoice-generation env vars are configured yet. `settlement-run-worker` exists only as a scaffold and must be replaced or hardened in this slice without triggering irreversible payouts.
+
+ACCOUNTS FOR TESTING:
+Deployed apps: https://customer.gozaika.in/   https://restaurant.gozaika.in/ and https://admin.gozaika.in/admin
+Accounts that can be used for testing: resturant=919000100001/123456   customer=918106230860/123456  https://admin.gozaika.in/auth/login=admin.ops@gozaika.example/GozaikaDemo@123 
+Database created on 
+
+EXPERTISE TO APPLY
+- Product manager: keep scope pilot-first and launch-useful.
+- Senior full-stack engineer: follow existing repo patterns and vertical-slice architecture.
+- Database/RLS engineer: protect tenancy, service-role boundaries, and public/private data separation.
+- UX designer: optimize for fast, obvious workflows with clear mobile/desktop layouts.
+- Food-safety/compliance reviewer: treat allergen, dietary, pickup, and restaurant identity as safety-critical.
+- Payments/security reviewer: apply only if this slice touches payment/auth/webhooks/RLS.
+- QA engineer: define validation gates and run focused checks.
+- Technical writer: update docs so future Codex can rebuild from ground zero.
+
+READ FIRST
+1. Run git status.
+2. Read docs/implementation-plan.md.
+3. Read relevant roadmap section in project docs/goZaika_Technology_Specification_v2.docx.
+4. Read these files before editing:
+   - packages/types/src/index.ts
+   - packages/types/src/index.test.ts
+   - packages/utils/src/index.ts
+   - packages/utils/src/index.test.ts
+   - packages/db/src/index.ts
+   - packages/supabase/src/index.ts
+   - packages/ui/src/index.tsx
+   - apps/restaurant-mgmt-web/lib/portal-auth.ts
+   - apps/restaurant-mgmt-web/lib/slice3.ts
+   - apps/restaurant-mgmt-web/app/portal/finance/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/orders/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/orders/orders-client.tsx
+   - apps/admin-web/lib/admin-auth.ts
+   - apps/admin-web/app/admin/page.tsx
+   - apps/admin-web/app/admin/drops/page.tsx
+   - apps/admin-web/app/admin/notifications/page.tsx
+   - apps/admin-web/app/admin/notifications/notifications-client.tsx
+   - supabase/functions/_shared/http.ts
+   - supabase/functions/_shared/supabase.ts
+   - supabase/functions/settlement-run-worker/index.ts
+   - supabase/functions/razorpay-webhook/index.ts
+   - supabase/migrations/20260425000000_gozaika_consolidated_schema.sql
+   - supabase/migrations/20260502000000_slice2_restaurant_onboarding.sql
+   - supabase/migrations/20260521000000_slice4b_razorpay_payment_order_confirmation.sql
+   - supabase/migrations/20260525000000_slice5_pickup_verification_incidents.sql
+   - supabase/migrations/20260526000000_slice6_transactional_notifications.sql
+   - docs/product/razorpay-payment-order-confirmation.md
+   - docs/product/pickup-verification-incident-basics.md
+   - docs/product/transactional-notifications.md
+   - docs/runbooks/payments.md
+   - docs/runbooks/pickup-operations.md
+   - docs/runbooks/notifications.md
+   - docs/runbooks/demo-data.md
+   - docs/configuration-reference.md
+   - docs/deployment-pipeline.md
+5. Inspect existing patterns before adding abstractions.
+
+SCOPE / MUST INCLUDE
+- Add a pilot settlement MVP that calculates restaurant settlement runs from eligible webhook-confirmed captured orders whose pickup window has closed and whose terminal pickup state is collected/no-show or otherwise payout-eligible by explicit rules.
+- Use existing finance tables where possible: `finance_settlement_run`, `finance_restaurant_payout_entry`, `finance_invoice`, `restaurant_payout_account`, `restaurant_commission_plan`, and `restaurant_commission_override`; add only additive migration changes required for idempotency, lock immutability, status transitions, safe read models, adjustment notes, invoice metadata, and auditability.
+- Admin/Ops must be able to preview, create/recalculate a draft, lock a settlement, issue invoice metadata, and mark payout status as sent/paid/reconciled manually. These are accounting workflow states only, not Razorpay transfer initiation.
+- Restaurant users must see their own settlement summaries and line entries on `/portal/finance`, including gross sales, refunds/debits if any, commission, tax/fee deductions, net payout, masked payout account state, invoice status, and payout status.
+- Add typed request/response models in `@gozaika/types` for settlement summaries, settlement detail rows, payout entries, settlement preview/create/lock/status requests, adjustment requests, invoice summaries, and finance status codes.
+- Add focused admin UI for `/admin/finance` or an enhanced admin support surface: restaurant filter, period selection, status filter, settlement preview, draft/recalculate, lock, mark sent/paid/reconciled, adjustment entry, invoice metadata, and line-entry inspection.
+- Harden or replace `settlement-run-worker` so it can safely run bounded settlement calculations or maintenance tasks without irreversible payouts. It must never call Razorpay transfers in this slice.
+- Preserve Slice 4B payment ownership: only verified Razorpay webhooks create paid orders/payment transactions. Settlement logic must never create payments, orders, pickup transitions, notification sends, refunds, or Razorpay transfers.
+- Preserve Slice 5 pickup behavior: pickup verification/no-show/incident flows must continue to work regardless of finance/settlement status.
+- Preserve Slice 6 notification behavior: finance actions may enqueue operational admin/restaurant notifications only if already supported safely, but finance workflows must not depend on provider delivery.
+
+OUT OF SCOPE / MUST NOT INCLUDE
+- Do not initiate live Razorpay payouts, transfers, fund-account creation, or automated bank movement.
+- Do not initiate refunds or call Razorpay refund APIs. Refund/debit visibility may be read-only or manually represented only if already present in `payment_refund`.
+- Do not build full reconciliation exports, GST-compliant final invoice legal automation, CA workflows, accounting integrations, Tally/Zoho/QuickBooks sync, or payout bank verification automation.
+- Do not implement Swaad Club, subscriptions, loyalty, referrals, reviews, native mobile finance screens, marketing campaigns, advanced analytics, or ROI reports beyond the settlement/payment facts needed for Slice 7.
+- Do not expose private compliance documents, full bank account numbers, raw Razorpay payloads, service-role keys, provider secrets, raw pickup credentials, or broad PII exports.
+- Do not add destructive admin order overrides, second-admin correction workflows, broad config management, restaurant suspension, or full support ticketing; those belong to Slice 8B.
+- Do not redesign the marketing website.
+
+USER FLOWS
+Consumer:
+- Consumer pays for a held BAM Bag through Razorpay and webhook conversion creates a paid order as before.
+- Consumer pickup/no-show status remains unchanged by settlement activity.
+- Consumer-facing order pages must not expose restaurant settlement, commission, payout, invoice, or internal finance data.
+- Consumer refund promises must not change in this slice.
+
+Restaurant:
+- Restaurant owner opens `/portal/finance`.
+- They see current/past settlement runs for their own restaurant only.
+- They can inspect a settlement: period, order count, gross sales, commission/tax/fees, refunds/debits/adjustments, net payout, payout status, invoice status, masked payout account, and line entries.
+- Restaurant staff cannot edit settlement runs, create adjustments, mark payout paid, or view other restaurants' finance data.
+- Finance visibility must be clear even when there are no closed paid orders yet.
+
+Admin/Ops:
+- Admin opens a compact finance support surface.
+- Admin selects restaurant and date range, previews eligible orders and calculated totals.
+- Admin creates or recalculates a draft settlement idempotently.
+- Admin locks the settlement after review; locked settlements are immutable except status progression and later adjustment entries in future runs.
+- Admin can issue invoice metadata and manually mark settlement status as sent, paid, or reconciled with required notes/provider reference fields where useful.
+- Admin can see excluded orders with clear reasons: not captured, pickup window open, already settled, refunded/cancelled, wrong restaurant, or not payout-eligible.
+- Admin cannot trigger real payouts, refunds, payment captures, pickup overrides, destructive order edits, or broad data correction as part of this slice.
+
+Mobile:
+- No native mobile implementation.
+- Restaurant web portal and admin web surfaces must remain mobile-friendly for pilot operators.
+- Do not add Expo finance screens, native payout alerts, native push, or mobile background sync.
+
+DATA / DATABASE REQUIREMENTS
+- Prefer additive migrations.
+- Do not edit historical migrations unless fixing idempotency.
+- RLS and service-role usage must be reviewed.
+- Public views must expose only safe fields.
+- Tables/views/RPCs/functions likely involved:
+  - finance_settlement_run
+  - finance_restaurant_payout_entry
+  - finance_invoice
+  - restaurant_payout_account
+  - restaurant_commission_plan
+  - restaurant_commission_override
+  - restaurant_restaurant
+  - restaurant_team_membership
+  - restaurant_compliance
+  - iam_profile
+  - iam_platform_membership
+  - order_order
+  - order_item
+  - order_status_transition
+  - order_pickup_verification_event
+  - payment_order_intent
+  - payment_transaction
+  - payment_refund
+  - payment_webhook_event
+  - incident_incident
+  - incident_event
+  - storage_object
+  - notification_outbox only if optional finance status notifications are reused safely
+  - audit_log if available and useful for finance status actions
+  - new safe read models such as api_admin_finance_settlement_summary, api_admin_finance_settlement_detail, api_admin_finance_eligible_order_summary, api_restaurant_finance_settlement_summary, api_restaurant_finance_settlement_detail
+  - service-role/admin RPCs such as api_preview_restaurant_settlement, api_create_or_recalculate_settlement_run, api_lock_settlement_run, api_mark_settlement_status, api_create_settlement_adjustment, api_issue_settlement_invoice
+  - Supabase Edge Function settlement-run-worker
+- Settlement calculation rules must be explicit:
+  - Use paise integer arithmetic only.
+  - Include captured paid orders for the selected restaurant/period only after pickup window close.
+  - Include collected and no-show orders unless a refund/debit makes the order ineligible or adjusts payout.
+  - Exclude orders already attached to a locked/non-cancelled settlement entry.
+  - Calculate commission from active `restaurant_commission_override` at order time; fall back to the active/default commission plan.
+  - Tax/fee math must be documented. If GST/tax assumptions are not final, store/display as pilot estimate and require human finance review before locking.
+  - Locked settlement rows and entries must not be recalculated in place.
+- Migration naming convention:
+  - supabase/migrations/20260527000000_slice7_pilot_finance_settlement.sql
+
+API REQUIREMENTS
+- Add typed request/response models in `@gozaika/types` for finance status codes, settlement summary/detail, eligible-order preview, payout entry summary, invoice summary, settlement preview/create/lock/status requests, and adjustment requests.
+- Add admin route/server loader support for finance summaries and details, guarded by existing platform membership checks. Finance mutations require platform admin access and should prefer FINANCE_ADMIN/SUPER_ADMIN if role granularity exists.
+- Add restaurant route/server loader support for own settlement summaries/details, guarded by active restaurant membership.
+- Add admin route handlers for preview, create/recalculate draft, lock, issue invoice metadata, mark sent/paid/reconciled/cancelled, and create manual adjustment. Require reason/note for lock, cancellation, reconciliation, and adjustment.
+- Add idempotency so repeated preview/create/recalculate calls cannot create duplicate active settlement runs for the same restaurant and period.
+- Locking must verify draft/open totals match current entry rows and then prevent further recalculation of that run.
+- `settlement-run-worker` may create or refresh draft runs for bounded periods, but must not call Razorpay transfer/payout/refund APIs.
+- API errors must be specific: login required, admin access required, finance admin access required, restaurant access required, restaurant not found, invalid period, no eligible orders, settlement not found, settlement already locked, recalculation not allowed, lock not allowed, status transition not allowed, invoice not available, internal error.
+- Do not add refund APIs, Razorpay transfer APIs, payout initiation APIs, native mobile APIs, marketing APIs, or broad PII export APIs.
+
+UI / UX REQUIREMENTS
+- Maintain production-quality layout.
+- Buttons must be visible, labeled, accessible, and responsive.
+- Avoid dead-end screens.
+- Errors must explain what to correct.
+- Success states must be clear.
+- Primary workflow should be fast for the target user.
+- Use existing design tokens/components where possible.
+- Do not add marketing/landing-page fluff inside operational apps.
+- Admin finance UI should be compact and operational: restaurant selector, period inputs, status chips, totals, line entries, eligibility/exclusion reasons, lock/status actions, and clear warnings that payouts are manual.
+- Restaurant finance UI should be calm and trust-building: show only own restaurant data, plain labels, exact paise/INR formatting, settlement status timeline, payout account masked state, and invoice/download status.
+- Money values must be formatted consistently in INR and never use floating-point display from unrounded values.
+- Locked settlements must feel final and read-only; editable actions should disappear or be disabled with clear explanations.
+- Empty states should tell operators what must happen before settlement: captured orders, pickup window closed, eligible restaurant, configured payout/account basics.
+- Do not bury safety-critical finance caveats in tiny text: estimates, manual payout, and no-live-transfer status must be obvious.
+
+SECURITY / COMPLIANCE REQUIREMENTS
+- No service-role key in client code.
+- No private docs/media exposed publicly.
+- No PII in logs.
+- RLS/tenant checks required for:
+  - Restaurant users can only read settlement summaries, invoices, payout entries, and masked payout/account state for restaurants where they have active membership.
+  - Admin users must be verified through existing platform membership before viewing finance metadata.
+  - Finance mutations must be server-side/service-role only and scoped to verified admin roles.
+  - Consumers cannot read finance settlement, commission, payout entry, invoice, restaurant bank, or internal adjustment data.
+  - Workers use service role only in Supabase Edge Functions/server code and must perform scoped, auditable mutations.
+  - Invoice/download links must not expose private storage broadly. Use signed URLs only for authorized restaurant/admin access if invoice files are added.
+  - Logs must not include full account numbers, IFSC plus account-holder combinations, raw Razorpay payloads, consumer phone/email, provider secrets, or broad order PII.
+- Human review required for:
+  - auth
+  - payment webhook
+  - RLS
+  - refund/financial mutation
+  - destructive admin action
+  - settlement eligibility rules
+  - commission/tax/GST calculations
+  - invoice wording and legal/tax assumptions
+  - payout status transitions
+  - storage access for invoice files
+  - any interaction with Razorpay finance, refund, transfer, or payout APIs
+
+DOCS REQUIREMENTS
+Update docs in the same implementation:
+1. docs/implementation-plan.md
+   - Add/update slice section.
+   - Include goal, completed items, validation gate, out-of-scope, verification commands.
+   - Keep it usable to recreate all slices from ground zero.
+   - Include exact remote migration application steps, any required env vars, Edge Function deploy steps, and Slice 7 smoke test flow.
+2. Product/runbook docs:
+   - Create docs/product/pilot-finance-settlement.md covering settlement behavior, eligible order rules, commission/tax assumptions, restaurant finance visibility, admin workflow, invoices, manual payout boundaries, refund/debit visibility, and out-of-scope boundaries.
+   - Create docs/runbooks/finance-settlements.md covering migration, settlement preview/create/lock/status operations, manual payout marking, invoice metadata/download procedure, adjustment procedure, rollback notes, data correction boundaries, and smoke test steps.
+   - Update docs/runbooks/payments.md to clarify settlement is downstream of webhook-confirmed captured payments and never creates payments/refunds.
+   - Update docs/runbooks/pickup-operations.md to clarify collected/no-show terminal states and pickup-window closure drive settlement eligibility.
+   - Update docs/runbooks/demo-data.md if demo settlement rows, payout entries, invoices, or smoke SQL are added.
+3. Configuration/deployment docs if env/domain/migration behavior changes:
+   - docs/configuration-reference.md
+   - docs/deployment-pipeline.md
+4. Update DOCX roadmap only if roadmap/scope materially changes:
+   - project docs/goZaika_Technology_Specification_v2.docx
+   - If editing DOCX, use Documents skill and render/visually verify.
+
+DEMO / SEED REQUIREMENTS
+- Add deterministic demo data if needed.
+- Register demo rows in dev_demo_seed_registry where applicable.
+- Update cleanup scripts if demo rows are added.
+- Do not seed production data.
+- Add/update smoke SQL if useful.
+- If adding a demo SQL file, use supabase/seeds/demo/008_slice7_pilot_finance_settlement_demo.sql and make it safe for local/staging only.
+- Demo rows must use clearly fake finance references, e.g. `settlement_demo_*`, `invoice_demo_*`, and must not contain real bank account numbers or real provider payout refs.
+- Cleanup must remove demo finance_invoice, finance_restaurant_payout_entry, finance_settlement_run, payment_refund, and related demo order/payment rows in FK-safe order.
+
+
+Codex is allowed to use http://localhost:3000 for local smoke testing.
+
+VALIDATION GATE
+This slice is complete only when:
+- Admin can preview eligible captured paid orders for a restaurant/period, create or recalculate one draft settlement idempotently, inspect line entries, and lock it without duplicate entries or floating-point money defects.
+- Restaurant user can open `/portal/finance` and see only their own settlement summaries/details: gross sales, commission, tax/fees, refunds/debits/adjustments, net payout, payout status, invoice status, and masked payout account state.
+- Locked settlement runs are immutable for recalculation; status progression and manual notes are auditable and cannot trigger real Razorpay transfers, refunds, payment mutations, pickup transitions, or order overrides.
+- RLS/service-role boundaries are verified for restaurant, admin, and worker paths; no full bank account numbers, private docs, raw provider payloads, secrets, or unnecessary PII are exposed.
+- `settlement-run-worker` is either safely hardened or explicitly documented/deployed as a no-live-payout bounded worker.
+- docs/implementation-plan.md explains how to rebuild Slice 7 from scratch after Slices 0, 1, 2, 3, 3.5, 4A, 4B, 5, and 6.
+- Product/runbook/config/deployment/demo docs are updated.
+- Focused typecheck, lint, builds, migration SQL review, Edge Function review, and manual/browser smoke tests pass or external finance/legal blockers are documented.
+
+VERIFICATION COMMANDS
+Run focused checks:
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+
+=====
+You are Codex working in C:\venkat\limca\gozaika\sourcecode.
+
+MODE
+- This is an implementation task.
+- Make code changes unless blocked.
+- Do not stop at a proposal.
+- Preserve unrelated user changes.
+- Run verification before final response.
+
+Current git state:
+- Branch: main
 - Latest commit: feda1d5
 - Expected state: all intended implementation changes are committed and pushed before this slice begins. prompts/impl_baseline_prompt.txt and prompts/template-development.txt will be dirty.
 - Deployments done on remote supabase and vercel environments.

@@ -46,3 +46,14 @@ export async function requireAdminActor(): Promise<AdminActor | NextResponse> {
   }
   return actor;
 }
+
+export async function requireFinanceAdminActor(): Promise<AdminActor | NextResponse> {
+  const actor = await requireAdminActor();
+  if (actor instanceof NextResponse) return actor;
+
+  if (!["SUPER_ADMIN", "FINANCE_ADMIN"].includes(actor.roleCode)) {
+    return NextResponse.json({ ok: false, error: "Finance admin access is required." }, { status: 403 });
+  }
+
+  return actor;
+}
