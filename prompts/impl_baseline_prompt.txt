@@ -1,3 +1,336 @@
+
+You are Codex working in C:\venkat\limca\gozaika\sourcecode.
+
+MODE
+- This is an implementation task.
+- Make code changes unless blocked.
+- Do not stop at a proposal.
+- Preserve unrelated user changes.
+- Run verification before final response.
+
+Current git state:
+- Branch: main
+- Latest commit: 0637ad6
+- Expected state: all intended implementation changes are committed and pushed before this slice begins. prompts/impl_baseline_prompt.txt and prompts/template-development.txt will be dirty.
+- Deployments done on remote supabase and vercel environments.
+- Codex must run `git status --short --branch` first and report any dirty files before editing.
+
+
+Remote migration state:
+- Remote Supabase migrations for prior slices have already been applied.
+- Local Supabase may lag behind remote.
+- Do not assume local DB is current unless verified.
+- If this slice adds a migration, document exactly how I should apply it remotely.
+
+SLICE
+- Slice name: Pilot ROI Reports
+- Slice number: 8A
+- Phase: Phase 2 - Restaurant Trust, Reporting, and Money Movement
+- Business goal: Give pilot restaurant partners and goZaika ops a trustworthy weekly ROI report showing whether the paid pickup loop is working: bags listed/sold, sell-through, GMV, estimated net recovery, pickup completion, no-shows, refunds/debits, incidents, first-time/repeat buyer signals where available, and practical next actions for the 30-day zero-commission pilot.
+- User-facing proof point: Restaurant owner opens a reporting surface and can see a clear weekly partner report for their own restaurant; admin/ops can open a compact ROI reporting surface, select a restaurant/period, inspect drop/order metrics, and copy/download/share-safe report details for partner review.
+
+PROJECT CONTEXT
+- Current deployed surfaces:
+  - Website: https://gozaika.in/
+  - Consumer web: https://customer.gozaika.in/
+  - Restaurant portal: https://restaurant.gozaika.in/
+  - Admin portal: https://admin.gozaika.in/
+- Owned domains: gozaik.in, gozaika.com
+- Baseline roadmap: project docs/goZaika_Technology_Specification_v2.docx
+- Rebuild source of truth: docs/implementation-plan.md
+- Current completed slices:
+  - Slice 0: Foundation - monorepo, canonical schema, app shells, shared packages, Supabase client separation, UI baseline, CI shape.
+  - Slice 1: Auth/Profile/Consent - consumer auth, profile bootstrap, DPDP consent capture, account surface, Supabase SSR session refresh.
+  - Slice 2: Restaurant Onboarding - owner portal, onboarding/compliance, private document upload, admin review/activation, active restaurant membership gate.
+  - Slice 3: First Drop Publishing & Consumer Discovery - active restaurants publish public drops, consumer discovery/detail reads safe public drop data.
+  - Slice 3.5: Manual Launch Comms Support - public drop links, WhatsApp-safe copy, restaurant/admin copy surfaces.
+  - Slice 4A: Claim Hold / Order Intent - signed-in consumer temporary holds, checkout hold page, expired-hold release path.
+  - Slice 4B: Razorpay Payment & Order Confirmation - server-created Razorpay orders, verified webhook conversion, paid order page with QR/OTP pickup proof, restaurant/admin order visibility.
+  - Slice 5: Pickup Verification, Incident Basics & Pilot UX Polish - restaurant OTP/QR pickup verification, collected/no-show states, minimal incidents, UX cleanup.
+  - Slice 6: Transactional Notifications & Delivery Logs - durable notification outbox, Meta WhatsApp/Resend worker, pickup reminders, admin delivery logs, fallback copy, notification status on consumer/restaurant surfaces.
+  - Slice 7: Pilot Finance & Settlement - admin settlement preview/create/lock/manual status workflow, restaurant finance transparency, safe invoice metadata, no live payouts.
+- Migrations already applied: 20260425000000_gozaika_consolidated_schema.sql, 20260427000000_slice1_auth_profile_consent.sql, 20260502000000_slice2_restaurant_onboarding.sql, 20260502001000_slice2_restaurant_rls_hardening.sql, 20260513000000_slice3_drop_publishing_discovery.sql, 20260517000000_slice3_public_drop_aliases.sql, 20260518000000_slice3_template_active_revision_repair.sql, 20260518001000_slice3_template_drop_preferences.sql, 20260518002000_slice4a_claim_hold_order_intent.sql, 20260521000000_slice4b_razorpay_payment_order_confirmation.sql, 20260522000000_slice4b_payment_rpc_returning_repair.sql, 20260524000000_payment_webhook_event_processing_updates.sql, 20260524001000_slice4b_payment_rpc_variable_conflict_repair.sql, 20260525000000_slice5_pickup_verification_incidents.sql, 20260526000000_slice6_transactional_notifications.sql, 20260527000000_slice7_pilot_finance_settlement.sql, 20260527001000_slice7_finance_settlement_rpc_repair.sql.
+- Known deployment/env state: Remote Supabase and Vercel are primary. Slice 7 smoke tests passed end-to-end. `release-expired-holds`, `razorpay-webhook`, `pickup-reminder-cron`, `notification-outbox-worker`, and `settlement-run-worker` are deployed. Razorpay payment/webhook, pickup credential, Meta WhatsApp, Resend, notification, finance settlement, admin, restaurant, and consumer env vars are configured for current pilot testing. No automated ROI email digest, advanced analytics warehouse, Sentry, export-job worker, native mobile reporting, or accounting integration env vars are configured yet.
+
+
+SMOKE TEST SLICE:
+If Browser/in-app browser tooling is not callable, run local route smoke tests with a Node script that starts Next through `cmd.exe /d /s /c`, passes a sanitized child env with only one `Path` key, requests the target localhost routes with `fetch(..., { redirect: "manual" })`, treats expected auth redirects as pass, then kills the child process and verifies no ports remain open. Do not use PowerShell `Start-Process` directly because this Windows shell may contain duplicate `Path/PATH` env keys.
+
+Setup shortcuts:
+- read docs/implementation-plan.md for slice gates and docs/runbooks/*.md only as needed.
+- Run `npm.cmd run ci` once up front. If it fails, fix and rerun full CI after fixes.
+- Use deployed apps for authenticated end-to-end smoke unless the task is specifically local-only:
+  - customer: https://customer.gozaika.in/
+  - restaurant: https://restaurant.gozaika.in/
+  - admin: https://admin.gozaika.in/
+- Use local apps only for code/layout verification after changes. If local auth needs Supabase, expect sandbox network failures and do not spend time debugging that as an app bug.
+- On Windows, avoid PowerShell `Start-Process` for dev servers because duplicate Path/PATH can break it. Prefer foreground checks, `npm.cmd`, or a sanitized Node launcher.
+- Razorpay is not configured. run  `powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File C:\venkat\limca\gozaika\infra\rpay.ps1 -HoldPk <hold-pk>`
+- If that hold is already CONVERTED, use the converted order id from the debug response as the smoke-test anchor.
+- WhatsApp failures are expected as the customer/restaurant phone numbers are not added to the Meta test account. Treat provider auth/config failures as expected only if the outbox rows, attempts, fallback copy, and email path are visible.
+
+Credentials:
+resturant=919000100001/123456   customer=918106230860/123456  https://admin.gozaika.in/auth/login=admin.ops@gozaika.example/GozaikaDemo@123 
+
+
+Required UI checks:
+- Desktop and mobile viewport checks for the touched surfaces.
+- Record horizontal overflow with document scrollWidth/clientWidth.
+- Capture screenshots for customer, restaurant, and admin slice pages.
+
+Cleanup:
+- Stop local dev servers on ports 3000/3001/3002 after testing.
+- Do not revert unrelated dirty files.
+
+
+
+
+EXPERTISE TO APPLY
+- Product manager: keep scope pilot-first and launch-useful.
+- Senior full-stack engineer: follow existing repo patterns and vertical-slice architecture.
+- Database/RLS engineer: protect tenancy, service-role boundaries, and public/private data separation.
+- UX designer: optimize for fast, obvious workflows with clear mobile/desktop layouts.
+- Food-safety/compliance reviewer: treat allergen, dietary, pickup, and restaurant identity as safety-critical.
+- Payments/security reviewer: apply only if this slice touches payment/auth/webhooks/RLS.
+- QA engineer: define validation gates and run focused checks.
+- Technical writer: update docs so future Codex can rebuild from ground zero.
+
+READ FIRST
+1. Run git status.
+2. Read docs/implementation-plan.md.
+3. Read relevant roadmap section in project docs/goZaika_Technology_Specification_v2.docx.
+4. Read these files before editing:
+   - packages/types/src/index.ts
+   - packages/types/src/index.test.ts
+   - packages/utils/src/index.ts
+   - packages/utils/src/index.test.ts
+   - packages/db/src/index.ts
+   - packages/supabase/src/index.ts
+   - packages/ui/src/index.tsx
+   - apps/restaurant-mgmt-web/lib/portal-auth.ts
+   - apps/restaurant-mgmt-web/lib/slice3.ts
+   - apps/restaurant-mgmt-web/lib/finance.ts
+   - apps/restaurant-mgmt-web/app/portal/portal-nav.tsx
+   - apps/restaurant-mgmt-web/app/portal/dashboard/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/finance/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/orders/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/orders/orders-client.tsx
+   - apps/admin-web/lib/admin-auth.ts
+   - apps/admin-web/lib/finance.ts
+   - apps/admin-web/app/admin/page.tsx
+   - apps/admin-web/app/admin/drops/page.tsx
+   - apps/admin-web/app/admin/finance/page.tsx
+   - apps/admin-web/app/admin/finance/finance-client.tsx
+   - apps/admin-web/app/admin/notifications/page.tsx
+   - apps/admin-web/app/admin/notifications/notifications-client.tsx
+   - apps/consumer-web/lib/orders.ts
+   - apps/consumer-web/lib/drops.ts
+   - supabase/functions/_shared/http.ts
+   - supabase/functions/_shared/supabase.ts
+   - supabase/migrations/20260425000000_gozaika_consolidated_schema.sql
+   - supabase/migrations/20260513000000_slice3_drop_publishing_discovery.sql
+   - supabase/migrations/20260521000000_slice4b_razorpay_payment_order_confirmation.sql
+   - supabase/migrations/20260525000000_slice5_pickup_verification_incidents.sql
+   - supabase/migrations/20260526000000_slice6_transactional_notifications.sql
+   - supabase/migrations/20260527000000_slice7_pilot_finance_settlement.sql
+   - supabase/migrations/20260527001000_slice7_finance_settlement_rpc_repair.sql
+   - docs/product/pilot-finance-settlement.md
+   - docs/product/pickup-verification-incident-basics.md
+   - docs/product/transactional-notifications.md
+   - docs/runbooks/finance-settlements.md
+   - docs/runbooks/pickup-operations.md
+   - docs/runbooks/payments.md
+   - docs/runbooks/notifications.md
+   - docs/runbooks/demo-data.md
+   - docs/configuration-reference.md
+   - docs/deployment-pipeline.md
+5. Inspect existing patterns before adding abstractions.
+
+SCOPE / MUST INCLUDE
+- Add a pilot weekly ROI reporting MVP for restaurant partners and ops, grounded in existing paid pickup facts: drops listed, bags listed, bags sold, sell-through rate, GMV, estimated net recovery, settlement/finance totals where available, pickup completion, no-shows, refunds/debits, incidents, and first-time/repeat buyer signals where safely derivable.
+- Add restaurant-facing reporting on a compact `/portal/analytics` or `/portal/reports` surface and link it from the portal navigation. Restaurant users must only see their own restaurant’s reports and supporting rows.
+- Add admin/ops reporting on a compact `/admin/reports` or `/admin/roi` surface with restaurant selector, date range/weekly presets, summary cards, drop/order detail table, incident/refund notes, and copy/share-safe partner report text for founder-led weekly partner reviews.
+- Use existing facts and finance tables where possible; add only additive migration changes needed for safe read models, optional persisted report snapshots, report notes, idempotent report generation, and auditability.
+- Calculate all money in paise integer arithmetic and format as INR only at UI boundaries.
+- Make report assumptions explicit: estimated net is pilot/reporting guidance unless a locked settlement exists; commission-free pilot may make estimated net equal gross minus refunds/debits/fees depending on available finance entries.
+- Include clear empty states: no drops listed, no paid orders yet, pickup window still open, settlement not locked, insufficient repeat-buyer data, or incidents/refunds not present.
+- Preserve Slice 7 finance ownership: ROI reports may read settlement and payout facts but must not mutate settlements, invoices, payouts, refunds, payments, orders, pickup states, or notification delivery state.
+- Add typed request/response models in `@gozaika/types` for ROI report summary, report detail rows, report period request, drop performance row, incident/refund note row, and status/insight codes.
+- Add utility helpers in `@gozaika/utils` for percentage formatting, rate tone/label helpers, and INR/paise presentation reuse if needed.
+- Add focused smoke/report SQL or deterministic demo data only if needed for local/staging validation, registered in demo registry and cleanup.
+
+OUT OF SCOPE / MUST NOT INCLUDE
+- Do not build advanced Zaika Pro analytics, ML demand forecasting, heatmaps, cohort dashboards beyond simple first-time/repeat buyer signals, neighborhood benchmarking, competitor benchmarking, exports-as-background-jobs, scheduled weekly email automation, native mobile analytics, or full CRM tooling.
+- Do not initiate refunds, payouts, Razorpay transfers, fund-account creation, payment captures, settlement recalculation, pickup overrides, destructive order edits, or automated merchant billing.
+- Do not expose consumer PII, full phone/email lists, raw Razorpay payloads, notification destinations beyond existing masked/support-safe patterns, private compliance documents, raw pickup credentials, service-role keys, or broad data exports.
+- Do not redesign marketing website, consumer discovery, checkout, pickup verification, notification provider behavior, or settlement workflow unless a small compatibility fix is required.
+- Do not implement Swaad Club, referrals, reviews, corporate BAM, subscription billing, sponsored placement, Tally/Zoho/QuickBooks sync, CA workflows, or GST-compliant legal invoice automation.
+
+USER FLOWS
+Consumer:
+- Consumer pays and picks up/no-shows as before. Consumer pages must not expose partner ROI, sell-through analytics, settlement, commission, payout, invoice, repeat-buyer classification, or internal report notes.
+- Existing consumer order/history/drop behavior must remain unchanged except for data being counted in reports.
+
+Restaurant:
+- Restaurant owner opens the new reporting surface from portal navigation.
+- They select or view the current weekly period and see bags listed/sold, sell-through, GMV, estimated net, pickup completion, no-shows, incidents, refunds/debits, settlement status, and practical report notes.
+- They can inspect drop-level rows: drop title/window, quantity listed, sold/claimed/collected/no-show, sell-through, GMV, refund/debit amount, incident count.
+- They see plain explanations when metrics are estimated, when settlement is not locked, and when repeat-buyer data is too thin.
+- Restaurant users cannot edit report calculations, create refunds, create settlements, mark payouts, view other restaurants, or access raw customer PII.
+
+Admin/Ops:
+- Admin opens a compact ROI reporting surface.
+- Admin selects restaurant and date range or weekly preset.
+- Admin sees the same partner-facing summary plus ops-only context: excluded/open-window counts, incident/refund flags, settlement link/status, data freshness, and report generation notes.
+- Admin can generate or refresh an idempotent report snapshot if a persisted snapshot is added, add an internal/report note if scoped and audited, and copy partner-safe report text for WhatsApp/email/manual deck use.
+- Admin cannot trigger payments, refunds, payouts, pickup overrides, destructive corrections, settlement recalculation, or broad exports from this slice.
+
+Mobile:
+- No native mobile implementation.
+- Restaurant portal and admin reporting surfaces must remain responsive for mobile/tablet smoke checks.
+- Do not add Expo analytics screens, push reporting alerts, native charts, or mobile background sync.
+
+DATA / DATABASE REQUIREMENTS
+- Prefer additive migrations.
+- Do not edit historical migrations unless fixing idempotency.
+- RLS and service-role usage must be reviewed.
+- Public views must expose only safe fields.
+- Tables/views/RPCs/functions likely involved:
+  - restaurant_restaurant
+  - restaurant_team_membership
+  - iam_profile
+  - iam_platform_membership
+  - catalog_bag_template
+  - catalog_bag_template_revision
+  - drop_drop
+  - drop_inventory_hold
+  - drop_inventory_event
+  - order_order
+  - order_item
+  - order_status_transition
+  - order_pickup_verification_event
+  - payment_order_intent
+  - payment_transaction
+  - payment_refund
+  - finance_settlement_run
+  - finance_restaurant_payout_entry
+  - finance_invoice
+  - incident_incident
+  - incident_event
+  - notification_outbox only for read-only delivery context if useful
+  - audit_log if persisted report snapshots/notes are added
+  - optional new table: restaurant_roi_report_snapshot
+  - optional new table: restaurant_roi_report_note
+  - safe read models such as api_restaurant_roi_report_summary, api_restaurant_roi_drop_detail, api_admin_roi_report_summary, api_admin_roi_drop_detail
+  - service-role/admin RPCs such as api_generate_restaurant_roi_report and api_add_restaurant_roi_report_note only if persisted snapshots/notes are added
+- Migration naming convention:
+  - supabase/migrations/20260528000000_slice8a_pilot_roi_reports.sql
+
+API REQUIREMENTS
+- Add typed request/response models in `@gozaika/types` for ROI report period request, report summary, drop detail row, metric card, report note, copy-safe report payload, and insight/status codes.
+- Add restaurant server loader support for own ROI reports, guarded by active restaurant membership.
+- Add admin server loader support for ROI reports, guarded by existing platform membership checks.
+- If report generation is mutable/persisted, admin mutations must be server-side/service-role only and scoped to verified admin roles. Prefer `SUPER_ADMIN`, `OPS_ADMIN`, and `FINANCE_ADMIN` for report generation/notes unless existing role patterns dictate otherwise.
+- API errors must be specific: login required, admin access required, restaurant access required, restaurant not found, invalid period, period too large, report not found, no reportable activity, generation not allowed, internal error.
+- Use idempotency for persisted weekly report snapshots: repeated generation for the same restaurant and period must update/refresh one active snapshot, not create duplicates.
+- Do not add refund APIs, payout APIs, payment mutation APIs, pickup mutation APIs, broad PII export APIs, scheduled digest automation, or marketing APIs.
+
+UI / UX REQUIREMENTS
+- Maintain production-quality layout.
+- Buttons must be visible, labeled, accessible, and responsive.
+- Avoid dead-end screens.
+- Errors must explain what to correct.
+- Success states must be clear.
+- Primary workflow should be fast for the target user.
+- Use existing design tokens/components where possible.
+- Do not add marketing/landing-page fluff inside operational apps.
+- Restaurant ROI UI should be calm and trust-building: plain language, exact metrics, clear data freshness, no hype, no hidden estimates.
+- Admin ROI UI should be compact and operational: restaurant selector, period presets, metric cards, drop detail table, incident/refund callouts, settlement link/status, copy-safe report text, and clear warnings when data is incomplete.
+- Use charts sparingly and only if they improve comprehension. Tables/cards are acceptable and likely better for the pilot.
+- Money values must be formatted consistently in INR from paise. Percentages must avoid floating-point defects and show clear denominator context.
+- Empty states must tell operators what must happen before ROI appears: publish drops, receive paid orders, pickup window closes, verify pickup/no-show, lock settlement if finance-backed net is required.
+- Partner-facing copy must avoid “discount”, “leftover”, “stale”, “rescue”, or brand-damaging language. Use “BAM Bags”, “Limited Drops”, “sell-through”, “incremental recovery”, and “partner report”.
+
+SECURITY / COMPLIANCE REQUIREMENTS
+- No service-role key in client code.
+- No private docs/media exposed publicly.
+- No PII in logs.
+- RLS/tenant checks required for:
+  - Restaurant users can only read ROI summaries/details for restaurants where they have active membership.
+  - Admin users must be verified through existing platform membership before viewing cross-restaurant ROI metadata.
+  - Any report snapshot/note mutation must be server-side/service-role only and audited.
+  - Consumers cannot read restaurant ROI, settlement, payout, repeat-buyer reporting, internal report notes, or other restaurant analytics.
+  - Report views must not expose raw phone/email, full customer identity, raw Razorpay payloads, notification destinations, pickup secrets/hashes, private docs, or provider secrets.
+- Human review required for:
+  - auth
+  - payment webhook
+  - RLS
+  - refund/financial mutation
+  - destructive admin action
+  - ROI metric definitions
+  - first-time/repeat-buyer logic
+  - settlement/estimated-net assumptions
+  - partner-facing report wording
+  - any admin report notes or export/download behavior
+
+DOCS REQUIREMENTS
+Update docs in the same implementation:
+1. docs/implementation-plan.md
+   - Add/update slice section.
+   - Include goal, completed items, validation gate, out-of-scope, verification commands.
+   - Keep it usable to recreate all slices from ground zero.
+   - Include exact remote migration application steps, any required env vars, deployment steps, and Slice 8A smoke test flow.
+2. Product/runbook docs:
+   - Create docs/product/pilot-roi-reports.md covering metric definitions, report periods, sell-through rules, GMV/net assumptions, pickup/no-show/incident/refund visibility, restaurant-facing visibility, admin workflow, copy-safe report text, and out-of-scope analytics.
+   - Create docs/runbooks/roi-reports.md covering migration, report generation/refresh if applicable, weekly partner review workflow, data quality checks, settlement/finance assumptions, troubleshooting empty/incomplete reports, rollback notes, and smoke test steps.
+   - Update docs/runbooks/finance-settlements.md to clarify ROI reports read settlement facts but do not mutate settlement or payout state.
+   - Update docs/runbooks/pickup-operations.md to clarify pickup completion/no-show states feed ROI reporting.
+   - Update docs/runbooks/demo-data.md if demo ROI report rows, report snapshots, smoke SQL, or cleanup rows are added.
+3. Configuration/deployment docs if env/domain/migration behavior changes:
+   - docs/configuration-reference.md
+   - docs/deployment-pipeline.md
+4. Update DOCX roadmap only if roadmap/scope materially changes:
+   - project docs/goZaika_Technology_Specification_v2.docx
+   - If editing DOCX, use Documents skill and render/visually verify.
+
+DEMO / SEED REQUIREMENTS
+- Add deterministic demo data if needed.
+- Register demo rows in dev_demo_seed_registry where applicable.
+- Update cleanup scripts if demo rows are added.
+- Do not seed production data.
+- Add/update smoke SQL if useful.
+- If adding a demo SQL file, use supabase/seeds/demo/009_slice8a_pilot_roi_reports_demo.sql and make it safe for local/staging only.
+- Demo rows must use clearly fake report references, e.g. `roi_demo_*`, and must not contain real bank account numbers, provider payout refs, raw customer PII, or real partner-sensitive notes.
+- Cleanup must remove demo ROI report snapshots/notes and any related demo finance/order/payment/drop rows in FK-safe order.
+
+Codex is allowed to use http://localhost:3000 for local smoke testing.
+
+VALIDATION GATE
+This slice is complete only when:
+- Restaurant owner can open the ROI reporting surface and see only their own restaurant’s weekly summary and drop-level detail: bags listed/sold, sell-through, GMV, estimated net or settlement-backed net, pickup completion, no-shows, refunds/debits, incidents, and data freshness/estimate explanations.
+- Admin can select restaurant/period, inspect the same metrics plus ops context, copy/share-safe partner report text, and optionally generate/refresh one idempotent report snapshot if persistence is implemented.
+- Metrics are derived from existing paid pickup facts using integer paise math and clear denominators; reports do not mutate payments, refunds, pickups, settlements, invoices, payouts, notification sends, or order state.
+- RLS/service-role boundaries are verified for restaurant, admin, and consumer paths; no raw PII, private docs, provider payloads, secrets, pickup credentials, or broad exports are exposed.
+- docs/implementation-plan.md explains how to rebuild Slice 8A from scratch after Slices 0, 1, 2, 3, 3.5, 4A, 4B, 5, 6, and 7.
+- Product/runbook/config/deployment/demo docs are updated.
+- Focused typecheck, lint, builds, migration SQL review, and manual/browser smoke tests pass or blockers are documented.
+
+VERIFICATION COMMANDS
+Run focused checks:
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+
+=====
+
 You are Codex working in C:\venkat\limca\gozaika\sourcecode.
 
 MODE

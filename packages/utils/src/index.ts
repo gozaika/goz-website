@@ -33,6 +33,43 @@ export function formatSignedPaise(amountPaise: number | bigint, locale = "en-IN"
   return formatPaise(0, locale);
 }
 
+export function rateToBasisPoints(numerator: number, denominator: number): number | null {
+  if (!Number.isFinite(numerator) || !Number.isFinite(denominator) || denominator <= 0) {
+    return null;
+  }
+
+  return Math.max(0, Math.round((numerator * 10_000) / denominator));
+}
+
+export function formatBasisPoints(basisPoints: number | null | undefined, options: { readonly emptyText?: string } = {}): string {
+  if (basisPoints == null || !Number.isFinite(basisPoints)) {
+    return options.emptyText ?? "Not enough data";
+  }
+
+  const clamped = Math.max(0, basisPoints);
+  const whole = Math.floor(clamped / 100);
+  const fraction = clamped % 100;
+  return fraction === 0 ? `${whole}%` : `${whole}.${fraction.toString().padStart(2, "0").replace(/0+$/, "")}%`;
+}
+
+export function rateTone(
+  basisPoints: number | null | undefined,
+  thresholds: { readonly strongBps: number; readonly watchBps: number } = { strongBps: 7000, watchBps: 4000 },
+): "success" | "warning" | "danger" | "neutral" {
+  if (basisPoints == null || !Number.isFinite(basisPoints)) return "neutral";
+  if (basisPoints >= thresholds.strongBps) return "success";
+  if (basisPoints >= thresholds.watchBps) return "warning";
+  return "danger";
+}
+
+export function rateLabel(basisPoints: number | null | undefined): string {
+  const tone = rateTone(basisPoints);
+  if (tone === "success") return "Strong";
+  if (tone === "warning") return "Watch";
+  if (tone === "danger") return "Needs attention";
+  return "Not enough data";
+}
+
 export function formatPickupWindow(
   pickupStartAt: string | Date,
   pickupEndAt: string | Date,

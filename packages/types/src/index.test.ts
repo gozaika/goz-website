@@ -17,6 +17,8 @@ import {
   pickupVerificationRequestSchema,
   financeSettlementStatusCodes,
   financePayoutEntryTypeCodes,
+  roiReportInsightCodes,
+  roiReportPeriodRequestSchema,
   settlementAdjustmentRequestSchema,
   settlementCreateRequestSchema,
   settlementInvoiceIssueRequestSchema,
@@ -44,6 +46,10 @@ describe("goZaika status constants", () => {
   it("keeps pilot finance settlement states and payout entry types available", () => {
     expect(financeSettlementStatusCodes).toEqual(expect.arrayContaining(["DRAFT", "LOCKED", "SENT", "PAID", "RECONCILED", "CANCELLED"]));
     expect(financePayoutEntryTypeCodes).toEqual(expect.arrayContaining(["ORDER_GROSS", "COMMISSION", "PAYMENT_FEE", "TAX", "REFUND", "ADJUSTMENT"]));
+  });
+
+  it("keeps pilot ROI report insight states available", () => {
+    expect(roiReportInsightCodes).toEqual(expect.arrayContaining(["NO_PAID_ORDERS", "SETTLEMENT_LOCKED", "INCIDENTS_PRESENT"]));
   });
 
   it("keeps claim hold intent states separate from paid order states", () => {
@@ -129,6 +135,28 @@ describe("API schemas", () => {
     expect(settlementStatusUpdateRequestSchema.safeParse({ statusCode: "PAID", noteText: "Manual UTR received from bank statement.", providerReferenceText: "settlement_demo_utr" }).success).toBe(true);
     expect(settlementAdjustmentRequestSchema.safeParse({ amountPaise: -1250, descriptionText: "Manual debit for prior overpayment." }).success).toBe(true);
     expect(settlementInvoiceIssueRequestSchema.safeParse({ invoiceNumber: "invoice_demo_001", metadata: { reviewer: "pilot" } }).success).toBe(true);
+  });
+
+  it("validates ROI report periods", () => {
+    expect(
+      roiReportPeriodRequestSchema.safeParse({
+        restaurantPk: "11111111-1111-4111-8111-111111111111",
+        periodStartAt: "2026-05-01T00:00:00.000Z",
+        periodEndAt: "2026-05-08T00:00:00.000Z",
+      }).success,
+    ).toBe(true);
+    expect(
+      roiReportPeriodRequestSchema.safeParse({
+        periodStartAt: "2026-05-08T00:00:00.000Z",
+        periodEndAt: "2026-05-01T00:00:00.000Z",
+      }).success,
+    ).toBe(false);
+    expect(
+      roiReportPeriodRequestSchema.safeParse({
+        periodStartAt: "2026-01-01T00:00:00.000Z",
+        periodEndAt: "2026-06-01T00:00:00.000Z",
+      }).success,
+    ).toBe(false);
   });
 
   it("accepts deterministic Postgres UUIDs used by demo restaurant seeds", () => {

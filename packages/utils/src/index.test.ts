@@ -6,6 +6,7 @@ import {
   financeSettlementStatusLabel,
   financeSettlementStatusTone,
   formatPaise,
+  formatBasisPoints,
   formatPickupWindow,
   formatSignedPaise,
   generateManualDropAlertText,
@@ -13,6 +14,9 @@ import {
   normalizeIndianPhone,
   notificationStatusLabel,
   notificationStatusTone,
+  rateLabel,
+  rateToBasisPoints,
+  rateTone,
   resolveLatestConsent,
   slugifyRestaurantName,
 } from "./index";
@@ -46,6 +50,22 @@ describe("consent resolution", () => {
 describe("pickup window formatting", () => {
   it("formats pickup windows in India time by default", () => {
     expect(formatPickupWindow("2026-04-25T12:30:00.000Z", "2026-04-25T13:30:00.000Z")).toContain("6:00");
+  });
+});
+
+describe("rate formatting", () => {
+  it("formats basis point rates without noisy decimals", () => {
+    expect(rateToBasisPoints(7, 10)).toBe(7000);
+    expect(formatBasisPoints(7000)).toBe("70%");
+    expect(formatBasisPoints(3333)).toBe("33.33%");
+    expect(formatBasisPoints(null)).toBe("Not enough data");
+  });
+
+  it("labels rate tones for pilot reports", () => {
+    expect(rateTone(8000)).toBe("success");
+    expect(rateTone(5000)).toBe("warning");
+    expect(rateTone(2500)).toBe("danger");
+    expect(rateLabel(null)).toBe("Not enough data");
   });
 });
 

@@ -4,6 +4,7 @@ const links = [
   ["Templates", "/portal/templates"],
   ["New drop", "/portal/drops/new"],
   ["Orders", "/portal/orders"],
+  ["Reports", "/portal/reports"],
   ["Finance", "/portal/finance"],
   ["Profile", "/portal/profile"],
 ] as const;

@@ -145,6 +145,19 @@ export const financePayoutEntryTypeCodes = [
   "PAYOUT",
 ] as const;
 export const financeOrderEligibilityStatusCodes = ["ELIGIBLE", "EXCLUDED"] as const;
+export const roiReportInsightCodes = [
+  "NO_DROPS_LISTED",
+  "NO_PAID_ORDERS",
+  "PICKUP_WINDOW_OPEN",
+  "SETTLEMENT_NOT_LOCKED",
+  "SETTLEMENT_LOCKED",
+  "REFUNDS_OR_DEBITS_PRESENT",
+  "INCIDENTS_PRESENT",
+  "REPEAT_BUYER_DATA_THIN",
+  "SELL_THROUGH_STRONG",
+  "SELL_THROUGH_NEEDS_ATTENTION",
+] as const;
+export const roiReportEstimateBasisCodes = ["ESTIMATED", "SETTLEMENT_LOCKED", "INSUFFICIENT_DATA"] as const;
 
 export type DietaryCategoryCode = (typeof dietaryCategoryCodes)[number];
 export type SpiceLevelCode = (typeof spiceLevelCodes)[number];
@@ -167,6 +180,8 @@ export type FinanceSettlementStatusCode = (typeof financeSettlementStatusCodes)[
 export type FinanceInvoiceStatusCode = (typeof financeInvoiceStatusCodes)[number];
 export type FinancePayoutEntryTypeCode = (typeof financePayoutEntryTypeCodes)[number];
 export type FinanceOrderEligibilityStatusCode = (typeof financeOrderEligibilityStatusCodes)[number];
+export type RoiReportInsightCode = (typeof roiReportInsightCodes)[number];
+export type RoiReportEstimateBasisCode = (typeof roiReportEstimateBasisCodes)[number];
 export type PlatformRoleCode = (typeof platformRoleCodes)[number];
 export type RestaurantStatusCode = (typeof restaurantStatusCodes)[number];
 export type RestaurantTeamRoleCode = (typeof restaurantTeamRoleCodes)[number];
@@ -345,6 +360,21 @@ export const settlementInvoiceIssueRequestSchema = z.object({
   externalDocumentRef: z.preprocess(optionalString, z.string().trim().max(240).optional()),
   metadata: z.record(z.string(), z.unknown()).default({}),
 });
+
+export const roiReportPeriodRequestSchema = z
+  .object({
+    restaurantPk: uuidSchema.optional(),
+    periodStartAt: z.string().datetime(),
+    periodEndAt: z.string().datetime(),
+  })
+  .refine((value) => Date.parse(value.periodEndAt) > Date.parse(value.periodStartAt), {
+    message: "Report period end must be after the start.",
+    path: ["periodEndAt"],
+  })
+  .refine((value) => Date.parse(value.periodEndAt) - Date.parse(value.periodStartAt) <= 93 * 24 * 60 * 60 * 1000, {
+    message: "ROI report periods are limited to 93 days.",
+    path: ["periodEndAt"],
+  });
 
 export interface PickupVerificationResult {
   readonly orderPk: string;
@@ -537,6 +567,115 @@ export interface NotificationFallbackCopy {
   readonly channelCode: NotificationChannelCode;
   readonly fallbackText: string;
   readonly warningText: string;
+}
+
+export interface RoiReportMetricCard {
+  readonly code: string;
+  readonly label: string;
+  readonly valueText: string;
+  readonly helperText: string;
+  readonly tone: "success" | "warning" | "danger" | "neutral";
+}
+
+export interface RoiReportPeriodRequest {
+  readonly restaurantPk?: string;
+  readonly periodStartAt: string;
+  readonly periodEndAt: string;
+}
+
+export interface RoiReportSummary {
+  readonly restaurantPk: string;
+  readonly restaurantName: string;
+  readonly periodStartAt: string;
+  readonly periodEndAt: string;
+  readonly dropsListedCount: number;
+  readonly bagsListedCount: number;
+  readonly bagsSoldCount: number;
+  readonly sellThroughBps: number | null;
+  readonly gmvPaise: number;
+  readonly estimatedNetRecoveryPaise: number;
+  readonly netRecoveryBasisCode: RoiReportEstimateBasisCode;
+  readonly settlementRunPk: string | null;
+  readonly settlementStatusCode: FinanceSettlementStatusCode | null;
+  readonly settlementLockedAt: string | null;
+  readonly pickupCompletedCount: number;
+  readonly noShowCount: number;
+  readonly pickupCompletionBps: number | null;
+  readonly openPickupOrderCount: number;
+  readonly refundDebitPaise: number;
+  readonly paymentFeePaise: number;
+  readonly paymentTaxPaise: number;
+  readonly incidentCount: number;
+  readonly firstTimeBuyerCount: number;
+  readonly repeatBuyerCount: number;
+  readonly repeatBuyerDataAvailable: boolean;
+  readonly dataFreshnessAt: string;
+  readonly insightCodes: readonly RoiReportInsightCode[];
+  readonly metricCards: readonly RoiReportMetricCard[];
+  readonly assumptions: readonly string[];
+  readonly nextActions: readonly string[];
+}
+
+export interface RoiReportDropDetailRow {
+  readonly restaurantPk: string;
+  readonly restaurantName: string;
+  readonly dropPk: string;
+  readonly dropTitle: string;
+  readonly bagDisplayName: string;
+  readonly dropStatusCode: DropStatusCode | string;
+  readonly pickupStartAt: string;
+  readonly pickupEndAt: string;
+  readonly quantityListed: number;
+  readonly quantitySold: number;
+  readonly quantityCollected: number;
+  readonly noShowCount: number;
+  readonly openPickupOrderCount: number;
+  readonly sellThroughBps: number | null;
+  readonly gmvPaise: number;
+  readonly estimatedNetRecoveryPaise: number;
+  readonly refundDebitPaise: number;
+  readonly paymentFeePaise: number;
+  readonly paymentTaxPaise: number;
+  readonly incidentCount: number;
+  readonly firstTimeBuyerCount: number;
+  readonly repeatBuyerCount: number;
+  readonly settlementRunPk: string | null;
+  readonly settlementStatusCode: FinanceSettlementStatusCode | null;
+  readonly latestOrderCreatedAt: string | null;
+  readonly updatedAt: string;
+}
+
+export interface RoiReportIncidentRefundNoteRow {
+  readonly rowPk: string;
+  readonly restaurantPk: string;
+  readonly restaurantName: string;
+  readonly orderPk: string | null;
+  readonly orderNumber: string | null;
+  readonly dropPk: string | null;
+  readonly noteTypeCode: "INCIDENT" | "REFUND" | "DEBIT";
+  readonly severityCode?: IncidentSeverityCode | null;
+  readonly statusCode: string | null;
+  readonly amountPaise: number | null;
+  readonly titleText: string;
+  readonly descriptionText: string | null;
+  readonly occurredAt: string;
+}
+
+export interface RoiPartnerReportCopyPayload {
+  readonly title: string;
+  readonly periodLabel: string;
+  readonly restaurantName: string;
+  readonly summaryLines: readonly string[];
+  readonly assumptionLines: readonly string[];
+  readonly nextActionLines: readonly string[];
+  readonly generatedAt: string;
+}
+
+export interface RoiReportPayload {
+  readonly summary: RoiReportSummary;
+  readonly dropRows: readonly RoiReportDropDetailRow[];
+  readonly noteRows: readonly RoiReportIncidentRefundNoteRow[];
+  readonly partnerCopy: RoiPartnerReportCopyPayload;
 }
 
 export const consentCaptureSchema = z.object({

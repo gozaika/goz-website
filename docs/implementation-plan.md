@@ -148,6 +148,14 @@ Use this order for a clean rebuild:
    - Open `/portal/finance` as the restaurant owner and confirm only own settlement summaries/details are visible.
    - Do not configure Razorpay transfer, payout, refund, fund-account, invoice-generation, or accounting integration env vars for Slice 7.
 
+14. Recreate Slice 8A pilot ROI reports after Slice 7 is available:
+
+   - Apply migration `20260528000000_slice8a_pilot_roi_reports.sql`.
+   - Redeploy `restaurant.gozaika.in` and `admin.gozaika.in`.
+   - Open `/portal/reports` as a restaurant owner and confirm weekly own-restaurant metrics: drops listed, bags listed/sold, sell-through, GMV, estimated or settlement-backed net recovery, pickup completion, no-shows, refunds/debits, incidents, and buyer signals.
+   - Open `/admin/reports`, select a restaurant and weekly period, inspect drop/order metrics, notes, settlement context, and copy/download partner-safe report text.
+   - No new env vars, Edge Functions, workers, scheduled digests, export jobs, refund APIs, payout APIs, settlement recalculation, or native mobile reporting are required.
+
 ## Slice 0: Foundation
 
 ### Goal
@@ -882,3 +890,81 @@ npm.cmd --workspace @gozaika/admin-web run build
 ### Out Of Scope
 
 No live Razorpay payouts, transfers, fund-account creation, refund initiation, GST-compliant final invoice legal automation, CA workflows, reconciliation exports, accounting integrations, native mobile finance screens, ROI reports, broad correction tooling, restaurant suspension, or marketing-site redesign.
+
+## Slice 8A: Pilot ROI Reports
+
+### Goal
+
+Give pilot restaurant partners and goZaika ops a trustworthy weekly ROI report showing whether the paid pickup loop is working: bags listed/sold, sell-through, GMV, estimated or settlement-backed net recovery, pickup completion, no-shows, refunds/debits, incidents, and simple first-time/repeat buyer signals.
+
+### Completed
+
+- [x] Add migration `20260528000000_slice8a_pilot_roi_reports.sql`.
+- [x] Add read-only restaurant/admin ROI drop detail and incident/refund note views.
+- [x] Scope restaurant reporting by active restaurant membership and admin reporting by platform membership.
+- [x] Add shared typed ROI request/response, metric, detail row, note row, copy payload, insight, and estimate-basis models.
+- [x] Add integer-safe rate/percentage helpers for sell-through and pickup completion display.
+- [x] Add restaurant `/portal/reports` and portal navigation link.
+- [x] Add admin `/admin/reports` with restaurant selector, weekly presets, drop table, notes, settlement context, and copy/download partner-safe report text.
+- [x] Document metric definitions, workflow, data quality checks, deployment, and runbook boundaries.
+
+### Validation Gate
+
+Restaurant owner can open `/portal/reports` and see only their own restaurant's weekly summary and drop-level detail. Admin can open `/admin/reports`, select restaurant/period, inspect the same partner-facing metrics plus ops context, and copy/download share-safe report text. Reports are derived from existing paid pickup facts with paise integer money math and clear denominators. ROI reporting does not mutate payments, refunds, pickups, settlements, invoices, payouts, notifications, or order state.
+
+### Remote Migration Steps
+
+Apply this migration after all Slice 7 migrations:
+
+```powershell
+Get-Content -Raw supabase/migrations/20260528000000_slice8a_pilot_roi_reports.sql
+```
+
+Review the SQL, then run it once in the Supabase Dashboard SQL editor or approved remote migration path. Verify:
+
+```sql
+select to_regclass('public.api_restaurant_roi_drop_detail');
+select to_regclass('public.api_admin_roi_drop_detail');
+select to_regclass('public.api_restaurant_roi_report_note');
+select to_regclass('public.api_admin_roi_report_note');
+```
+
+Redeploy:
+
+```powershell
+# Vercel projects
+restaurant.gozaika.in
+admin.gozaika.in
+```
+
+No new environment variables, Supabase Edge Functions, workers, cron schedules, storage buckets, or provider secrets are introduced.
+
+### Smoke Test Flow
+
+1. Use a webhook-confirmed captured order tied to a published drop.
+2. Verify pickup as `COLLECTED`, or after pickup close mark `NO_SHOW`.
+3. Optionally lock an exact-period settlement in `/admin/finance` to validate settlement-backed net.
+4. Open `/portal/reports` as the restaurant owner and confirm own-tenant weekly metrics.
+5. Open `/admin/reports`, select the restaurant and period, and confirm admin metrics match the restaurant report.
+6. Copy/download partner-safe report text and confirm no consumer PII, raw provider payloads, pickup credentials, private docs, service keys, or internal notes appear.
+7. Check desktop/mobile layouts and horizontal overflow for `/portal/reports` and `/admin/reports`.
+8. Confirm consumer pages remain unchanged and do not expose ROI, settlement, payout, or repeat-buyer reporting.
+
+### Verification Commands
+
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+```
+
+### Out Of Scope
+
+No advanced Zaika Pro analytics, forecasting, heatmaps, cohorts beyond simple repeat-buyer counts, benchmarking, scheduled email digest, background export jobs, CRM, native mobile reporting, refund initiation, payout initiation, settlement recalculation, pickup override, accounting integration, or legal invoice automation.

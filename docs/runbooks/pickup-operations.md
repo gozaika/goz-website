@@ -47,6 +47,12 @@ Slice 7 finance uses pickup completion as an input only. A captured paid order b
 
 Do not mark pickup state just to force settlement. Use the real counter outcome and leave finance corrections to manual adjustments in the settlement workflow.
 
+## ROI Reporting Handoff
+
+Slice 8A ROI reports read pickup outcomes to calculate pickup completion and no-show counts. Open pickup windows are flagged as incomplete so operators do not overstate completion before the counter workflow is finished.
+
+Pickup verification and no-show remain the source of truth. ROI reporting does not create pickup verification events, mark no-shows, override order status, or mutate inventory.
+
 ## Pickup Reminders
 
 Slice 6 schedules pickup reminder notifications through `pickup-reminder-cron`, which calls `api_enqueue_pickup_reminders`. The cron is idempotent: repeated runs should not create duplicate reminder rows for the same order, channel, and template.

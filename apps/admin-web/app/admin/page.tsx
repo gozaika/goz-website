@@ -32,6 +32,10 @@ export default async function AdminPage() {
             <h2 className="text-xl font-bold">Finance settlements</h2>
             <p className="mt-2 text-sm text-black/65">Preview eligible paid pickup orders, lock settlement runs, and track manual payout status.</p>
           </Link>
+          <Link className="rounded-lg border border-black/10 bg-white p-5 transition hover:border-[#1A5C38]" href="/admin/reports">
+            <h2 className="text-xl font-bold">Pilot ROI reports</h2>
+            <p className="mt-2 text-sm text-black/65">Review weekly partner metrics, drop performance, incidents, refunds/debits, and copy-safe report text.</p>
+          </Link>
         </div>
       </section>
     </main>

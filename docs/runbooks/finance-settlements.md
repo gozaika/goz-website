@@ -66,6 +66,12 @@ Ask the restaurant to open `/portal/finance`. They should see:
 
 If the page is empty, confirm there are webhook-confirmed captured orders whose pickup windows have closed and are `COLLECTED` or `NO_SHOW`.
 
+## ROI Reporting Handoff
+
+Slice 8A ROI reports read settlement summaries and line-entry facts for context only. When a locked settlement exactly matches the selected restaurant and report period, `/portal/reports` and `/admin/reports` can show settlement-backed net recovery. Otherwise they label net recovery as a pilot estimate.
+
+ROI reports do not create, recalculate, lock, cancel, invoice, or mark payout status on settlement runs. Continue using `/admin/finance` for all finance mutations and human review.
+
 ## Adjustment Procedure
 
 - Use adjustments before lock only.

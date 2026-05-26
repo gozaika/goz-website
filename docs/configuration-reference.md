@@ -38,6 +38,9 @@
 - Slice 7 pilot finance settlements:
   - No live payout, Razorpay transfer, refund, fund-account, invoice-generation, or accounting integration env vars are required.
   - Optional `SETTLEMENT_WORKER_ACTOR_PROFILE_PK` lets `settlement-run-worker` refresh draft runs for a configured `FINANCE_ADMIN`/`SUPER_ADMIN` profile. Leave it unset unless ops intentionally enables worker-created drafts.
+- Slice 8A pilot ROI reports:
+  - No new environment variables are required.
+  - Reports read existing drop, order, payment, pickup, incident, refund, and settlement facts through authenticated app sessions.
 - Approved public mailbox mapping: general `contact@gozaika.in`, partners `partners@gozaika.in`, waitlist `waitlist@gozaika.in`, billing/refund finance `billing@gozaika.in`, careers `careers@gozaika.in`, and technical/security/platform `tech@gozaika.in`.
 
 ## Current base URLs
@@ -67,6 +70,7 @@ Owned but not necessarily routed domains: `gozaik.in`, `gozaika.com`.
 - Apply Slice 5 migration `20260525000000_slice5_pickup_verification_incidents.sql` before enabling restaurant pickup verification, no-show, or incident creation UI.
 - Apply Slice 6 migration `20260526000000_slice6_transactional_notifications.sql` before deploying notification UI or notification workers.
 - Apply Slice 7 migration `20260527000000_slice7_pilot_finance_settlement.sql` before deploying `/admin/finance`, `/portal/finance`, or the hardened `settlement-run-worker`.
+- Apply Slice 8A migration `20260528000000_slice8a_pilot_roi_reports.sql` before deploying `/admin/reports` or `/portal/reports`.
 - Grant anon/authenticated read to `api_public_drop_card`.
 - Grant authenticated read to `api_claim_hold_summary`.
 - Enable Realtime for `drop_drop` inventory/status updates if live client updates are required in the target environment.

@@ -78,6 +78,7 @@ export default async function AdminFinancePage({
           <Link className="text-[#1A5C38]" href="/admin/drops">Drops</Link>
           <Link className="text-[#1A5C38]" href="/admin/notifications">Notifications</Link>
           <Link className="text-[#1A5C38]" href="/admin/finance">Finance</Link>
+          <Link className="text-[#1A5C38]" href="/admin/reports">Reports</Link>
         </nav>
       </ShellHeader>
       <section className="mx-auto max-w-7xl px-4 py-8">

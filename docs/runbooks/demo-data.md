@@ -154,3 +154,9 @@ If a future seed adds `007_slice6_transactional_notifications_demo.sql`, keep it
 No deterministic Slice 7 demo seed is added. Settlements should usually be produced from a real local or staging paid order after webhook conversion and pickup terminal state so finance eligibility, idempotency, and line-entry math are exercised together.
 
 If a future seed adds `supabase/seeds/demo/008_slice7_pilot_finance_settlement_demo.sql`, keep it local/staging-only, use fake references such as `settlement_demo_*` and `invoice_demo_*`, register rows in `dev_demo_seed_registry`, and delete in FK-safe order for `finance_invoice`, `finance_restaurant_payout_entry`, `finance_settlement_run`, `payment_refund`, and any related demo order/payment rows. Never seed real bank account numbers, UTRs, provider payout refs, or production finance rows.
+
+# Slice 8A Pilot ROI Reports Demo Data
+
+No deterministic Slice 8A demo seed is added. ROI reports should usually be validated from real local or staging paid pickup facts so drop, payment, pickup, incident, refund, and settlement read models are exercised together.
+
+If a future seed adds `supabase/seeds/demo/009_slice8a_pilot_roi_reports_demo.sql`, keep it local/staging-only, use clearly fake report references such as `roi_demo_*`, register rows in `dev_demo_seed_registry`, and delete rows in FK-safe order. Do not seed real bank account numbers, provider payout references, raw customer PII, provider payloads, pickup credentials, or partner-sensitive notes.
