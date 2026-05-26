@@ -1,4 +1,389 @@
+You are Codex working in C:\venkat\limca\gozaika\sourcecode.
 
+MODE
+- This is an implementation task.
+- Make code changes unless blocked.
+- Do not stop at a proposal.
+- Preserve unrelated user changes.
+- Run verification before final response.
+
+Current git state:
+- Branch: main
+- Latest commit: c4d4471
+- Expected state: all intended implementation changes are committed and pushed before this slice begins. prompts/impl_baseline_prompt.txt and prompts/template-development.txt will be dirty.
+- Deployments done on remote supabase and vercel environments.
+- Codex must run `git status --short --branch` first and report any dirty files before editing.
+
+
+Remote migration state:
+- Remote Supabase migrations for prior slices have already been applied.
+- Local Supabase may lag behind remote.
+- Do not assume local DB is current unless verified.
+- If this slice adds a migration, document exactly how I should apply it remotely.
+
+SLICE
+- Slice name: Admin Ops Hardening
+- Slice number: 8B
+- Phase: Phase 2 - Restaurant Trust, Reporting, and Money Movement
+- Business goal: Give goZaika ops a auditable control center for restaurants: pause/suspend risky restaurants or drops, triage incident/support/refund requests, manage a small allowlist of operational config flags, inspect privileged audit history, and copy/download support-safe queue details without exposing PII or triggering live financial movement.
+- User-facing proof point: Admin opens a compact ops surface, sees open incidents/support/refund flags across restaurants, safely pauses a restaurant or drop with a required reason and audit trail, tracks refund/support workflow without initiating provider refunds, and verifies consumer/restaurant surfaces respect pause/suspension guardrails.
+
+PROJECT CONTEXT
+- Current deployed surfaces:
+  - Website: https://gozaika.in/
+  - Consumer web: https://customer.gozaika.in/
+  - Restaurant portal: https://restaurant.gozaika.in/
+  - Admin portal: https://admin.gozaika.in/
+- Owned domains: gozaik.in, gozaika.com
+- Baseline roadmap: project docs/goZaika_Technology_Specification_v2.docx
+- Rebuild source of truth: docs/implementation-plan.md
+- Current completed slices:
+  - Slice 0: Foundation - monorepo, canonical schema, app shells, shared packages, Supabase client separation, UI baseline, CI shape.
+  - Slice 1: Auth/Profile/Consent - consumer auth, profile bootstrap, DPDP consent capture, account surface, Supabase SSR session refresh.
+  - Slice 2: Restaurant Onboarding - owner portal, onboarding/compliance, private document upload, admin review/activation, active restaurant membership gate.
+  - Slice 3: First Drop Publishing & Consumer Discovery - active restaurants publish public drops, consumer discovery/detail reads safe public drop data.
+  - Slice 3.5: Manual Launch Comms Support - public drop links, WhatsApp-safe copy, restaurant/admin copy surfaces.
+  - Slice 4A: Claim Hold / Order Intent - signed-in consumer temporary holds, checkout hold page, expired-hold release path.
+  - Slice 4B: Razorpay Payment & Order Confirmation - server-created Razorpay orders, verified webhook conversion, paid order page with QR/OTP pickup proof, restaurant/admin order visibility.
+  - Slice 5: Pickup Verification, Incident Basics & Pilot UX Polish - restaurant OTP/QR pickup verification, collected/no-show states, minimal incidents, UX cleanup.
+  - Slice 6: Transactional Notifications & Delivery Logs - durable notification outbox, Meta WhatsApp/Resend worker, pickup reminders, admin delivery logs, fallback copy, notification status on consumer/restaurant surfaces.
+  - Slice 7: Pilot Finance & Settlement - admin settlement preview/create/lock/manual status workflow, restaurant finance transparency, safe invoice metadata, no live payouts.
+  - Slice 8A: Pilot ROI Reports - restaurant/admin weekly ROI report, drop-level metrics, refund/incident notes, copy-safe partner report text.
+- Migrations already applied: 20260425000000_gozaika_consolidated_schema.sql, 20260427000000_slice1_auth_profile_consent.sql, 20260502000000_slice2_restaurant_onboarding.sql, 20260502001000_slice2_restaurant_rls_hardening.sql, 20260513000000_slice3_drop_publishing_discovery.sql, 20260517000000_slice3_public_drop_aliases.sql, 20260518000000_slice3_template_active_revision_repair.sql, 20260518001000_slice3_template_drop_preferences.sql, 20260518002000_slice4a_claim_hold_order_intent.sql, 20260521000000_slice4b_razorpay_payment_order_confirmation.sql, 20260522000000_slice4b_payment_rpc_returning_repair.sql, 20260524000000_payment_webhook_event_processing_updates.sql, 20260524001000_slice4b_payment_rpc_variable_conflict_repair.sql, 20260525000000_slice5_pickup_verification_incidents.sql, 20260526000000_slice6_transactional_notifications.sql, 20260527000000_slice7_pilot_finance_settlement.sql, 20260527001000_slice7_finance_settlement_rpc_repair.sql, 20260528000000_slice8a_pilot_roi_reports.sql.
+- Known deployment/env state: Remote Supabase and Vercel are primary. Slice 8A smoke tests passed end-to-end and all Slice 8A changes are committed/pushed. `release-expired-holds`, `razorpay-webhook`, `pickup-reminder-cron`, `notification-outbox-worker`, and `settlement-run-worker` are deployed. Razorpay payment/webhook, pickup credential, Meta WhatsApp, Resend, notification, finance settlement, admin, restaurant, consumer, and ROI reporting env vars are configured for current pilot testing. No live Razorpay refund API integration, live payouts/transfers, accounting integration, export-job worker, advanced CRM, scheduled digest automation, native mobile reporting, Sentry, or advanced analytics warehouse is configured yet.
+
+
+SMOKE TEST SLICE:
+If Browser/in-app browser tooling is not callable, run local route smoke tests with a Node script that starts Next through `cmd.exe /d /s /c`, passes a sanitized child env with only one `Path` key, requests the target localhost routes with `fetch(..., { redirect: "manual" })`, treats expected auth redirects as pass, then kills the child process and verifies no ports remain open. Do not use PowerShell `Start-Process` directly because this Windows shell may contain duplicate `Path/PATH` env keys.
+
+Setup shortcuts:
+- read docs/implementation-plan.md for slice gates and docs/runbooks/*.md only as needed.
+- Run `npm.cmd run ci` once up front. If it fails, fix and rerun full CI after fixes.
+- Use deployed apps for authenticated end-to-end smoke unless the task is specifically local-only:
+  - customer: https://customer.gozaika.in/
+  - restaurant: https://restaurant.gozaika.in/
+  - admin: https://admin.gozaika.in/
+- Use local apps only for code/layout verification after changes. If local auth needs Supabase, expect sandbox network failures and do not spend time debugging that as an app bug.
+- On Windows, avoid PowerShell `Start-Process` for dev servers because duplicate Path/PATH can break it. Prefer foreground checks, `npm.cmd`, or a sanitized Node launcher.
+- Razorpay is not configured. run  `powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File C:\venkat\limca\gozaika\infra\rpay.ps1 -HoldPk <hold-pk>`
+- If that hold is already CONVERTED, use the converted order id from the debug response as the smoke-test anchor.
+- WhatsApp failures are expected as the customer/restaurant phone numbers are not added to the Meta test account. Treat provider auth/config failures as expected only if the outbox rows, attempts, fallback copy, and email path are visible.
+
+Credentials:
+resturant=919000100001/123456   customer=918106230860/123456  https://admin.gozaika.in/auth/login=admin.ops@gozaika.example/GozaikaDemo@123 
+
+
+Required UI checks:
+- Desktop and mobile viewport checks for the touched surfaces.
+- Record horizontal overflow with document scrollWidth/clientWidth.
+- Capture screenshots for customer, restaurant, and admin slice pages.
+
+Cleanup:
+- Stop local dev servers on ports 3000/3001/3002 after testing.
+- Do not revert unrelated dirty files.
+
+
+
+
+EXPERTISE TO APPLY
+- Product manager: keep scope pilot-first and launch-useful.
+- Senior full-stack engineer: follow existing repo patterns and vertical-slice architecture.
+- Database/RLS engineer: protect tenancy, service-role boundaries, and public/private data separation.
+- UX designer: optimize for fast, obvious workflows with clear mobile/desktop layouts.
+- Food-safety/compliance reviewer: treat allergen, dietary, pickup, and restaurant identity as safety-critical.
+- Payments/security reviewer: apply only if this slice touches payment/auth/webhooks/RLS.
+- QA engineer: define validation gates and run focused checks.
+- Technical writer: update docs so future Codex can rebuild from ground zero.
+
+READ FIRST
+1. Run git status.
+2. Read docs/implementation-plan.md.
+3. Read relevant roadmap section in project docs/goZaika_Technology_Specification_v2.docx.
+4. Read these files before editing:
+   - packages/types/src/index.ts
+   - packages/types/src/index.test.ts
+   - packages/utils/src/index.ts
+   - packages/utils/src/index.test.ts
+   - packages/db/src/index.ts
+   - packages/supabase/src/index.ts
+   - packages/ui/src/index.tsx
+   - apps/admin-web/lib/admin-auth.ts
+   - apps/admin-web/lib/finance.ts
+   - apps/admin-web/app/admin/page.tsx
+   - apps/admin-web/app/admin/drops/page.tsx
+   - apps/admin-web/app/admin/drops/admin-incident-form.tsx
+   - apps/admin-web/app/admin/finance/page.tsx
+   - apps/admin-web/app/admin/finance/finance-client.tsx
+   - apps/admin-web/app/admin/notifications/page.tsx
+   - apps/admin-web/app/admin/notifications/notifications-client.tsx
+   - apps/admin-web/app/admin/reports/page.tsx
+   - apps/admin-web/app/admin/reports/reports-client.tsx
+   - apps/admin-web/app/admin/restaurants/onboarding/page.tsx
+   - apps/admin-web/app/admin/restaurants/[id]/review/page.tsx
+   - apps/admin-web/app/admin/restaurants/[id]/review/review-actions.tsx
+   - apps/admin-web/app/api/admin/orders/[orderId]/incidents/route.ts
+   - apps/admin-web/app/api/admin/notifications/[notificationId]/retry/route.ts
+   - apps/admin-web/app/api/admin/notifications/[notificationId]/suppress/route.ts
+   - apps/admin-web/app/api/admin/finance/preview/route.ts
+   - apps/admin-web/app/api/admin/finance/runs/route.ts
+   - apps/admin-web/app/api/admin/finance/runs/[runId]/lock/route.ts
+   - apps/admin-web/app/api/admin/finance/runs/[runId]/status/route.ts
+   - apps/admin-web/app/api/admin/finance/runs/[runId]/adjustments/route.ts
+   - apps/restaurant-mgmt-web/lib/portal-auth.ts
+   - apps/restaurant-mgmt-web/lib/slice3.ts
+   - apps/restaurant-mgmt-web/lib/finance.ts
+   - apps/restaurant-mgmt-web/lib/roi-report.ts
+   - apps/restaurant-mgmt-web/app/portal/portal-nav.tsx
+   - apps/restaurant-mgmt-web/app/portal/dashboard/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/drops/new/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/drops/new/drop-publishing-form.tsx
+   - apps/restaurant-mgmt-web/app/portal/orders/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/orders/orders-client.tsx
+   - apps/restaurant-mgmt-web/app/api/portal/drops/route.ts
+   - apps/restaurant-mgmt-web/app/api/portal/drops/[id]/route.ts
+   - apps/restaurant-mgmt-web/app/api/portal/orders/[orderId]/incidents/route.ts
+   - apps/consumer-web/lib/drops.ts
+   - apps/consumer-web/lib/orders.ts
+   - apps/consumer-web/app/drops/page.tsx
+   - apps/consumer-web/app/drops/[id]/page.tsx
+   - apps/consumer-web/app/drops/[id]/claim-panel.tsx
+   - supabase/functions/_shared/http.ts
+   - supabase/functions/_shared/supabase.ts
+   - supabase/functions/razorpay-webhook/index.ts
+   - supabase/functions/notification-outbox-worker/index.ts
+   - supabase/functions/settlement-run-worker/index.ts
+   - supabase/migrations/20260425000000_gozaika_consolidated_schema.sql
+   - supabase/migrations/20260502000000_slice2_restaurant_onboarding.sql
+   - supabase/migrations/20260513000000_slice3_drop_publishing_discovery.sql
+   - supabase/migrations/20260518002000_slice4a_claim_hold_order_intent.sql
+   - supabase/migrations/20260521000000_slice4b_razorpay_payment_order_confirmation.sql
+   - supabase/migrations/20260525000000_slice5_pickup_verification_incidents.sql
+   - supabase/migrations/20260526000000_slice6_transactional_notifications.sql
+   - supabase/migrations/20260527000000_slice7_pilot_finance_settlement.sql
+   - supabase/migrations/20260528000000_slice8a_pilot_roi_reports.sql
+   - docs/product/pickup-verification-incident-basics.md
+   - docs/product/transactional-notifications.md
+   - docs/product/pilot-finance-settlement.md
+   - docs/product/pilot-roi-reports.md
+   - docs/runbooks/pickup-operations.md
+   - docs/runbooks/payments.md
+   - docs/runbooks/notifications.md
+   - docs/runbooks/finance-settlements.md
+   - docs/runbooks/roi-reports.md
+   - docs/runbooks/demo-data.md
+   - docs/configuration-reference.md
+   - docs/deployment-pipeline.md
+5. Inspect existing patterns before adding abstractions.
+
+SCOPE / MUST INCLUDE
+- Add a pilot-first admin ops hardening MVP for the first 10 restaurants: one compact admin surface, likely `/admin/ops`, that combines restaurant operational status, open incidents, support tickets, refund/debit requests, recent audit activity, and safe operational config flags.
+- Add server-side admin actions to pause/reactivate restaurants and pause/resume active/scheduled drops with required reason text, role checks, append-only audit log rows, and clear before/after snapshots. Restaurant pause/suspension must prevent new drop publishing and new consumer claims for that restaurant; drop pause must prevent new claims/discovery while preserving historical orders.
+- Add a narrow support/refund workflow: create/view/update support tickets, link tickets to orders/restaurants/incidents/refund records, add internal/admin notes, move ticket/incident statuses through approved states, and record manual refund/debit tracking without calling Razorpay refund APIs or changing settlement/payout state.
+- Add small allowlisted operational config controls for launch kill switches/settings, such as global or restaurant-scoped claim enablement, restaurant publishing enablement, and max bags/drop guidance if existing flows can consume it safely. Do not build a generic arbitrary config editor.
+- Add admin support-safe queue/detail read models for restaurants, drops, incidents, support tickets, refund records, config flags, and audit history. Include role-appropriate filters, date/status/restaurant filters, and copy/download current filtered queue details in support-safe CSV/text form with bounded row limits.
+- Add typed request/response models in `@gozaika/types` for admin ops summary, restaurant/drop status action request, support ticket row/detail, support ticket action request, incident triage request, refund support request/status, config flag row/update, audit row, and export/copy-safe payloads.
+- Add utility helpers in `@gozaika/utils` for status labels/tones, SLA freshness/overdue labels, support-safe masking/presentation, and CSV/text generation if not already available locally.
+- Preserve existing Slice 7 finance ownership and Slice 8A ROI ownership. This slice may read finance/ROI facts and create/manual-track refund support records, but must not recalculate settlements, lock/unlock settlements, mark payouts paid, initiate provider refunds, or mutate captured payment transactions.
+- Make every privileged mutation require a human-readable reason, enforce role authorization server-side, and write `audit_log` plus domain event rows where available (`support_ticket_event`, `incident_event`, order/drop status transitions if touched).
+- Include clear empty states: no open incidents, no support tickets, no refund requests, no config overrides, no recent audit activity, restaurant already paused/suspended, drop already closed/sold out, or action unavailable due closed pickup/payment state.
+
+OUT OF SCOPE / MUST NOT INCLUDE
+- Do not build advanced CRM, Zaika Pro advanced analytics, forecasting, heatmaps, cohort dashboards, broad customer exports, consumer marketing tools, Swaad Club, referrals, corporate BAM, reviews/public ratings, subscriptions, sponsored placement, or accounting integrations.
+- Do not call Razorpay refund APIs, create Razorpay transfers, create fund accounts, initiate payouts, capture payments, modify webhook logic except for compatibility guards, recalculate/lock/unlock settlements, or mark payouts paid/reconciled from the ops surface.
+- Do not expose consumer PII, full phone/email lists, raw Razorpay payloads, notification destinations beyond existing masked/support-safe patterns, private compliance documents, pickup credentials/hashes, provider secrets, service-role keys, internal-only notes to restaurants/consumers, or broad exports.
+- Do not implement generic data correction tooling, destructive order edits, pickup override workflows, restaurant offboarding deletion, native mobile ops screens, scheduled background export workers, Sentry, or automated merchant billing.
+- Do not redesign marketing website, consumer discovery, checkout, pickup verification, notification provider behavior, settlement workflow, ROI report workflow, or restaurant onboarding except for small guardrail compatibility changes required by pause/config state.
+
+USER FLOWS
+Consumer:
+- Consumer discovery/claim/payment/pickup flows remain unchanged unless a restaurant/drop/global claim kill switch is active.
+- If a restaurant/drop is paused or suspended before claim, consumer should not see claimable inventory or should receive a plain unavailable message without internal reason text.
+- Consumer pages must not expose admin ops notes, support queue details, refund decision internals, restaurant suspension reasons, config flags, audit logs, settlement state, raw provider refs, or repeat-buyer/ROI analytics.
+
+Restaurant:
+- Restaurant owner portal remains mostly unchanged but must respect admin pause/suspension and publishing guardrails.
+- If restaurant publishing is paused/suspended or a safe config flag disables publishing, owners should see a clear operational message and cannot publish new drops until ops reactivates access.
+- Existing finance, reports, orders, and notification surfaces remain read-only/tenant-scoped as before.
+- Restaurant users cannot pause/reactivate themselves, change config flags, change refund/support status, view internal notes, access cross-restaurant queues, or see admin audit logs.
+
+Admin/Ops:
+- Admin opens `/admin/ops` or equivalent from admin navigation.
+- Admin sees a compact dashboard with: restaurant operational status, open support tickets, open/high-severity incidents, refund/debit requests, paused/suspended restaurants/drops, config overrides, and recent privileged audit activity.
+- Admin filters by restaurant, status, severity/priority, queue type, and date range.
+- Admin can pause/suspend/reactivate a restaurant with required reason and optional public-safe note. The action is server-side, role-checked, idempotent where reasonable, and audited.
+- Admin can pause/resume a drop when operationally necessary, with required reason and audit trail, without touching existing paid orders.
+- Admin can triage incidents and support tickets: assign/status/comment/link related order/restaurant/refund record, add internal notes, and mark resolved/closed.
+- Admin can create/manual-track a refund support record tied to an order only as a support/finance tracking artifact. It must not call Razorpay, must not mutate payment capture state, and must not silently alter settlement/payout state.
+- Admin can update only allowlisted launch config flags/settings and sees exactly where each flag is consumed.
+- Admin can copy/download support-safe current queue rows for founder/manual ops review, bounded and PII-safe.
+
+Mobile:
+- No native mobile implementation.
+- Admin ops and restaurant guardrail states must remain responsive on mobile/tablet browser checks.
+- Do not add Expo admin screens, push alert controls, or native background sync.
+
+DATA / DATABASE REQUIREMENTS
+- Prefer additive migrations.
+- Do not edit historical migrations unless fixing idempotency.
+- RLS and service-role usage must be reviewed.
+- Public views must expose only safe fields.
+- Tables/views/RPCs/functions likely involved:
+  - restaurant_restaurant
+  - restaurant_team_membership
+  - iam_profile
+  - iam_platform_membership
+  - iam_platform_role
+  - drop_drop
+  - drop_inventory_hold
+  - drop_inventory_event
+  - order_order
+  - order_item
+  - order_status_transition
+  - payment_order_intent
+  - payment_transaction
+  - payment_refund
+  - finance_settlement_run
+  - finance_restaurant_payout_entry
+  - incident_incident
+  - incident_event
+  - support_ticket
+  - support_ticket_event
+  - master_support_ticket_type
+  - master_support_ticket_status
+  - master_support_ticket_priority
+  - master_incident_type
+  - master_incident_status
+  - master_incident_severity
+  - notification_outbox only for read-only delivery context if useful
+  - config_feature_flag
+  - config_runtime_setting
+  - admin_export_job only if used as read-only/manual metadata; do not add async export worker
+  - admin_data_correction only if needed for future-compatible metadata; do not implement broad correction flow
+  - audit_log
+  - api_admin_pickup_order_summary
+  - api_admin_incident_summary
+  - api_admin_payment_order_summary
+  - api_admin_finance_settlement_summary
+  - api_admin_roi_drop_detail
+  - optional new safe read models: api_admin_ops_restaurant_summary, api_admin_ops_support_queue, api_admin_ops_incident_queue, api_admin_ops_refund_queue, api_admin_ops_config_flag, api_admin_ops_audit_log
+  - optional server-side/admin RPCs: api_admin_set_restaurant_operational_status, api_admin_set_drop_operational_status, api_admin_update_support_ticket, api_admin_add_support_ticket_event, api_admin_update_incident_status, api_admin_track_refund_support_record, api_admin_update_config_feature_flag
+- Migration naming convention:
+  - supabase/migrations/20260529000000_slice8b_admin_ops_hardening.sql
+
+API REQUIREMENTS
+- Add admin server loader support for ops queues, guarded by existing platform membership checks. Use service-role server code only after verifying the admin actor.
+- Add role-specific guards. Suggested minimum: `SUPER_ADMIN` can perform all ops actions; `OPS_ADMIN` can pause/reactivate restaurants/drops, manage incidents/support, and update allowlisted ops config; `SUPPORT_ADMIN` can manage support tickets/incidents/refund requests but not finance settlement/payout actions; `FINANCE_ADMIN` can view refund support records and update manual refund tracking status where finance review is needed.
+- Add typed API routes or server actions for restaurant/drop operational status changes, support ticket create/update/comment, incident status/assignment/comment, refund support tracking, and config flag update.
+- API errors must be specific: login required, admin access required, role not allowed, restaurant not found, drop not found, order not found, invalid status transition, reason required, closed object cannot be mutated, payment mutation not allowed, provider refund not configured/not allowed, config flag not allowlisted, export too large, internal error.
+- Mutations must be idempotent where practical: repeating pause/suspend/reactivate with same target/state should not create conflicting state, and should either return current state or append a clear no-op audit event only if useful.
+- Support/refund mutations must not call Razorpay, mutate `payment_transaction`, create payment captures, recalculate finance settlement runs, mark payouts, or change order status except where an existing approved support workflow explicitly requires it and is audited.
+- Config APIs must use an allowlist of flag/setting codes and validate scope. Do not accept arbitrary JSON secrets or unbounded config payloads.
+- Export/copy APIs must return bounded, support-safe rows only. No background export jobs unless absolutely necessary; if added, document exact worker/deployment steps and storage privacy.
+
+UI / UX REQUIREMENTS
+- Maintain production-quality layout.
+- Buttons must be visible, labeled, accessible, and responsive.
+- Avoid dead-end screens.
+- Errors must explain what to correct.
+- Success states must be clear.
+- Primary workflow should be fast for the target user.
+- Use existing design tokens/components where possible.
+- Do not add marketing/landing-page fluff inside operational apps.
+- Admin ops UI should be compact, operational, and queue-oriented: filters first, summary chips/cards, tables for actionable rows, and detail panels/forms only where needed.
+- Status-changing actions must use confirmations that show current state, next state, target name, and required reason. Dangerous-but-needed actions such as suspend/pause must be visually distinct without being theatrical.
+- Show internal vs partner/customer-safe notes clearly. Never let an internal note be copied into partner/customer-safe output by default.
+- Show data freshness and source context for queue rows: order, drop, restaurant, incident/ticket/refund, latest event, SLA due/overdue.
+- Config flag UI must be allowlisted and explanatory: show scope, current value, last changed time, and where the flag is consumed. Avoid a raw JSON editor unless the codebase already has a safe pattern.
+- Empty states must tell ops what has to happen before rows appear: incidents logged, support ticket created, refund support request recorded, config override created, or audit event written.
+- Use support-safe labels: avoid “leftover”, “stale”, and brand-damaging partner language. Use “BAM Bags”, “Limited Drops”, “pickup issue”, “partner action required”, and “ops review”.
+
+SECURITY / COMPLIANCE REQUIREMENTS
+- No service-role key in client code.
+- No private docs/media exposed publicly.
+- No PII in logs.
+- RLS/tenant checks required for:
+  - Admin users must be verified through existing platform membership before viewing or mutating cross-restaurant ops data.
+  - Restaurant users can only see their own existing tenant-scoped data and cannot read admin ops queues, internal support notes, config flags, audit logs, or other restaurants.
+  - Consumers cannot read admin ops, restaurant pause reasons, support/refund internal notes, payout/settlement internals, config flags, raw provider refs, or audit logs.
+  - Public/consumer drop discovery and claim paths must not expose paused/suspended restaurant/drop inventory as claimable.
+  - Any privileged mutation must be server-side/service-role only, role-checked, reasoned, and audited.
+  - Export/copy/download output must be bounded and support-safe, with no full phone/email lists, raw provider payloads, private documents, pickup secrets/hashes, service keys, or internal-only notes.
+- Human review required for:
+  - auth
+  - payment webhook
+  - RLS
+  - refund/financial mutation
+  - destructive admin action
+  - restaurant suspension/pause behavior
+  - drop pause/resume behavior
+  - support/refund status workflow
+  - config flag allowlist and consumption points
+  - audit log payload content
+  - export/copy-safe output fields
+
+DOCS REQUIREMENTS
+Update docs in the same implementation:
+1. docs/implementation-plan.md
+   - Add/update slice section.
+   - Include goal, completed items, validation gate, out-of-scope, verification commands.
+   - Keep it usable to recreate all slices from ground zero.
+   - Include exact remote migration application steps, any required env vars, deployment steps, and Slice 8B smoke test flow.
+2. Product/runbook docs:
+   - Create docs/product/admin-ops-hardening.md covering scope, roles, pause/suspend rules, support ticket workflow, incident triage, refund support tracking, config flag allowlist, audit trail, support-safe copy/download, and out-of-scope operations.
+   - Create docs/runbooks/admin-ops-hardening.md covering migration, role setup, weekly/daily ops workflow, pause/reactivate process, incident/support/refund workflow, config change process, audit review, data quality checks, troubleshooting, rollback notes, and smoke test steps.
+   - Update docs/runbooks/pickup-operations.md to clarify incident states feed the admin ops queue and pickup/no-show flows remain unchanged.
+   - Update docs/runbooks/payments.md to clarify Slice 8B refund support tracking does not call Razorpay refund APIs or mutate captures.
+   - Update docs/runbooks/finance-settlements.md to clarify refund support records may be read by finance workflows later but Slice 8B does not recalculate settlements or mutate payouts.
+   - Update docs/runbooks/roi-reports.md to clarify pause/support/refund rows may inform ops review but ROI report calculations remain read-only.
+   - Update docs/runbooks/notifications.md only if support/ops actions add notification side effects; otherwise explicitly document no notification behavior change.
+   - Update docs/runbooks/demo-data.md if demo ops tickets/incidents/config flags/refund support rows or cleanup are added.
+3. Configuration/deployment docs if env/domain/migration behavior changes:
+   - docs/configuration-reference.md
+   - docs/deployment-pipeline.md
+4. Update DOCX roadmap only if roadmap/scope materially changes:
+   - project docs/goZaika_Technology_Specification_v2.docx
+   - If editing DOCX, use Documents skill and render/visually verify.
+
+DEMO / SEED REQUIREMENTS
+- Add deterministic demo data if needed.
+- Register demo rows in dev_demo_seed_registry where applicable.
+- Update cleanup scripts if demo rows are added.
+- Do not seed production data.
+- Add/update smoke SQL if useful.
+- If adding demo SQL, use supabase/seeds/demo/010_slice8b_admin_ops_hardening_demo.sql or the next available demo seed number, and make it safe for local/staging only.
+- Demo rows must use clearly fake references such as `ops_demo_*`, `support_demo_*`, `refund_demo_*`, or `config_demo_*`.
+- Demo data must not contain real phone numbers, real email lists, bank account numbers, provider payout/refund refs, raw customer PII, pickup credentials, or partner-sensitive notes.
+- Cleanup must remove demo support events, incident events, refund support records, config overrides, audit rows, and related demo support/incidents in FK-safe order.
+
+
+Codex is allowed to use http://localhost:3000 for local smoke testing.
+
+VALIDATION GATE
+This slice is complete only when:
+- Admin can open the new ops surface, filter by restaurant/status/date, inspect open incidents/support/refund requests/config overrides/audit rows, and copy/download bounded support-safe queue details without PII or raw provider/private data.
+- Admin can pause/suspend/reactivate a restaurant and pause/resume a drop with role checks, required reason text, idempotent safe behavior, visible success/error states, append-only audit logging, and no mutation to historical paid orders, payment captures, settlements, payouts, or notification sends.
+- Consumer discovery/claim and restaurant publishing flows respect paused/suspended restaurants, paused drops, and allowlisted ops config guardrails while keeping existing normal flows unchanged.
+- Admin can triage support tickets/incidents and manually track refund/debit support status without calling Razorpay refund APIs, initiating payouts, recalculating settlements, or exposing internal notes to restaurants/consumers.
+- RLS/service-role boundaries are verified for admin, restaurant, consumer, and public paths; no service-role keys, raw PII, private docs, provider payloads, pickup secrets/hashes, or broad exports are exposed.
+- docs/implementation-plan.md explains how to rebuild Slice 8B from scratch after Slices 0, 1, 2, 3, 3.5, 4A, 4B, 5, 6, 7, and 8A.
+- Product/runbook/config/deployment/demo docs are updated.
+- Focused typecheck, lint, builds, migration SQL review, and manual/browser smoke tests pass or blockers are documented.
+
+VERIFICATION COMMANDS
+Run focused checks:
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+
+===
 You are Codex working in C:\venkat\limca\gozaika\sourcecode.
 
 MODE

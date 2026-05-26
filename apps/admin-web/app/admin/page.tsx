@@ -16,6 +16,10 @@ export default async function AdminPage() {
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">goZaika operations</p>
         <h1 className="mt-2 text-3xl font-bold">Admin home</h1>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <Link className="rounded-lg border border-black/10 bg-white p-5 transition hover:border-[#1A5C38]" href="/admin/ops">
+            <h2 className="text-xl font-bold">Restaurant trust ops</h2>
+            <p className="mt-2 text-sm text-black/65">Pause restaurants or drops, triage support/refund queues, review config flags, and inspect audit history.</p>
+          </Link>
           <Link className="rounded-lg border border-black/10 bg-white p-5 transition hover:border-[#1A5C38]" href="/admin/restaurants/onboarding">
             <h2 className="text-xl font-bold">Restaurant onboarding</h2>
             <p className="mt-2 text-sm text-black/65">Review compliance, documents, and activation status.</p>

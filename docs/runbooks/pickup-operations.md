@@ -91,3 +91,7 @@ Use the short incident form from restaurant or admin order context.
 - If restaurant pickup verification is faulty, roll back the restaurant/admin/consumer deployments first.
 - Keep verification, transition, and incident audit rows intact for investigation.
 - Do not manually edit order status, inventory counters, or payment tables without a reviewed SQL correction plan.
+
+## Slice 8B Admin Ops Queue
+
+Pickup/no-show flows remain unchanged. Incidents logged from restaurant/admin order context feed `/admin/ops` for triage, assignment, support-ticket linking, and audit review. Admin ops triage changes incident status only; it does not override pickup proof, edit paid orders, or create refunds automatically.

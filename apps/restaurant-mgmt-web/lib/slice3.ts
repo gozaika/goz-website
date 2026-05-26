@@ -9,6 +9,12 @@ export type ActivePortalRestaurant = {
   readonly neighborhoodPk: string | null;
 };
 
+export type RestaurantOpsGuardrails = {
+  readonly claimsEnabled: boolean;
+  readonly publishingEnabled: boolean;
+  readonly maxBagsPerDrop: number;
+};
+
 export async function loadDefaultRestaurant(profilePk: string): Promise<ActivePortalRestaurant | null> {
   const service = createServiceRoleSupabaseClient();
   const { data: membership } = await service
@@ -271,4 +277,19 @@ export async function loadPublicDropsByDropPks(dropPks: readonly string[]): Prom
   }
 
   return ((data ?? []) as PublicDropRow[]).map(mapPublicDrop);
+}
+
+export async function loadRestaurantOpsGuardrails(restaurantPk: string): Promise<RestaurantOpsGuardrails> {
+  const service = createServiceRoleSupabaseClient();
+  const [{ data: claimsEnabled }, { data: publishingEnabled }, { data: maxBagsPerDrop }] = await Promise.all([
+    service.rpc("api_ops_claims_enabled", { p_restaurant_pk: restaurantPk }),
+    service.rpc("api_ops_publishing_enabled", { p_restaurant_pk: restaurantPk }),
+    service.rpc("api_ops_max_bags_per_drop", { p_restaurant_pk: restaurantPk }),
+  ]);
+
+  return {
+    claimsEnabled: claimsEnabled !== false,
+    publishingEnabled: publishingEnabled !== false,
+    maxBagsPerDrop: Number(maxBagsPerDrop ?? 50),
+  };
 }

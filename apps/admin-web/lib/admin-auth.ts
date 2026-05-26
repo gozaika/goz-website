@@ -68,3 +68,26 @@ export async function requireFinanceAdminActor(): Promise<AdminActor | NextRespo
 
   return actor;
 }
+
+export async function requireAdminActorWithRoles(allowedRoleCodes: readonly string[]): Promise<AdminActor | NextResponse> {
+  const actor = await requireAdminActor();
+  if (actor instanceof NextResponse) return actor;
+
+  if (!actor.roleCodes.some((roleCode) => allowedRoleCodes.includes(roleCode))) {
+    return NextResponse.json({ ok: false, error: "Role is not allowed for this admin action." }, { status: 403 });
+  }
+
+  return actor;
+}
+
+export async function requireOpsAdminActor(): Promise<AdminActor | NextResponse> {
+  return requireAdminActorWithRoles(["SUPER_ADMIN", "OPS_ADMIN"]);
+}
+
+export async function requireSupportAdminActor(): Promise<AdminActor | NextResponse> {
+  return requireAdminActorWithRoles(["SUPER_ADMIN", "OPS_ADMIN", "SUPPORT_ADMIN"]);
+}
+
+export async function requireRefundSupportActor(): Promise<AdminActor | NextResponse> {
+  return requireAdminActorWithRoles(["SUPER_ADMIN", "OPS_ADMIN", "SUPPORT_ADMIN", "FINANCE_ADMIN"]);
+}

@@ -51,6 +51,7 @@ Owned domains also include `gozaik.in` and `gozaika.com`. Treat these as reserve
 - Slice 6 requires migration `20260526000000_slice6_transactional_notifications.sql`, deployed `notification-outbox-worker`, redeployed `pickup-reminder-cron` and `razorpay-webhook`, and notification env vars or `NOTIFICATION_DRY_RUN=true` for non-provider smoke tests. WhatsApp defaults to Meta Cloud API with WATI left as a later provider switch.
 - Slice 7 requires migration `20260527000000_slice7_pilot_finance_settlement.sql`, redeployed admin/restaurant apps, and deployed `settlement-run-worker`. No live Razorpay payout, transfer, refund, fund-account, invoice-generation, or accounting integration env vars are added. Optional `SETTLEMENT_WORKER_ACTOR_PROFILE_PK` is only for worker-created draft settlement refreshes.
 - Slice 8A requires migration `20260528000000_slice8a_pilot_roi_reports.sql` and redeployed admin/restaurant apps. No new env vars, Edge Functions, workers, scheduled digests, export jobs, or provider integrations are added.
+- Slice 8B requires migration `20260529000000_slice8b_admin_ops_hardening.sql` and redeployed admin/restaurant/consumer apps. No new env vars, Edge Functions, workers, provider refund APIs, payout APIs, settlement recalculation jobs, or notification side effects are added.
 - Website deployments should use the approved mailbox mapping: `contact@gozaika.in`, `partners@gozaika.in`, `waitlist@gozaika.in`, `billing@gozaika.in`, `careers@gozaika.in`, and `tech@gozaika.in`.
 
 ## Rollback procedure
@@ -64,3 +65,4 @@ Owned domains also include `gozaik.in` and `gozaika.com`. Treat these as reserve
 7. For Slice 6 notification incidents, pause worker/cron schedules first; keep outbox and delivery attempt rows for support review and retry.
 8. For Slice 7 finance incidents, roll back admin/restaurant deployments first; do not delete locked settlement, payout entry, invoice, or audit rows. Cancel incorrect drafts or create later adjustment runs for locked corrections.
 9. For Slice 8A ROI report incidents, roll back admin/restaurant deployments first. The migration is read-only; do not delete underlying payment, order, pickup, incident, refund, settlement, or finance rows during debugging.
+10. For Slice 8B admin ops incidents, roll back admin/restaurant/consumer deployments first. Keep audit, support, incident, refund tracking, and config rows intact; re-enable `CLAIMS_ENABLED`/`PUBLISHING_ENABLED` or reactivate restaurants/drops through reviewed SQL/admin action if a guardrail was set incorrectly.

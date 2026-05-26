@@ -351,6 +351,83 @@ export function financeSettlementStatusTone(statusCode: string): "success" | "wa
   return "neutral";
 }
 
+export function adminOpsStatusLabel(statusCode: string): string {
+  const labels: Record<string, string> = {
+    ACTIVE: "Active",
+    SCHEDULED: "Scheduled",
+    PAUSED: "Paused",
+    SUSPENDED: "Suspended",
+    OPEN: "Open",
+    IN_PROGRESS: "In progress",
+    TRIAGED: "Triaged",
+    INVESTIGATING: "Investigating",
+    MERCHANT_ACTION_REQUIRED: "Partner action required",
+    OPS_REVIEW: "Ops review",
+    FINANCE_REVIEW: "Finance review",
+    APPROVED_MANUAL: "Approved for manual handling",
+    TRACKED_EXTERNALLY: "Tracked externally",
+    RESOLVED: "Resolved",
+    CLOSED: "Closed",
+    REJECTED: "Rejected",
+    CANCELLED: "Cancelled",
+  };
+  return labels[statusCode] ?? statusCode.replaceAll("_", " ").toLowerCase();
+}
+
+export function adminOpsStatusTone(statusCode: string): "success" | "warning" | "danger" | "neutral" {
+  if (["ACTIVE", "RESOLVED", "CLOSED", "TRACKED_EXTERNALLY"].includes(statusCode)) return "success";
+  if (["OPEN", "IN_PROGRESS", "TRIAGED", "INVESTIGATING", "OPS_REVIEW", "FINANCE_REVIEW", "SCHEDULED"].includes(statusCode)) return "warning";
+  if (["PAUSED", "SUSPENDED", "REJECTED", "CANCELLED", "MERCHANT_ACTION_REQUIRED"].includes(statusCode)) return "danger";
+  return "neutral";
+}
+
+export function slaFreshnessLabel(slaDueAt: string | null | undefined, now: Date = new Date()): string {
+  if (!slaDueAt) return "No SLA";
+  const dueMs = Date.parse(slaDueAt);
+  if (!Number.isFinite(dueMs)) return "No SLA";
+  const deltaMinutes = Math.round((dueMs - now.valueOf()) / 60_000);
+  if (deltaMinutes < 0) return `Overdue ${Math.abs(deltaMinutes)}m`;
+  if (deltaMinutes < 60) return `Due in ${deltaMinutes}m`;
+  return `Due in ${Math.round(deltaMinutes / 60)}h`;
+}
+
+export function maskSupportSafe(value: string | null | undefined): string {
+  const text = value?.trim();
+  if (!text) return "";
+  if (text.includes("@")) {
+    const [local = "", domain = ""] = text.split("@");
+    return `${local.slice(0, 2)}***@${domain}`;
+  }
+  const digits = text.replace(/\D/g, "");
+  if (digits.length >= 8) {
+    return `${text.slice(0, 3)}***${text.slice(-3)}`;
+  }
+  return text.length > 12 ? `${text.slice(0, 6)}...${text.slice(-3)}` : text;
+}
+
+function csvCell(value: unknown): string {
+  if (value == null) return "";
+  const text = String(value).replace(/\r?\n/g, " ").trim();
+  return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+}
+
+export function generateSupportSafeCsv(rows: readonly Record<string, unknown>[], columns: readonly string[]): string {
+  const bounded = rows.slice(0, 200);
+  return [columns.join(","), ...bounded.map((row) => columns.map((column) => csvCell(row[column])).join(","))].join("\n");
+}
+
+export function generateSupportSafeText(title: string, rows: readonly Record<string, unknown>[], columns: readonly string[]): string {
+  const lines = [title, `Rows: ${Math.min(rows.length, 200)}`, ""];
+  for (const [index, row] of rows.slice(0, 200).entries()) {
+    lines.push(`#${index + 1}`);
+    for (const column of columns) {
+      lines.push(`${column}: ${row[column] ?? ""}`);
+    }
+    lines.push("");
+  }
+  return lines.join("\n").trimEnd();
+}
+
 export interface ConsentEventLike {
   readonly purposeCode: string;
   readonly state?: "GRANTED" | "REVOKED";

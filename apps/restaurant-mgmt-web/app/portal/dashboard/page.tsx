@@ -1,7 +1,7 @@
 import { ShellHeader } from "@gozaika/ui";
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
-import { loadDefaultRestaurant, loadPortalDrops, loadPortalTemplates } from "@/lib/slice3";
+import { loadDefaultRestaurant, loadPortalDrops, loadPortalTemplates, loadRestaurantOpsGuardrails } from "@/lib/slice3";
 import { PortalNav } from "../portal-nav";
 
 export default async function DashboardPage() {
@@ -11,10 +11,10 @@ export default async function DashboardPage() {
   const restaurant = await loadDefaultRestaurant(actor.profilePk);
   if (!restaurant) redirect("/portal/onboarding");
 
-  const [templates, drops] =
+  const [templates, drops, guardrails] =
     restaurant.restaurantStatusCode === "ACTIVE"
-      ? await Promise.all([loadPortalTemplates(restaurant.restaurantPk), loadPortalDrops(restaurant.restaurantPk)])
-      : [[], []];
+      ? await Promise.all([loadPortalTemplates(restaurant.restaurantPk), loadPortalDrops(restaurant.restaurantPk), loadRestaurantOpsGuardrails(restaurant.restaurantPk)])
+      : [[], [], null];
 
   const activeDrops = drops.filter((drop) => drop.statusCode === "ACTIVE").length;
   const availableBags = drops.reduce((total, drop) => total + drop.quantityAvailable, 0);
@@ -44,6 +44,15 @@ export default async function DashboardPage() {
           </section>
         ) : null}
 
+        {isActive && guardrails && !guardrails.publishingEnabled ? (
+          <section className="rounded-lg border border-[#D4A017]/40 bg-[#FFF8E6] p-5">
+            <h2 className="text-lg font-semibold">Publishing paused by ops</h2>
+            <p className="mt-2 text-sm text-[#7A5A00]">
+              New Limited Drops are temporarily unavailable while goZaika ops reviews this restaurant. Existing orders, finance, and reports remain read-only.
+            </p>
+          </section>
+        ) : null}
+
         <div className="grid gap-4 md:grid-cols-3">
           <article className="rounded-lg border border-black/10 bg-white p-4">
             <p className="text-sm text-slate-500">Templates</p>
@@ -59,7 +68,7 @@ export default async function DashboardPage() {
           </article>
         </div>
 
-        {isActive ? (
+        {isActive && guardrails?.publishingEnabled !== false ? (
           <section className="grid gap-4 md:grid-cols-2">
             <a className="rounded-lg border border-black/10 bg-white p-5 transition hover:border-[#1A5C38]" href="/portal/templates">
               <h2 className="text-xl font-bold">Create BAM Bag template</h2>

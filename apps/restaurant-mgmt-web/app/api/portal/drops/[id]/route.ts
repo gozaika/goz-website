@@ -2,7 +2,7 @@ import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getPortalActor } from "@/lib/portal-auth";
-import { loadDefaultRestaurant } from "@/lib/slice3";
+import { loadDefaultRestaurant, loadRestaurantOpsGuardrails } from "@/lib/slice3";
 
 const dropStatusActionSchema = z.object({
   statusCode: z.enum(["ACTIVE", "PAUSED", "PICKUP_CLOSED", "EMERGENCY_CLOSED", "CANCELLED"]),
@@ -23,6 +23,16 @@ export async function PATCH(request: Request, { params }: { readonly params: Pro
   const parsed = dropStatusActionSchema.safeParse(await request.json().catch(() => ({})));
   if (!parsed.success) {
     return NextResponse.json({ ok: false, error: "Choose a valid drop status." }, { status: 400 });
+  }
+
+  if (["ACTIVE", "SCHEDULED"].includes(parsed.data.statusCode)) {
+    if (restaurant.restaurantStatusCode !== "ACTIVE") {
+      return NextResponse.json({ ok: false, error: "goZaika ops must reactivate this restaurant before drops can be resumed." }, { status: 403 });
+    }
+    const guardrails = await loadRestaurantOpsGuardrails(restaurant.restaurantPk);
+    if (!guardrails.publishingEnabled) {
+      return NextResponse.json({ ok: false, error: "Publishing is paused by goZaika ops for this restaurant or pilot." }, { status: 403 });
+    }
   }
 
   const now = new Date().toISOString();

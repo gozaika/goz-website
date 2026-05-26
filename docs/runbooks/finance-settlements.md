@@ -105,3 +105,7 @@ Slice 7 stores invoice metadata only. If an invoice file is later attached, stor
 9. Issue invoice metadata.
 10. Mark `SENT`, `PAID`, then `RECONCILED`; confirm no Razorpay transfer/refund/order/pickup mutation occurs.
 11. Open `/portal/finance` as the restaurant owner and confirm only own settlement data appears.
+
+## Slice 8B Admin Ops Boundary
+
+Refund support records from `/admin/ops` may be read by future finance workflows, but Slice 8B does not recalculate settlements, create payout entries, lock/unlock settlements, mark payouts, or initiate provider refunds. Finance operators should continue to use `/admin/finance` for settlement preview, lock, invoice metadata, and manual payout status.

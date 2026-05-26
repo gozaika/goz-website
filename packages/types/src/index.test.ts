@@ -19,6 +19,12 @@ import {
   financePayoutEntryTypeCodes,
   roiReportInsightCodes,
   roiReportPeriodRequestSchema,
+  adminOpsConfigFlagUpdateSchema,
+  adminOpsDropStatusActionSchema,
+  adminOpsRefundSupportSchema,
+  adminOpsRestaurantStatusActionSchema,
+  adminOpsSupportTicketActionSchema,
+  refundSupportStatusCodes,
   settlementAdjustmentRequestSchema,
   settlementCreateRequestSchema,
   settlementInvoiceIssueRequestSchema,
@@ -50,6 +56,10 @@ describe("goZaika status constants", () => {
 
   it("keeps pilot ROI report insight states available", () => {
     expect(roiReportInsightCodes).toEqual(expect.arrayContaining(["NO_PAID_ORDERS", "SETTLEMENT_LOCKED", "INCIDENTS_PRESENT"]));
+  });
+
+  it("keeps admin ops refund workflow states available", () => {
+    expect(refundSupportStatusCodes).toEqual(expect.arrayContaining(["REQUESTED", "FINANCE_REVIEW", "TRACKED_EXTERNALLY", "REJECTED"]));
   });
 
   it("keeps claim hold intent states separate from paid order states", () => {
@@ -155,6 +165,61 @@ describe("API schemas", () => {
       roiReportPeriodRequestSchema.safeParse({
         periodStartAt: "2026-01-01T00:00:00.000Z",
         periodEndAt: "2026-06-01T00:00:00.000Z",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("validates admin ops status and support requests", () => {
+    const restaurantPk = "11111111-1111-4111-8111-111111111111";
+    expect(
+      adminOpsRestaurantStatusActionSchema.safeParse({
+        restaurantPk,
+        nextStatusCode: "PAUSED",
+        reasonText: "Food safety review requested by ops.",
+      }).success,
+    ).toBe(true);
+    expect(
+      adminOpsDropStatusActionSchema.safeParse({
+        dropPk: restaurantPk,
+        nextStatusCode: "PAUSED",
+        reasonText: "Partner asked ops to pause claim flow.",
+      }).success,
+    ).toBe(true);
+    expect(
+      adminOpsSupportTicketActionSchema.safeParse({
+        restaurantPk,
+        typeCode: "ORDER_ISSUE",
+        priorityCode: "HIGH",
+        statusCode: "OPEN",
+        subjectText: "Pickup issue for support review",
+        reasonText: "Ops created the ticket from the admin queue.",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("validates admin ops refund tracking and config allowlist updates", () => {
+    const orderPk = "11111111-1111-4111-8111-111111111111";
+    expect(
+      adminOpsRefundSupportSchema.safeParse({
+        orderPk,
+        amountPaise: 34900,
+        trackingStatusCode: "FINANCE_REVIEW",
+        noteText: "Manual review requested. No provider refund has been initiated.",
+        reasonText: "Customer reported missing pickup and support needs finance review.",
+      }).success,
+    ).toBe(true);
+    expect(
+      adminOpsConfigFlagUpdateSchema.safeParse({
+        flagCode: "MAX_BAGS_PER_DROP",
+        scopeCode: "GLOBAL",
+        numericValue: 25,
+        reasonText: "Pilot cap for first ten restaurants.",
+      }).success,
+    ).toBe(true);
+    expect(
+      adminOpsConfigFlagUpdateSchema.safeParse({
+        flagCode: "NOT_ALLOWLISTED",
+        reasonText: "Trying to change arbitrary config.",
       }).success,
     ).toBe(false);
   });

@@ -156,6 +156,15 @@ Use this order for a clean rebuild:
    - Open `/admin/reports`, select a restaurant and weekly period, inspect drop/order metrics, notes, settlement context, and copy/download partner-safe report text.
    - No new env vars, Edge Functions, workers, scheduled digests, export jobs, refund APIs, payout APIs, settlement recalculation, or native mobile reporting are required.
 
+15. Recreate Slice 8B admin ops hardening after Slice 8A is available:
+
+   - Apply migration `20260529000000_slice8b_admin_ops_hardening.sql`.
+   - Redeploy `admin.gozaika.in`, `restaurant.gozaika.in`, and `customer.gozaika.in`.
+   - Open `/admin/ops` and confirm restaurant/drop ops queues, support tickets, incident triage, refund support tracking, config flags, audit history, and support-safe copy/download.
+   - Use required reason text to pause/reactivate a restaurant and pause/resume a drop.
+   - Confirm restaurant publishing and consumer discovery/claim guardrails respect restaurant status, drop status, `CLAIMS_ENABLED`, `PUBLISHING_ENABLED`, and `MAX_BAGS_PER_DROP`.
+   - No new env vars, Edge Functions, workers, provider refund APIs, payout APIs, settlement recalculation, or notification side effects are required.
+
 ## Slice 0: Foundation
 
 ### Goal
@@ -968,3 +977,88 @@ npm.cmd --workspace @gozaika/admin-web run build
 ### Out Of Scope
 
 No advanced Zaika Pro analytics, forecasting, heatmaps, cohorts beyond simple repeat-buyer counts, benchmarking, scheduled email digest, background export jobs, CRM, native mobile reporting, refund initiation, payout initiation, settlement recalculation, pickup override, accounting integration, or legal invoice automation.
+
+## Slice 8B: Admin Ops Hardening
+
+### Goal
+
+Give goZaika ops a compact, auditable control center for the first pilot restaurants: pause/suspend risky restaurants or drops, triage incidents/support/refund requests, manage a small allowlist of operational config flags, inspect privileged audit history, and copy/download bounded support-safe queue details without exposing PII or triggering live financial movement.
+
+### Completed
+
+- [x] Add migration `20260529000000_slice8b_admin_ops_hardening.sql`.
+- [x] Add admin ops safe read models for restaurants, drops, incidents, support tickets, refund support tracking, config flags, and audit rows.
+- [x] Add server-side admin routes for restaurant pause/suspend/reactivate, drop pause/resume, support tickets, incident triage, refund support tracking, and allowlisted config flags.
+- [x] Require role checks and human-readable reason text for every privileged mutation.
+- [x] Append `audit_log` rows for privileged changes, plus `support_ticket_event`, `incident_event`, and drop inventory ledger rows where applicable.
+- [x] Add `/admin/ops` compact queue-oriented UI with filters, summary chips, action controls, support-safe copy, and bounded CSV download.
+- [x] Add typed request/response models and utility helpers for admin ops status labels, SLA freshness, support-safe masking, CSV, and text output.
+- [x] Enforce restaurant/drop/config guardrails in consumer public discovery/claim and restaurant publishing flows.
+- [x] Keep finance/ROI ownership read-only: no Razorpay refund API calls, payment capture mutation, settlement recalculation, payout mutation, or notification side effects.
+
+### Remote Migration Steps
+
+Apply this migration after all Slice 8A migrations:
+
+```powershell
+Get-Content -Raw supabase/migrations/20260529000000_slice8b_admin_ops_hardening.sql
+```
+
+Review the SQL, then run it once in the Supabase Dashboard SQL editor or approved remote migration path. Verify:
+
+```sql
+select to_regprocedure('public.api_admin_set_restaurant_operational_status(uuid,uuid,text,text,text)');
+select to_regprocedure('public.api_admin_set_drop_operational_status(uuid,uuid,text,text)');
+select to_regprocedure('public.api_ops_claims_enabled(uuid)');
+select to_regprocedure('public.api_ops_publishing_enabled(uuid)');
+select to_regprocedure('public.api_ops_max_bags_per_drop(uuid)');
+select to_regclass('public.api_admin_ops_restaurant_summary');
+select to_regclass('public.api_admin_ops_drop_summary');
+select to_regclass('public.api_admin_ops_support_queue');
+select to_regclass('public.api_admin_ops_incident_queue');
+select to_regclass('public.api_admin_ops_refund_queue');
+select to_regclass('public.api_admin_ops_config_flag');
+select to_regclass('public.api_admin_ops_audit_log');
+```
+
+Redeploy:
+
+```powershell
+# Vercel projects
+customer.gozaika.in
+restaurant.gozaika.in
+admin.gozaika.in
+```
+
+No new environment variables, Supabase Edge Functions, workers, storage buckets, provider secrets, cron schedules, Razorpay refund APIs, payout APIs, accounting integrations, or notification side effects are introduced.
+
+### Smoke Test Flow
+
+1. Open `/admin/ops` as `SUPER_ADMIN` or `OPS_ADMIN`.
+2. Filter by restaurant, status, and date; inspect open incidents, support tickets, refund support records, paused/suspended restaurants/drops, config overrides, and audit rows.
+3. Copy and download the current filtered queue and verify it excludes consumer contact lists, raw provider payloads, pickup credentials/hashes, private documents, service keys, and internal event bodies.
+4. Pause a restaurant with reason text, then confirm `/portal/drops/new` blocks new publishing and consumer public discovery/claims are unavailable for that restaurant.
+5. Reactivate the restaurant and confirm normal publishing/claim flows still work.
+6. Pause/resume one active/scheduled drop and confirm historical paid orders, payment captures, settlements, payouts, notifications, and ROI facts are unchanged.
+7. Create/update a support ticket, triage an incident, and save/update a refund support record. Confirm no Razorpay refund API is called.
+8. Update `CLAIMS_ENABLED`, `PUBLISHING_ENABLED`, or `MAX_BAGS_PER_DROP` and confirm only the documented consumption points change behavior.
+9. Check desktop/mobile layout and horizontal overflow for `/admin/ops`, `/portal/drops/new`, `/drops`, and `/drops/[id]`.
+
+### Verification Commands
+
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+```
+
+### Out Of Scope
+
+No advanced CRM, live Razorpay refunds, Razorpay transfers, fund accounts, payouts, payment capture mutation, webhook behavior changes beyond claim guardrails, settlement recalculation, payout status mutation, accounting integrations, destructive order edits, pickup overrides, broad customer exports, native mobile ops screens, scheduled export workers, Sentry, marketing automation, reviews/public ratings, loyalty, referrals, subscriptions, or marketing-site redesign.

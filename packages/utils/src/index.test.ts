@@ -10,7 +10,12 @@ import {
   formatPickupWindow,
   formatSignedPaise,
   generateManualDropAlertText,
+  adminOpsStatusLabel,
+  adminOpsStatusTone,
   getDropClaimAvailability,
+  generateSupportSafeCsv,
+  generateSupportSafeText,
+  maskSupportSafe,
   normalizeIndianPhone,
   notificationStatusLabel,
   notificationStatusTone,
@@ -19,6 +24,7 @@ import {
   rateTone,
   resolveLatestConsent,
   slugifyRestaurantName,
+  slaFreshnessLabel,
 } from "./index";
 
 describe("money formatting", () => {
@@ -125,6 +131,22 @@ describe("finance status helpers", () => {
     expect(financeSettlementStatusLabel("SENT")).toBe("Payout sent");
     expect(financeSettlementStatusTone("RECONCILED")).toBe("success");
     expect(financeSettlementStatusTone("CANCELLED")).toBe("danger");
+  });
+});
+
+describe("admin ops helpers", () => {
+  it("labels admin ops statuses and SLA freshness", () => {
+    expect(adminOpsStatusLabel("MERCHANT_ACTION_REQUIRED")).toBe("Partner action required");
+    expect(adminOpsStatusTone("SUSPENDED")).toBe("danger");
+    expect(slaFreshnessLabel("2026-05-18T18:00:00.000Z", new Date("2026-05-18T17:30:00.000Z"))).toBe("Due in 30m");
+    expect(slaFreshnessLabel("2026-05-18T17:00:00.000Z", new Date("2026-05-18T17:30:00.000Z"))).toBe("Overdue 30m");
+  });
+
+  it("generates bounded support-safe copy formats", () => {
+    expect(maskSupportSafe("person@example.com")).toBe("pe***@example.com");
+    const rows = [{ order: "GZ-1", note: "pickup issue", amount: 34900 }];
+    expect(generateSupportSafeCsv(rows, ["order", "note"])).toContain("GZ-1,pickup issue");
+    expect(generateSupportSafeText("Queue", rows, ["order", "amount"])).toContain("Rows: 1");
   });
 });
 

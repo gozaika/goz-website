@@ -2,7 +2,7 @@ import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { NextResponse } from "next/server";
 import { createDropDraftSchema } from "@gozaika/types";
 import { getPortalActor } from "@/lib/portal-auth";
-import { loadDefaultRestaurant, loadPortalDrops, loadPublicDropsByDropPks } from "@/lib/slice3";
+import { loadDefaultRestaurant, loadPortalDrops, loadPublicDropsByDropPks, loadRestaurantOpsGuardrails } from "@/lib/slice3";
 
 export async function GET() {
   const actor = await getPortalActor();
@@ -27,6 +27,11 @@ export async function POST(request: Request) {
   const restaurant = await loadDefaultRestaurant(actor.profilePk);
   if (!restaurant || restaurant.restaurantStatusCode !== "ACTIVE") {
     return NextResponse.json({ ok: false, error: "Only approved active restaurants can publish drops." }, { status: 403 });
+  }
+
+  const guardrails = await loadRestaurantOpsGuardrails(restaurant.restaurantPk);
+  if (!guardrails.publishingEnabled) {
+    return NextResponse.json({ ok: false, error: "Publishing is paused by goZaika ops for this restaurant or pilot." }, { status: 403 });
   }
 
   const json = await request.json().catch(() => ({}));
@@ -70,6 +75,9 @@ export async function POST(request: Request) {
   const pickupEnd = new Date(parsed.data.pickupEndAt);
   if (!(pickupEnd > pickupStart)) {
     return NextResponse.json({ ok: false, error: "Pickup end time must be after pickup start time." }, { status: 400 });
+  }
+  if (parsed.data.quantityTotal > guardrails.maxBagsPerDrop) {
+    return NextResponse.json({ ok: false, error: `Quantity cannot exceed the ops guidance cap of ${guardrails.maxBagsPerDrop} bags.` }, { status: 400 });
   }
 
   const now = new Date().toISOString();

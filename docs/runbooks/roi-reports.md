@@ -66,3 +66,7 @@ Slice 8A does not mutate payment, refund, order, pickup, settlement, payout, inv
 5. Confirm copy/download report text contains no consumer PII or internal/provider details.
 6. Check desktop and mobile layouts for `/portal/reports` and `/admin/reports`.
 7. Confirm consumer pages do not expose ROI or settlement report details.
+
+## Slice 8B Admin Ops Context
+
+Restaurant pauses, support tickets, incident triage, and refund support records may inform ops review before partner calls, but ROI report calculations remain read-only and still derive from existing drop/order/payment/pickup/finance facts. Slice 8B does not change ROI formulas, settlement-backed net recovery rules, or partner-safe report output.

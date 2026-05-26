@@ -160,3 +160,9 @@ If a future seed adds `supabase/seeds/demo/008_slice7_pilot_finance_settlement_d
 No deterministic Slice 8A demo seed is added. ROI reports should usually be validated from real local or staging paid pickup facts so drop, payment, pickup, incident, refund, and settlement read models are exercised together.
 
 If a future seed adds `supabase/seeds/demo/009_slice8a_pilot_roi_reports_demo.sql`, keep it local/staging-only, use clearly fake report references such as `roi_demo_*`, register rows in `dev_demo_seed_registry`, and delete rows in FK-safe order. Do not seed real bank account numbers, provider payout references, raw customer PII, provider payloads, pickup credentials, or partner-sensitive notes.
+
+# Slice 8B Admin Ops Hardening Demo Data
+
+No deterministic Slice 8B demo seed is added. Ops rows should usually be produced through local or staging admin actions so pause/reactivate audit, support events, incident events, refund support tracking, and config flag consumption are exercised realistically.
+
+If a future seed adds `supabase/seeds/demo/010_slice8b_admin_ops_hardening_demo.sql`, keep it local/staging-only, use clearly fake references such as `ops_demo_*`, `support_demo_*`, `refund_demo_*`, and `config_demo_*`, register rows in `dev_demo_seed_registry`, and delete rows in FK-safe order for `support_ticket_event`, `incident_event`, `payment_refund`, `support_ticket`, demo incidents, config overrides, and related audit rows. Do not seed real phone numbers, email lists, bank account numbers, provider payout/refund refs, raw customer PII, pickup credentials, private documents, or partner-sensitive notes.

@@ -137,3 +137,7 @@ Keep WATI or Meta approved templates aligned with the safe fields in `payload_js
 - If delivery is faulty, pause the worker schedule first. Existing queued rows remain available for retry.
 - If reminders are noisy, pause `pickup-reminder-cron`; order confirmation and pickup flows continue.
 - Do not delete outbox or delivery attempt rows during incident review.
+
+## Slice 8B Admin Ops Boundary
+
+Admin ops pause, support, incident triage, refund tracking, config, copy, and download actions do not enqueue notifications or change provider delivery behavior. Continue using `/admin/notifications` for retry/suppress/fallback workflows.

@@ -71,6 +71,7 @@ Owned but not necessarily routed domains: `gozaik.in`, `gozaika.com`.
 - Apply Slice 6 migration `20260526000000_slice6_transactional_notifications.sql` before deploying notification UI or notification workers.
 - Apply Slice 7 migration `20260527000000_slice7_pilot_finance_settlement.sql` before deploying `/admin/finance`, `/portal/finance`, or the hardened `settlement-run-worker`.
 - Apply Slice 8A migration `20260528000000_slice8a_pilot_roi_reports.sql` before deploying `/admin/reports` or `/portal/reports`.
+- Apply Slice 8B migration `20260529000000_slice8b_admin_ops_hardening.sql` before deploying `/admin/ops` or relying on restaurant/drop/config guardrails.
 - Grant anon/authenticated read to `api_public_drop_card`.
 - Grant authenticated read to `api_claim_hold_summary`.
 - Enable Realtime for `drop_drop` inventory/status updates if live client updates are required in the target environment.
@@ -78,6 +79,7 @@ Owned but not necessarily routed domains: `gozaik.in`, `gozaika.com`.
 - Deploy `razorpay-webhook` with `RAZORPAY_WEBHOOK_SECRET` after Slice 4B migration is applied.
 - Deploy `notification-outbox-worker` and redeploy `pickup-reminder-cron` after Slice 6 migration is applied.
 - Deploy `settlement-run-worker` after Slice 7 migration is applied. The worker is bounded and reports `livePayoutsEnabled=false`.
+- Slice 8B adds no Edge Functions, workers, cron schedules, provider refund env vars, payout env vars, or notification env vars.
 - Add Supabase Auth redirect URLs for:
   - `https://customer.gozaika.in/auth/callback`
   - `https://restaurant.gozaika.in/auth/callback`

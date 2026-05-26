@@ -6,6 +6,7 @@ import { createPublicDropUrl, formatPaise, formatPickupWindow, generateManualDro
 import { Clock3, Pause, Play, Save, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState } from "react";
+import type { RestaurantOpsGuardrails } from "@/lib/slice3";
 
 type Feedback = {
   readonly kind: "success" | "error";
@@ -48,11 +49,13 @@ export function DropPublishingForm({
   drops,
   launchDrops,
   restaurantName,
+  guardrails,
 }: {
   readonly templates: readonly PortalBagTemplate[];
   readonly drops: readonly PortalDrop[];
   readonly launchDrops: readonly PublicDropCard[];
   readonly restaurantName: string;
+  readonly guardrails: RestaurantOpsGuardrails;
 }) {
   const router = useRouter();
   const activeTemplates = useMemo(
@@ -125,6 +128,7 @@ export function DropPublishingForm({
     const errors: string[] = [];
     if (!templateRevisionPk) errors.push("Choose a template.");
     if (!Number.isFinite(quantityTotal) || quantityTotal < 1) errors.push("Quantity must be at least 1.");
+    if (quantityTotal > guardrails.maxBagsPerDrop) errors.push(`Quantity cannot exceed the ops guidance cap of ${guardrails.maxBagsPerDrop} bags.`);
     if (!Number.isFinite(priceRupees) || priceRupees < 1) errors.push("Price must be at least INR 1.");
     const start = fromLocalInputValue(pickupStartAt);
     const end = fromLocalInputValue(pickupEndAt);
@@ -259,6 +263,12 @@ export function DropPublishingForm({
           </p>
         ) : null}
 
+        {!guardrails.publishingEnabled ? (
+          <p className="rounded-md border border-[#D4A017]/40 bg-[#FFF8E6] p-3 text-sm font-medium text-[#7A5A00]">
+            goZaika ops has paused publishing for this restaurant or pilot. Existing drops and orders remain visible, but new drops cannot be published.
+          </p>
+        ) : null}
+
         {feedback ? (
           <div
             className={
@@ -305,7 +315,7 @@ export function DropPublishingForm({
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Bags
-            <input value={quantityTotal} onChange={(event) => setQuantityTotal(Number(event.target.value))} type="number" min="1" max="500" required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input value={quantityTotal} onChange={(event) => setQuantityTotal(Number(event.target.value))} type="number" min="1" max={guardrails.maxBagsPerDrop} required className="min-h-11 rounded-md border border-black/10 px-3" />
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Price INR
@@ -361,7 +371,7 @@ export function DropPublishingForm({
           </label>
         </div>
 
-        <button disabled={pending || activeTemplates.length === 0} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#FF6B35] px-4 font-semibold text-white disabled:opacity-60">
+        <button disabled={pending || activeTemplates.length === 0 || !guardrails.publishingEnabled} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#FF6B35] px-4 font-semibold text-white disabled:opacity-60">
           <Save size={18} aria-hidden="true" />
           {pending ? "Publishing..." : "Publish drop"}
         </button>

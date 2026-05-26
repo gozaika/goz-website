@@ -102,3 +102,7 @@ SUPABASE_SERVICE_ROLE_KEY
 ## HUMAN_REVIEW
 
 Before production, review Razorpay event names, settlement mapping, refund authorization, replay handling, and operational alerting with finance and security.
+
+## Slice 8B Refund Support Tracking
+
+`/admin/ops` can create and update refund/debit support records as manual tracking artifacts. Slice 8B does not call Razorpay refund APIs, mutate `payment_transaction`, capture payments, change order payment status, or alter settlement/payout state. A refund support row should be treated as a queue item until a future approved refund process or manual finance workflow handles it.

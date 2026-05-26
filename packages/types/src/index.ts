@@ -158,6 +158,21 @@ export const roiReportInsightCodes = [
   "SELL_THROUGH_NEEDS_ATTENTION",
 ] as const;
 export const roiReportEstimateBasisCodes = ["ESTIMATED", "SETTLEMENT_LOCKED", "INSUFFICIENT_DATA"] as const;
+export const adminOpsQueueTypeCodes = ["INCIDENT", "SUPPORT", "REFUND"] as const;
+export const adminOpsConfigFlagCodes = [
+  "CLAIMS_ENABLED",
+  "PUBLISHING_ENABLED",
+  "MAX_BAGS_PER_DROP",
+] as const;
+export const refundSupportStatusCodes = [
+  "REQUESTED",
+  "OPS_REVIEW",
+  "FINANCE_REVIEW",
+  "APPROVED_MANUAL",
+  "TRACKED_EXTERNALLY",
+  "REJECTED",
+  "CANCELLED",
+] as const;
 
 export type DietaryCategoryCode = (typeof dietaryCategoryCodes)[number];
 export type SpiceLevelCode = (typeof spiceLevelCodes)[number];
@@ -182,6 +197,9 @@ export type FinancePayoutEntryTypeCode = (typeof financePayoutEntryTypeCodes)[nu
 export type FinanceOrderEligibilityStatusCode = (typeof financeOrderEligibilityStatusCodes)[number];
 export type RoiReportInsightCode = (typeof roiReportInsightCodes)[number];
 export type RoiReportEstimateBasisCode = (typeof roiReportEstimateBasisCodes)[number];
+export type AdminOpsQueueTypeCode = (typeof adminOpsQueueTypeCodes)[number];
+export type AdminOpsConfigFlagCode = (typeof adminOpsConfigFlagCodes)[number];
+export type RefundSupportStatusCode = (typeof refundSupportStatusCodes)[number];
 export type PlatformRoleCode = (typeof platformRoleCodes)[number];
 export type RestaurantStatusCode = (typeof restaurantStatusCodes)[number];
 export type RestaurantTeamRoleCode = (typeof restaurantTeamRoleCodes)[number];
@@ -375,6 +393,73 @@ export const roiReportPeriodRequestSchema = z
     message: "ROI report periods are limited to 93 days.",
     path: ["periodEndAt"],
   });
+
+export const adminOpsReasonSchema = z.string().trim().min(8).max(1000);
+
+export const adminOpsRestaurantStatusActionSchema = z.object({
+  restaurantPk: uuidSchema,
+  nextStatusCode: z.enum(["ACTIVE", "PAUSED", "SUSPENDED"]),
+  reasonText: adminOpsReasonSchema,
+  publicNoteText: z.preprocess(optionalString, z.string().trim().max(500).optional()),
+});
+
+export const adminOpsDropStatusActionSchema = z.object({
+  dropPk: uuidSchema,
+  nextStatusCode: z.enum(["ACTIVE", "SCHEDULED", "PAUSED"]),
+  reasonText: adminOpsReasonSchema,
+});
+
+export const adminOpsSupportTicketActionSchema = z.object({
+  supportTicketPk: uuidSchema.optional(),
+  restaurantPk: uuidSchema.optional().nullable(),
+  orderPk: uuidSchema.optional().nullable(),
+  incidentPk: uuidSchema.optional().nullable(),
+  refundPk: uuidSchema.optional().nullable(),
+  typeCode: z.string().trim().min(2).max(60).default("GENERAL"),
+  priorityCode: z.string().trim().min(2).max(40).default("NORMAL"),
+  statusCode: z.string().trim().min(2).max(40).default("OPEN"),
+  subjectText: z.string().trim().min(4).max(180),
+  descriptionText: z.string().trim().max(1200).optional(),
+  assignedToProfilePk: uuidSchema.optional().nullable(),
+  noteText: z.preprocess(optionalString, z.string().trim().max(1200).optional()),
+  internalNoteFlag: z.boolean().default(true),
+  reasonText: adminOpsReasonSchema,
+});
+
+export const adminOpsIncidentTriageSchema = z.object({
+  incidentPk: uuidSchema,
+  statusCode: z.enum(incidentStatusCodes),
+  assignedToProfilePk: uuidSchema.optional().nullable(),
+  supportTicketPk: uuidSchema.optional().nullable(),
+  noteText: z.preprocess(optionalString, z.string().trim().max(1200).optional()),
+  reasonText: adminOpsReasonSchema,
+});
+
+export const adminOpsRefundSupportSchema = z.object({
+  refundPk: uuidSchema.optional(),
+  orderPk: uuidSchema,
+  supportTicketPk: uuidSchema.optional().nullable(),
+  incidentPk: uuidSchema.optional().nullable(),
+  amountPaise: paiseSchema.min(1),
+  refundReasonCode: z.string().trim().min(3).max(80).default("CUSTOMER_SUPPORT"),
+  trackingStatusCode: z.enum(refundSupportStatusCodes).default("REQUESTED"),
+  noteText: z.string().trim().min(8).max(1200),
+  reasonText: adminOpsReasonSchema,
+});
+
+export const adminOpsConfigFlagUpdateSchema = z.object({
+  flagCode: z.enum(adminOpsConfigFlagCodes),
+  scopeCode: z.enum(["GLOBAL", "RESTAURANT"]).default("GLOBAL"),
+  scopeEntityPk: uuidSchema.optional().nullable(),
+  isEnabled: z.boolean().optional(),
+  numericValue: z.number().int().min(1).max(500).optional(),
+  reasonText: adminOpsReasonSchema,
+});
+
+export const adminOpsExportRequestSchema = z.object({
+  rows: z.array(z.record(z.string(), z.unknown())).max(200),
+  title: z.string().trim().min(1).max(80).default("Admin ops queue"),
+});
 
 export interface PickupVerificationResult {
   readonly orderPk: string;
@@ -676,6 +761,133 @@ export interface RoiReportPayload {
   readonly dropRows: readonly RoiReportDropDetailRow[];
   readonly noteRows: readonly RoiReportIncidentRefundNoteRow[];
   readonly partnerCopy: RoiPartnerReportCopyPayload;
+}
+
+export interface AdminOpsRestaurantSummary {
+  readonly restaurantPk: string;
+  readonly restaurantName: string;
+  readonly restaurantSlug: string;
+  readonly statusCode: RestaurantStatusCode | string;
+  readonly openIncidentCount: number;
+  readonly openSupportTicketCount: number;
+  readonly openRefundRequestCount: number;
+  readonly activeDropCount: number;
+  readonly pausedDropCount: number;
+  readonly latestAuditAt: string | null;
+  readonly updatedAt: string;
+}
+
+export interface AdminOpsDropSummary {
+  readonly dropPk: string;
+  readonly restaurantPk: string;
+  readonly restaurantName: string;
+  readonly dropTitle: string;
+  readonly statusCode: DropStatusCode | string;
+  readonly quantityTotal: number;
+  readonly quantityAvailable: number;
+  readonly paidOrderCount: number;
+  readonly pickupStartAt: string;
+  readonly pickupEndAt: string;
+  readonly updatedAt: string;
+}
+
+export interface AdminOpsSupportTicketRow {
+  readonly supportTicketPk: string;
+  readonly restaurantPk: string | null;
+  readonly restaurantName: string | null;
+  readonly orderPk: string | null;
+  readonly orderNumber: string | null;
+  readonly incidentPk: string | null;
+  readonly refundPk: string | null;
+  readonly typeCode: string;
+  readonly statusCode: string;
+  readonly priorityCode: string;
+  readonly subjectText: string;
+  readonly descriptionText: string | null;
+  readonly assignedToProfilePk: string | null;
+  readonly slaDueAt: string | null;
+  readonly resolvedAt: string | null;
+  readonly latestEventAt: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
+
+export interface AdminOpsIncidentQueueRow {
+  readonly incidentPk: string;
+  readonly restaurantPk: string | null;
+  readonly restaurantName: string | null;
+  readonly orderPk: string | null;
+  readonly orderNumber: string | null;
+  readonly supportTicketPk: string | null;
+  readonly typeCode: IncidentTypeCode | string;
+  readonly severityCode: IncidentSeverityCode | string;
+  readonly statusCode: IncidentStatusCode | string;
+  readonly titleText: string;
+  readonly descriptionText: string | null;
+  readonly assignedToProfilePk: string | null;
+  readonly latestEventAt: string | null;
+  readonly occurredAt: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
+
+export interface AdminOpsRefundQueueRow {
+  readonly refundPk: string;
+  readonly restaurantPk: string;
+  readonly restaurantName: string;
+  readonly orderPk: string;
+  readonly orderNumber: string;
+  readonly supportTicketPk: string | null;
+  readonly incidentPk: string | null;
+  readonly refundStatusCode: string;
+  readonly trackingStatusCode: RefundSupportStatusCode | string;
+  readonly refundReasonCode: string;
+  readonly amountPaise: number;
+  readonly requestedAt: string;
+  readonly processedAt: string | null;
+  readonly updatedAt: string;
+}
+
+export interface AdminOpsConfigFlagRow {
+  readonly configPk: string;
+  readonly flagCode: AdminOpsConfigFlagCode | string;
+  readonly flagName: string;
+  readonly description: string | null;
+  readonly scopeCode: "GLOBAL" | "RESTAURANT" | string;
+  readonly scopeEntityPk: string | null;
+  readonly scopeLabel: string;
+  readonly isEnabled: boolean;
+  readonly numericValue: number | null;
+  readonly consumedByText: string;
+  readonly updatedAt: string;
+}
+
+export interface AdminOpsAuditRow {
+  readonly auditLogPk: string;
+  readonly actorProfilePk: string | null;
+  readonly actorRoleCode: string | null;
+  readonly actionCode: string;
+  readonly targetEntityTypeCode: string | null;
+  readonly targetEntityPk: string | null;
+  readonly reasonText: string | null;
+  readonly createdAt: string;
+}
+
+export interface AdminOpsSummaryPayload {
+  readonly restaurants: readonly AdminOpsRestaurantSummary[];
+  readonly drops: readonly AdminOpsDropSummary[];
+  readonly incidents: readonly AdminOpsIncidentQueueRow[];
+  readonly supportTickets: readonly AdminOpsSupportTicketRow[];
+  readonly refunds: readonly AdminOpsRefundQueueRow[];
+  readonly configFlags: readonly AdminOpsConfigFlagRow[];
+  readonly auditRows: readonly AdminOpsAuditRow[];
+  readonly generatedAt: string;
+}
+
+export interface AdminOpsActionResult {
+  readonly targetPk: string;
+  readonly statusCode?: string;
+  readonly message: string;
 }
 
 export const consentCaptureSchema = z.object({
