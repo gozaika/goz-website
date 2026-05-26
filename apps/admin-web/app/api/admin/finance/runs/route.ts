@@ -35,6 +35,10 @@ export async function POST(request: Request) {
   });
 
   if (error) {
+    console.error("finance_settlement_create_rpc_failed", {
+      code: error.code,
+      message: error.message,
+    });
     const mapped = mapSettlementError(error.message);
     return NextResponse.json({ ok: false, error: mapped.error } satisfies ApiResponse, { status: mapped.status });
   }

@@ -54,6 +54,8 @@ export async function loadActiveRestaurantsForProfile(profilePk: string): Promis
     throw error;
   }
 
+  const seenRestaurantPks = new Set<string>();
+
   return (data ?? []).flatMap((membership) => {
     const restaurant = Array.isArray(membership.restaurant_restaurant)
       ? membership.restaurant_restaurant[0]
@@ -62,6 +64,11 @@ export async function loadActiveRestaurantsForProfile(profilePk: string): Promis
     if (!restaurant?.restaurant_restaurant_pk || !restaurant.geo_city_fk || restaurant.restaurant_status_code !== "ACTIVE") {
       return [];
     }
+
+    if (seenRestaurantPks.has(restaurant.restaurant_restaurant_pk)) {
+      return [];
+    }
+    seenRestaurantPks.add(restaurant.restaurant_restaurant_pk);
 
     return [
       {

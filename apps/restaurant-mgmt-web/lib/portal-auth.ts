@@ -55,6 +55,7 @@ export async function assertRestaurantAccess(restaurantPk: string, profilePk: st
     .eq("restaurant_fk", restaurantPk)
     .eq("iam_profile_fk", profilePk)
     .eq("is_active", true)
+    .limit(1)
     .maybeSingle();
 
   return Boolean(data);
