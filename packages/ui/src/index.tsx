@@ -81,7 +81,7 @@ export function Button({ className, ...props }: ButtonHTMLAttributes<HTMLButtonE
 export function ShellHeader({ children }: { readonly children?: ReactNode }) {
   return (
     <header className="sticky top-0 z-20 border-b border-black/10 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
         <GoZaikaLogo className="h-9" />
         {children}
       </div>

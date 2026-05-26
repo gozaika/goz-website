@@ -1,26 +1,11 @@
 import type { Metadata } from 'next';
 import { GoogleAnalytics } from '@next/third-parties/google';
-import { Playfair_Display, Poppins } from 'next/font/google';
 
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { canonical, openGraphFor } from '@/lib/metadata';
 
 import './globals.css';
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  variable: '--font-sans',
-  display: 'optional',
-});
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  weight: ['700'],
-  variable: '--font-display',
-  display: 'optional',
-});
 
 export const metadata: Metadata = {
   title: 'goZaika — Discover. Pickup. Devour.',
@@ -44,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>): React.ReactElement {
   return (
-    <html lang="en" className={`${poppins.variable} ${playfair.variable} h-full antialiased`}>
+    <html lang="en" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
         <a href="#main-content" className="skip-link">
           Skip to main content

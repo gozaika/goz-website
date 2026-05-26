@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-sans);
-  --font-display: var(--font-display);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
   --color-saffron: #FF6B35;
   --color-saffron-light: #FFF0E8;
   --color-saffronLight: #FFF0E8;
@@ -26,6 +26,13 @@
   --color-header-glass-border: color-mix(in srgb, var(--color-forest) 14%, white);
 }
 
+:root {
+  --font-body: "Poppins", "Segoe UI", Arial, sans-serif;
+  --font-heading: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
+}
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5.5rem;
@@ -34,7 +41,7 @@ html {
 body {
   background: var(--color-cream);
   color: var(--color-gray900);
-  font-family: var(--font-sans), sans-serif;
+  font-family: var(--font-body);
 }
 
 @keyframes float {
@@ -84,7 +91,7 @@ body {
 }
 
 .heading-hero {
-  font-family: var(--font-display), serif;
+  font-family: var(--font-heading);
   font-size: clamp(2.5rem, 5vw, 3.75rem);
   font-weight: 700;
   line-height: 1.05;
@@ -92,7 +99,7 @@ body {
 }
 
 .heading-page {
-  font-family: var(--font-display), serif;
+  font-family: var(--font-heading);
   font-size: clamp(2rem, 4vw, 2.75rem);
   font-weight: 700;
   line-height: 1.1;
@@ -100,7 +107,7 @@ body {
 }
 
 .heading-section {
-  font-family: var(--font-sans), sans-serif;
+  font-family: var(--font-body);
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 600;
   line-height: 1.2;
@@ -203,7 +210,7 @@ details[open] .faq-answer {
 
 @media (max-width: 767px) {
   .heading-hero {
-    font-family: var(--font-sans), sans-serif;
+    font-family: var(--font-body);
     font-size: clamp(2.25rem, 8vw, 2.9rem);
     font-weight: 600;
     line-height: 1.08;

@@ -131,6 +131,16 @@ describe("API schemas", () => {
     expect(settlementInvoiceIssueRequestSchema.safeParse({ invoiceNumber: "invoice_demo_001", metadata: { reviewer: "pilot" } }).success).toBe(true);
   });
 
+  it("accepts deterministic Postgres UUIDs used by demo restaurant seeds", () => {
+    expect(
+      settlementCreateRequestSchema.safeParse({
+        restaurantPk: "20000000-0000-0000-0000-000000000001",
+        periodStartAt: "2026-05-01T00:00:00.000Z",
+        periodEndAt: "2026-05-08T00:00:00.000Z",
+      }).success,
+    ).toBe(true);
+  });
+
   it("validates restaurant onboarding basics", () => {
     const result = restaurantBasicsUpdateSchema.safeParse({
       restaurantPk: "11111111-1111-4111-8111-111111111111",

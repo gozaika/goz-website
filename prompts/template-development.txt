@@ -64,6 +64,8 @@ SMOKE TEST NOTE:
 a) If Browser/in-app browser tooling is not callable, run local route smoke tests with a Node script that starts Next through `cmd.exe /d /s /c`, passes a sanitized child env with only one `Path` key, requests the target localhost routes with `fetch(..., { redirect: "manual" })`, treats expected auth redirects as pass, then kills the child process and verifies no ports remain open. Do not use PowerShell `Start-Process` directly because this Windows shell may contain duplicate `Path/PATH` env keys.
 b) Deployed apps: https://customer.gozaika.in/   https://restaurant.gozaika.in/ and https://admin.gozaika.in/admin
 c) Accounts that can be used for testing: resturant=919000100001/123456   customer=918106230860/123456  https://admin.gozaika.in/auth/login=admin.ops@gozaika.example/GozaikaDemo@123 
+d) razorpay is not configured. Simulate payment by customer: C:\venkat\limca\gozaika\infra\rpay.ps1   -HoldPk  88f70721-cd0d-4d85-9efe-4324d47046d0
+e) Customer and restuarent hone numbers not configured with WhatsApp test account
 
 
 EXPERTISE TO APPLY

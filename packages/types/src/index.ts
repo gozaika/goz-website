@@ -178,7 +178,10 @@ export type RestaurantOnboardingTaskCode = (typeof restaurantOnboardingTaskCodes
 export type ConsentPurposeCode = (typeof consentPurposeCodes)[number];
 export type ConsentStateCode = (typeof consentStateCodes)[number];
 
-export const uuidSchema = z.string().uuid();
+export const uuidSchema = z.string().regex(
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+  "Invalid UUID",
+);
 export const paiseSchema = z.number().int().nonnegative().safe();
 export const signedPaiseSchema = z.number().int().safe();
 export const positiveQuantitySchema = z.number().int().min(1).max(99);
