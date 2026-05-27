@@ -1,4 +1,5 @@
 import { ShellHeader } from "@gozaika/ui";
+import Link from "next/link";
 import { DropDiscoveryClient } from "./drop-discovery-client";
 import { loadPublicDrops } from "@/lib/drops";
 
@@ -9,18 +10,25 @@ export default async function DropsPage() {
 
   return (
     <main>
-      <ShellHeader />
-      <section className="mx-auto max-w-7xl px-4 py-8">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+      <ShellHeader>
+        <nav className="flex gap-4 text-sm font-semibold">
+          <Link href="/drops">Drops</Link>
+          <Link href="/restaurants">Restaurants</Link>
+          <Link href="/account">Account</Link>
+        </nav>
+      </ShellHeader>
+      <section className="bg-[#FFF8F0]">
+        <div className="mx-auto max-w-7xl px-4 py-10">
           <div>
-            <h1 className="text-4xl font-bold">Hyderabad BAM Bag drops</h1>
-            <p className="mt-2 text-[#2D2D2D]/70">Filter by cuisine, dietary category, allergens, price, and pickup window.</p>
-          </div>
-          <div className="rounded-lg border border-black/10 bg-white p-1 text-sm font-semibold">
-            <button className="rounded-md bg-[#1A5C38] px-3 py-2 text-white">List</button>
-            <button className="px-3 py-2">Map</button>
+            <p className="text-sm font-bold uppercase tracking-wide text-[#1A5C38]">Live Hyderabad discovery</p>
+            <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight text-[#2D2D2D]">Find today&apos;s BAM Bags by cuisine, neighborhood, and pickup window.</h1>
+            <p className="mt-3 max-w-2xl text-[#2D2D2D]/70">
+              Search restaurant names, Chef&apos;s Selection drops, dietary categories, allergens, and pickup neighborhoods. Availability updates without changing the claim and payment flow.
+            </p>
           </div>
         </div>
+      </section>
+      <section className="mx-auto max-w-7xl px-4 py-8">
         <div className="mt-6">
           <DropDiscoveryClient initialDrops={drops} generatedAt={new Date().toISOString()} />
         </div>

@@ -20,13 +20,13 @@ export function Footer(): React.ReactElement {
         </div>
 
         <div className="mb-8 mt-8 flex gap-4">
-          <FooterSocialLink href="#" label="LinkedIn">
+          <FooterSocialLink href="https://www.linkedin.com/company/gozaika" label="LinkedIn">
             <LinkedInIcon />
           </FooterSocialLink>
-          <FooterSocialLink href="#" label="Instagram">
+          <FooterSocialLink href="https://www.instagram.com/gozaika.in" label="Instagram">
             <InstagramIcon />
           </FooterSocialLink>
-          <FooterSocialLink href="#" label="WhatsApp">
+          <FooterSocialLink href="/insider" label="WhatsApp Insider">
             <MessageCircle className="h-5 w-5" />
           </FooterSocialLink>
         </div>
@@ -48,7 +48,7 @@ export function Footer(): React.ReactElement {
         </div>
 
         <div className="mt-8 flex flex-wrap justify-between gap-4 border-t border-[var(--color-forest-border)] pt-6 text-sm text-forest-light/80">
-          <p>© 2025 GoZaika Technologies Pvt. Ltd.</p>
+          <p>© 2026 GoZaika Technologies Pvt. Ltd.</p>
           <p>Made with care in Hyderabad</p>
         </div>
       </div>

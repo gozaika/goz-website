@@ -8,15 +8,15 @@ export const homeContent = {
     eyebrow: 'LAUNCHING IN HYDERABAD',
     headline: 'Great food. No menu. No algorithm.',
     supportLine: 'BAM! बड़ा ज़ायका, आएगा मज़ा',
-    founderLine: 'A new way to discover great food... coming soon to Hyderabad.',
-    body: "BAM Bags from Hyderabad's best restaurants — chef-curated, allergen-disclosed, always a surprise.",
+    founderLine: "India's first mystery meal-drop marketplace. Starting in Hyderabad.",
+    body: "Chef-curated BAM Bags from Hyderabad's finest kitchens — allergen-disclosed, always a surprise, picked up fresh from the source.",
     helper: 'Join the waitlist · Free · No spam',
     socialProof: 'Be among the first in Hyderabad',
     waitlistCount: 47,
     trustStrip: [
-      '3 restaurant partners in discussion',
-      'Allergens disclosed on every bag',
-      'Pickup only — zero delivery surprises',
+      'Premium restaurant partners in discussion',
+      'All 14 FSSAI allergens disclosed before purchase',
+      'Pickup only — kitchen-fresh, no delivery wait',
     ],
   },
   trustBadges: [
@@ -58,27 +58,46 @@ export const homeContent = {
     heading: 'Not a deal. A discovery.',
     body: "Every BAM Bag is a chef-curated to-go selection from a partner restaurant. The dishes are a surprise — but every allergen, dietary category, spice level, and pickup window is disclosed before you buy. You don't know what's inside. You do see the key trust details before you decide.",
     callout:
-      "goZaika is not a discount app, a rescue app, or a leftover platform. It is a controlled-access, off-menu discovery layer for people who want great food without the algorithm.",
+      "goZaika is a controlled-access, off-menu discovery layer for people who want great food without the algorithm. Not a price-led aggregator. Not a random grab bag. A premium experience designed by the chef, discovered by you.",
   },
   restaurantTeaser: {
     eyebrow: 'For Restaurants',
-    heading: 'Create demand, protect reputation.',
-    body: "A direct pickup-demand channel for your kitchen's intentional releases. You design the bag. We surface it to the right people.",
+    heading: 'Your kitchen. Your curation. New customers.',
+    body: "A direct pickup-demand channel for planned, chef-curated drops. You control the bag, the timing, and the story. goZaika surfaces it to the right people — without touching your regular menu or existing diners.",
     stats: [
       { value: '12%', label: 'Commission — lowest in category' },
-      { value: '0%', label: 'First 30 days free' },
-      { value: '0', label: 'Delivery ops — pickup only' },
+      { value: '0%', label: 'For the first 30 days' },
+      { value: '0', label: 'Delivery ops or rider coordination' },
     ],
-    cta: 'Become a Partner',
+    cta: 'Explore Partnership',
   },
   launch: {
     heading: 'Launching in Hyderabad',
-    body: 'Join the waitlist to hear about launch windows, first restaurant reveals, and the first premium BAM Bag drops near you.',
+    body: 'Join the waitlist to hear about launch windows, first restaurant reveals, and the first premium BAM Bag drops in Banjara Hills, Jubilee Hills, HITEC City, and Kondapur.',
     foundingOffer: 'First 100 consumers get Swaad Club membership free for 3 months at launch.',
     teaser:
-      "Our first restaurant partners will be announced at launch. They're premium, they're intentional, and they're not on any delivery app right now.",
+      "Our founding restaurant partners will be announced at launch. They are premium, intentional, and curating exclusively for goZaika drops.",
     disclaimer:
       '*Preview listings are illustrative only. Final restaurant partners will be announced at launch.',
+  },
+  impact: {
+    eyebrow: 'The goZaika Effect',
+    heading: 'Every bag tells a story.',
+    body: 'When great food finds the right person, everyone wins — the chef, the diner, and the city.',
+    stats: [
+      { value: '₹600+', label: 'Average bag value', sublabel: 'delivered at partner price' },
+      { value: '350g', label: 'Food per bag', sublabel: 'thoughtfully curated, not randomly packed' },
+      { value: '2.5×', label: 'CO₂ factor', sublabel: 'kg emissions avoided per kg food placed' },
+      { value: '0', label: 'Delivery riders', sublabel: 'pickup-only, always' },
+    ],
+  },
+  insiderBand: {
+    eyebrow: 'GOZAIKA INSIDER',
+    heading: 'Get drop alerts on WhatsApp.',
+    body: "Be the first to know when a new BAM Bag drops near you. No app needed. No algorithm. Just a WhatsApp message when something good is ready — in Banjara Hills, Jubilee Hills, Kondapur, or HITEC City.",
+    cta: 'Join the Insider List',
+    href: '/insider',
+    subtext: 'Hyderabad · Free · Cancel anytime',
   },
   partnerPreviews: [
     {
@@ -220,9 +239,9 @@ export const forRestaurantsContent = {
       notes: 'Available for partners releasing 200+ bags per month.',
     },
     {
-      phase: 'Zayka Pro SaaS',
-      commission: 'INR2,499/mo',
-      notes: 'Optional software layer for deeper merchandising and reporting.',
+      phase: 'ZaikaIQ Pro',
+      commission: '₹2,999/mo',
+      notes: 'Optional analytics layer for demand forecasting, sell-through benchmarking, and ESG impact reports.',
     },
   ],
   differentiators: [
@@ -294,10 +313,20 @@ export const forRestaurantsContent = {
   ],
   brandProtection: [
     "You control the bag. We never specify contents — that's your chef's decision.",
-    'No discount-led framing. BAM Bag drops are positioned as curated discovery, not clearance.',
+    'No price-led framing. BAM Bag drops are positioned as curated discovery, not a clearing exercise.',
     'Clear settlement visibility tied to completed pickups, without exposing sensitive customer or payment data.',
     'Your name, front and centre. Every bag shows your restaurant brand to the customer.',
   ],
+  cannibalizationAssurance: {
+    heading: 'Your regular business stays yours.',
+    body: "A common concern: will goZaika cannibalise my existing tables or takeaway orders? The answer is no — by design. BAM Bags are a separate, off-menu drop. They are claimed in advance by a pickup window you set. They do not appear on Zomato or Swiggy. They do not displace walk-in covers. They create incremental demand from a new segment of diner — the food-curious, the adventurous, the HITEC City professional looking for a quality evening pickup that is not another food aggregator order.",
+    points: [
+      'BAM Bags are separate from your regular menu — they do not affect existing orders',
+      'You set the pickup window, so drops do not conflict with peak dining hours',
+      'Customers come for the goZaika experience, not as a substitute for your dining room',
+      'You can pause or stop drops at any time — no lock-in, no forced volume',
+    ],
+  },
 } as const;
 
 export const aboutContent = {

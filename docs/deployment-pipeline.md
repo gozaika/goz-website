@@ -52,6 +52,7 @@ Owned domains also include `gozaik.in` and `gozaika.com`. Treat these as reserve
 - Slice 7 requires migration `20260527000000_slice7_pilot_finance_settlement.sql`, redeployed admin/restaurant apps, and deployed `settlement-run-worker`. No live Razorpay payout, transfer, refund, fund-account, invoice-generation, or accounting integration env vars are added. Optional `SETTLEMENT_WORKER_ACTOR_PROFILE_PK` is only for worker-created draft settlement refreshes.
 - Slice 8A requires migration `20260528000000_slice8a_pilot_roi_reports.sql` and redeployed admin/restaurant apps. No new env vars, Edge Functions, workers, scheduled digests, export jobs, or provider integrations are added.
 - Slice 8B requires migration `20260529000000_slice8b_admin_ops_hardening.sql` and redeployed admin/restaurant/consumer apps. No new env vars, Edge Functions, workers, provider refund APIs, payout APIs, settlement recalculation jobs, or notification side effects are added.
+- Slice 2.1 requires no migration and redeploys website, consumer, restaurant, and admin apps. Verify Google OAuth redirect configuration and optional public map key; no Razorpay subscription, payout, refund, worker, or notification provider changes are added.
 - Website deployments should use the approved mailbox mapping: `contact@gozaika.in`, `partners@gozaika.in`, `waitlist@gozaika.in`, `billing@gozaika.in`, `careers@gozaika.in`, and `tech@gozaika.in`.
 
 ## Rollback procedure

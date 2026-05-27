@@ -41,6 +41,11 @@
 - Slice 8A pilot ROI reports:
   - No new environment variables are required.
   - Reports read existing drop, order, payment, pickup, incident, refund, and settlement facts through authenticated app sessions.
+- Slice 2.1 premium UX transformation:
+  - No new required environment variables are introduced.
+  - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is optional and not required by the current map fallback.
+  - Supabase Google OAuth provider and redirect allow-list must be verified for `https://customer.gozaika.in/auth/callback` before treating Google login as production-ready.
+  - Swaad Club remains subscription-ready UI only; no Razorpay subscription/mandate env vars are required.
 - Approved public mailbox mapping: general `contact@gozaika.in`, partners `partners@gozaika.in`, waitlist `waitlist@gozaika.in`, billing/refund finance `billing@gozaika.in`, careers `careers@gozaika.in`, and technical/security/platform `tech@gozaika.in`.
 
 ## Current base URLs

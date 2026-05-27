@@ -4,7 +4,10 @@ import { BamBagSection } from '@/components/sections/BamBagSection';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { HomeWaitlistSection } from '@/components/sections/HomeWaitlistSection';
 import { HowItWorksFlow } from '@/components/sections/HowItWorksFlow';
+import { ImpactCounterSection } from '@/components/sections/ImpactCounterSection';
+import { InsiderCTASection } from '@/components/sections/InsiderCTASection';
 import { RestaurantTeaserSection } from '@/components/sections/RestaurantTeaserSection';
+import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
 import { TrustBadgesSection } from '@/components/sections/TrustBadgesSection';
 import { homeContent } from '@/lib/content';
 import { canonical, openGraphFor, twitterFor } from '@/lib/metadata';
@@ -39,8 +42,10 @@ export default function HomePage(): React.ReactElement {
         steps={homeContent.howItWorks}
       />
       <BamBagSection {...homeContent.bamBag} />
+      <ImpactCounterSection />
       <RestaurantTeaserSection {...homeContent.restaurantTeaser} />
-      {/* PHASE 2: Restore testimonials with real quotes post-pilot */}
+      <InsiderCTASection />
+      <TestimonialsSection />
       <HomeWaitlistSection
         heading={homeContent.launch.heading}
         body={homeContent.launch.body}

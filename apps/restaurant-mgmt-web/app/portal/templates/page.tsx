@@ -1,8 +1,7 @@
-import { ShellHeader } from "@gozaika/ui";
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
 import { loadDefaultRestaurant, loadPortalTemplates } from "@/lib/slice3";
-import { PortalNav } from "../portal-nav";
+import { PortalChrome } from "../portal-nav";
 import { TemplateForm } from "./template-form";
 
 export default async function TemplatesPage() {
@@ -15,10 +14,7 @@ export default async function TemplatesPage() {
   const templates = await loadPortalTemplates(restaurant.restaurantPk);
 
   return (
-    <main>
-      <ShellHeader>
-        <PortalNav />
-      </ShellHeader>
+    <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
       <section className="px-6 py-6">
         <h1 className="text-3xl font-bold">BAM Bag templates</h1>
         <p className="mt-2 max-w-3xl text-sm text-slate-600">
@@ -28,6 +24,6 @@ export default async function TemplatesPage() {
           <TemplateForm templates={templates} />
         </div>
       </section>
-    </main>
+    </PortalChrome>
   );
 }

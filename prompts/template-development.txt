@@ -1,9 +1,10 @@
 Do not modify source code. This is only a planning exercise.
 
-I have completed all slice 8A activities and successfully smoke tested them. Now i want to focus on constructing a comprehensive prompt for next development iteration.
+We have now completed an initial MVP implementation with skeletal UI and a more solid backend. We now switch to making gozaika apps fully complete and production ready. 
+Now i want to focus on constructing a comprehensive prompt for "Slice 2.1: Premium UX Transformation" as defined in  \project docs\goZaika_Technology_Specification_v3.docx.  
 
 
-Review \project docs\goZaika_Technology_Specification_v2.docx and determine scope for next implementation.  Review project docs\claude_goZaika_Master_Business_Document_v3.docx for overall project context. Construct a comprehensive prompt using template below that I can use in codex next chat on this project. The prompt should be comprehensive such that i can apply this at a later time if I need to recreate entire project from grounds up. Construct the prompt such that it makes codex most efficient and precise in implementing it.
+Review \project docs\goZaika_Technology_Specification_v3.docx thoroughly for full context determine implementation scope for target slice "Slice 2.1: Premium UX Transformation" .  Review project docs\claude_goZaika_Master_Business_Document_v3.docx for overall project context. Construct a comprehensive prompt using template below that I can use in codex next chat on this project. The prompt should be comprehensive such that i can apply this at a later time if I need to recreate entire project from grounds up. Construct the prompt such that it makes codex most efficient and precise in implementing it.
 
 Ensure your prompt addresses documents update. Especially implementation-plan.doc, which will be used to recreate entire implementation from grounds up on codex again.
 

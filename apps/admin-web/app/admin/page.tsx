@@ -24,6 +24,10 @@ export default async function AdminPage() {
             <h2 className="text-xl font-bold">Restaurant onboarding</h2>
             <p className="mt-2 text-sm text-black/65">Review compliance, documents, and activation status.</p>
           </Link>
+          <Link className="rounded-lg border border-black/10 bg-white p-5 transition hover:border-[#1A5C38]" href="/admin/users">
+            <h2 className="text-xl font-bold">User management</h2>
+            <p className="mt-2 text-sm text-black/65">Search one profile, inspect consent/order/hold context, and keep broad PII exports out of the pilot surface.</p>
+          </Link>
           <Link className="rounded-lg border border-black/10 bg-white p-5 transition hover:border-[#1A5C38]" href="/admin/drops">
             <h2 className="text-xl font-bold">Drop and hold ops</h2>
             <p className="mt-2 text-sm text-black/65">Copy launch alerts and inspect temporary claim holds for active or scheduled drops.</p>

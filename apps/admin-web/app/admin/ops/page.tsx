@@ -54,6 +54,7 @@ export default async function AdminOpsPage() {
       <ShellHeader>
         <nav className="flex flex-wrap gap-2 text-sm font-semibold">
           <Link className="text-[#1A5C38]" href="/admin/ops">Ops</Link>
+          <Link className="text-[#1A5C38]" href="/admin/users">Users</Link>
           <Link className="text-[#1A5C38]" href="/admin/drops">Drops</Link>
           <Link className="text-[#1A5C38]" href="/admin/finance">Finance</Link>
           <Link className="text-[#1A5C38]" href="/admin/reports">Reports</Link>

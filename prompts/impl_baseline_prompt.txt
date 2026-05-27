@@ -1,3 +1,423 @@
+You are Codex working in C:\venkat\limca\gozaika\sourcecode.
+
+MODE
+- This is an implementation task.
+- Make code changes unless blocked.
+- Do not stop at a proposal.
+- Preserve unrelated user changes.
+- Run verification before final response.
+
+Current git state:
+- Branch: main
+- Latest commit: 57047f2
+- Expected state: all intended implementation changes are committed and pushed before this slice begins. prompts/impl_baseline_prompt.txt and prompts/template-development.txt will be dirty.
+- Deployments done on remote supabase and vercel environments.
+- Codex must run `git status --short --branch` first and report any dirty files before editing.
+
+
+Remote migration state:
+- Remote Supabase migrations for prior slices have already been applied.
+- Local Supabase may lag behind remote.
+- Do not assume local DB is current unless verified.
+- If this slice adds a migration, document exactly how I should apply it remotely.
+
+SLICE
+- Slice name: Premium UX Transformation
+- Slice number: 2.1
+- Phase: v3 Production Roadmap - Premium Product Readiness
+- Business goal: Transform the existing goZaika MVP surfaces from skeletal pilot UI into premium, production-ready web experiences that credibly support partner demos, investor demos, and first-city launch operations without changing the core backend/payment/settlement model.
+- User-facing proof point: A customer can discover BAM Bags through a polished search/filter/map/list experience, browse real restaurant profiles, and use a refined account/login flow; a restaurant manager sees a premium sidebar portal, rich dashboard, and active drop list; ops can find user accounts from admin; the marketing website feels complete with trust/social proof and share-ready metadata.
+
+PROJECT CONTEXT
+- Current deployed surfaces:
+  - Website: https://gozaika.in/
+  - Consumer web: https://customer.gozaika.in/
+  - Restaurant portal: https://restaurant.gozaika.in/
+  - Admin portal: https://admin.gozaika.in/
+- Owned domains: gozaik.in, gozaika.com
+- Baseline roadmap: project docs/goZaika_Technology_Specification_v2.docx
+- Target roadmap for this slice: project docs/goZaika_Technology_Specification_v3.docx, Slice 2.1 Premium UX Transformation
+- Business context: project docs/claude_goZaika_Master_Business_Document_v3.docx
+- Rebuild source of truth: docs/implementation-plan.md
+- Current completed slices:
+  - Slice 0: Foundation - monorepo, canonical schema, app shells, shared packages, Supabase client separation, UI baseline, CI shape.
+  - Slice 1: Auth/Profile/Consent - consumer auth, profile bootstrap, DPDP consent capture, account surface, Supabase SSR session refresh.
+  - Slice 2: Restaurant Onboarding - owner portal, onboarding/compliance, private document upload, admin review/activation, active restaurant membership gate.
+  - Slice 3: First Drop Publishing & Consumer Discovery - active restaurants publish public drops, consumer discovery/detail reads safe public drop data.
+  - Slice 3.5: Manual Launch Comms Support - public drop links, WhatsApp-safe copy, restaurant/admin copy surfaces.
+  - Slice 4A: Claim Hold / Order Intent - signed-in consumer temporary holds, checkout hold page, expired-hold release path.
+  - Slice 4B: Razorpay Payment & Order Confirmation - server-created Razorpay orders, verified webhook conversion, paid order page with QR/OTP pickup proof, restaurant/admin order visibility.
+  - Slice 5: Pickup Verification, Incident Basics & Pilot UX Polish - restaurant OTP/QR pickup verification, collected/no-show states, minimal incidents, UX cleanup.
+  - Slice 6: Transactional Notifications & Delivery Logs - durable notification outbox, Meta WhatsApp/Resend worker, pickup reminders, admin delivery logs, fallback copy.
+  - Slice 7: Pilot Finance & Settlement - admin settlement preview/create/lock/manual status workflow, restaurant finance transparency, safe invoice metadata, no live payouts.
+  - Slice 8A: Pilot ROI Reports - restaurant/admin weekly ROI report, drop-level metrics, refund/incident notes, copy-safe partner report text.
+  - Slice 8B: Admin Ops Hardening - admin ops control center, restaurant/drop pause guardrails, support/refund tracking, config flags, audit history, service-role view repair.
+- Migrations already applied: 20260425000000_gozaika_consolidated_schema.sql, 20260427000000_slice1_auth_profile_consent.sql, 20260502000000_slice2_restaurant_onboarding.sql, 20260502001000_slice2_restaurant_rls_hardening.sql, 20260513000000_slice3_drop_publishing_discovery.sql, 20260517000000_slice3_public_drop_aliases.sql, 20260518000000_slice3_template_active_revision_repair.sql, 20260518001000_slice3_template_drop_preferences.sql, 20260518002000_slice4a_claim_hold_order_intent.sql, 20260521000000_slice4b_razorpay_payment_order_confirmation.sql, 20260522000000_slice4b_payment_rpc_returning_repair.sql, 20260524000000_payment_webhook_event_processing_updates.sql, 20260524001000_slice4b_payment_rpc_variable_conflict_repair.sql, 20260525000000_slice5_pickup_verification_incidents.sql, 20260526000000_slice6_transactional_notifications.sql, 20260527000000_slice7_pilot_finance_settlement.sql, 20260527001000_slice7_finance_settlement_rpc_repair.sql, 20260528000000_slice8a_pilot_roi_reports.sql, 20260529000000_slice8b_admin_ops_hardening.sql, 20260529001000_slice8b_admin_ops_service_role_view_repair.sql.
+- Known deployment/env state: Remote Supabase and Vercel are primary. Customer, restaurant, admin, and website projects are deployed. Razorpay payment/webhook, pickup credentials, Meta WhatsApp, Resend, notification, finance settlement, admin, restaurant, consumer, ROI reporting, and admin ops env vars are configured for pilot testing. Google OAuth may exist in code but must be verified in Supabase/Vercel before treating it as production. Google Maps key may exist as NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, but implementation should prefer an open-source Leaflet fallback if key/config is absent. No live Razorpay subscription billing, live payouts/transfers, accounting integration, advanced CRM, scheduled digest automation, native mobile parity, Sentry, or analytics warehouse is configured yet.
+
+
+SMOKE TEST SLICE:
+If Browser/in-app browser tooling is not callable, run local route smoke tests with a Node script that starts Next through `cmd.exe /d /s /c`, passes a sanitized child env with only one `Path` key, requests the target localhost routes with `fetch(..., { redirect: "manual" })`, treats expected auth redirects as pass, then kills the child process and verifies no ports remain open. Do not use PowerShell `Start-Process` directly because this Windows shell may contain duplicate `Path/PATH` env keys.
+
+Setup shortcuts:
+- read docs/implementation-plan.md for slice gates and docs/runbooks/*.md only as needed.
+- Run `npm.cmd run ci` once up front. If it fails, fix and rerun full CI after fixes.
+- Use deployed apps for authenticated end-to-end smoke unless the task is specifically local-only:
+  - customer: https://customer.gozaika.in/
+  - restaurant: https://restaurant.gozaika.in/
+  - admin: https://admin.gozaika.in/
+- Use local apps only for code/layout verification after changes. If local auth needs Supabase, expect sandbox network failures and do not spend time debugging that as an app bug.
+- On Windows, avoid PowerShell `Start-Process` for dev servers because duplicate Path/PATH can break it. Prefer foreground checks, `npm.cmd`, or a sanitized Node launcher.
+- Razorpay is not configured. run  `powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File C:\venkat\limca\gozaika\infra\rpay.ps1 -HoldPk <hold-pk>`
+- If that hold is already CONVERTED, use the converted order id from the debug response as the smoke-test anchor.
+- WhatsApp failures are expected as the customer/restaurant phone numbers are not added to the Meta test account. Treat provider auth/config failures as expected only if the outbox rows, attempts, fallback copy, and email path are visible.
+
+Credentials:
+resturant=919000100001/123456   customer=918106230860/123456  https://admin.gozaika.in/auth/login=admin.ops@gozaika.example/GozaikaDemo@123 
+
+
+Required UI checks:
+- Desktop and mobile viewport checks for the touched surfaces.
+- Record horizontal overflow with document scrollWidth/clientWidth.
+- Capture screenshots for customer, restaurant, and admin slice pages.
+- Also capture website screenshots if website pages are changed.
+
+Cleanup:
+- Stop local dev servers on ports 3000/3001/3002 after testing.
+- If testing website locally, also stop its dev server port.
+- Do not revert unrelated dirty files.
+
+
+
+
+EXPERTISE TO APPLY
+- Product manager: keep scope pilot-first and launch-useful.
+- Senior full-stack engineer: follow existing repo patterns and vertical-slice architecture.
+- Database/RLS engineer: protect tenancy, service-role boundaries, and public/private data separation.
+- UX designer: optimize for fast, obvious workflows with clear mobile/desktop layouts.
+- Food-safety/compliance reviewer: treat allergen, dietary, pickup, and restaurant identity as safety-critical.
+- Payments/security reviewer: apply only if this slice touches payment/auth/webhooks/RLS.
+- QA engineer: define validation gates and run focused checks.
+- Technical writer: update docs so future Codex can rebuild from ground zero.
+
+READ FIRST
+1. Run git status.
+2. Read docs/implementation-plan.md.
+3. Read relevant roadmap section in project docs/goZaika_Technology_Specification_v3.docx, especially Slice 2.1 Premium UX Transformation.
+4. Read project docs/claude_goZaika_Master_Business_Document_v3.docx for brand, business, compliance, and positioning context.
+5. Read relevant roadmap section in project docs/goZaika_Technology_Specification_v2.docx only for historical baseline comparison.
+6. Read these files before editing:
+   - packages/ui/src/index.tsx
+   - packages/types/src/index.ts
+   - packages/types/src/index.test.ts
+   - packages/utils/src/index.ts
+   - packages/utils/src/index.test.ts
+   - packages/supabase/src/index.ts
+   - apps/consumer-web/app/page.tsx
+   - apps/consumer-web/app/drops/page.tsx
+   - apps/consumer-web/app/drops/drop-discovery-client.tsx
+   - apps/consumer-web/app/drops/[id]/page.tsx
+   - apps/consumer-web/app/drops/[id]/claim-panel.tsx
+   - apps/consumer-web/app/restaurants/page.tsx
+   - apps/consumer-web/app/swaad-club/page.tsx
+   - apps/consumer-web/app/account/page.tsx
+   - apps/consumer-web/app/account/account-client.tsx
+   - apps/consumer-web/app/auth/login/page.tsx
+   - apps/consumer-web/app/auth/login/login-form.tsx
+   - apps/consumer-web/lib/drops.ts
+   - apps/consumer-web/lib/orders.ts
+   - apps/restaurant-mgmt-web/lib/portal-auth.ts
+   - apps/restaurant-mgmt-web/lib/slice3.ts
+   - apps/restaurant-mgmt-web/lib/finance.ts
+   - apps/restaurant-mgmt-web/lib/roi-report.ts
+   - apps/restaurant-mgmt-web/app/portal/portal-nav.tsx
+   - apps/restaurant-mgmt-web/app/portal/dashboard/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/drops/new/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/drops/new/drop-publishing-form.tsx
+   - apps/restaurant-mgmt-web/app/portal/templates/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/orders/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/orders/orders-client.tsx
+   - apps/restaurant-mgmt-web/app/portal/finance/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/reports/page.tsx
+   - apps/restaurant-mgmt-web/app/portal/profile/page.tsx
+   - apps/restaurant-mgmt-web/app/api/portal/drops/route.ts
+   - apps/restaurant-mgmt-web/app/api/portal/drops/[id]/route.ts
+   - apps/admin-web/lib/admin-auth.ts
+   - apps/admin-web/lib/ops.ts
+   - apps/admin-web/app/admin/page.tsx
+   - apps/admin-web/app/admin/ops/page.tsx
+   - apps/admin-web/app/admin/ops/ops-client.tsx
+   - apps/admin-web/app/auth/login/login-form.tsx
+   - apps/website/app/page.tsx
+   - apps/website/app/layout.tsx
+   - apps/website/lib/content.ts
+   - apps/website/lib/navigation.ts
+   - apps/website/lib/metadata.ts
+   - apps/website/components/sections/TestimonialSection.tsx if present, otherwise inspect testimonials-related section components
+   - docs/product/*.md and docs/runbooks/*.md only as needed for changed surfaces
+5. Inspect existing patterns before adding abstractions.
+
+SCOPE / MUST INCLUDE
+- Consumer web premium discovery:
+  - Redesign `/` and `/drops` into a polished, production-grade discovery experience using existing public drop data.
+  - Add search by restaurant/drop/cuisine/dietary text, cuisine/category filter chips, closing-soon and recently-missed sections, clear empty states, and mobile-first list/map switching.
+  - Implement map view for `/drops` using Leaflet/open-source tiles by default or Google Maps only if existing env/config is present. Map pins must be support-safe and based on public restaurant/drop coordinates only; if coordinates are missing, degrade gracefully to list view with a clear message.
+  - Preserve claim/payment/pickup behavior from Slices 4A/4B/5; do not break hold/payment flow.
+- Consumer restaurant directory/profile:
+  - Replace `/restaurants` EmptyState with a real directory of public/active restaurants derived from existing safe public data or a new safe read model if absolutely necessary.
+  - Add `/restaurants/[slug]` profile page with restaurant identity, cuisine tags, active/upcoming drops, past-safe drop history if available, share action, food-safety/disclosure reminders, and no private compliance/internal fields.
+  - RestaurantCard must be visually premium and brand-safe: logo/photo fallback, cuisine/dietary tags, active drop badge, pickup neighborhood, no "leftover/stale/cheap" language.
+- Consumer account/auth polish:
+  - Polish `/account` with order history affordances, notification/consent clarity, Swaad Club status/CTA, profile completeness, and mobile-friendly sections.
+  - Verify existing Google OAuth button/flow in consumer login; make it production quality if incomplete, using Supabase OAuth and preserving phone OTP as primary on mobile.
+  - Do not implement risky account merge unless a safe existing backend path exists; otherwise document as Slice 2.2/2.4 follow-up.
+- Swaad Club page:
+  - Transform `/swaad-club` from placeholder into a premium subscription-ready product page with benefits, eligibility, priority-access explanation, FAQs, and CTA.
+  - Do not initiate live recurring billing unless the required subscription backend, plan env vars, and compliance path already exist. If not present, implement a safe "Join waitlist / notify me" or "Coming soon" CTA and document Razorpay subscription activation as Slice 2.2.
+- Restaurant portal premium UX:
+  - Replace flat portal nav with a responsive/collapsible sidebar layout that works across dashboard/templates/new drop/orders/finance/reports/profile/onboarding/compliance.
+  - Add active route states, grouped nav sections, restaurant identity/trust badge, help/support affordance, and a mobile/tablet navigation pattern.
+  - Upgrade `/portal/dashboard` from static counters to a rich but honest dashboard using existing order/drop/finance/ROI facts: today revenue, bags sold, sell-through, AOV, weekly trend, sell-through by day, next drop card, quick actions, and sustainability estimate.
+  - Add `/portal/drops` active drops list with title/date/price/listed/sold/sell-through/status/actions. Actions should be limited to safe existing capabilities: view, duplicate/pre-fill where feasible, pause/cancel only through existing allowed route and guardrails.
+- Admin web premium ops/user UX:
+  - Add a Users tab or adjacent `/admin/users` surface following existing admin auth/service-role patterns.
+  - Provide debounced search by safe identifiers, user detail side panel, profile/auth provider summary where available, consent ledger, order/hold summaries, notification-safe context, Swaad Club placeholder/status if data exists, and audit visibility.
+  - Add tightly scoped admin actions only if safe server-side patterns exist: suspend/reactivate account, support-safe data export for one selected user, reset/annotate contact issue. Every mutation must require reason, role check, and audit log.
+  - Do not build broad customer exports, destructive account merge, or bulk user tooling.
+- Marketing website polish:
+  - Enable or complete testimonials/social-proof section only with real/static clearly-marked pilot-safe content; do not fabricate live metrics.
+  - Add/verify SEO metadata, Open Graph/Twitter metadata, JSON-LD structured data for relevant public pages, skip-to-content/accessibility basics, image optimization, and lazy-loading below-fold media.
+  - Preserve current website content/strategy unless directly improving production polish for Slice 2.1.
+- Shared design system:
+  - Create or extend reusable UI components only where they reduce repeated complexity across consumer/restaurant/admin surfaces.
+  - Align web apps to goZaika brand tokens from business doc: Saffron Flame `#FF6B35`, Forest Deep `#1A5C38`, Heritage Gold `#D4A017`, Warm Cream `#FFF8F0`, Charcoal `#2D2D2D`.
+  - Use premium-access language: BAM Bags, Limited Drops, Chef's Selection, off-menu discovery, smarter access. Never use "leftover", "stale", "clearance", "liquidation", or brand-damaging discount language.
+
+OUT OF SCOPE / MUST NOT INCLUDE
+- Do not build Slice 2.2 growth/revenue backend: live Swaad Club recurring billing, Zaika Pro paid subscription, referral rewards ledger, coupons/promo codes, restaurant team account management, or advanced Zaika Pro analytics unless already fully supported and only UI wiring is needed.
+- Do not build Slice 2.3 native mobile parity, Expo push, camera QR scanner, native Razorpay SDK, or mobile app redesign.
+- Do not build Slice 2.4 multi-city architecture, B2B catering, automated payouts, reviews/disputes, monitoring dashboard, DPDP erasure automation, or PostGIS geo-fencing.
+- Do not call Razorpay subscription/refund/payout APIs unless explicitly already configured and requested; no live financial movement should be introduced by a UX transformation.
+- Do not mutate payment captures, paid orders, settlements, payouts, refund state, pickup verification, notification provider behavior, or admin ops guardrails except for display/read-only UX.
+- Do not expose consumer PII, raw provider payloads, private compliance documents, pickup credentials/hashes, service-role keys, internal support notes, broad customer exports, or private restaurant documents.
+- Do not redesign the core business model, rename BAM Bags, or reposition goZaika as food rescue/discount/leftover.
+- Do not introduce heavy new frontend libraries if existing CSS/components can deliver the UX; if adding map/chart libraries, justify and keep them scoped.
+
+USER FLOWS
+Consumer:
+- New visitor opens `customer.gozaika.in`, sees a premium hero with current city/drop availability, search, cuisine chips, closing-soon drops, and a clear path to browse.
+- Consumer opens `/drops`, toggles list/map, applies cuisine/search filters, taps a pin/card, sees a bottom sheet or card detail, opens `/drops/[id]`, and claims through the existing hold/payment flow.
+- Consumer opens `/restaurants`, browses active restaurant cards, opens `/restaurants/[slug]`, sees brand-safe restaurant profile, active/upcoming drops, disclosures, and share actions.
+- Consumer logs in using phone OTP or Google OAuth when configured, lands on intended URL/account, reviews profile/consent/notifications/order history, and sees Swaad Club CTA/status without fake entitlement.
+
+Restaurant:
+- Restaurant owner logs in and sees a premium sidebar portal with clear sections and active state.
+- Dashboard shows useful, truthful metrics from existing data: today revenue, bags sold, sell-through, AOV, weekly trend, next drop, and quick actions.
+- Owner opens `/portal/drops`, scans active/scheduled/expired drops, sees status badges, sell-through, pickup window, and safe actions.
+- Existing new drop, templates, orders, finance, reports, onboarding, and profile flows remain reachable, tenant-scoped, and responsive.
+- If admin pause/config guardrails are active, dashboard/new drop/drop list surfaces show clear operational messaging and block unsafe publishing actions.
+
+Admin/Ops:
+- Admin opens `/admin/ops` or `/admin/users`, searches a user by phone/email/name if permitted, opens one user detail panel, sees safe profile/auth/consent/order/hold context, and can take only reasoned, audited actions.
+- Admin user actions must not expose broad exports or internal secrets. PII export, if implemented, is one-user, SUPER_ADMIN-only, reasoned, audited, and DPDP-purpose labeled.
+- Existing admin ops/finance/reports/onboarding flows remain intact and visually compatible.
+
+Mobile:
+- No native mobile implementation.
+- All touched web surfaces must work well at mobile and tablet browser sizes.
+- Map/list toggle must be ergonomic on mobile; map should not trap scrolling or hide claim actions.
+- Sidebar must collapse or become drawer/bottom navigation on narrow restaurant portal viewports.
+- Buttons must remain at least 44px tap targets and text must not overflow cards/buttons.
+
+DATA / DATABASE REQUIREMENTS
+- Prefer additive migrations.
+- Do not edit historical migrations unless fixing idempotency.
+- RLS and service-role usage must be reviewed.
+- Public views must expose only safe fields.
+- This slice should be primarily UI/read-model work. Avoid migrations unless existing safe read models cannot support restaurant directory/profile/dashboard/user search.
+- Tables/views/RPCs/functions likely involved:
+  - restaurant_restaurant
+  - restaurant_public_profile
+  - restaurant_team_membership
+  - iam_profile
+  - iam_platform_membership
+  - consent_event / DPDP consent tables from Slice 1
+  - drop_drop
+  - catalog_bag_template
+  - catalog_bag_template_revision
+  - order_order
+  - order_item
+  - drop_inventory_hold
+  - payment_order_intent
+  - payment_transaction
+  - incident_incident
+  - support_ticket
+  - notification_outbox
+  - audit_log
+  - api_public_drop_card
+  - api_restaurant_roi_drop_detail
+  - api_admin_roi_drop_detail
+  - api_restaurant_finance_settlement_summary
+  - api_admin_ops_restaurant_summary
+  - api_admin_ops_audit_log
+  - optional safe read models: api_public_restaurant_directory, api_public_restaurant_profile, api_portal_dashboard_summary, api_admin_user_search, api_admin_user_detail
+- Migration naming convention:
+  - supabase/migrations/20260530000000_slice21_premium_ux_transformation.sql if a migration is truly needed.
+  - If only repairing view grants/read models after deployment, use the next timestamp with `_slice21_premium_ux_repair.sql`.
+
+API REQUIREMENTS
+- Use existing server/client data-loading patterns. Prefer server components/loaders for initial data and small client components for search/filter/map interactivity.
+- Add typed API routes only where required for admin user search/actions, dashboard summaries, or subscription-ready CTA. Guard admin routes with existing platform membership checks before using service-role clients.
+- Consumer/public APIs must return safe public fields only. No consumer PII, private docs, raw provider refs, pickup secrets, internal audit/support details, or settlement internals.
+- Admin user search API must be bounded, debounced client-side, paginated/limited server-side, and support exact-ish phone/email/name matching without returning broad full customer lists.
+- Every admin mutation must require human-readable reason text, role authorization, and append `audit_log`.
+- Google OAuth must use Supabase `signInWithOAuth({ provider: "google" })`, correct redirect URLs, and safe callback/profile bootstrap behavior. Do not fake OAuth success.
+- Map integration must not require a secret in client code. Public map keys only; if using Google Maps, use `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`. Prefer Leaflet if a Google key is absent.
+- Swaad Club CTA must not call Razorpay subscription APIs unless env/config/backend is complete. If subscription is deferred, surface "coming soon/join insider" and document exact future activation steps.
+
+UI / UX REQUIREMENTS
+- Maintain production-quality layout.
+- Buttons must be visible, labeled, accessible, and responsive.
+- Avoid dead-end screens.
+- Errors must explain what to correct.
+- Success states must be clear.
+- Primary workflow should be fast for the target user.
+- Use existing design tokens/components where possible.
+- Do not add marketing/landing-page fluff inside operational apps.
+- Premium UX means clear hierarchy, high information scent, polished empty/loading/error states, consistent spacing, brand typography/color discipline, and excellent mobile behavior.
+- Consumer surfaces should feel warm, premium, and discovery-led. Restaurant/admin surfaces should feel operational, dense enough to scan, and calm.
+- Use real visual assets where available; avoid generic gradient/orb decoration. If no restaurant photo/logo exists, use a polished branded fallback.
+- Use lucide icons for buttons/actions where available.
+- Build skeleton loaders or graceful pending states for async UI boundaries.
+- Search/filter state should be understandable and resettable.
+- Map/list state should sync with filters and not create two conflicting result sets.
+- Never show "leftover", "stale", "cheap", "clearance", or "food rescue" language. Use BAM Bags, Limited Drops, Chef's Selection, off-menu access, pickup issue, ops review, and partner action required.
+- Account/admin user PII should be masked unless the actor is explicitly authorized and viewing one selected record.
+- Layout must avoid horizontal overflow on 390px mobile and 1440px desktop. Record `document.documentElement.scrollWidth/clientWidth`.
+
+SECURITY / COMPLIANCE REQUIREMENTS
+- No service-role key in client code.
+- No private docs/media exposed publicly.
+- No PII in logs.
+- RLS/tenant checks required for:
+  - Consumer/public restaurant directory/profile/drop discovery can read only safe public restaurant/drop fields.
+  - Restaurant portal dashboard/drop list reads only own active restaurant membership data.
+  - Admin user search/detail requires platform membership and role checks before service-role usage.
+  - Admin PII export, suspend/reactivate, or contact reset actions must be server-side only, SUPER_ADMIN/OPS_ADMIN as appropriate, reasoned, and audited.
+  - Website metadata/JSON-LD must not expose private restaurant compliance data or unverified claims.
+  - Swaad Club UI must not grant priority access or subscription status unless a real backend entitlement exists.
+- Human review required for:
+  - auth
+  - payment webhook
+  - RLS
+  - refund/financial mutation
+  - destructive admin action
+  - Google OAuth redirect/profile bootstrap behavior
+  - admin user search and PII/export behavior
+  - public restaurant directory/profile fields
+  - map coordinate privacy and public geodata
+  - Swaad Club subscription/payment boundary
+  - SEO/JSON-LD claims and testimonial authenticity
+
+DOCS REQUIREMENTS
+Update docs in the same implementation:
+1. docs/implementation-plan.md
+   - Add/update slice section.
+   - Include goal, completed items, validation gate, out-of-scope, verification commands.
+   - Keep it usable to recreate all slices from ground zero.
+   - Add remote migration steps if a migration is added; otherwise explicitly state no migration was required.
+   - Add deployment steps for affected Vercel apps and any required env var checks.
+   - Add Slice 2.1 smoke test flow covering website, consumer discovery/map/restaurants/account, restaurant sidebar/dashboard/drops, and admin user management.
+2. Product/runbook docs:
+   - Create docs/product/premium-ux-transformation.md covering consumer discovery/map, restaurant directory/profile, Swaad Club page boundary, restaurant portal dashboard/sidebar/drop list, admin user management, website polish, brand language rules, and out-of-scope revenue/mobile/scale features.
+   - Create docs/runbooks/premium-ux-transformation.md covering deployment, env checks for Google OAuth/maps, smoke tests, map fallback, admin user search safety, support-safe PII handling, troubleshooting, and rollback notes.
+   - Update docs/runbooks/demo-data.md if deterministic demo restaurant/profile/drop/user rows or cleanup guidance change.
+   - Update docs/runbooks/admin-ops-hardening.md if admin user management is added under ops.
+   - Update docs/runbooks/payments.md only if Swaad Club/Razorpay subscription UI or env checks are added; explicitly document no live recurring billing if deferred.
+   - Update docs/runbooks/notifications.md only if this slice changes notification preferences or visible notification UX; otherwise document no provider behavior change.
+3. Configuration/deployment docs if env/domain/migration behavior changes:
+   - docs/configuration-reference.md
+   - docs/deployment-pipeline.md
+   - Include `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` only if used, and any Supabase OAuth redirect settings that must be configured.
+4. Update DOCX roadmap only if roadmap/scope materially changes:
+   - project docs/goZaika_Technology_Specification_v2.docx
+   - If editing DOCX, use Documents skill and render/visually verify.
+
+DEMO / SEED REQUIREMENTS
+- Add deterministic demo data if needed.
+- Register demo rows in dev_demo_seed_registry where applicable.
+- Update cleanup scripts if demo rows are added.
+- Do not seed production data.
+- Add/update smoke SQL if useful.
+- If adding demo SQL, use supabase/seeds/demo/011_slice21_premium_ux_demo.sql or the next available demo seed number.
+- Demo data must use fake references and must not contain real phone numbers, real email lists, real provider refs, pickup credentials, bank details, private docs, or partner-sensitive notes.
+- Prefer using existing Slice 3/4/5/7/8 demo facts for UI richness before adding new seed data.
+
+
+Codex is allowed to use http://localhost:3000 for local smoke testing.
+
+VALIDATION GATE
+This slice is complete only when:
+- Consumer `/`, `/drops`, `/drops/[id]`, `/restaurants`, `/restaurants/[slug]`, `/account`, `/auth/login`, and `/swaad-club` feel production-grade on desktop and mobile, with working search/filter/list-map behavior or graceful map fallback.
+- Restaurant portal has a responsive sidebar navigation across touched portal pages, a rich dashboard powered by existing data, and an active drops list with clear status/action affordances.
+- Admin can access a bounded user-management/search/detail workflow with role checks, reasoned/audited mutations if any, and no broad PII exposure.
+- Website polish is live: testimonials/social proof if real, metadata/OG/JSON-LD/accessibility/image improvements, and no fabricated metrics.
+- Existing claim/payment/pickup/notification/finance/ROI/admin ops flows still compile and route correctly.
+- No new live recurring billing, payout, refund, payment capture, settlement mutation, or provider side effect is introduced unless explicitly supported and documented.
+- docs/implementation-plan.md explains how to rebuild Slice 2.1 from scratch after Slices 0, 1, 2, 3, 3.5, 4A, 4B, 5, 6, 7, 8A, and 8B.
+- Product/runbook/config/deployment/demo docs are updated.
+- Desktop/mobile browser checks pass for customer, restaurant, admin, and website touched pages; screenshots are captured; horizontal overflow is recorded.
+- Focused typecheck, lint, builds, route smoke tests, and migration SQL review pass or blockers are documented.
+
+VERIFICATION COMMANDS
+Run focused checks:
+```powershell
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/website run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npm.cmd --workspace @gozaika/website run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+npm.cmd --workspace @gozaika/website run build
+
+====
+Context:
+Review C:\venkat\limca\gozaika\sourcecode\project docs\claude_goZaika_Master_Business_Document_v3.docx & C:\venkat\limca\gozaika\sourcecode\project docs\goZaika_Technology_Specification_v2.docx for context. Gozaika website is at gozaika.in.  
+
+Website, phase 1 and phase 2 as defined in goZaika_Technology_Specification_v2.docx have been implemented. C:\venkat\limca\gozaika\sourcecode\docs\implementation-plan.md contains what was implemented in each slice.
+
+- Apps at deployed apps at 
+  - customer: https://customer.gozaika.in/ v(login using following credentials for testing: 918106230860/123456)
+  - restaurant: https://restaurant.gozaika.in/  (login using following credentials for testing: 919000100001/123456)
+  - admin: https://admin.gozaika.in/   (login using following credentials for testing: admin.ops@gozaika.example/GozaikaDemo@123)
+  - restaurant-staff-mobile: https://expo.dev/accounts/orbitwell/projects/gozaika-staff   id=25d52d62-cc07-4e55-bba8-3c8e7c9a25e8  slug=gozaika-staff  owner=orbitwell
+  - consumer-mobile: https://expo.dev/accounts/orbitwell/projects/gozaika-consumer  id=3c14ae81-39e4-4c01-9214-7a15eb6f9a34  slug=gozaika-consumer   owner=orbitwell
+  - website: gozaika.in
+
+- Razorpay is not configured. run  `powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File C:\venkat\limca\gozaika\infra\rpay.ps1 -HoldPk <hold-pk>`
+- If that hold is already CONVERTED, use the converted order id from the debug response as the smoke-test anchor.
+- WhatsApp failures are expected as the customer/restaurant phone numbers are not added to the Meta test account. Treat provider auth/config failures as expected only if the outbox rows, attempts, fallback copy, and email path are visible.
+
+Task:
+I would like to divert from direction established in goZaika_Technology_Specification_v2.docx. Since i am using AI for software development, I can go for full pledged production scope instead of going to pilot with the current barebones MVP. During restaurant sales meetings, i want to present gozaika as a fully complete and ready solution with a lot of invested time and effort that can be trusted by restaurants as against it being just an experimental exercise.
+
+I want to make all 5 apps fully complete (as against MVP)  and rock solid with best in class UX and production ready for phase 1 and phase 2 scope. let me know if you have reservations against this approach.
+
+Analyze current state of the 5 apps. Login to each of them and navigate through each screen and action and use  C:\venkat\limca\gozaika\sourcecode\docs\implementation-plan.md to understand what to expect from each app. Review for gaps in functionality, if flows are intuitive, premium contemporary high quality UI/UX (meet best in class standard), production readiness, efficiency, robustness/resilience and scalability. Mobile applications are just a shall currently.
+
+Create a goZaika_Technology_Specification_v3.docx. Construct a product roadmap/development strategy and approach to make all 5 apps production ready for phase 1 and phase 2 scope. Divide the relases into multiple slices (e.g.  3- 4) slices. We will number these slices starting from 2.1. Create a clear comprehnsive but concise defination for each slice that includes objective, scope covered, flows expeected and suggested test cases. For each slice, also inlcude a prompt for generating code using claude code and codex.
+
+This is a critical document. I need you to dedicate all resources necessary to be thorough and comprehensive in your analysis and research. No shortcuts.
+
+Note: Do not change code base. This is a planning exercise. your deliverable is  goZaika_Technology_Specification_v3.docx and other related documents.
+
+
 
 =======
 You are Codex working in C:\venkat\limca\gozaika\sourcecode.

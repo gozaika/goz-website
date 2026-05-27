@@ -1,11 +1,10 @@
-import { ShellHeader } from "@gozaika/ui";
 import type { NotificationSummary, RestaurantOrderSummary } from "@gozaika/types";
 import { redirect } from "next/navigation";
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { getPortalActor } from "@/lib/portal-auth";
 import { loadActiveRestaurantsForProfile } from "@/lib/slice3";
 import { createClient } from "@/lib/supabase/server";
-import { PortalNav } from "../portal-nav";
+import { PortalChrome } from "../portal-nav";
 import { OrdersClient } from "./orders-client";
 
 type PickupOrderRow = {
@@ -268,10 +267,7 @@ export default async function OrdersPage() {
   }
 
   return (
-    <main>
-      <ShellHeader>
-        <PortalNav />
-      </ShellHeader>
+    <PortalChrome restaurantName={restaurants[0]?.restaurantName} statusCode="ACTIVE">
       <section className="px-4 py-6 sm:px-6">
         <h1 className="text-3xl font-bold">Pickup orders</h1>
         <p className="mt-2 max-w-3xl text-sm text-slate-600">
@@ -282,6 +278,6 @@ export default async function OrdersPage() {
           <OrdersClient initialOrders={orders} />
         </div>
       </section>
-    </main>
+    </PortalChrome>
   );
 }

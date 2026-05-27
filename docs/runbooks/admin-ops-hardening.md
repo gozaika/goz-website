@@ -38,6 +38,10 @@ Confirm admin users have active `iam_platform_membership` rows. Minimum permissi
 
 1. Open `/admin/ops`.
 2. Filter by restaurant, status, and date.
+
+## Slice 2.1 User Management Adjacent Surface
+
+`/admin/users` is adjacent to ops and uses the same platform membership gate. It is search-first and bounded: enter at least two characters, receive at most 12 matching profiles, inspect one selected user, and keep broad exports/account merge/destructive actions out of the pilot surface. List identifiers are masked; selected detail is for authorized platform actors only.
 3. Review open incidents, support tickets, refund support records, paused restaurants/drops, config overrides, and recent audit rows.
 4. Copy or download the current filtered support-safe queue for founder/manual ops review.
 

@@ -1,4 +1,3 @@
-import { ShellHeader } from "@gozaika/ui";
 import { formatBasisPoints, formatPaise } from "@gozaika/utils";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -17,7 +16,7 @@ import {
 } from "@/lib/roi-report";
 import { loadActiveRestaurantsForProfile } from "@/lib/slice3";
 import { createClient } from "@/lib/supabase/server";
-import { PortalNav } from "../portal-nav";
+import { PortalChrome } from "../portal-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -93,10 +92,7 @@ export default async function PortalReportsPage({
   });
 
   return (
-    <main>
-      <ShellHeader>
-        <PortalNav />
-      </ShellHeader>
+    <PortalChrome restaurantName={restaurant.restaurantName} statusCode="ACTIVE">
       <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -225,6 +221,6 @@ export default async function PortalReportsPage({
           </div>
         </section>
       </section>
-    </main>
+    </PortalChrome>
   );
 }

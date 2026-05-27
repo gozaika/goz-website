@@ -1,0 +1,22 @@
+[
+  {
+    "name": "consumer",
+    "pid": 20892,
+    "port": "3000"
+  },
+  {
+    "name": "restaurant",
+    "pid": 11372,
+    "port": "3001"
+  },
+  {
+    "name": "admin",
+    "pid": 22644,
+    "port": "3002"
+  },
+  {
+    "name": "website",
+    "pid": 24344,
+    "port": "3003"
+  }
+]

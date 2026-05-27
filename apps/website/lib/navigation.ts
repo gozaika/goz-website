@@ -69,6 +69,14 @@ export const siteRoutes: ReadonlyArray<SiteRoute> = [
     indexable: true,
   },
   {
+    href: '/insider',
+    label: 'Insider',
+    title: 'goZaika Insider — Drop Alerts on WhatsApp',
+    description:
+      'Get WhatsApp alerts when a new BAM Bag drops near you in Hyderabad. Free. No app needed.',
+    indexable: true,
+  },
+  {
     href: '/cities',
     label: 'Cities',
     title: 'Cities | goZaika',
@@ -133,6 +141,7 @@ export const footerColumns = {
   discover: [
     { label: 'How It Works', href: '/how-it-works' },
     { label: 'FAQ', href: '/faq' },
+    { label: 'Insider', href: '/insider' },
     { label: 'Cities', href: '/cities' },
   ],
   partners: [

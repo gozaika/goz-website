@@ -1062,3 +1062,81 @@ npm.cmd --workspace @gozaika/admin-web run build
 ### Out Of Scope
 
 No advanced CRM, live Razorpay refunds, Razorpay transfers, fund accounts, payouts, payment capture mutation, webhook behavior changes beyond claim guardrails, settlement recalculation, payout status mutation, accounting integrations, destructive order edits, pickup overrides, broad customer exports, native mobile ops screens, scheduled export workers, Sentry, marketing automation, reviews/public ratings, loyalty, referrals, subscriptions, or marketing-site redesign.
+
+## Slice 2.1: Premium UX Transformation
+
+### Goal
+
+Raise the existing production web surfaces from pilot-grade screens to credible demo/launch UX without changing the core backend, payment, pickup, notification, finance, or settlement model.
+
+### Completed
+
+- [x] Consumer `/` and `/drops` now provide premium discovery with search, cuisine chips, dietary filters, closing-soon and recently-missed sections, and a mobile-first list/map toggle.
+- [x] Map mode degrades safely when no public restaurant coordinates are available. No secret map key is required; no private restaurant address/compliance fields are exposed.
+- [x] Consumer `/restaurants` now lists public/active restaurants from safe public profile and drop data; `/restaurants/[slug]` shows identity, cuisine/dietary tags, active/upcoming drops, recent public drop history, share affordance, and safety reminders.
+- [x] Consumer `/account`, `/auth/login`, and `/swaad-club` are polished around profile completeness, consent/notification clarity, Google OAuth boundary, and subscription-ready Swaad Club positioning.
+- [x] Restaurant portal has a responsive sidebar chrome, grouped navigation, active states, support affordance, richer dashboard metrics, and `/portal/drops` active drop list.
+- [x] Admin has `/admin/users` bounded user search/detail with masked list PII, selected-record detail, consent/order/hold/notification/audit counts, and no bulk export or destructive action.
+- [x] Marketing website social-proof/Insider polish now typechecks; metadata/skip-link structure remains in place.
+- [x] Product and runbook docs were added for premium UX operations and boundaries.
+
+### Remote Migration Steps
+
+No Supabase migration is required for Slice 2.1. The implementation uses existing safe read models including `api_public_drop_card`, `api_public_restaurant_profile`, Slice 8B admin ops views, existing `iam_profile`, consent, hold, order, notification, and audit tables.
+
+### Environment And Deploy
+
+Redeploy affected Vercel apps after merge:
+
+```powershell
+# Vercel projects
+customer.gozaika.in
+restaurant.gozaika.in
+admin.gozaika.in
+gozaika.in
+```
+
+Confirm environment:
+
+```text
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY for server-only admin/restaurant routes
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY optional only; current map fallback does not require it
+Supabase Auth Google provider and redirect allow-list for https://customer.gozaika.in/auth/callback before treating Google OAuth as production
+```
+
+No Razorpay subscription, payout, refund, transfer, settlement mutation, worker, Edge Function, storage bucket, or notification provider environment variable is introduced.
+
+### Smoke Test Flow
+
+1. Website: open `/`, confirm testimonial/social proof and Insider CTA render, metadata remains share-ready, and skip-to-content works.
+2. Consumer discovery: open `/`, `/drops`, search/filter by restaurant/cuisine/dietary text, toggle List/Map, confirm map fallback message when public coordinates are missing, open `/drops/[id]`, and confirm claim/hold CTA still routes to existing checkout flow.
+3. Consumer restaurants: open `/restaurants`, search/filter, open `/restaurants/[slug]`, confirm no private compliance/contact/payout/team fields appear.
+4. Consumer account/auth: open `/auth/login`, confirm phone OTP remains primary and Google OAuth uses Supabase redirect; open `/account` signed in and verify profile, consents, orders, holds, notification context, and Swaad Club CTA.
+5. Restaurant portal: open `/portal/dashboard`, `/portal/drops`, `/portal/drops/new`, `/portal/templates`, `/portal/orders`, `/portal/finance`, `/portal/reports`, `/portal/profile`; confirm sidebar collapses horizontally on mobile and publishing guardrails remain visible.
+6. Admin: open `/admin`, `/admin/ops`, `/admin/users?q=demo`; confirm bounded results, masked list identifiers, selected detail panel, and no broad export or account merge action.
+7. Check 390px mobile and 1440px desktop widths for horizontal overflow on customer, restaurant, admin, and website touched pages.
+
+### Verification Commands
+
+```powershell
+npm.cmd run ci
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/website run typecheck
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npm.cmd --workspace @gozaika/website run lint
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npm.cmd --workspace @gozaika/admin-web run build
+npm.cmd --workspace @gozaika/website run build
+```
+
+### Out Of Scope
+
+No live Swaad Club recurring billing, Zaika Pro paid subscription, referral rewards ledger, coupons, restaurant team management, native mobile parity, PostGIS/geofencing, broad customer exports, destructive account merge, automated payouts, refunds, settlement recalculation, payment capture mutation, notification provider changes, or analytics warehouse was added.

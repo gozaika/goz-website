@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
-import { Clock, MapPin, ShieldCheck } from "lucide-react";
-import type { PublicDropCard } from "@gozaika/types";
+import { Clock, MapPin, ShieldCheck, Store } from "lucide-react";
+import type { PublicDropCard, PublicRestaurantProfile } from "@gozaika/types";
 import { cn, dietaryBadgeLabel, formatPaise, formatPickupWindow, getDropClaimAvailability } from "@gozaika/utils";
 
 export { DropShareActions, LaunchCommsPanel } from "./launch-comms-actions";
@@ -232,6 +232,65 @@ export function DropCard({
         )}
       </div>
       {actions ? <div className="mt-3">{actions}</div> : null}
+    </article>
+  );
+}
+
+export function RestaurantCard({
+  restaurant,
+  className,
+}: {
+  readonly restaurant: PublicRestaurantProfile;
+  readonly className?: string;
+}) {
+  return (
+    <article className={cn("overflow-hidden rounded-lg border border-black/10 bg-white shadow-sm", className)}>
+      <div className="flex min-h-28 items-start justify-between gap-3 bg-[#FFF8F0] p-4">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wide text-[#1A5C38]">
+            {restaurant.neighborhoodName ? `${restaurant.neighborhoodName} pickup` : restaurant.cityName ?? "Pickup partner"}
+          </p>
+          <h3 className="mt-2 text-2xl font-bold text-[#2D2D2D]">{restaurant.restaurantName}</h3>
+          <p className="mt-2 line-clamp-2 text-sm text-[#2D2D2D]/70">
+            {restaurant.headline ?? "Chef-led BAM Bags with published dietary, allergen, and pickup details."}
+          </p>
+        </div>
+        <div className="grid h-14 w-14 shrink-0 place-items-center rounded-lg bg-white text-[#FF6B35] shadow-sm">
+          <Store aria-hidden="true" />
+        </div>
+      </div>
+      <div className="grid gap-4 p-4">
+        <div className="flex flex-wrap gap-2">
+          {restaurant.cuisineTags.slice(0, 4).map((tag) => (
+            <span key={tag} className="rounded-full bg-[#F2F8EF] px-2.5 py-1 text-xs font-semibold text-[#1A5C38]">
+              {tag}
+            </span>
+          ))}
+          {restaurant.dietaryTags.slice(0, 3).map((tag) => (
+            <DietaryBadge key={tag} code={tag} />
+          ))}
+        </div>
+        <dl className="grid grid-cols-3 gap-2 text-sm text-[#2D2D2D]/70">
+          <div>
+            <dt className="text-xs font-semibold uppercase text-[#2D2D2D]/45">Active</dt>
+            <dd className="mt-1 font-bold text-[#2D2D2D]">{restaurant.activeDropCount}</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-semibold uppercase text-[#2D2D2D]/45">History</dt>
+            <dd className="mt-1 font-bold text-[#2D2D2D]">{restaurant.totalDropCount}</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-semibold uppercase text-[#2D2D2D]/45">Trust</dt>
+            <dd className="mt-1 font-bold text-[#2D2D2D]">Disclosed</dd>
+          </div>
+        </dl>
+        <a
+          href={`/restaurants/${restaurant.restaurantSlug}`}
+          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[#1A5C38]/25 px-4 py-2 text-sm font-semibold text-[#1A5C38] transition hover:border-[#1A5C38] hover:bg-[#F2F8EF]"
+        >
+          View profile
+        </a>
+      </div>
     </article>
   );
 }

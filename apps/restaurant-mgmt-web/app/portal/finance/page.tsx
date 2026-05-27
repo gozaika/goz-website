@@ -1,4 +1,3 @@
-import { ShellHeader } from "@gozaika/ui";
 import {
   financeSettlementStatusLabel,
   financeSettlementStatusTone,
@@ -11,7 +10,7 @@ import { getPortalActor } from "@/lib/portal-auth";
 import { mapFinanceSettlementDetail, mapFinanceSettlementSummary } from "@/lib/finance";
 import { loadActiveRestaurantsForProfile } from "@/lib/slice3";
 import { createClient } from "@/lib/supabase/server";
-import { PortalNav } from "../portal-nav";
+import { PortalChrome } from "../portal-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -68,10 +67,7 @@ export default async function FinancePage({
   const details = (detailData ?? []).map(mapFinanceSettlementDetail);
 
   return (
-    <main>
-      <ShellHeader>
-        <PortalNav />
-      </ShellHeader>
+    <PortalChrome restaurantName={restaurants[0]?.restaurantName} statusCode="ACTIVE">
       <section className="px-4 py-6 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -211,6 +207,6 @@ export default async function FinancePage({
           </div>
         )}
       </section>
-    </main>
+    </PortalChrome>
   );
 }

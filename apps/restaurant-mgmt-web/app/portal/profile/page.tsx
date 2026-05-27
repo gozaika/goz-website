@@ -1,9 +1,8 @@
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
-import { ShellHeader } from "@gozaika/ui";
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
 import { loadDefaultRestaurant } from "@/lib/slice3";
-import { PortalNav } from "../portal-nav";
+import { PortalChrome } from "../portal-nav";
 import { PortalProfileClient, type PortalProfileState } from "./profile-client";
 
 export default async function PortalProfilePage() {
@@ -46,11 +45,8 @@ export default async function PortalProfilePage() {
   };
 
   return (
-    <main>
-      <ShellHeader>
-        <PortalNav />
-      </ShellHeader>
+    <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
       <PortalProfileClient initialProfile={initialProfile} />
-    </main>
+    </PortalChrome>
   );
 }

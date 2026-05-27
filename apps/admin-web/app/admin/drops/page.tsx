@@ -20,8 +20,11 @@ type PublicDropRow = {
   readonly price_paise: number | string;
   readonly pickup_start_at: string;
   readonly pickup_end_at: string;
+  readonly city_name: string | null;
+  readonly restaurant_restaurant_pk: string;
   readonly restaurant_slug: string;
   readonly restaurant_name: string;
+  readonly restaurant_headline: string | null;
   readonly neighborhood_name: string | null;
   readonly bag_display_name: string;
   readonly bag_short_description: string | null;
@@ -151,9 +154,14 @@ function mapPublicDrop(row: PublicDropRow): PublicDropCard {
     dropPk: row.drop_drop_pk,
     dropTitle: row.drop_title,
     dropTypeCode: row.drop_type_code,
+    restaurantPk: row.restaurant_restaurant_pk,
     restaurantName: row.restaurant_name,
     restaurantSlug: row.restaurant_slug,
+    restaurantHeadline: row.restaurant_headline,
+    cityName: row.city_name,
     neighborhoodName: row.neighborhood_name,
+    latitude: null,
+    longitude: null,
     bagDisplayName: row.bag_display_name,
     bagShortDescription: row.bag_short_description,
     dietaryCategoryCode: row.dietary_category_code,

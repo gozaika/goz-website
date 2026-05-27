@@ -3,7 +3,7 @@
 import { Button, GoZaikaLogo } from "@gozaika/ui";
 import { consentPurposeCodes, type ClaimIntent, type ConsentPurposeCode, type ConsumerOrderSummary, type NotificationSummary } from "@gozaika/types";
 import { formatPaise, formatPickupWindow, notificationStatusLabel, safeErrorMessage } from "@gozaika/utils";
-import { LogOut, ShieldCheck } from "lucide-react";
+import { Crown, LogOut, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -156,6 +156,31 @@ export function AccountClient({
       {status ? (
         <p className="mt-6 rounded-lg border border-[#D4A017]/40 bg-white px-3 py-2 text-sm text-[#2D2D2D]">{status}</p>
       ) : null}
+
+      <section className="mt-6 grid gap-4 md:grid-cols-3">
+        <article className="rounded-lg border border-[#D4A017]/35 bg-[#FFF8F0] p-4">
+          <div className="flex items-center gap-2">
+            <Crown className="h-5 w-5 text-[#D4A017]" aria-hidden="true" />
+            <h2 className="font-bold text-[#2D2D2D]">Swaad Club</h2>
+          </div>
+          <p className="mt-2 text-sm text-[#2D2D2D]/70">Subscription billing is not active yet. Join the launch list for priority-access updates.</p>
+          <Link className="mt-3 inline-flex min-h-10 items-center rounded-lg border border-[#1A5C38]/25 px-3 text-sm font-semibold text-[#1A5C38]" href="/swaad-club">
+            View benefits
+          </Link>
+        </article>
+        <article className="rounded-lg border border-black/10 bg-white p-4">
+          <p className="text-sm font-semibold text-[#2D2D2D]/55">Profile completeness</p>
+          <p className="mt-2 text-3xl font-bold text-[#2D2D2D]">
+            {[profile.fullName, profile.phone, profile.email].filter(Boolean).length}/3
+          </p>
+          <p className="mt-1 text-sm text-[#2D2D2D]/65">Name, phone, and email help support identify your account safely.</p>
+        </article>
+        <article className="rounded-lg border border-black/10 bg-white p-4">
+          <p className="text-sm font-semibold text-[#2D2D2D]/55">Order affordance</p>
+          <p className="mt-2 text-3xl font-bold text-[#2D2D2D]">{initialOrders.length}</p>
+          <p className="mt-1 text-sm text-[#2D2D2D]/65">Paid orders stay below with pickup proof and notification status.</p>
+        </article>
+      </section>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">

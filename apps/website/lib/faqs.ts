@@ -29,7 +29,7 @@ export const faqs: ReadonlyArray<FaqItem> = [
     id: 'bam-bag-definition',
     question: 'What exactly is a BAM Bag?',
     answer:
-      'A BAM Bag (Big Aayega Maza) is a chef-curated to-go selection from a partner restaurant. Contents are undisclosed until pickup, with allergen details shown before purchase.',
+      'A BAM Bag (Bada Aayega Maza — बड़ा आएगा मज़ा) is a chef-curated to-go selection from a partner restaurant. Contents are a surprise, but cuisine type, dietary category, spice level, all 14 FSSAI allergens, pickup window, and indicative value are disclosed before you buy.',
     category: 'consumer',
   },
   {
@@ -43,7 +43,14 @@ export const faqs: ReadonlyArray<FaqItem> = [
     id: 'pickup-process',
     question: 'How does pickup work?',
     answer:
-      'You receive a confirmation after payment. Visit the restaurant within the listed pickup window and show your order confirmation.',
+      'After payment you receive a QR-code confirmation. Walk to the restaurant within the stated pickup window, show your QR to the staff, and collect your bag. No waiting for a rider, no delivery delays — you are at the source, which is the entire point.',
+    category: 'consumer',
+  },
+  {
+    id: 'pickup-why-not-delivery',
+    question: "Why is pickup-only a feature, not a limitation?",
+    answer:
+      "Pickup is a deliberate design choice, not a cost-cutting measure. When you collect directly from the kitchen, the food is at peak quality, prepared for your window. Delivery adds 20–45 minutes, packaging compromise, and the risk of a cold or shaken meal. goZaika is about the best version of the food — and that lives at the source.",
     category: 'consumer',
   },
   {
@@ -94,5 +101,19 @@ export const faqs: ReadonlyArray<FaqItem> = [
     answer:
       'Swaad Club is our upcoming loyalty programme. Earn points on every BAM Bag you claim. Redeem for early access to exclusive drops and partner rewards. Launching with the goZaika app.',
     category: 'consumer',
+  },
+  {
+    id: 'restaurant-cannibalization',
+    question: "Will goZaika affect a restaurant's existing walk-in or delivery business?",
+    answer:
+      "No — by design. BAM Bags are a separate, off-menu drop set to a pickup window the restaurant defines. They do not appear on any delivery aggregator, they do not displace dining covers, and they do not affect your regular takeaway flow. Restaurants control when drops go live and can pause or stop at any point. The channel is additive, not competitive.",
+    category: 'restaurant',
+  },
+  {
+    id: 'food-safety-qr',
+    question: 'Is there a way to verify the freshness of my bag?',
+    answer:
+      "Yes. Every BAM Bag carries a freshness certificate. You can scan the QR code on your order confirmation or on the bag tag at pickup to verify that the food was prepared within the declared window and meets goZaika's freshness standards. If the food is outside the safe window, the listing should not be active — this is enforced at the platform level.",
+    category: 'safety',
   },
 ];

@@ -10,6 +10,7 @@
 - PII must not be logged.
 - Raw webhook payloads, Razorpay secrets, pickup QR nonce, OTP, and pickup credential hashes are never exposed to browser-safe views.
 - Pickup verification is collection proof only. It must never create payments, orders, refunds, settlements, payouts, or compensation.
+- Slice 2.1 Swaad Club UI is subscription-ready only. It does not call Razorpay subscription APIs, create mandates, renewals, entitlements, refunds, captures, transfers, or payout state.
 
 ## Slice 4A Hold Flow
 

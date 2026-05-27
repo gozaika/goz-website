@@ -1070,9 +1070,14 @@ export interface PublicDropCard {
   readonly dropPk: string;
   readonly dropTitle: string;
   readonly dropTypeCode: string;
+  readonly restaurantPk: string;
   readonly restaurantName: string;
   readonly restaurantSlug: string;
+  readonly restaurantHeadline: string | null;
+  readonly cityName: string | null;
   readonly neighborhoodName: string | null;
+  readonly latitude: number | null;
+  readonly longitude: number | null;
   readonly bagDisplayName: string;
   readonly bagShortDescription: string | null;
   readonly dietaryCategoryCode: DietaryCategoryCode;
@@ -1090,6 +1095,29 @@ export interface PublicDropCard {
   readonly quantityTotal: number;
   readonly quantityAvailable: number;
   readonly statusCode: DropStatusCode;
+}
+
+export interface PublicRestaurantProfile {
+  readonly restaurantPk: string;
+  readonly restaurantSlug: string;
+  readonly restaurantName: string;
+  readonly cityName: string | null;
+  readonly neighborhoodName: string | null;
+  readonly pickupInstructions: string | null;
+  readonly headline: string | null;
+  readonly storyMarkdown: string | null;
+  readonly averageRating: number | null;
+  readonly ratingCount: number;
+  readonly cuisineTags: readonly string[];
+  readonly dietaryTags: readonly DietaryCategoryCode[];
+  readonly activeDropCount: number;
+  readonly totalDropCount: number;
+  readonly upcomingDropCount: number;
+  readonly pastDropCount: number;
+  readonly latitude: number | null;
+  readonly longitude: number | null;
+  readonly activeDrops: readonly PublicDropCard[];
+  readonly pastDrops: readonly PublicDropCard[];
 }
 
 export interface ClaimIntent {

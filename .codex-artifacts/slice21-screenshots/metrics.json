@@ -1,0 +1,228 @@
+{
+  "routeSmoke": [
+    {
+      "app": "consumer",
+      "route": "/",
+      "status": 200,
+      "location": null
+    },
+    {
+      "app": "consumer",
+      "route": "/drops",
+      "status": 200,
+      "location": null
+    },
+    {
+      "app": "consumer",
+      "route": "/restaurants",
+      "status": 200,
+      "location": null
+    },
+    {
+      "app": "consumer",
+      "route": "/swaad-club",
+      "status": 200,
+      "location": null
+    },
+    {
+      "app": "consumer",
+      "route": "/auth/login",
+      "status": 200,
+      "location": null
+    },
+    {
+      "app": "admin",
+      "route": "/admin/users?q=demo",
+      "status": 307,
+      "location": "/auth/login"
+    },
+    {
+      "app": "restaurant",
+      "route": "/portal/dashboard",
+      "status": 307,
+      "location": "/auth/login"
+    },
+    {
+      "app": "restaurant",
+      "route": "/portal/drops",
+      "status": 307,
+      "location": "/auth/login"
+    },
+    {
+      "app": "website",
+      "route": "/",
+      "status": 200,
+      "location": null
+    }
+  ],
+  "results": [
+    {
+      "name": "customer-home-desktop",
+      "requestedUrl": "http://localhost:3000/",
+      "width": 1440,
+      "height": 1000,
+      "file": "C:/venkat/limca/gozaika/sourcecode/.codex-artifacts/slice21-screenshots/customer-home-desktop.png",
+      "url": "http://localhost:3000/",
+      "title": "goZaika | BAM Bag Discovery",
+      "h1": "Chef-curated BAM Bags, ready for pickup today.",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "text": "Drops\nRestaurants\nAccount\n\nLAUNCHING IN HYDERABAD\n\nChef-curated BAM Bags, ready for pickup today.\n\nDiscover Limited Drops from Hyderabad kitchens. Search by restaurant, cuisine, dietary category, and pickup window with a",
+      "overflow": false
+    },
+    {
+      "name": "customer-drops-desktop",
+      "requestedUrl": "http://localhost:3000/drops",
+      "width": 1440,
+      "height": 1000,
+      "file": "C:/venkat/limca/gozaika/sourcecode/.codex-artifacts/slice21-screenshots/customer-drops-desktop.png",
+      "url": "http://localhost:3000/drops",
+      "title": "goZaika | BAM Bag Discovery",
+      "h1": "Find today's BAM Bags by cuisine, neighborhood, and pickup window.",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "text": "Drops\nRestaurants\nAccount\n\nLIVE HYDERABAD DISCOVERY\n\nFind today's BAM Bags by cuisine, neighborhood, and pickup window.\n\nSearch restaurant names, Chef's Selection drops, dietary categories, allergens, and pickup neighbor",
+      "overflow": false
+    },
+    {
+      "name": "customer-drops-mobile",
+      "requestedUrl": "http://localhost:3000/drops",
+      "width": 390,
+      "height": 844,
+      "file": "C:/venkat/limca/gozaika/sourcecode/.codex-artifacts/slice21-screenshots/customer-drops-mobile.png",
+      "url": "http://localhost:3000/drops",
+      "title": "goZaika | BAM Bag Discovery",
+      "h1": "Find today's BAM Bags by cuisine, neighborhood, and pickup window.",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "text": "Drops\nRestaurants\nAccount\n\nLIVE HYDERABAD DISCOVERY\n\nFind today's BAM Bags by cuisine, neighborhood, and pickup window.\n\nSearch restaurant names, Chef's Selection drops, dietary categories, allergens, and pickup neighbor",
+      "overflow": false
+    },
+    {
+      "name": "customer-restaurants-desktop",
+      "requestedUrl": "http://localhost:3000/restaurants",
+      "width": 1440,
+      "height": 1000,
+      "file": "C:/venkat/limca/gozaika/sourcecode/.codex-artifacts/slice21-screenshots/customer-restaurants-desktop.png",
+      "url": "http://localhost:3000/restaurants",
+      "title": "goZaika | BAM Bag Discovery",
+      "h1": "Discover kitchens curating Limited Drops for goZaika.",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "text": "Drops\nRestaurants\nSwaad Club\nAccount\n\nHYDERABAD RESTAURANT DIRECTORY\n\nDiscover kitchens curating Limited Drops for goZaika.\n\nBrowse active public partners, cuisine signals, pickup neighborhoods, and safe profile details.",
+      "overflow": false
+    },
+    {
+      "name": "customer-restaurants-mobile",
+      "requestedUrl": "http://localhost:3000/restaurants",
+      "width": 390,
+      "height": 844,
+      "file": "C:/venkat/limca/gozaika/sourcecode/.codex-artifacts/slice21-screenshots/customer-restaurants-mobile.png",
+      "url": "http://localhost:3000/restaurants",
+      "title": "goZaika | BAM Bag Discovery",
+      "h1": "Discover kitchens curating Limited Drops for goZaika.",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "text": "Drops\nRestaurants\nSwaad Club\nAccount\n\nHYDERABAD RESTAURANT DIRECTORY\n\nDiscover kitchens curating Limited Drops for goZaika.\n\nBrowse active public partners, cuisine signals, pickup neighborhoods, and safe profile details.",
+      "overflow": false
+    },
+    {
+      "name": "customer-swaad-mobile",
+      "requestedUrl": "http://localhost:3000/swaad-club",
+      "width": 390,
+      "height": 844,
+      "file": "C:/venkat/limca/gozaika/sourcecode/.codex-artifacts/slice21-screenshots/customer-swaad-mobile.png",
+      "url": "http://localhost:3000/swaad-club",
+      "title": "goZaika | BAM Bag Discovery",
+      "h1": "Priority access for Hyderabad's first BAM Bag explorers.",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "text": "Drops\nRestaurants\nAccount\n\nSWAAD CLUB\n\nPriority access for Hyderabad's first BAM Bag explorers.\n\nBuilt for diners who want smarter access to off-menu discovery: early alerts, member-first drop context, and launch benefit",
+      "overflow": false
+    },
+    {
+      "name": "admin-users-desktop",
+      "requestedUrl": "http://localhost:3002/admin/users?q=demo",
+      "width": 1440,
+      "height": 1000,
+      "file": "C:/venkat/limca/gozaika/sourcecode/.codex-artifacts/slice21-screenshots/admin-users-desktop.png",
+      "url": "http://localhost:3002/auth/login",
+      "title": "",
+      "h1": "Admin access",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "text": "Admin access\n\nRestricted operations portal.\n\nSign in",
+      "overflow": false
+    },
+    {
+      "name": "admin-users-mobile",
+      "requestedUrl": "http://localhost:3002/admin/users?q=demo",
+      "width": 390,
+      "height": 844,
+      "file": "C:/venkat/limca/gozaika/sourcecode/.codex-artifacts/slice21-screenshots/admin-users-mobile.png",
+      "url": "http://localhost:3002/auth/login",
+      "title": "",
+      "h1": "Admin access",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "text": "Admin access\n\nRestricted operations portal.\n\nSign in",
+      "overflow": false
+    },
+    {
+      "name": "restaurant-dashboard-desktop",
+      "requestedUrl": "http://localhost:3001/portal/dashboard",
+      "width": 1440,
+      "height": 1000,
+      "file": "C:/venkat/limca/gozaika/sourcecode/.codex-artifacts/slice21-screenshots/restaurant-dashboard-desktop.png",
+      "url": "http://localhost:3001/auth/login",
+      "title": "",
+      "h1": "Restaurant dignity first.",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "text": "ZAYKA PRO\n\nRestaurant dignity first.\n\nSet up your pickup-only BAM Bag channel, upload compliance docs privately, and keep your restaurant brand front and center.\n\nRestaurant owner login\n\nPhone OTP first, demo account loc",
+      "overflow": false
+    },
+    {
+      "name": "restaurant-drops-mobile",
+      "requestedUrl": "http://localhost:3001/portal/drops",
+      "width": 390,
+      "height": 844,
+      "file": "C:/venkat/limca/gozaika/sourcecode/.codex-artifacts/slice21-screenshots/restaurant-drops-mobile.png",
+      "url": "http://localhost:3001/auth/login",
+      "title": "",
+      "h1": "Restaurant dignity first.",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "text": "ZAYKA PRO\n\nRestaurant dignity first.\n\nSet up your pickup-only BAM Bag channel, upload compliance docs privately, and keep your restaurant brand front and center.\n\nRestaurant owner login\n\nPhone OTP first, demo account loc",
+      "overflow": false
+    },
+    {
+      "name": "website-home-desktop",
+      "requestedUrl": "http://localhost:3003/",
+      "width": 1440,
+      "height": 1000,
+      "file": "C:/venkat/limca/gozaika/sourcecode/.codex-artifacts/slice21-screenshots/website-home-desktop.png",
+      "url": "http://localhost:3003/",
+      "title": "goZaika — Discover. Pickup. Devour.",
+      "h1": "Great food. No menu. No algorithm.",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "text": "Skip to main content\nHow It Works\nFor Restaurants\nAbout\nFAQ\nJoin Waitlist\nLAUNCHING IN HYDERABAD\nGreat food. No menu. No algorithm.\n\nBAM! बड़ा ज़ायका, आएगा मज़ा\n\nIndia's first mystery meal-drop marketplace. Starting in H",
+      "overflow": false
+    },
+    {
+      "name": "website-home-mobile",
+      "requestedUrl": "http://localhost:3003/",
+      "width": 390,
+      "height": 844,
+      "file": "C:/venkat/limca/gozaika/sourcecode/.codex-artifacts/slice21-screenshots/website-home-mobile.png",
+      "url": "http://localhost:3003/",
+      "title": "goZaika — Discover. Pickup. Devour.",
+      "h1": "Great food. No menu. No algorithm.",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "text": "Skip to main content\nHow It Works\nFor Restaurants\nAbout\nFAQ\nJoin Waitlist\nLAUNCHING IN HYDERABAD\nGreat food. No menu. No algorithm.\n\nBAM! बड़ा ज़ायका, आएगा मज़ा\n\nIndia's first mystery meal-drop marketplace. Starting in H",
+      "overflow": false
+    }
+  ]
+}

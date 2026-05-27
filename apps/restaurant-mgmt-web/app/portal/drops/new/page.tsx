@@ -1,8 +1,7 @@
-import { ShellHeader } from "@gozaika/ui";
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
 import { loadDefaultRestaurant, loadPortalDrops, loadPortalTemplates, loadPublicDropsByDropPks, loadRestaurantOpsGuardrails } from "@/lib/slice3";
-import { PortalNav } from "../../portal-nav";
+import { PortalChrome } from "../../portal-nav";
 import { DropPublishingForm } from "./drop-publishing-form";
 
 export default async function NewDropPage() {
@@ -14,10 +13,7 @@ export default async function NewDropPage() {
 
   if (restaurant.restaurantStatusCode !== "ACTIVE") {
     return (
-      <main>
-        <ShellHeader>
-          <PortalNav />
-        </ShellHeader>
+      <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
         <section className="mx-auto max-w-3xl px-6 py-8">
           <div className="rounded-lg border border-[#D4A017]/40 bg-[#FFF8E6] p-5">
             <p className="text-sm font-semibold text-[#7A5A00]">Publishing paused</p>
@@ -27,7 +23,7 @@ export default async function NewDropPage() {
             </p>
           </div>
         </section>
-      </main>
+      </PortalChrome>
     );
   }
 
@@ -39,10 +35,7 @@ export default async function NewDropPage() {
   const launchDrops = await loadPublicDropsByDropPks(drops.map((drop) => drop.dropPk));
 
   return (
-    <main>
-      <ShellHeader>
-        <PortalNav />
-      </ShellHeader>
+    <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
       <section className="px-6 py-6">
         <h1 className="text-3xl font-bold">Create a BAM Bag drop</h1>
         <p className="mt-2 max-w-3xl text-sm text-slate-600">
@@ -52,6 +45,6 @@ export default async function NewDropPage() {
           <DropPublishingForm templates={templates} drops={drops} launchDrops={launchDrops} restaurantName={restaurant.restaurantName} guardrails={guardrails} />
         </div>
       </section>
-    </main>
+    </PortalChrome>
   );
 }

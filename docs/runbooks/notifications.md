@@ -50,6 +50,10 @@ The worker response includes `whatsAppProvider`, `configuredWhatsAppProvider`, a
 
 Set `NOTIFICATION_DRY_RUN=true` in local or staging when provider delivery should not happen. For provider smoke tests, set `NOTIFICATION_DRY_RUN=false` and configure Meta sandbox credentials instead.
 
+## Slice 2.1 UX Boundary
+
+Slice 2.1 only changes visible account/Swaad Club notification context. It does not alter notification consent semantics, provider credentials, outbox enqueue logic, worker delivery behavior, templates, retries, suppression, or pickup reminder scheduling.
+
 ## Email Delivery And Spam Checks
 
 Email sends use Resend with both plain text and branded HTML. Configure the sender from a verified domain:
