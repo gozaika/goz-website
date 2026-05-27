@@ -556,7 +556,8 @@ left join lateral (
   from audit_log a
   where a.target_entity_pk = r.restaurant_restaurant_pk
 ) aud on true
-where public.rls_is_platform_user();
+where public.rls_is_platform_user()
+   or auth.role() = 'service_role';
 
 create view api_admin_ops_drop_summary
 with (security_barrier = true) as
@@ -580,7 +581,8 @@ left join lateral (
   where o.drop_fk = d.drop_drop_pk
     and o.payment_status_code = 'CAPTURED'
 ) orders on true
-where public.rls_is_platform_user()
+where (public.rls_is_platform_user()
+   or auth.role() = 'service_role')
   and d.drop_status_code in ('ACTIVE','SCHEDULED','PAUSED')
 order by d.pickup_start_at desc;
 
@@ -616,7 +618,8 @@ left join lateral (
   from support_ticket_event e
   where e.support_ticket_fk = t.support_ticket_pk
 ) latest on true
-where public.rls_is_platform_user();
+where public.rls_is_platform_user()
+   or auth.role() = 'service_role';
 
 create view api_admin_ops_incident_queue
 with (security_barrier = true) as
@@ -648,7 +651,8 @@ left join lateral (
   from incident_event e
   where e.incident_fk = i.incident_incident_pk
 ) latest on true
-where public.rls_is_platform_user();
+where public.rls_is_platform_user()
+   or auth.role() = 'service_role';
 
 create view api_admin_ops_refund_queue
 with (security_barrier = true) as
@@ -670,7 +674,8 @@ select
 from payment_refund pr
 join order_order o on o.order_order_pk = pr.order_fk
 join restaurant_restaurant r on r.restaurant_restaurant_pk = o.restaurant_fk
-where public.rls_is_platform_user();
+where public.rls_is_platform_user()
+   or auth.role() = 'service_role';
 
 create view api_admin_ops_config_flag
 with (security_barrier = true) as
@@ -698,7 +703,8 @@ select
   f.updated_at
 from config_feature_flag f
 left join restaurant_restaurant r on r.restaurant_restaurant_pk = f.scope_entity_pk
-where public.rls_is_platform_user()
+where (public.rls_is_platform_user()
+   or auth.role() = 'service_role')
   and f.flag_code in ('CLAIMS_ENABLED','PUBLISHING_ENABLED','MAX_BAGS_PER_DROP')
   and f.scope_code in ('GLOBAL','RESTAURANT');
 
@@ -714,7 +720,8 @@ select
   a.audit_payload_json ->> 'reason' as reason_text,
   a.created_at
 from audit_log a
-where public.rls_is_platform_user()
+where (public.rls_is_platform_user()
+   or auth.role() = 'service_role')
   and (
     a.action_code like 'RESTAURANT_%'
     or a.action_code like 'DROP_%'
@@ -742,6 +749,13 @@ grant select on api_admin_ops_incident_queue to authenticated;
 grant select on api_admin_ops_refund_queue to authenticated;
 grant select on api_admin_ops_config_flag to authenticated;
 grant select on api_admin_ops_audit_log to authenticated;
+grant select on api_admin_ops_restaurant_summary to service_role;
+grant select on api_admin_ops_drop_summary to service_role;
+grant select on api_admin_ops_support_queue to service_role;
+grant select on api_admin_ops_incident_queue to service_role;
+grant select on api_admin_ops_refund_queue to service_role;
+grant select on api_admin_ops_config_flag to service_role;
+grant select on api_admin_ops_audit_log to service_role;
 
 revoke all on function public.api_admin_ops_has_role(uuid,text[]) from public;
 revoke all on function public.api_ops_claims_enabled(uuid) from public;

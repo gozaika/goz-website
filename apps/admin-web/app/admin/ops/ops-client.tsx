@@ -68,7 +68,7 @@ export function AdminOpsClient({
   const { reason, setReason } = useReason();
   const [tab, setTab] = useState<QueueTab>("restaurants");
   const [restaurantFilter, setRestaurantFilter] = useState("ALL");
-  const [statusFilter, setStatusFilter] = useState("OPEN");
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const [dateFilter, setDateFilter] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
@@ -80,6 +80,19 @@ export function AdminOpsClient({
   const canOps = actorRoleCodes.some((role) => ["SUPER_ADMIN", "OPS_ADMIN"].includes(role));
   const canSupport = actorRoleCodes.some((role) => ["SUPER_ADMIN", "OPS_ADMIN", "SUPPORT_ADMIN"].includes(role));
   const canRefund = actorRoleCodes.some((role) => ["SUPER_ADMIN", "OPS_ADMIN", "SUPPORT_ADMIN", "FINANCE_ADMIN"].includes(role));
+  const reasonReady = reason.trim().length >= 12;
+  const canRunOpsAction = canOps && reasonReady;
+  const canRunSupportAction = canSupport && reasonReady;
+  const canRunRefundAction = canRefund && reasonReady;
+
+  const statusOptions = useMemo(() => {
+    if (tab === "restaurants") return ["ALL", "ACTIVE", "PAUSED", "SUSPENDED", "PENDING", "ONBOARDING"];
+    if (tab === "drops") return ["ALL", "ACTIVE", "SCHEDULED", "PAUSED", "SOLD_OUT", "PICKUP_CLOSED"];
+    if (tab === "refunds") return ["OPEN", "ALL", "REQUESTED", "OPS_REVIEW", "FINANCE_REVIEW", "APPROVED_MANUAL", "TRACKED_EXTERNALLY", "REJECTED", "CANCELLED"];
+    if (tab === "config") return ["ALL", "ENABLED", "DISABLED"];
+    if (tab === "audit") return ["ALL"];
+    return ["OPEN", "ALL", "TRIAGED", "INVESTIGATING", "IN_PROGRESS", "MERCHANT_ACTION_REQUIRED", "PENDING_MERCHANT", "RESOLVED", "CLOSED", "REJECTED"];
+  }, [tab]);
 
   const restaurantMatches = useCallback((restaurantPk: string | null | undefined) => {
     return restaurantFilter === "ALL" || restaurantPk === restaurantFilter;
@@ -92,12 +105,12 @@ export function AdminOpsClient({
   const visible = useMemo(() => {
     const openStatuses = new Set(["OPEN", "IN_PROGRESS", "TRIAGED", "INVESTIGATING", "MERCHANT_ACTION_REQUIRED", "REQUESTED", "OPS_REVIEW", "FINANCE_REVIEW"]);
     return {
-      restaurants: restaurants.filter((row) => restaurantMatches(row.restaurantPk)),
+      restaurants: restaurants.filter((row) => restaurantMatches(row.restaurantPk) && (statusFilter === "ALL" || statusFilter === "OPEN" || row.statusCode === statusFilter)),
       drops: drops.filter((row) => restaurantMatches(row.restaurantPk) && (statusFilter === "ALL" || row.statusCode === statusFilter || (statusFilter === "OPEN" && row.statusCode !== "PICKUP_CLOSED")) && dateMatches(row.updatedAt)),
       incidents: incidents.filter((row) => restaurantMatches(row.restaurantPk) && (statusFilter === "ALL" || row.statusCode === statusFilter || (statusFilter === "OPEN" && openStatuses.has(row.statusCode))) && dateMatches(row.updatedAt)),
       support: supportTickets.filter((row) => restaurantMatches(row.restaurantPk) && (statusFilter === "ALL" || row.statusCode === statusFilter || (statusFilter === "OPEN" && openStatuses.has(row.statusCode))) && dateMatches(row.updatedAt)),
       refunds: refunds.filter((row) => restaurantMatches(row.restaurantPk) && (statusFilter === "ALL" || row.trackingStatusCode === statusFilter || (statusFilter === "OPEN" && openStatuses.has(row.trackingStatusCode))) && dateMatches(row.updatedAt)),
-      config: configFlags.filter((row) => restaurantMatches(row.scopeEntityPk) && dateMatches(row.updatedAt)),
+      config: configFlags.filter((row) => restaurantMatches(row.scopeEntityPk) && (statusFilter === "ALL" || (statusFilter === "ENABLED" && row.isEnabled) || (statusFilter === "DISABLED" && !row.isEnabled)) && dateMatches(row.updatedAt)),
       audit: auditRows.filter((row) => dateMatches(row.createdAt)),
     };
   }, [auditRows, configFlags, dateMatches, drops, incidents, refunds, restaurantMatches, restaurants, statusFilter, supportTickets]);
@@ -236,56 +249,85 @@ export function AdminOpsClient({
         <SummaryChip label="Paused/suspended" value={counts.pausedRestaurants} />
       </section>
 
-      <section className="grid gap-3 rounded-lg border border-black/10 bg-white p-4 lg:grid-cols-[1.2fr_1fr_1fr_1.4fr]">
-        <label className="grid gap-1 text-sm font-semibold">
-          Restaurant
-          <select className="min-h-11 rounded-md border border-black/15 px-3" value={restaurantFilter} onChange={(event) => setRestaurantFilter(event.target.value)}>
-            <option value="ALL">All restaurants</option>
-            {restaurants.map((restaurant) => (
-              <option key={restaurant.restaurantPk} value={restaurant.restaurantPk}>{restaurant.restaurantName}</option>
-            ))}
-          </select>
-        </label>
-        <label className="grid gap-1 text-sm font-semibold">
-          Status
-          <select className="min-h-11 rounded-md border border-black/15 px-3" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
-            {["OPEN", "ALL", "ACTIVE", "PAUSED", "SUSPENDED", "TRIAGED", "FINANCE_REVIEW", "RESOLVED", "CLOSED", "REJECTED"].map((status) => (
-              <option key={status} value={status}>{adminOpsStatusLabel(status)}</option>
-            ))}
-          </select>
-        </label>
-        <label className="grid gap-1 text-sm font-semibold">
-          Since
-          <input className="min-h-11 rounded-md border border-black/15 px-3" type="date" value={dateFilter} onChange={(event) => setDateFilter(event.target.value)} />
-        </label>
-        <label className="grid gap-1 text-sm font-semibold">
-          Required reason
-          <input className="min-h-11 rounded-md border border-black/15 px-3" value={reason} onChange={(event) => setReason(event.target.value)} />
-        </label>
-      </section>
-
-      <section className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-2">
-          {(["restaurants", "incidents", "support", "refunds", "drops", "config", "audit"] as const).map((nextTab) => (
-            <button
-              key={nextTab}
-              type="button"
-              className={`min-h-10 rounded-lg border px-3 text-sm font-semibold ${tab === nextTab ? "border-[#1A5C38] bg-[#F2F8EF] text-[#1A5C38]" : "border-black/10 bg-white text-black/65"}`}
-              onClick={() => setTab(nextTab)}
-            >
-              {nextTab}
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <section className="grid gap-4 rounded-lg border border-black/10 bg-white p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-bold">Queue filters</h2>
+              <p className="mt-1 text-xs text-black/55">Restaurants remain visible as operational targets; date filters activity rows.</p>
+            </div>
+            <button type="button" className="text-sm font-semibold text-[#1A5C38]" onClick={() => { setRestaurantFilter("ALL"); setStatusFilter(tab === "restaurants" || tab === "drops" || tab === "config" || tab === "audit" ? "ALL" : "OPEN"); setDateFilter(""); }}>
+              Reset
             </button>
-          ))}
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button type="button" className="min-h-10 bg-white text-[#1A5C38] ring-1 ring-[#1A5C38]/25 hover:bg-[#F2F8EF]" onClick={copyRows}>
-            <Copy className="mr-2 h-4 w-4" aria-hidden="true" />
-            Copy safe rows
-          </Button>
-          <Button type="button" className="min-h-10 bg-white text-[#1A5C38] ring-1 ring-[#1A5C38]/25 hover:bg-[#F2F8EF]" onClick={downloadRows}>
-            <Download className="mr-2 h-4 w-4" aria-hidden="true" />
-            Download CSV
-          </Button>
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            <label className="grid gap-1 text-sm font-semibold">
+              Restaurant
+              <select className="min-h-11 rounded-md border border-black/15 px-3" value={restaurantFilter} onChange={(event) => setRestaurantFilter(event.target.value)}>
+                <option value="ALL">All restaurants</option>
+                {restaurants.map((restaurant) => (
+                  <option key={restaurant.restaurantPk} value={restaurant.restaurantPk}>{restaurant.restaurantName}</option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm font-semibold">
+              Queue status
+              <select className="min-h-11 rounded-md border border-black/15 px-3" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+                {statusOptions.map((status) => (
+                  <option key={status} value={status}>{adminOpsStatusLabel(status)}</option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm font-semibold">
+              Activity since
+              <input className="min-h-11 rounded-md border border-black/15 px-3" type="date" value={dateFilter} onChange={(event) => setDateFilter(event.target.value)} />
+            </label>
+          </div>
+        </section>
+
+        <aside className="grid gap-3 rounded-lg border border-[#1A5C38]/20 bg-[#F7FBF5] p-4 lg:sticky lg:top-4 lg:self-start">
+          <div>
+            <h2 className="font-bold text-[#1A5C38]">Action reason</h2>
+            <p className="mt-1 text-xs text-black/60">Applied only to pause, resume, triage, refund, and config changes.</p>
+          </div>
+          <textarea
+            className="min-h-28 resize-y rounded-md border border-[#1A5C38]/20 bg-white px-3 py-2 text-sm"
+            value={reason}
+            onChange={(event) => setReason(event.target.value)}
+          />
+          <p className={`text-xs font-semibold ${reasonReady ? "text-[#1A5C38]" : "text-[#B42318]"}`}>
+            {reasonReady ? "Reason ready for audited actions." : "Enter at least 12 characters before changing state."}
+          </p>
+        </aside>
+      </div>
+
+      <section className="grid gap-3 rounded-lg border border-black/10 bg-white p-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-2">
+            {(["restaurants", "drops", "incidents", "support", "refunds", "config", "audit"] as const).map((nextTab) => (
+              <button
+                key={nextTab}
+                type="button"
+                className={`min-h-10 rounded-lg border px-3 text-sm font-semibold ${tab === nextTab ? "border-[#1A5C38] bg-[#F2F8EF] text-[#1A5C38]" : "border-black/10 bg-white text-black/65"}`}
+                onClick={() => {
+                  setTab(nextTab);
+                  setStatusFilter(nextTab === "incidents" || nextTab === "support" || nextTab === "refunds" ? "OPEN" : "ALL");
+                }}
+              >
+                {nextTab}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" className="min-h-10 bg-white text-[#1A5C38] ring-1 ring-[#1A5C38]/25 hover:bg-[#F2F8EF]" onClick={copyRows}>
+              <Copy className="mr-2 h-4 w-4" aria-hidden="true" />
+              Copy safe rows
+            </Button>
+            <Button type="button" className="min-h-10 bg-white text-[#1A5C38] ring-1 ring-[#1A5C38]/25 hover:bg-[#F2F8EF]" onClick={downloadRows}>
+              <Download className="mr-2 h-4 w-4" aria-hidden="true" />
+              Download CSV
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -293,7 +335,7 @@ export function AdminOpsClient({
 
       {tab === "restaurants" ? (
         <section className="grid gap-3">
-          {visible.restaurants.length === 0 ? <Empty text="No restaurant rows match these filters. Pauses, support tickets, refund tracking, or audit events will appear here after ops activity." /> : null}
+          {visible.restaurants.length === 0 ? <Empty text={restaurants.length === 0 ? "No restaurant records were returned for ops. Apply the Slice 8B service-role view repair migration, then refresh this page." : "No restaurants match the selected restaurant/status filters."} /> : null}
           {visible.restaurants.map((restaurant) => (
             <article key={restaurant.restaurantPk} className="rounded-lg border border-black/10 bg-white p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -312,15 +354,15 @@ export function AdminOpsClient({
                 <Stat label="Paused drops" value={restaurant.pausedDropCount} />
               </dl>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Button type="button" disabled={!canOps || busy !== null || restaurant.statusCode === "PAUSED"} className="min-h-10 bg-[#7A5A00] text-xs hover:bg-[#604600]" onClick={() => runAction(`restaurant:${restaurant.restaurantPk}:PAUSED`, `/api/admin/ops/restaurants/${restaurant.restaurantPk}/status`, { nextStatusCode: "PAUSED", reasonText: reason }, "Could not pause restaurant.")}>
+                <Button type="button" disabled={!canRunOpsAction || busy !== null || restaurant.statusCode === "PAUSED"} className="min-h-10 bg-[#7A5A00] text-xs hover:bg-[#604600]" onClick={() => runAction(`restaurant:${restaurant.restaurantPk}:PAUSED`, `/api/admin/ops/restaurants/${restaurant.restaurantPk}/status`, { nextStatusCode: "PAUSED", reasonText: reason }, "Could not pause restaurant.")}>
                   <Pause className="mr-2 h-4 w-4" aria-hidden="true" />
                   Pause
                 </Button>
-                <Button type="button" disabled={!canOps || busy !== null || restaurant.statusCode === "SUSPENDED"} className="min-h-10 bg-red-700 text-xs hover:bg-red-800" onClick={() => runAction(`restaurant:${restaurant.restaurantPk}:SUSPENDED`, `/api/admin/ops/restaurants/${restaurant.restaurantPk}/status`, { nextStatusCode: "SUSPENDED", reasonText: reason }, "Could not suspend restaurant.")}>
+                <Button type="button" disabled={!canRunOpsAction || busy !== null || restaurant.statusCode === "SUSPENDED"} className="min-h-10 bg-red-700 text-xs hover:bg-red-800" onClick={() => runAction(`restaurant:${restaurant.restaurantPk}:SUSPENDED`, `/api/admin/ops/restaurants/${restaurant.restaurantPk}/status`, { nextStatusCode: "SUSPENDED", reasonText: reason }, "Could not suspend restaurant.")}>
                   <ShieldAlert className="mr-2 h-4 w-4" aria-hidden="true" />
                   Suspend
                 </Button>
-                <Button type="button" disabled={!canOps || busy !== null || restaurant.statusCode === "ACTIVE"} className="min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" onClick={() => runAction(`restaurant:${restaurant.restaurantPk}:ACTIVE`, `/api/admin/ops/restaurants/${restaurant.restaurantPk}/status`, { nextStatusCode: "ACTIVE", reasonText: reason }, "Could not reactivate restaurant.")}>
+                <Button type="button" disabled={!canRunOpsAction || busy !== null || restaurant.statusCode === "ACTIVE"} className="min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" onClick={() => runAction(`restaurant:${restaurant.restaurantPk}:ACTIVE`, `/api/admin/ops/restaurants/${restaurant.restaurantPk}/status`, { nextStatusCode: "ACTIVE", reasonText: reason }, "Could not reactivate restaurant.")}>
                   <Play className="mr-2 h-4 w-4" aria-hidden="true" />
                   Reactivate
                 </Button>
@@ -344,7 +386,7 @@ export function AdminOpsClient({
               </dl>
               <div className="mt-3 flex flex-wrap gap-2">
                 {(["PAUSED", "ACTIVE", "SCHEDULED"] as const).map((status) => (
-                  <Button key={status} type="button" className="min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" disabled={!canOps || busy !== null || drop.statusCode === status} onClick={() => runAction(`drop:${drop.dropPk}:${status}`, `/api/admin/ops/drops/${drop.dropPk}/status`, { nextStatusCode: status, reasonText: reason }, "Could not update drop status.")}>
+                  <Button key={status} type="button" className="min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" disabled={!canRunOpsAction || busy !== null || drop.statusCode === status} onClick={() => runAction(`drop:${drop.dropPk}:${status}`, `/api/admin/ops/drops/${drop.dropPk}/status`, { nextStatusCode: status, reasonText: reason }, "Could not update drop status.")}>
                     {status === "PAUSED" ? <Pause className="mr-2 h-4 w-4" aria-hidden="true" /> : <Play className="mr-2 h-4 w-4" aria-hidden="true" />}
                     {adminOpsStatusLabel(status)}
                   </Button>
@@ -363,7 +405,7 @@ export function AdminOpsClient({
               <p className="mt-2 text-sm text-black/65">{incident.descriptionText ?? "No description provided."}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {["TRIAGED", "INVESTIGATING", "MERCHANT_ACTION_REQUIRED", "RESOLVED", "CLOSED"].map((status) => (
-                  <Button key={status} type="button" className="min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" disabled={!canSupport || busy !== null || incident.statusCode === status} onClick={() => runAction(`incident:${incident.incidentPk}:${status}`, `/api/admin/ops/incidents/${incident.incidentPk}/triage`, { statusCode: status, reasonText: reason, noteText: reason }, "Could not triage incident.")}>
+                  <Button key={status} type="button" className="min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" disabled={!canRunSupportAction || busy !== null || incident.statusCode === status} onClick={() => runAction(`incident:${incident.incidentPk}:${status}`, `/api/admin/ops/incidents/${incident.incidentPk}/triage`, { statusCode: status, reasonText: reason, noteText: reason }, "Could not triage incident.")}>
                     <RefreshCcw className="mr-2 h-4 w-4" aria-hidden="true" />
                     {adminOpsStatusLabel(status)}
                   </Button>
@@ -383,7 +425,7 @@ export function AdminOpsClient({
                 {restaurants.map((restaurant) => <option key={restaurant.restaurantPk} value={restaurant.restaurantPk}>{restaurant.restaurantName}</option>)}
               </select>
               <input className="min-h-11 rounded-md border border-black/15 px-3" value={ticketSubject} onChange={(event) => setTicketSubject(event.target.value)} />
-              <Button type="button" disabled={!canSupport || busy !== null || ticketSubject.trim().length < 4} onClick={() => runAction("support:create", "/api/admin/ops/support-tickets", { restaurantPk: ticketRestaurantPk, subjectText: ticketSubject, descriptionText: "Created from admin ops queue.", typeCode: "GENERAL", priorityCode: "NORMAL", statusCode: "OPEN", reasonText: reason }, "Could not create support ticket.")}>
+              <Button type="button" disabled={!canRunSupportAction || busy !== null || ticketSubject.trim().length < 4} onClick={() => runAction("support:create", "/api/admin/ops/support-tickets", { restaurantPk: ticketRestaurantPk, subjectText: ticketSubject, descriptionText: "Created from admin ops queue.", typeCode: "GENERAL", priorityCode: "NORMAL", statusCode: "OPEN", reasonText: reason }, "Could not create support ticket.")}>
                 <TicketCheck className="mr-2 h-4 w-4" aria-hidden="true" />
                 Create
               </Button>
@@ -396,7 +438,7 @@ export function AdminOpsClient({
               <p className="mt-2 text-xs font-semibold text-[#7A5A00]">{slaFreshnessLabel(ticket.slaDueAt)}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {["IN_PROGRESS", "PENDING_MERCHANT", "RESOLVED", "CLOSED", "REJECTED"].map((status) => (
-                  <Button key={status} type="button" className="min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" disabled={!canSupport || busy !== null || ticket.statusCode === status} onClick={() => runAction(`ticket:${ticket.supportTicketPk}:${status}`, "/api/admin/ops/support-tickets", { supportTicketPk: ticket.supportTicketPk, restaurantPk: ticket.restaurantPk, orderPk: ticket.orderPk, incidentPk: ticket.incidentPk, refundPk: ticket.refundPk, subjectText: ticket.subjectText, descriptionText: ticket.descriptionText ?? undefined, typeCode: ticket.typeCode, priorityCode: ticket.priorityCode, statusCode: status, noteText: reason, reasonText: reason }, "Could not update support ticket.")}>
+                  <Button key={status} type="button" className="min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" disabled={!canRunSupportAction || busy !== null || ticket.statusCode === status} onClick={() => runAction(`ticket:${ticket.supportTicketPk}:${status}`, "/api/admin/ops/support-tickets", { supportTicketPk: ticket.supportTicketPk, restaurantPk: ticket.restaurantPk, orderPk: ticket.orderPk, incidentPk: ticket.incidentPk, refundPk: ticket.refundPk, subjectText: ticket.subjectText, descriptionText: ticket.descriptionText ?? undefined, typeCode: ticket.typeCode, priorityCode: ticket.priorityCode, statusCode: status, noteText: reason, reasonText: reason }, "Could not update support ticket.")}>
                     {adminOpsStatusLabel(status)}
                   </Button>
                 ))}
@@ -414,7 +456,7 @@ export function AdminOpsClient({
             <div className="mt-3 grid gap-2 md:grid-cols-[1fr_150px_auto]">
               <input className="min-h-11 rounded-md border border-black/15 px-3" value={refundOrderPk} onChange={(event) => setRefundOrderPk(event.target.value)} placeholder="Order UUID" />
               <input className="min-h-11 rounded-md border border-black/15 px-3" inputMode="numeric" value={refundAmount} onChange={(event) => setRefundAmount(event.target.value.replace(/\D/g, ""))} placeholder="Amount paise" />
-              <Button type="button" disabled={!canRefund || busy !== null || refundOrderPk.length < 20 || !refundAmount} onClick={() => runAction("refund:create", "/api/admin/ops/refunds", { orderPk: refundOrderPk, amountPaise: Number(refundAmount), trackingStatusCode: "FINANCE_REVIEW", noteText: "Manual refund support record. Provider refund API was not called.", reasonText: reason }, "Could not save refund support tracking.")}>
+              <Button type="button" disabled={!canRunRefundAction || busy !== null || refundOrderPk.length < 20 || !refundAmount} onClick={() => runAction("refund:create", "/api/admin/ops/refunds", { orderPk: refundOrderPk, amountPaise: Number(refundAmount), trackingStatusCode: "FINANCE_REVIEW", noteText: "Manual refund support record. Provider refund API was not called.", reasonText: reason }, "Could not save refund support tracking.")}>
                 Save tracking
               </Button>
             </div>
@@ -425,7 +467,7 @@ export function AdminOpsClient({
               <p className="mt-2 text-sm text-black/65">Provider refund API is not configured here. Payment capture and settlement state remain unchanged.</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {["OPS_REVIEW", "FINANCE_REVIEW", "APPROVED_MANUAL", "TRACKED_EXTERNALLY", "REJECTED", "CANCELLED"].map((status) => (
-                  <Button key={status} type="button" className="min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" disabled={!canRefund || busy !== null || refund.trackingStatusCode === status} onClick={() => runAction(`refund:${refund.refundPk}:${status}`, "/api/admin/ops/refunds", { refundPk: refund.refundPk, orderPk: refund.orderPk, supportTicketPk: refund.supportTicketPk, incidentPk: refund.incidentPk, amountPaise: refund.amountPaise, refundReasonCode: refund.refundReasonCode, trackingStatusCode: status, noteText: `Marked ${status} from admin ops. No provider refund called.`, reasonText: reason }, "Could not update refund tracking.")}>
+                  <Button key={status} type="button" className="min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" disabled={!canRunRefundAction || busy !== null || refund.trackingStatusCode === status} onClick={() => runAction(`refund:${refund.refundPk}:${status}`, "/api/admin/ops/refunds", { refundPk: refund.refundPk, orderPk: refund.orderPk, supportTicketPk: refund.supportTicketPk, incidentPk: refund.incidentPk, amountPaise: refund.amountPaise, refundReasonCode: refund.refundReasonCode, trackingStatusCode: status, noteText: `Marked ${status} from admin ops. No provider refund called.`, reasonText: reason }, "Could not update refund tracking.")}>
                     {adminOpsStatusLabel(status)}
                   </Button>
                 ))}
@@ -445,14 +487,14 @@ export function AdminOpsClient({
               <div className="mt-3 flex flex-wrap gap-2">
                 {flag.flagCode === "MAX_BAGS_PER_DROP" ? (
                   [10, 25, 50].map((value) => (
-                    <Button key={value} type="button" disabled={!canOps || busy !== null || flag.numericValue === value} className="min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" onClick={() => runAction(`config:${flag.configPk}:${value}`, "/api/admin/ops/config-flags", { flagCode: flag.flagCode, scopeCode: flag.scopeCode, scopeEntityPk: flag.scopeEntityPk, numericValue: value, reasonText: reason }, "Could not update config flag.")}>
+                    <Button key={value} type="button" disabled={!canRunOpsAction || busy !== null || flag.numericValue === value} className="min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" onClick={() => runAction(`config:${flag.configPk}:${value}`, "/api/admin/ops/config-flags", { flagCode: flag.flagCode, scopeCode: flag.scopeCode, scopeEntityPk: flag.scopeEntityPk, numericValue: value, reasonText: reason }, "Could not update config flag.")}>
                       <Flag className="mr-2 h-4 w-4" aria-hidden="true" />
                       {value} bags
                     </Button>
                   ))
                 ) : (
                   [true, false].map((enabled) => (
-                    <Button key={String(enabled)} type="button" disabled={!canOps || busy !== null || flag.isEnabled === enabled} className={enabled ? "min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" : "min-h-10 bg-red-700 text-xs hover:bg-red-800"} onClick={() => runAction(`config:${flag.configPk}:${enabled}`, "/api/admin/ops/config-flags", { flagCode: flag.flagCode, scopeCode: flag.scopeCode, scopeEntityPk: flag.scopeEntityPk, isEnabled: enabled, reasonText: reason }, "Could not update config flag.")}>
+                    <Button key={String(enabled)} type="button" disabled={!canRunOpsAction || busy !== null || flag.isEnabled === enabled} className={enabled ? "min-h-10 bg-[#1A5C38] text-xs hover:bg-[#154b2e]" : "min-h-10 bg-red-700 text-xs hover:bg-red-800"} onClick={() => runAction(`config:${flag.configPk}:${enabled}`, "/api/admin/ops/config-flags", { flagCode: flag.flagCode, scopeCode: flag.scopeCode, scopeEntityPk: flag.scopeEntityPk, isEnabled: enabled, reasonText: reason }, "Could not update config flag.")}>
                       {enabled ? "Enable" : "Disable"}
                     </Button>
                   ))
