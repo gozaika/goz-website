@@ -1,6 +1,374 @@
 You are Codex working in C:\venkat\limca\gozaika\sourcecode.
 
 MODE
+- This is an implementation task, not a proposal task.
+- First audit, then prioritize, then make code changes unless blocked.
+- Preserve unrelated user changes.
+- Do not revert dirty files you did not create.
+- Run verification before final response.
+- Exclude the marketing website from UX implementation scope. Do not redesign apps/website, except avoid breaking shared packages it consumes.
+
+PROJECT CONTEXT
+This project is created in CoWork. Use the project workspace as necessary for context.
+
+My engineering team implemented "Slice 2.1: Premium UX Transformation" as defined in:
+C:\venkat\limca\gozaika\sourcecode\project docs\goZaika_Technology_Specification_v3.docx
+
+Implementation notes from prior phases:
+C:\venkat\limca\gozaika\sourcecode\docs\implementation-plan.md
+
+Business/brand context:
+C:\venkat\limca\gozaika\sourcecode\project docs\claude_goZaika_Master_Business_Document_v3.docx
+
+Overall Slice 2.1 objective:
+Elevate every existing screen to production quality.
+
+Current problem:
+UX across all product surfaces is still poor. goZaika aspires to be a premium service in the same broad consumer food category as Zomato and Swiggy, and must feel high-quality, robust, fast, polished, and trustworthy on mobile and desktop. Current UI layout, component design, hierarchy, responsiveness, and polish are not acceptable.
+
+APPS IN SCOPE
+Audit and improve these 5 apps:
+1. apps/consumer-web
+   Deployed: https://customer.gozaika.in/
+   Login for testing: 918106230860 / 123456
+
+2. apps/restaurant-mgmt-web
+   Deployed: https://restaurant.gozaika.in/
+   Login for testing: 919000100001 / 123456
+
+3. apps/admin-web
+   Deployed: https://admin.gozaika.in/
+   Login for testing: admin.ops@gozaika.example / GozaikaDemo@123
+
+4. apps/consumer-mobile
+   Expo: https://expo.dev/accounts/orbitwell/projects/gozaika-consumer
+   id=3c14ae81-39e4-4c01-9214-7a15eb6f9a34
+   slug=gozaika-consumer
+   owner=orbitwell
+
+5. apps/restaurant-staff-mobile
+   Expo: https://expo.dev/accounts/orbitwell/projects/gozaika-staff
+   id=25d52d62-cc07-4e55-bba8-3c8e7c9a25e8
+   slug=gozaika-staff
+   owner=orbitwell
+
+OUT OF SCOPE
+- Exclude apps/website from UX implementation.
+- Do not redesign the business model.
+- Do not add live recurring billing, payouts, refunds, broad exports, destructive account operations, or new financial/provider side effects.
+- Do not expose private compliance docs, pickup secrets, internal notes, service-role keys, raw provider payloads, or broad PII.
+- Do not use brand-damaging language: leftover, stale, cheap, clearance, liquidation, food rescue.
+- Use premium language: BAM Bags, Limited Drops, Chef’s Selection, off-menu discovery, smarter access, pickup issue, ops review, partner action required.
+
+REQUIRED FIRST STEPS
+1. Run:
+   git status --short --branch
+
+2. Report dirty files before editing.
+
+3. Read:
+   - docs/implementation-plan.md
+   - project docs/goZaika_Technology_Specification_v3.docx
+   - project docs/claude_goZaika_Master_Business_Document_v3.docx
+   - package.json files for in-scope apps
+   - packages/ui/src
+   - packages/types/src
+   - packages/utils/src
+   - all routes/screens/components under:
+     apps/consumer-web
+     apps/restaurant-mgmt-web
+     apps/admin-web
+     apps/consumer-mobile
+     apps/restaurant-staff-mobile
+
+4. Run up-front:
+   npm.cmd run ci
+
+If CI fails, determine whether the failure is pre-existing or caused by current changes. Fix relevant failures before final verification.
+
+LOCAL ENVIRONMENT NOTES
+- Use remote Supabase. The connection/config values are in .env.local.
+- Local Supabase may lag remote; do not assume local DB is current.
+- Start local web apps with .env.local loaded.
+- Prefer commands like:
+  npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run dev -- --port 3000
+  npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/restaurant-mgmt-web run dev -- --port 3001
+  npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/admin-web run dev -- --port 3002
+- Avoid PowerShell Start-Process for dev servers on Windows because duplicate Path/PATH env keys can break child processes.
+- If using a Node launcher for smoke tests, spawn through cmd.exe /d /c with a sanitized env containing only one Path key, and load .env.local.
+- Expected protected route behavior when unauthenticated:
+  - restaurant portal routes redirect to /auth/login
+  - admin routes redirect to /auth/login
+- Stop local dev servers on ports 3000, 3001, and 3002 after testing.
+- Verify no LISTENING entries remain on 3000/3001/3002. TIME_WAIT entries are acceptable.
+
+PAYMENT / NOTIFICATION TESTING NOTES
+- Razorpay is not configured for normal local checkout.
+- If testing a hold payment flow, run:
+  powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File C:\venkat\limca\gozaika\infra\rpay.ps1 -HoldPk <hold-pk>
+- If that hold is already CONVERTED, use the converted order id from the debug response as the smoke-test anchor.
+- WhatsApp failures are expected because the customer/restaurant phone numbers are not added to the Meta test account.
+- Treat provider auth/config failures as expected only if outbox rows, attempts, fallback copy, and email path are visible.
+
+AUDIT REQUIREMENTS
+Produce a UX audit report before implementing broad fixes.
+
+Create or update:
+docs/product/ux-audit-production-polish.md
+
+The report must cover every in-scope app and every visible route/screen/component. For each area, include:
+- Route/screen name
+- Current purpose
+- UX quality rating: Critical / High / Medium / Low
+- Issues in layout consistency
+- Issues in accessibility
+- Issues in spacing/density
+- Issues in mobile responsiveness
+- Issues in visual hierarchy
+- Issues in copy/tone/brand safety
+- Interaction problems
+- Empty/loading/error state problems
+- Suggested fix
+- Whether fixed in this pass or deferred
+
+Do not stop after writing the audit. Review and prioritize the findings, then implement improvements.
+
+PRIORITIZATION RULES
+Prioritize fixes in this order:
+1. Broken mobile layouts, horizontal overflow, unusable navigation, blocked primary flows.
+2. Accessibility problems affecting forms, buttons, focus, labels, touch targets, contrast, semantic structure.
+3. Premium visual hierarchy: cards, spacing, typography scale, CTA clarity, dense-but-readable operational surfaces.
+4. Consumer discovery and restaurant profile polish.
+5. Restaurant portal dashboard/drop/order operational clarity.
+6. Admin search/detail/support workflow clarity.
+7. Mobile app screen consistency and tap ergonomics.
+8. Nice-to-have animations or decorative polish.
+
+DESIGN QUALITY BAR
+The result should feel premium, modern, robust, and launch-ready.
+
+Consumer surfaces:
+- Warm, discovery-led, food-forward.
+- Clear search/filter/card/detail flows.
+- Strong mobile-first layouts.
+- No dead ends.
+- Clear claim/payment/pickup affordances.
+- No brand-damaging discount language.
+
+Restaurant/admin surfaces:
+- Calm, operational, dense enough to scan.
+- Clear sidebar/nav state.
+- Fast workflows.
+- Strong tables/lists/cards.
+- Clear status badges.
+- Action buttons should be obvious, safe, and role-appropriate.
+
+Mobile apps:
+- Thumb-friendly.
+- Clear top-level navigation.
+- 44px minimum tap targets.
+- No cramped forms.
+- Avoid tiny gray text.
+- Use consistent spacing, clear headings, useful empty states.
+
+DESIGN TOKENS / BRAND
+Align with goZaika brand tokens where appropriate:
+- Saffron Flame: #FF6B35
+- Forest Deep: #1A5C38
+- Heritage Gold: #D4A017
+- Warm Cream: #FFF8F0
+- Charcoal: #2D2D2D
+
+Avoid one-note palettes and overuse of gradients.
+Do not add decorative orbs/blob backgrounds.
+Use lucide icons where already used in web apps.
+Use existing package/ui components where possible.
+Add shared UI components only when they reduce real duplication and match existing patterns.
+
+ACCESSIBILITY REQUIREMENTS
+- Buttons and links must have accessible names.
+- Inputs must have labels.
+- Color contrast must be acceptable.
+- Focus states must be visible.
+- Touch targets should be at least 44px.
+- Do not rely on color alone for status.
+- Use semantic headings in order.
+- Avoid horizontal overflow at 390px mobile and 1440px desktop.
+- Modals/drawers must be keyboard-aware where practical.
+
+IMPLEMENTATION REQUIREMENTS
+- Inspect existing patterns before editing.
+- Keep changes scoped.
+- Prefer CSS/layout/component fixes over new heavy dependencies.
+- Do not introduce heavy frontend libraries unless clearly justified.
+- Do not mutate backend/payment/settlement/provider behavior.
+- Preserve claim/payment/pickup/admin/finance/ROI behavior.
+- No service-role usage in client code.
+- Do not expose PII beyond existing authorized selected-record surfaces.
+- If adding data loading or API routes, follow existing auth/RLS/service-role patterns.
+
+SUGGESTED AGENT PARTITIONING
+If several agents are working in parallel, each agent should own one surface to avoid conflicts:
+- Agent A: consumer-web routes and shared consumer UI.
+- Agent B: restaurant-mgmt-web portal UX.
+- Agent C: admin-web UX.
+- Agent D: consumer-mobile.
+- Agent E: restaurant-staff-mobile.
+- One integration agent: shared packages, consistency review, final CI/smoke.
+
+Each agent must:
+- State owned files before editing.
+- Avoid touching files owned by another active agent unless coordinating.
+- Update the shared audit doc only in its assigned section.
+- Preserve unrelated dirty files.
+
+WEB ROUTES TO AUDIT AT MINIMUM
+consumer-web:
+- /
+- /drops
+- /drops/[id]
+- /restaurants
+- /restaurants/[slug]
+- /account
+- /auth/login
+- /swaad-club
+- /checkout/[orderId]
+- /orders/[orderId]
+- /onboarding/consent
+- /cities/[city]
+
+restaurant-mgmt-web:
+- /auth/login
+- /portal/dashboard
+- /portal/drops
+- /portal/drops/new
+- /portal/templates
+- /portal/orders
+- /portal/finance
+- /portal/reports
+- /portal/profile
+- /portal/onboarding
+- /portal/compliance
+
+admin-web:
+- /auth/login
+- /admin
+- /admin/users
+- /admin/ops
+- /admin/drops
+- /admin/finance
+- /admin/notifications
+- /admin/reports
+- /admin/restaurants/onboarding
+- /admin/restaurants/[id]/review
+
+MOBILE SCREENS
+Audit all React Native screens/components in:
+- apps/consumer-mobile
+- apps/restaurant-staff-mobile
+
+If Expo device/browser testing is not available, still inspect and improve source-level UX, then run typecheck/lint/build/export commands available in package scripts.
+
+REQUIRED VISUAL TESTING
+For touched web apps:
+- Test desktop around 1440px wide.
+- Test mobile around 390px wide.
+- Record:
+  document.documentElement.scrollWidth
+  document.documentElement.clientWidth
+- Horizontal overflow is a failure unless intentionally contained in a scrollable table/list.
+- Capture screenshots for the touched pages.
+- For protected admin/restaurant routes, authenticate against deployed apps if possible. If local auth is blocked by environment, document auth redirects as expected and use deployed app screenshots when reachable.
+
+VERIFICATION COMMANDS
+Run relevant focused checks during development, then full CI at end.
+
+Focused:
+npm.cmd --workspace @gozaika/types run typecheck
+npm.cmd --workspace @gozaika/consumer-web run typecheck
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
+npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-mobile run typecheck
+npm.cmd --workspace @gozaika/restaurant-staff-mobile run typecheck
+
+npm.cmd --workspace @gozaika/consumer-web run lint
+npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
+npm.cmd --workspace @gozaika/admin-web run lint
+npm.cmd --workspace @gozaika/consumer-mobile run lint
+npm.cmd --workspace @gozaika/restaurant-staff-mobile run lint
+
+Builds:
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/admin-web run build
+npm.cmd --workspace @gozaika/consumer-mobile run build
+npm.cmd --workspace @gozaika/restaurant-staff-mobile run build
+
+Final:
+npm.cmd run ci
+
+DOCUMENTATION REQUIREMENTS
+Update:
+- docs/product/ux-audit-production-polish.md
+- docs/implementation-plan.md
+
+If operational testing/runbook behavior changes, update the relevant runbook:
+- docs/runbooks/premium-ux-transformation.md
+- docs/runbooks/admin-ops-hardening.md
+- docs/runbooks/payments.md only if payment-adjacent UI/testing changed
+- docs/runbooks/notifications.md only if notification UX changed
+
+FINAL RESPONSE REQUIREMENTS
+Final response must include:
+- Summary of audited scope.
+- Most important UX fixes implemented.
+- Files changed by category.
+- Any deferred UX issues with reason.
+- Verification commands run and results.
+- Screenshot/overflow summary.
+- Whether local dev servers were stopped.
+- Whether deployed app smoke was completed or blocked.
+- Migration status. If no migration, state "No migration required."
+
+
+
+===================
+Context:
+Work on project C:\venkat\limca\gozaika\sourcecode. This project is created in CoWork. Use that project as necessary for context.
+
+My engineering team implemented "Slice 2.1: Premium UX Transformation" as defined in "C:\venkat\limca\gozaika\sourcecode\project docs\goZaika_Technology_Specification_v3.docx". Implementation notes from all prior phases is C:\venkat\limca\gozaika\sourcecode\docs\implementation-plan.md . 
+
+Overall objective of Slice 2.1 is to Elevate every existing screen to production quality. However, UX across surfaces of all apps is poor. goZaika aspires to be a premium service that is best in class. Current UX and overall UI layout, component design and polish is not even close. goZaika operates in same space as zomata and swiggy and must rival those apps on mobile and desktop in quality and robustness.
+
+Do a complete audit of every page across the 5 apps. Exclude website from this effort. Read all pages and components in this monorepo and produce a UX audit report covering layout consistency, accessibility, spacing, mobile responsiveness, and visual hierarchy. Review the findings and prioritize. Then work through improvements component by component or page by page
+
+
+- Apps at deployed apps at 
+  - customer: https://customer.gozaika.in/ v(login using following credentials for testing: 918106230860/123456)
+  - restaurant: https://restaurant.gozaika.in/  (login using following credentials for testing: 919000100001/123456)
+  - admin: https://admin.gozaika.in/   (login using following credentials for testing: admin.ops@gozaika.example/GozaikaDemo@123)
+  - restaurant-staff-mobile: https://expo.dev/accounts/orbitwell/projects/gozaika-staff   id=25d52d62-cc07-4e55-bba8-3c8e7c9a25e8  slug=gozaika-staff  owner=orbitwell
+  - consumer-mobile: https://expo.dev/accounts/orbitwell/projects/gozaika-consumer  id=3c14ae81-39e4-4c01-9214-7a15eb6f9a34  slug=gozaika-consumer   owner=orbitwell
+  - website: gozaika.in
+
+- Razorpay is not configured. run  `powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File C:\venkat\limca\gozaika\infra\rpay.ps1 -HoldPk <hold-pk>`
+- If that hold is already CONVERTED, use the converted order id from the debug response as the smoke-test anchor.
+- WhatsApp failures are expected as the customer/restaurant phone numbers are not added to the Meta test account. Treat provider auth/config failures as expected only if the outbox rows, attempts, fallback copy, and email path are visible.
+- Use supabase remote. connect string can be foung in .env.local.
+
+
+Read all pages and components in this monorepo and produce a UX audit report covering layout consistency, accessibility, spacing, mobile responsiveness, and visual hierarchy."
+Review the findings and prioritize
+Then work through improvements component by component or page by page
+
+You can use ports 3000, 3001, 3002 to deploy and test all three apps iterative during UX design ad development. Key point to consider for using local envrioment successfully are as follows
+xxxxx
+xxxxx
+
+=============
+You are Codex working in C:\venkat\limca\gozaika\sourcecode.
+
+MODE
 - This is an implementation task.
 - Make code changes unless blocked.
 - Do not stop at a proposal.
@@ -416,6 +784,7 @@ Create a goZaika_Technology_Specification_v3.docx. Construct a product roadmap/d
 This is a critical document. I need you to dedicate all resources necessary to be thorough and comprehensive in your analysis and research. No shortcuts.
 
 Note: Do not change code base. This is a planning exercise. your deliverable is  goZaika_Technology_Specification_v3.docx and other related documents.
+
 
 
 
