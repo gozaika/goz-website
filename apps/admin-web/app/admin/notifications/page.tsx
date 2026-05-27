@@ -1,6 +1,6 @@
-import { ShellHeader } from "@gozaika/ui";
 import type { AdminNotificationDeliverySummary } from "@gozaika/types";
 import Link from "next/link";
+import { AdminNavHeader } from "../admin-nav";
 import { redirect } from "next/navigation";
 import { getAdminActor } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
@@ -104,14 +104,8 @@ export default async function AdminNotificationsPage({
   const notifications = ((data ?? []) as AdminNotificationRow[]).map(mapNotification);
 
   return (
-    <main>
-      <ShellHeader>
-        <nav className="flex flex-wrap gap-2 text-sm font-semibold">
-          <Link className="text-[#1A5C38]" href="/admin/drops">Drops</Link>
-          <Link className="text-[#1A5C38]" href="/admin/notifications">Notifications</Link>
-          <Link className="text-[#1A5C38]" href="/admin/reports">Reports</Link>
-        </nav>
-      </ShellHeader>
+    <main id="main-content">
+      <AdminNavHeader />
       <section className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

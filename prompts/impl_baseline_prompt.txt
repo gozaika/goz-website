@@ -1,4 +1,4 @@
-You are Codex working in C:\venkat\limca\gozaika\sourcecode.
+You are working in C:\venkat\limca\gozaika\sourcecode.
 
 MODE
 - This is an implementation task, not a proposal task.
@@ -24,7 +24,7 @@ Overall Slice 2.1 objective:
 Elevate every existing screen to production quality.
 
 Current problem:
-UX across all product surfaces is still poor. goZaika aspires to be a premium service in the same broad consumer food category as Zomato and Swiggy, and must feel high-quality, robust, fast, polished, and trustworthy on mobile and desktop. Current UI layout, component design, hierarchy, responsiveness, and polish are not acceptable.
+UX across all product surfaces on both desktop and mobile is still very poor. goZaika aspires to be a premium service in the same broad consumer food category as Zomato and Swiggy, and must feel high-quality, robust, fast, polished, and trustworthy on mobile and desktop. Current UI layout, component design, hierarchy, responsiveness, and polish are not acceptable.
 
 APPS IN SCOPE
 Audit and improve these 5 apps:
@@ -45,12 +45,14 @@ Audit and improve these 5 apps:
    id=3c14ae81-39e4-4c01-9214-7a15eb6f9a34
    slug=gozaika-consumer
    owner=orbitwell
+   Login for testing: 918106230860 / 123456
 
 5. apps/restaurant-staff-mobile
    Expo: https://expo.dev/accounts/orbitwell/projects/gozaika-staff
    id=25d52d62-cc07-4e55-bba8-3c8e7c9a25e8
    slug=gozaika-staff
    owner=orbitwell
+   Login for testing: 919000100001 / 123456
 
 OUT OF SCOPE
 - Exclude apps/website from UX implementation.

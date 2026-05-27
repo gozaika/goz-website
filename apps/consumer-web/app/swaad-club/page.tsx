@@ -1,6 +1,7 @@
 import { ShellHeader } from "@gozaika/ui";
 import { Bell, Crown, ShieldCheck, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { ConsumerNavLinks } from "../consumer-nav";
 
 const benefits = [
   ["Priority signals", "Early notice when a Limited Drop is scheduled in your preferred neighborhoods."],
@@ -17,13 +18,9 @@ const faqs = [
 
 export default function SwaadClubPage() {
   return (
-    <main>
+    <main id="main-content">
       <ShellHeader>
-        <nav className="flex gap-4 text-sm font-semibold">
-          <Link href="/drops">Drops</Link>
-          <Link href="/restaurants">Restaurants</Link>
-          <Link href="/account">Account</Link>
-        </nav>
+        <ConsumerNavLinks />
       </ShellHeader>
       <section className="bg-[#FFF8F0]">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 lg:grid-cols-[1fr_380px]">

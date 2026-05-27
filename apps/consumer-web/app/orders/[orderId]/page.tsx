@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { issuePickupProof, loadConsumerNotifications, loadConsumerOrder } from "@/lib/orders";
 import { createClient } from "@/lib/supabase/server";
 import { PickupProofCard } from "./pickup-proof-card";
+import { ConsumerNavLinks } from "../../consumer-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -49,7 +50,9 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
 
   return (
     <main>
-      <ShellHeader />
+      <ShellHeader>
+        <ConsumerNavLinks />
+      </ShellHeader>
       <section className="mx-auto grid max-w-5xl gap-6 px-4 py-8 lg:grid-cols-[1fr_0.75fr]">
         <div className="grid gap-5">
           <div>

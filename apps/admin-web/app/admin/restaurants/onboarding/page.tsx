@@ -1,8 +1,8 @@
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
-import { ShellHeader } from "@gozaika/ui";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAdminActor } from "@/lib/admin-auth";
+import { AdminNavHeader } from "../../admin-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -20,17 +20,8 @@ export default async function AdminRestaurantOnboardingPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <main>
-      <ShellHeader>
-        <nav className="flex flex-wrap gap-2 text-sm font-semibold">
-          <Link className="text-[#1A5C38]" href="/admin/restaurants/onboarding">
-            Onboarding
-          </Link>
-          <Link className="text-[#1A5C38]" href="/admin/drops">
-            Drops
-          </Link>
-        </nav>
-      </ShellHeader>
+    <main id="main-content">
+      <AdminNavHeader />
       <section className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex items-end justify-between gap-4">
           <div>

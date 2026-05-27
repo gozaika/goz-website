@@ -1,5 +1,6 @@
 import { ShellHeader } from "@gozaika/ui";
 import type { ClaimIntent } from "@gozaika/types";
+import { ConsumerNavLinks } from "../consumer-nav";
 import { redirect } from "next/navigation";
 import { loadConsumerClaimIntents } from "@/lib/claims";
 import { loadConsumerNotifications, loadConsumerOrders } from "@/lib/orders";
@@ -62,8 +63,10 @@ export default async function AccountPage() {
   };
 
   return (
-    <main>
-      <ShellHeader />
+    <main id="main-content">
+      <ShellHeader>
+        <ConsumerNavLinks />
+      </ShellHeader>
       <AccountClient
         initialProfile={profile}
         initialConsents={(consents ?? []) as AccountConsent[]}

@@ -7,6 +7,7 @@ import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { createClient } from "@/lib/supabase/server";
 import { HoldCountdown } from "./hold-countdown";
 import { RazorpayCheckoutPanel } from "./razorpay-checkout-panel";
+import { ConsumerNavLinks } from "../../consumer-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -57,8 +58,10 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
       : undefined;
 
   return (
-    <main>
-      <ShellHeader />
+    <main id="main-content">
+      <ShellHeader>
+        <ConsumerNavLinks />
+      </ShellHeader>
       <section className="mx-auto grid max-w-5xl gap-6 px-4 py-8 lg:grid-cols-[1fr_0.75fr]">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Checkout</p>

@@ -1,12 +1,13 @@
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import type { AdminPickupOrderSummary, OrderIncidentSummary, PublicDropCard } from "@gozaika/types";
-import { LaunchCommsPanel, ShellHeader } from "@gozaika/ui";
+import { LaunchCommsPanel } from "@gozaika/ui";
 import { createPublicDropUrl, formatPaise, formatPickupWindow, generateManualDropAlertText } from "@gozaika/utils";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAdminActor } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { AdminIncidentForm } from "./admin-incident-form";
+import { AdminNavHeader } from "../admin-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -295,23 +296,8 @@ export default async function AdminDropsPage() {
   const incidents = (incidentData ?? []) as IncidentRow[];
 
   return (
-    <main>
-      <ShellHeader>
-        <nav className="flex flex-wrap gap-2 text-sm font-semibold">
-          <Link className="text-[#1A5C38]" href="/admin/restaurants/onboarding">
-            Onboarding
-          </Link>
-          <Link className="text-[#1A5C38]" href="/admin/drops">
-            Drops
-          </Link>
-          <Link className="text-[#1A5C38]" href="/admin/notifications">
-            Notifications
-          </Link>
-          <Link className="text-[#1A5C38]" href="/admin/reports">
-            Reports
-          </Link>
-        </nav>
-      </ShellHeader>
+    <main id="main-content">
+      <AdminNavHeader />
       <section className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

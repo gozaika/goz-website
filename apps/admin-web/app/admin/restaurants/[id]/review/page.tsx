@@ -1,6 +1,6 @@
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
-import { ShellHeader } from "@gozaika/ui";
 import { redirect } from "next/navigation";
+import { AdminNavHeader } from "../../../admin-nav";
 import { getAdminActor } from "@/lib/admin-auth";
 import { ReviewActions } from "./review-actions";
 
@@ -32,10 +32,8 @@ export default async function AdminRestaurantReviewPage({ params }: { readonly p
   }
 
   return (
-    <main>
-      <ShellHeader>
-        <a className="text-sm font-semibold text-[#1A5C38]" href="/admin/restaurants/onboarding">Back to queue</a>
-      </ShellHeader>
+    <main id="main-content">
+      <AdminNavHeader />
       <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8 lg:grid-cols-[1fr_360px]">
         <div className="grid gap-6">
           <section className="rounded-lg border border-black/10 bg-white p-5">

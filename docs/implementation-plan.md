@@ -1079,6 +1079,13 @@ Raise the existing production web surfaces from pilot-grade screens to credible 
 - [x] Admin has `/admin/users` bounded user search/detail with masked list PII, selected-record detail, consent/order/hold/notification/audit counts, and no bulk export or destructive action.
 - [x] Marketing website social-proof/Insider polish now typechecks; metadata/skip-link structure remains in place.
 - [x] Product and runbook docs were added for premium UX operations and boundaries.
+- [x] Consumer nav unified: new `consumer-nav.tsx` client component with `usePathname()` active states and `aria-current="page"`; all consumer pages (including account, drop detail, checkout, and order detail which previously had bare `<ShellHeader />`) now render consistent nav.
+- [x] Consumer layout gains skip-to-main-content link (sr-only/focus-visible) and site footer with Discover/Account nav sections and allergen disclaimer.
+- [x] Admin nav unified: new `admin-nav.tsx` client component wrapping `ShellHeader`; all 9 admin pages replaced inconsistent/missing inline nav with `<AdminNavHeader />`; Home link uses exact-match guard; TypeScript `NavLink` type fixes optional `exact` flag.
+- [x] Restaurant portal mobile nav improved: separate mobile/desktop nav implementations in `portal-nav.tsx`; group labels visible on mobile; `shrink-0` group blocks with border-styled items; `aria-current` on all links; support link visible at all breakpoints; sidebar gets `lg:overflow-y-auto`.
+- [x] Consumer mobile `App.tsx` rewritten with brand palette, four-tab navigation state, functional screen content, min-56px touch targets, and full accessibility labels.
+- [x] Restaurant staff mobile `App.tsx` rewritten with brand palette, live OTP state management, disabled Verify button until 6 digits, color-coded status feedback, and pickup failure guidance.
+- [x] UX audit written at `docs/product/ux-audit-production-polish.md` covering all five in-scope apps, issue severity, fixes applied, files changed, and deferred items.
 
 ### Remote Migration Steps
 
@@ -1126,14 +1133,16 @@ npm.cmd --workspace @gozaika/types run typecheck
 npm.cmd --workspace @gozaika/consumer-web run typecheck
 npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck
 npm.cmd --workspace @gozaika/admin-web run typecheck
+npm.cmd --workspace @gozaika/consumer-mobile run typecheck
+npm.cmd --workspace @gozaika/restaurant-staff-mobile run typecheck
 npm.cmd --workspace @gozaika/website run typecheck
 npm.cmd --workspace @gozaika/consumer-web run lint
 npm.cmd --workspace @gozaika/restaurant-mgmt-web run lint
 npm.cmd --workspace @gozaika/admin-web run lint
 npm.cmd --workspace @gozaika/website run lint
 npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run build
-npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
-npm.cmd --workspace @gozaika/admin-web run build
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/admin-web run build
+npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/restaurant-mgmt-web run build
 npm.cmd --workspace @gozaika/website run build
 ```
 

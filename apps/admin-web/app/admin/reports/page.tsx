@@ -1,9 +1,9 @@
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
-import { ShellHeader } from "@gozaika/ui";
 import { formatBasisPoints, formatPaise } from "@gozaika/utils";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAdminActor } from "@/lib/admin-auth";
+import { AdminNavHeader } from "../admin-nav";
 import { mapFinanceSettlementSummary, type AdminRestaurantOption } from "@/lib/finance";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -66,15 +66,8 @@ export default async function AdminReportsPage({
     : null;
 
   return (
-    <main>
-      <ShellHeader>
-        <nav className="flex flex-wrap gap-2 text-sm font-semibold">
-          <Link className="text-[#1A5C38]" href="/admin/drops">Drops</Link>
-          <Link className="text-[#1A5C38]" href="/admin/notifications">Notifications</Link>
-          <Link className="text-[#1A5C38]" href="/admin/finance">Finance</Link>
-          <Link className="text-[#1A5C38]" href="/admin/reports">Reports</Link>
-        </nav>
-      </ShellHeader>
+    <main id="main-content">
+      <AdminNavHeader />
       <section className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

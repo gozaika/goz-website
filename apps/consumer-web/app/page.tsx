@@ -2,6 +2,7 @@ import Link from "next/link";
 import { DropCard, EmptyState, ShellHeader } from "@gozaika/ui";
 import { loadPublicDrops } from "@/lib/drops";
 import { loadPublicRestaurants } from "@/lib/restaurants";
+import { ConsumerNavLinks } from "./consumer-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -14,13 +15,9 @@ export default async function HomePage() {
   const closingSoon = activeDrops.filter((drop) => Date.parse(drop.pickupEndAt) - now < 2 * 60 * 60 * 1000).slice(0, 2);
 
   return (
-    <main>
+    <main id="main-content">
       <ShellHeader>
-        <nav className="flex gap-4 text-sm font-semibold">
-          <Link href="/drops">Drops</Link>
-          <Link href="/restaurants">Restaurants</Link>
-          <Link href="/account">Account</Link>
-        </nav>
+        <ConsumerNavLinks />
       </ShellHeader>
       <section className="bg-[#FFF8F0]">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 lg:grid-cols-[0.9fr_1.1fr]">

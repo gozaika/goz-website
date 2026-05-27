@@ -1,9 +1,9 @@
-import { ShellHeader } from "@gozaika/ui";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAdminActor } from "@/lib/admin-auth";
 import { searchAdminUsers } from "@/lib/users";
 import { AdminUsersClient } from "./users-client";
+import { AdminNavHeader } from "../admin-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -24,15 +24,8 @@ export default async function AdminUsersPage({
   const users = query.length >= 2 ? await searchAdminUsers(query) : [];
 
   return (
-    <main>
-      <ShellHeader>
-        <nav className="flex flex-wrap gap-2 text-sm font-semibold">
-          <Link className="text-[#1A5C38]" href="/admin/ops">Ops</Link>
-          <Link className="text-[#1A5C38]" href="/admin/users">Users</Link>
-          <Link className="text-[#1A5C38]" href="/admin/finance">Finance</Link>
-          <Link className="text-[#1A5C38]" href="/admin/reports">Reports</Link>
-        </nav>
-      </ShellHeader>
+    <main id="main-content">
+      <AdminNavHeader />
       <section className="mx-auto max-w-7xl px-4 py-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

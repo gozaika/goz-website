@@ -1,17 +1,15 @@
-import { ShellHeader } from "@gozaika/ui";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAdminActor } from "@/lib/admin-auth";
+import { AdminNavHeader } from "./admin-nav";
 
 export default async function AdminPage() {
   const actor = await getAdminActor();
   if (!actor) redirect("/auth/login");
 
   return (
-    <main>
-      <ShellHeader>
-        <span className="text-sm font-semibold text-[#1A5C38]">Admin ops</span>
-      </ShellHeader>
+    <main id="main-content">
+      <AdminNavHeader />
       <section className="mx-auto max-w-5xl px-4 py-8">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">goZaika operations</p>
         <h1 className="mt-2 text-3xl font-bold">Admin home</h1>

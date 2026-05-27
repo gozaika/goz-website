@@ -73,10 +73,10 @@ export function PortalChrome({
 
   return (
     <main className="min-h-screen bg-[#FAFAF8] lg:grid lg:grid-cols-[280px_1fr]">
-      <aside className="border-b border-black/10 bg-white lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
+      <aside className="border-b border-black/10 bg-white lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r lg:overflow-y-auto">
         <div className="flex items-center justify-between gap-3 px-4 py-4 lg:block">
           <div className="flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-lg bg-[#FFF8F0] text-[#FF6B35]">
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-[#FFF8F0] text-[#FF6B35]">
               <ShieldCheck aria-hidden="true" />
             </div>
             <div>
@@ -90,18 +90,55 @@ export function PortalChrome({
             </span>
           ) : null}
         </div>
-        <div className="flex gap-3 overflow-x-auto px-4 pb-4 lg:grid lg:gap-5 lg:overflow-visible lg:pb-0">
+
+        {/* Mobile: horizontal scroll grouped nav */}
+        <nav
+          className="flex gap-4 overflow-x-auto px-4 pb-4 lg:hidden"
+          aria-label="Restaurant portal"
+        >
           {groups.map((group) => (
-            <div key={group.label} className="min-w-max lg:min-w-0">
-              <p className="mb-2 hidden text-xs font-bold uppercase tracking-[0.16em] text-[#2D2D2D]/45 lg:block">{group.label}</p>
-              <div className="flex gap-2 lg:grid">
+            <div key={group.label} className="shrink-0">
+              <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.14em] text-[#2D2D2D]/40">
+                {group.label}
+              </p>
+              <div className="flex gap-1.5">
                 {group.links.map(([label, href, Icon]) => {
                   const active = pathname === href || (href !== "/portal/dashboard" && pathname.startsWith(`${href}/`));
                   return (
                     <a
                       key={href}
                       href={href}
-                      className={`inline-flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold transition ${
+                      aria-current={active ? "page" : undefined}
+                      className={`inline-flex min-h-10 items-center gap-2 rounded-lg px-3 text-sm font-semibold transition ${
+                        active ? "bg-[#1A5C38] text-white" : "border border-black/10 bg-white text-[#2D2D2D]/70 hover:border-[#1A5C38]/30 hover:text-[#1A5C38]"
+                      }`}
+                    >
+                      <Icon size={15} aria-hidden="true" />
+                      <span>{label}</span>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </nav>
+
+        {/* Desktop: vertical grouped nav */}
+        <nav className="hidden px-3 lg:grid lg:gap-5" aria-label="Restaurant portal">
+          {groups.map((group) => (
+            <div key={group.label}>
+              <p className="mb-1.5 px-3 text-xs font-bold uppercase tracking-[0.16em] text-[#2D2D2D]/45">
+                {group.label}
+              </p>
+              <div className="grid gap-0.5">
+                {group.links.map(([label, href, Icon]) => {
+                  const active = pathname === href || (href !== "/portal/dashboard" && pathname.startsWith(`${href}/`));
+                  return (
+                    <a
+                      key={href}
+                      href={href}
+                      aria-current={active ? "page" : undefined}
+                      className={`inline-flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm font-semibold transition ${
                         active ? "bg-[#1A5C38] text-white" : "text-[#2D2D2D]/70 hover:bg-[#F2F8EF] hover:text-[#1A5C38]"
                       }`}
                     >
@@ -113,9 +150,13 @@ export function PortalChrome({
               </div>
             </div>
           ))}
-        </div>
-        <div className="hidden p-4 lg:block">
-          <a href="mailto:partners@gozaika.in" className="flex items-center gap-2 rounded-lg border border-[#D4A017]/40 bg-[#FFF8F0] p-3 text-sm font-semibold text-[#2D2D2D]">
+        </nav>
+
+        <div className="px-4 py-4">
+          <a
+            href="mailto:partners@gozaika.in"
+            className="flex items-center gap-2 rounded-lg border border-[#D4A017]/40 bg-[#FFF8F0] p-3 text-sm font-semibold text-[#2D2D2D]"
+          >
             <HelpCircle size={18} aria-hidden="true" />
             Partner support
           </a>

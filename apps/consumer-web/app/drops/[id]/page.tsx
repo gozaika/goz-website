@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { loadPublicDrop } from "@/lib/drops";
 import { createClient } from "@/lib/supabase/server";
 import { ClaimPanel } from "./claim-panel";
+import { ConsumerNavLinks } from "../../consumer-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -37,8 +38,10 @@ export default async function DropDetailPage({
   const alertText = generateManualDropAlertText(drop, publicDropUrl);
 
   return (
-    <main>
-      <ShellHeader />
+    <main id="main-content">
+      <ShellHeader>
+        <ConsumerNavLinks />
+      </ShellHeader>
       <section className="mx-auto grid max-w-5xl gap-6 px-4 py-10 lg:grid-cols-[1fr_0.75fr]">
         <div>
           <p className="text-sm font-bold uppercase text-[#1A5C38]">{drop.restaurantName}</p>
