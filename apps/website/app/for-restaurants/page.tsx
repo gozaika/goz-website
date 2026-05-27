@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { PackageCheck, Percent, ShieldCheck } from 'lucide-react';
+import { CheckCircle, MessageCircle, PackageCheck, Percent, ShieldCheck } from 'lucide-react';
 
 import { PartnerInterestForm } from '@/components/forms/PartnerInterestForm';
 import { Reveal } from '@/components/ui/Reveal';
@@ -149,6 +149,37 @@ export default function ForRestaurantsPage(): React.ReactElement {
         </div>
       </section>
 
+      {/* Cannibalization assurance */}
+      <section className="bg-forest text-white" aria-labelledby="cannibalization-heading">
+        <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:grid lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-8">
+          <div>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-saffron">
+              A COMMON QUESTION
+            </p>
+            <h2
+              id="cannibalization-heading"
+              className="font-playfair text-3xl font-bold text-white sm:text-4xl"
+            >
+              {forRestaurantsContent.cannibalizationAssurance.heading}
+            </h2>
+            <p className="mt-6 text-base leading-relaxed text-forest-light/90">
+              {forRestaurantsContent.cannibalizationAssurance.body}
+            </p>
+          </div>
+          <ul className="mt-10 space-y-4 lg:mt-0">
+            {forRestaurantsContent.cannibalizationAssurance.points.map((point) => (
+              <li key={point} className="flex items-start gap-3">
+                <CheckCircle
+                  className="mt-0.5 h-5 w-5 shrink-0 text-[#25D366]"
+                  aria-hidden="true"
+                />
+                <span className="text-base text-forest-light/90">{point}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       <section className="bg-cream">
         <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:px-8">
           <SectionIntro title="Operational clarity for serious operators" />
@@ -196,7 +227,28 @@ export default function ForRestaurantsPage(): React.ReactElement {
         </div>
       </section>
 
-      <section className="bg-cream">
+      {/* WhatsApp partner onboarding band */}
+      <section className="bg-saffron-light border-y border-saffron/20">
+        <div className="mx-auto flex max-w-screen-xl flex-col items-center gap-6 px-4 py-10 sm:px-6 lg:flex-row lg:justify-between lg:px-8">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-forest">
+              PREFER TO START ON WHATSAPP?
+            </p>
+            <p className="mt-1 text-base text-gray700">
+              Message us <strong>PARTNER</strong> on WhatsApp and our team will walk you through onboarding in a conversation.
+            </p>
+          </div>
+          <Link
+            href="/insider"
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#25D366] px-7 py-3.5 text-sm font-semibold text-white shadow transition-all hover:bg-[#1ebe59] hover:shadow-md"
+          >
+            <MessageCircle className="h-4 w-4" aria-hidden="true" />
+            Message us on WhatsApp
+          </Link>
+        </div>
+      </section>
+
+      <section id="partner-form" className="bg-cream">
         <div className="mx-auto grid max-w-screen-xl gap-8 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8">
           <div className="space-y-4">
             <SectionIntro

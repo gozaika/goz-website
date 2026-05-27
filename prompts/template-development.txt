@@ -84,7 +84,7 @@ resturant=919000100001/123456   customer=918106230860/123456  https://admin.goza
 Required UI checks:
 - Desktop and mobile viewport checks for the touched surfaces.
 - Record horizontal overflow with document scrollWidth/clientWidth.
-- Capture screenshots for customer, restaurant, and admin slice pages.
+
 
 Cleanup:
 - Stop local dev servers on ports 3000/3001/3002 after testing.

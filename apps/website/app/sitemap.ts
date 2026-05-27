@@ -4,6 +4,12 @@ import { getAllBlogPosts } from '@/lib/blog';
 
 const routes = [
   '',
+  '/how-it-works',
+  '/for-restaurants',
+  '/insider',
+  '/about',
+  '/faq',
+  '/contact',
   '/blog',
   '/partner-portal',
   '/cities',
@@ -12,11 +18,6 @@ const routes = [
   '/company/culture',
   '/company/careers',
   '/company/investors',
-  '/how-it-works',
-  '/for-restaurants',
-  '/about',
-  '/faq',
-  '/contact',
   '/privacy-policy',
   '/terms-of-service',
   '/refund-policy',
@@ -29,10 +30,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const blogRoutes = getAllBlogPosts().map((post) => `/blog/${post.slug}`);
   const allRoutes = [...routes, ...blogRoutes];
 
+  const highPriority = new Set(['', '/how-it-works', '/for-restaurants', '/insider', '/faq']);
+  const medPriority = new Set(['/about', '/contact', '/blog', '/cities']);
+
   return allRoutes.map((route) => ({
     url: `${base}${route}`,
     lastModified: new Date(),
-    changeFrequency: route === '' ? 'weekly' : 'monthly',
-    priority: route === '' ? 1 : 0.8,
+    changeFrequency: (route === '' || route === '/insider' ? 'weekly' : 'monthly') as MetadataRoute.Sitemap[0]['changeFrequency'],
+    priority: route === '' ? 1 : highPriority.has(route) ? 0.9 : medPriority.has(route) ? 0.7 : 0.5,
   }));
 }

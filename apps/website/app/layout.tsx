@@ -7,21 +7,68 @@ import { canonical, openGraphFor } from '@/lib/metadata';
 
 import './globals.css';
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://gozaika.in';
+
 export const metadata: Metadata = {
-  title: 'goZaika — Discover. Pickup. Devour.',
+  title: {
+    default: 'goZaika — Discover. Pickup. Devour.',
+    template: '%s | goZaika',
+  },
   description:
-    'Discover chef-curated BAM Bags from premium restaurants near you. Pickup-first, trust-led, and built for discovery.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? 'https://gozaika.vercel.app'),
+    "India's first mystery meal-drop marketplace. Chef-curated BAM Bags from Hyderabad's finest kitchens — allergen-disclosed, pickup-only, always a surprise.",
+  metadataBase: new URL(BASE_URL),
   ...canonical('/'),
   openGraph: openGraphFor(
     '/',
     'goZaika — Discover. Pickup. Devour.',
-    'Premium-access mystery meal drops with transparent trust details.',
+    "India's first mystery meal-drop marketplace. Chef-curated BAM Bags from Hyderabad's finest kitchens.",
   ),
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION ?? '',
   },
+  keywords: [
+    'mystery meal',
+    'BAM Bag',
+    'food discovery Hyderabad',
+    'restaurant pickup Hyderabad',
+    'chef curated food',
+    'HITEC City food',
+    'Banjara Hills restaurant',
+    'Jubilee Hills food',
+    'Kondapur pickup',
+    'food surprise box Hyderabad',
+  ],
 };
+
+const localBusinessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'OnlineStore',
+  name: 'goZaika',
+  description:
+    "India's first mystery meal-drop marketplace. Chef-curated BAM Bags from Hyderabad's finest kitchens, pickup-only.",
+  url: BASE_URL,
+  logo: `${BASE_URL}/logos/gozaika-logo-color.svg`,
+  image: `${BASE_URL}/images/social/og-home-v2.svg`,
+  telephone: null,
+  email: 'contact@gozaika.in',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Hyderabad',
+    addressRegion: 'Telangana',
+    addressCountry: 'IN',
+  },
+  areaServed: [
+    { '@type': 'City', name: 'Hyderabad' },
+  ],
+  founder: {
+    '@type': 'Organization',
+    name: 'GoZaika Technologies Pvt. Ltd.',
+  },
+  sameAs: [
+    'https://www.instagram.com/gozaika.in',
+    'https://www.linkedin.com/company/gozaika',
+  ],
+} as const;
 
 export default function RootLayout({
   children,
@@ -31,6 +78,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+        />
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
