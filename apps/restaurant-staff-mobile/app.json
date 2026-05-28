@@ -7,7 +7,8 @@
     "orientation": "portrait",
     "platforms": [
       "ios",
-      "android"
+      "android",
+      "web"
     ],
     "assetBundlePatterns": [
       "**/*"
@@ -18,7 +19,7 @@
     "android": {
       "package": "com.orbitwell.gozaikastaff",
       "adaptiveIcon": {
-        "backgroundColor": "#111827"
+        "backgroundColor": "#FFF8F0"
       }
     },
     "plugins": [

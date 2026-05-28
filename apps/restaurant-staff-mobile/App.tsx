@@ -1,6 +1,9 @@
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+
+type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
 const brand = {
   saffron: "#FF6B35",
@@ -20,6 +23,13 @@ const brand = {
 };
 
 type VerifyState = "idle" | "verifying" | "success" | "error";
+
+const FAILURE_GUIDANCE: { icon: IoniconName; text: string }[] = [
+  { icon: "location-outline",    text: "Wrong restaurant — ask customer to confirm order details" },
+  { icon: "time-outline",        text: "Expired window — mark no-show from the portal after close" },
+  { icon: "checkmark-done-outline", text: "Already collected — duplicate scan, no action needed" },
+  { icon: "refresh-outline",     text: "Invalid OTP — ask customer to refresh their order page" },
+];
 
 export default function StaffApp() {
   const [otp, setOtp] = useState("");
@@ -54,6 +64,12 @@ export default function StaffApp() {
       : verifyState === "error"
         ? brand.errorText
         : brand.warningText;
+  const statusIcon: IoniconName =
+    verifyState === "success"
+      ? "checkmark-circle-outline"
+      : verifyState === "error"
+        ? "close-circle-outline"
+        : "hourglass-outline";
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: brand.cream }}>
@@ -74,9 +90,11 @@ export default function StaffApp() {
       >
         <View>
           <Text style={{ color: brand.forest, fontWeight: "900", fontSize: 16 }}>
-            Zayka Pro Staff
+            goZaika Staff
           </Text>
-          <Text style={{ color: brand.muted, fontSize: 12, marginTop: 1 }}>Pickup verification</Text>
+          <Text style={{ color: brand.muted, fontSize: 12, marginTop: 1 }}>
+            Pickup verification
+          </Text>
         </View>
         <View
           style={{
@@ -105,6 +123,7 @@ export default function StaffApp() {
             backgroundColor: brand.white,
             padding: 20,
             alignItems: "center",
+            gap: 4,
           }}
         >
           <Text style={{ color: brand.muted, fontSize: 13, fontWeight: "600" }}>
@@ -139,7 +158,10 @@ export default function StaffApp() {
             gap: 6,
           }}
         >
-          <Text style={{ color: brand.white, fontSize: 20, fontWeight: "900" }}>⬛ Scan QR</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <Ionicons name="qr-code-outline" size={28} color={brand.white} />
+            <Text style={{ color: brand.white, fontSize: 20, fontWeight: "900" }}>Scan QR</Text>
+          </View>
           <Text style={{ color: `${brand.white}90`, fontSize: 13 }}>
             Point camera at customer QR code
           </Text>
@@ -156,13 +178,16 @@ export default function StaffApp() {
             gap: 12,
           }}
         >
-          <View>
-            <Text style={{ color: brand.charcoal, fontSize: 16, fontWeight: "700" }}>
-              Enter 6-digit OTP
-            </Text>
-            <Text style={{ color: brand.muted, fontSize: 13, marginTop: 2 }}>
-              Customer shows OTP from their order confirmation
-            </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <Ionicons name="keypad-outline" size={18} color={brand.charcoal} />
+            <View>
+              <Text style={{ color: brand.charcoal, fontSize: 16, fontWeight: "700" }}>
+                Enter 6-digit OTP
+              </Text>
+              <Text style={{ color: brand.muted, fontSize: 13, marginTop: 1 }}>
+                Customer shows OTP from their order confirmation
+              </Text>
+            </View>
           </View>
 
           <TextInput
@@ -205,8 +230,15 @@ export default function StaffApp() {
                 otp.length !== 6 || verifyState === "verifying"
                   ? `${brand.forest}50`
                   : brand.forest,
+              flexDirection: "row",
+              gap: 8,
             }}
           >
+            <Ionicons
+              name={verifyState === "verifying" ? "hourglass-outline" : "checkmark-circle-outline"}
+              size={18}
+              color={brand.white}
+            />
             <Text style={{ color: brand.white, fontWeight: "800", fontSize: 16 }}>
               {verifyState === "verifying" ? "Verifying..." : "Verify pickup"}
             </Text>
@@ -218,16 +250,20 @@ export default function StaffApp() {
                 borderRadius: 8,
                 backgroundColor: statusBg,
                 padding: 12,
+                flexDirection: "row",
+                alignItems: "flex-start",
+                gap: 8,
               }}
             >
-              <Text style={{ color: statusColor, fontSize: 13, fontWeight: "600" }}>
+              <Ionicons name={statusIcon} size={16} color={statusColor} style={{ marginTop: 1 }} />
+              <Text style={{ color: statusColor, fontSize: 13, fontWeight: "600", flex: 1 }}>
                 {statusMessage}
               </Text>
             </View>
           ) : null}
         </View>
 
-        {/* Failure reference */}
+        {/* Failure guidance */}
         <View
           style={{
             borderRadius: 12,
@@ -237,20 +273,18 @@ export default function StaffApp() {
             padding: 16,
           }}
         >
-          <Text style={{ color: brand.charcoal, fontSize: 14, fontWeight: "700" }}>
-            Pickup failure guidance
-          </Text>
-          <View style={{ marginTop: 10, gap: 8 }}>
-            {[
-              "Wrong restaurant — ask customer to confirm order details",
-              "Expired window — mark no-show from the portal after close",
-              "Already collected — duplicate scan, no action needed",
-              "Invalid OTP — ask customer to refresh their order page",
-            ].map((item) => (
-              <View key={item} style={{ flexDirection: "row", gap: 8 }}>
-                <Text style={{ color: brand.saffron, fontWeight: "700" }}>·</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 12 }}>
+            <Ionicons name="help-circle-outline" size={16} color={brand.charcoal} />
+            <Text style={{ color: brand.charcoal, fontSize: 14, fontWeight: "700" }}>
+              Pickup failure guidance
+            </Text>
+          </View>
+          <View style={{ gap: 10 }}>
+            {FAILURE_GUIDANCE.map((item) => (
+              <View key={item.text} style={{ flexDirection: "row", gap: 10, alignItems: "flex-start" }}>
+                <Ionicons name={item.icon} size={14} color={brand.saffron} style={{ marginTop: 2 }} />
                 <Text style={{ color: brand.muted, fontSize: 13, flex: 1, lineHeight: 18 }}>
-                  {item}
+                  {item.text}
                 </Text>
               </View>
             ))}

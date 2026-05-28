@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "expo start",
+    "web": "expo start --web --port 8082",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "build": "expo export",
@@ -14,6 +15,7 @@
     "expo:install-native": "npx expo install react react-native expo-status-bar expo-secure-store"
   },
   "dependencies": {
+    "@expo/metro-runtime": "~55.0.11",
     "@gozaika/supabase": "*",
     "@gozaika/types": "*",
     "@gozaika/utils": "*",
@@ -23,7 +25,9 @@
     "expo-secure-store": "~55.0.13",
     "expo-status-bar": "~55.0.6",
     "react": "19.2.0",
-    "react-native": "0.83.6"
+    "react-dom": "19.2.0",
+    "react-native": "0.83.6",
+    "react-native-web": "^0.21.0"
   },
   "devDependencies": {
     "@expo/ngrok": "^4.1.3",

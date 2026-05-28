@@ -103,6 +103,20 @@ LOCAL ENVIRONMENT NOTES
   - admin routes redirect to /auth/login
 - Stop local dev servers on ports 3000, 3001, and 3002 after testing.
 - Verify no LISTENING entries remain on 3000/3001/3002. TIME_WAIT entries are acceptable.
+Dev servers:
+- consumer-web runs on port 3000 (npm run dev:consumer or npm.cmd --workspace @gozaika/consumer-web run dev)
+- restaurant-mgmt-web runs on port 3001 (npm run dev:restaurant)
+- admin-web runs on port 3002 (npm run dev:admin)
+- Do not pass extra --port flags; the ports are already set in each app's package.json dev script
+- Use run_in_background: true without & in the command
+- A background dev task that exits with code 0 after printing "Ready" is running — verify 
+  with: netstat -ano | grep -E ":300[012]" (not findstr)
+- If a second start attempt gets EADDRINUSE, the server from the first attempt is alive
+
+Chrome is open with the Claude in Chrome extension installed and signed in. 
+Use it for visual testing at 390px and 1440px. Test localhost:3000 (consumer), 
+localhost:3001 (restaurant portal), localhost:3002 (admin).
+
 
 PAYMENT / NOTIFICATION TESTING NOTES
 - Razorpay is not configured for normal local checkout.
