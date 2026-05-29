@@ -2,7 +2,7 @@
 
 import { Button } from "@gozaika/ui";
 import { safeErrorMessage } from "@gozaika/utils";
-import { Mail, Phone, Store, UserRound } from "lucide-react";
+import { Mail, MapPin, Phone, Store, UserRound } from "lucide-react";
 import { useState } from "react";
 
 export interface PortalProfileState {
@@ -12,6 +12,10 @@ export interface PortalProfileState {
   readonly staffPhone: string | null;
   readonly primaryContactEmail: string | null;
   readonly primaryContactPhone: string | null;
+  readonly addressLine1: string | null;
+  readonly addressLandmark: string | null;
+  readonly latitude: number | null;
+  readonly longitude: number | null;
 }
 
 export function PortalProfileClient({ initialProfile }: { readonly initialProfile: PortalProfileState }) {
@@ -19,8 +23,42 @@ export function PortalProfileClient({ initialProfile }: { readonly initialProfil
   const [staffPhone, setStaffPhone] = useState(initialProfile.staffPhone ?? "");
   const [primaryContactEmail, setPrimaryContactEmail] = useState(initialProfile.primaryContactEmail ?? "");
   const [primaryContactPhone, setPrimaryContactPhone] = useState(initialProfile.primaryContactPhone ?? "");
+  const [addressLine1, setAddressLine1] = useState(initialProfile.addressLine1 ?? "");
+  const [addressLandmark, setAddressLandmark] = useState(initialProfile.addressLandmark ?? "");
+  const [latitude, setLatitude] = useState(initialProfile.latitude != null ? String(initialProfile.latitude) : "");
+  const [longitude, setLongitude] = useState(initialProfile.longitude != null ? String(initialProfile.longitude) : "");
   const [saving, setSaving] = useState(false);
+  const [locationSaving, setLocationSaving] = useState(false);
   const [status, setStatus] = useState("");
+
+  async function saveLocation() {
+    if (!addressLine1.trim()) {
+      setStatus("Street address is required to save location.");
+      return;
+    }
+    setLocationSaving(true);
+    setStatus("");
+    try {
+      const res = await fetch("/api/portal/restaurant/location", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          restaurantPk: initialProfile.restaurantPk,
+          line1: addressLine1.trim(),
+          landmark: addressLandmark.trim() || undefined,
+          latitude: latitude ? Number(latitude) : null,
+          longitude: longitude ? Number(longitude) : null,
+        }),
+      });
+      const payload = (await res.json()) as { ok: boolean; error?: string };
+      if (!payload.ok) throw new Error(payload.error ?? "Could not save location.");
+      setStatus("Location saved. The map pin will update on your public profile.");
+    } catch (caught) {
+      setStatus(safeErrorMessage(caught, "Could not save location."));
+    } finally {
+      setLocationSaving(false);
+    }
+  }
 
   async function saveProfile() {
     setSaving(true);
@@ -96,6 +134,84 @@ export function PortalProfileClient({ initialProfile }: { readonly initialProfil
           {saving ? "Saving..." : "Save profile"}
         </Button>
       </div>
+
+      {/* Address & Location */}
+      <section className="rounded-lg border border-black/10 bg-white p-5">
+        <div className="flex items-center gap-2">
+          <MapPin className="text-[#1A5C38]" aria-hidden="true" />
+          <h2 className="text-xl font-bold text-[#2D2D2D]">Address &amp; Location</h2>
+        </div>
+        <p className="mt-2 text-sm text-[#2D2D2D]/65">
+          Set your pickup address and coordinates so customers can find you on the map. Latitude and
+          longitude enable the map pin — enter them as decimal degrees (e.g. 17.385000, 78.486700).
+        </p>
+
+        <div className="mt-5 grid gap-4">
+          <label className="grid gap-1.5 text-sm font-semibold text-[#2D2D2D]">
+            Street address *
+            <input
+              value={addressLine1}
+              onChange={(e) => setAddressLine1(e.target.value)}
+              placeholder="Plot 12, Road 4, Banjara Hills"
+              className="min-h-11 rounded-lg border border-black/15 px-3 text-sm font-normal outline-none focus:border-[#1A5C38]"
+            />
+          </label>
+          <label className="grid gap-1.5 text-sm font-semibold text-[#2D2D2D]">
+            Landmark (optional)
+            <input
+              value={addressLandmark}
+              onChange={(e) => setAddressLandmark(e.target.value)}
+              placeholder="Near Inorbit Mall gate 2"
+              className="min-h-11 rounded-lg border border-black/15 px-3 text-sm font-normal outline-none focus:border-[#1A5C38]"
+            />
+          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="grid gap-1.5 text-sm font-semibold text-[#2D2D2D]">
+              Latitude
+              <input
+                value={latitude}
+                onChange={(e) => setLatitude(e.target.value)}
+                placeholder="17.385000"
+                type="number"
+                step="0.000001"
+                className="min-h-11 rounded-lg border border-black/15 px-3 text-sm font-normal outline-none focus:border-[#1A5C38]"
+              />
+            </label>
+            <label className="grid gap-1.5 text-sm font-semibold text-[#2D2D2D]">
+              Longitude
+              <input
+                value={longitude}
+                onChange={(e) => setLongitude(e.target.value)}
+                placeholder="78.486700"
+                type="number"
+                step="0.000001"
+                className="min-h-11 rounded-lg border border-black/15 px-3 text-sm font-normal outline-none focus:border-[#1A5C38]"
+              />
+            </label>
+          </div>
+
+          {/* Map preview when coordinates set */}
+          {latitude && longitude && !isNaN(Number(latitude)) && !isNaN(Number(longitude)) && (
+            <div className="overflow-hidden rounded-lg border border-black/10" style={{ height: 220 }}>
+              <iframe
+                key={`${latitude},${longitude}`}
+                title="Map pin preview"
+                width="100%"
+                height="220"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps?q=${latitude},${longitude}&z=16&output=embed`}
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="mt-5 flex justify-end">
+          <Button type="button" onClick={saveLocation} disabled={locationSaving}>
+            {locationSaving ? "Saving…" : "Save location"}
+          </Button>
+        </div>
+      </section>
     </section>
   );
 }

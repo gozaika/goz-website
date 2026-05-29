@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, ClipboardList, FileCheck2, HelpCircle, Home, Landmark, LayoutDashboard, PackagePlus, ReceiptText, ShieldCheck, Store, Utensils } from "lucide-react";
+import { BarChart3, ClipboardList, FileCheck2, HelpCircle, Home, Landmark, LayoutDashboard, PackagePlus, ReceiptText, ShieldCheck, Star, Store, Utensils } from "lucide-react";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
@@ -28,6 +28,7 @@ const groups = [
       ["Onboarding", "/portal/onboarding", Home],
       ["Compliance", "/portal/compliance", FileCheck2],
       ["Profile", "/portal/profile", Store],
+      ["Reviews", "/portal/reviews", Star],
     ],
   },
 ] as const;

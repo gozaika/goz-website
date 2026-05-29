@@ -13,6 +13,8 @@ type PublicRestaurantRow = {
   readonly pickup_instructions: string | null;
   readonly headline: string | null;
   readonly story_markdown: string | null;
+  readonly latitude: number | string | null;
+  readonly longitude: number | string | null;
 };
 
 const cuisineKeywords = [
@@ -63,8 +65,8 @@ function mapRestaurant(row: PublicRestaurantRow, drops: readonly PublicDropCard[
     totalDropCount: restaurantDrops.length,
     upcomingDropCount: activeDrops.filter((drop) => drop.statusCode === "SCHEDULED").length,
     pastDropCount: pastDrops.length,
-    latitude: null,
-    longitude: null,
+    latitude: row.latitude != null ? Number(row.latitude) : null,
+    longitude: row.longitude != null ? Number(row.longitude) : null,
     activeDrops,
     pastDrops,
   };
@@ -103,6 +105,8 @@ export async function loadPublicRestaurants(): Promise<PublicRestaurantProfile[]
           pickup_instructions: null,
           headline: drop.restaurantHeadline,
           story_markdown: null,
+          latitude: drop.latitude,
+          longitude: drop.longitude,
         },
         drops,
         generatedAtMs,

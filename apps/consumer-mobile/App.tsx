@@ -16,13 +16,14 @@ const brand = {
   white: "#FFFFFF",
 };
 
-type Tab = "home" | "drops" | "orders" | "account";
+type Tab = "home" | "drops" | "orders" | "passport" | "account";
 
 const tabs: { id: Tab; label: string; icon: IoniconName; iconOutline: IoniconName }[] = [
-  { id: "home",    label: "Home",    icon: "home",    iconOutline: "home-outline" },
-  { id: "drops",   label: "Drops",   icon: "bag",     iconOutline: "bag-outline" },
-  { id: "orders",  label: "Orders",  icon: "receipt", iconOutline: "receipt-outline" },
-  { id: "account", label: "Account", icon: "person",  iconOutline: "person-outline" },
+  { id: "home",     label: "Home",     icon: "home",       iconOutline: "home-outline" },
+  { id: "drops",    label: "Drops",    icon: "bag",        iconOutline: "bag-outline" },
+  { id: "orders",   label: "Orders",   icon: "receipt",    iconOutline: "receipt-outline" },
+  { id: "passport", label: "Passport", icon: "id-card",    iconOutline: "id-card-outline" },
+  { id: "account",  label: "Account",  icon: "person",     iconOutline: "person-outline" },
 ];
 
 const HOW_IT_WORKS: { icon: IoniconName; title: string; desc: string }[] = [
@@ -93,7 +94,7 @@ export default function App() {
               <Text
                 style={{ color: brand.charcoal, fontSize: 28, fontWeight: "800", lineHeight: 36 }}
               >
-                Great food.{"\n"}No menu. No algorithm.
+                Great food.{"\n"}No menu. No feed.
               </Text>
               <Text style={{ color: brand.muted, fontSize: 15, lineHeight: 22 }}>
                 Claim chef-curated BAM Bags with allergen-disclosed, pickup-only trust.
@@ -111,10 +112,7 @@ export default function App() {
                 justifyContent: "center",
                 borderRadius: 10,
                 backgroundColor: brand.saffron,
-                shadowColor: brand.saffron,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.25,
-                shadowRadius: 8,
+                boxShadow: "0px 4px 8px rgba(255,107,53,0.25)",
                 elevation: 4,
                 flexDirection: "row",
                 gap: 8,
@@ -294,7 +292,7 @@ export default function App() {
                 on your browser.
               </Text>
               <TouchableOpacity
-                accessibilityRole="link"
+                accessibilityRole="button"
                 accessibilityLabel="Open goZaika web app"
                 onPress={() => Linking.openURL("https://customer.gozaika.in")}
                 style={{
@@ -378,6 +376,161 @@ export default function App() {
               >
                 <Text style={{ color: brand.white, fontWeight: "700", fontSize: 14 }}>
                   Browse today's drops
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {activeTab === "passport" && (
+          <View style={{ gap: 16 }}>
+            <Text style={{ color: brand.charcoal, fontSize: 22, fontWeight: "800" }}>
+              Zayka Passport
+            </Text>
+
+            {/* Passport card teaser */}
+            <View
+              style={{
+                borderRadius: 16,
+                backgroundColor: brand.forest,
+                padding: 20,
+                gap: 12,
+                overflow: "hidden",
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                <View>
+                  <Text style={{ color: `${brand.white}90`, fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2 }}>
+                    Zayka Passport
+                  </Text>
+                  <Text style={{ color: brand.white, fontSize: 20, fontWeight: "900", marginTop: 2 }}>
+                    goZaika
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    borderRadius: 10,
+                    borderWidth: 1.5,
+                    borderColor: brand.gold,
+                    paddingHorizontal: 10,
+                    paddingVertical: 4,
+                  }}
+                >
+                  <Text style={{ color: brand.gold, fontSize: 11, fontWeight: "800" }}>BRONZE</Text>
+                </View>
+              </View>
+
+              <View style={{ flexDirection: "row", gap: 16 }}>
+                {[
+                  { label: "BAM Bags", value: "0" },
+                  { label: "Kitchens", value: "0" },
+                  { label: "Cuisines", value: "0" },
+                ].map((stat) => (
+                  <View key={stat.label}>
+                    <Text style={{ color: `${brand.white}70`, fontSize: 10, fontWeight: "600" }}>{stat.label}</Text>
+                    <Text style={{ color: brand.white, fontSize: 20, fontWeight: "900", marginTop: 1 }}>{stat.value}</Text>
+                  </View>
+                ))}
+              </View>
+
+              <Text style={{ color: `${brand.white}80`, fontSize: 12, lineHeight: 17 }}>
+                Sign in to see your Flavour Diversity Score and tier progress.
+              </Text>
+            </View>
+
+            {/* Tier benefits */}
+            <View
+              style={{
+                borderRadius: 12,
+                backgroundColor: brand.white,
+                borderWidth: 1,
+                borderColor: brand.border,
+                overflow: "hidden",
+              }}
+            >
+              <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: brand.border }}>
+                <Text style={{ color: brand.charcoal, fontSize: 14, fontWeight: "700" }}>Tier benefits</Text>
+              </View>
+              {[
+                { tier: "BRONZE",   bags: "0",  perk: "Access to all public drops" },
+                { tier: "SILVER",   bags: "10", perk: "+ Early access window (30 min)" },
+                { tier: "GOLD",     bags: "30", perk: "+ Chef's Selection drops & priority queue" },
+                { tier: "PLATINUM", bags: "75", perk: "+ Exclusive kitchen tastings & custom drops" },
+              ].map((row) => (
+                <View
+                  key={row.tier}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    padding: 12,
+                    gap: 12,
+                    borderBottomWidth: 1,
+                    borderBottomColor: brand.border,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 64,
+                      alignItems: "center",
+                      borderRadius: 6,
+                      paddingVertical: 3,
+                      backgroundColor: row.tier === "PLATINUM" ? "#6D28D9" : row.tier === "GOLD" ? `${brand.gold}25` : row.tier === "SILVER" ? "#94A3B825" : `${brand.forest}15`,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 9,
+                        fontWeight: "800",
+                        color: row.tier === "PLATINUM" ? "#6D28D9" : row.tier === "GOLD" ? brand.gold : row.tier === "SILVER" ? "#64748B" : brand.forest,
+                      }}
+                    >
+                      {row.tier}
+                    </Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: brand.muted, fontSize: 11, fontWeight: "600" }}>{row.bags}+ bags</Text>
+                    <Text style={{ color: brand.charcoal, fontSize: 12, lineHeight: 17, marginTop: 1 }}>{row.perk}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+
+            {/* Adventure teaser */}
+            <View
+              style={{
+                borderRadius: 12,
+                backgroundColor: brand.forest,
+                padding: 16,
+                gap: 8,
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                <Ionicons name="compass-outline" size={16} color={brand.gold} />
+                <Text style={{ color: brand.gold, fontSize: 11, fontWeight: "800", textTransform: "uppercase", letterSpacing: 0.8 }}>
+                  Food Adventure
+                </Text>
+              </View>
+              <Text style={{ color: brand.white, fontSize: 15, fontWeight: "700" }}>
+                Expand your Flavour Passport
+              </Text>
+              <Text style={{ color: `${brand.white}80`, fontSize: 13, lineHeight: 19 }}>
+                Try cuisines you've never explored. Each new cuisine you discover improves your Flavour Diversity Score.
+              </Text>
+              <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityLabel="Explore adventure drops on the web app"
+                onPress={() => Linking.openURL("https://customer.gozaika.in/account/discovery")}
+                style={{
+                  marginTop: 4,
+                  minHeight: 40,
+                  borderRadius: 8,
+                  backgroundColor: brand.saffron,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ color: brand.white, fontWeight: "700", fontSize: 13 }}>
+                  View Flavour Passport
                 </Text>
               </TouchableOpacity>
             </View>

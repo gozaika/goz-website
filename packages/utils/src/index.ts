@@ -451,6 +451,80 @@ export function resolveLatestConsent(events: readonly ConsentEventLike[]): Map<s
   return latest;
 }
 
+// ─── Slice 9 utilities ────────────────────────────────────────────────────────
+
+export function formatCountdown(endAt: string | Date, now: Date = new Date()): string {
+  const endMs = typeof endAt === "string" ? Date.parse(endAt) : endAt.getTime();
+  const remainingMs = Math.max(0, endMs - now.getTime());
+  if (remainingMs === 0) return "00:00:00";
+  const totalSeconds = Math.floor(remainingMs / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+const TIER_THRESHOLDS = { BRONZE: 0, SILVER: 10, GOLD: 30, PLATINUM: 75 } as const;
+
+export function tierFromBagCount(n: number): "BRONZE" | "SILVER" | "GOLD" | "PLATINUM" {
+  if (n >= TIER_THRESHOLDS.PLATINUM) return "PLATINUM";
+  if (n >= TIER_THRESHOLDS.GOLD) return "GOLD";
+  if (n >= TIER_THRESHOLDS.SILVER) return "SILVER";
+  return "BRONZE";
+}
+
+export function tierLabel(tier: string): string {
+  const labels: Record<string, string> = {
+    BRONZE: "Foodie Explorer",
+    SILVER: "Flavor Nomad",
+    GOLD: "Taste Connoisseur",
+    PLATINUM: "Culinary Ambassador",
+  };
+  return labels[tier] ?? tier;
+}
+
+export function bagsToNextTier(n: number): number | null {
+  if (n < TIER_THRESHOLDS.SILVER) return TIER_THRESHOLDS.SILVER - n;
+  if (n < TIER_THRESHOLDS.GOLD) return TIER_THRESHOLDS.GOLD - n;
+  if (n < TIER_THRESHOLDS.PLATINUM) return TIER_THRESHOLDS.PLATINUM - n;
+  return null;
+}
+
+export function tierProgressPercent(n: number): number {
+  if (n >= TIER_THRESHOLDS.PLATINUM) return 100;
+  if (n >= TIER_THRESHOLDS.GOLD) {
+    return Math.round(((n - TIER_THRESHOLDS.GOLD) / (TIER_THRESHOLDS.PLATINUM - TIER_THRESHOLDS.GOLD)) * 100);
+  }
+  if (n >= TIER_THRESHOLDS.SILVER) {
+    return Math.round(((n - TIER_THRESHOLDS.SILVER) / (TIER_THRESHOLDS.GOLD - TIER_THRESHOLDS.SILVER)) * 100);
+  }
+  return Math.round((n / TIER_THRESHOLDS.SILVER) * 100);
+}
+
+export function flavourPersonalityLabel(score: number): string {
+  if (score >= 81) return "Culinary Ambassador";
+  if (score >= 61) return "Flavour Nomad";
+  if (score >= 41) return "Spice Voyager";
+  if (score >= 21) return "Local Explorer";
+  return "Home Comfort";
+}
+
+export function ratingLabel(avg: number): string {
+  if (avg >= 4.0) return "Excellent";
+  if (avg >= 3.5) return "Very Good";
+  if (avg >= 3.0) return "Good";
+  if (avg >= 2.0) return "Fair";
+  return "Poor";
+}
+
+export function maskReviewerName(fullName: string | null | undefined): string {
+  if (!fullName?.trim()) return "Anonymous";
+  const parts = fullName.trim().split(/\s+/);
+  const first = parts[0] ?? "";
+  const lastInitial = parts.length > 1 ? ` ${(parts[parts.length - 1]?.[0] ?? "").toUpperCase()}.` : "";
+  return `${first}${lastInitial}`;
+}
+
 export function isAllowedDemoSupabaseUrl(url: string, allowRemote = false): boolean {
   if (allowRemote) {
     return true;

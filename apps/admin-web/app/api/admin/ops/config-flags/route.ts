@@ -19,6 +19,11 @@ const flagMeta = {
     description: "Pilot guidance cap enforced by drop publishing.",
     consumedBy: "restaurant portal drop publishing",
   },
+  BLIND_ADVENTURE_ENABLED: {
+    name: "Blind Adventure drops",
+    description: "Allow opted-in restaurants to publish mystery-cuisine Blind Adventure drops.",
+    consumedBy: "restaurant portal drop type selector",
+  },
 } as const;
 
 export async function POST(request: Request) {

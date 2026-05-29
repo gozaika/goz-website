@@ -1,9 +1,13 @@
 import type { ButtonHTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
 import { Clock, MapPin, ShieldCheck, Store } from "lucide-react";
 import type { PublicDropCard, PublicRestaurantProfile } from "@gozaika/types";
-import { cn, dietaryBadgeLabel, formatPaise, formatPickupWindow, getDropClaimAvailability } from "@gozaika/utils";
+import { cn, dietaryBadgeLabel, formatCountdown, formatPaise, formatPickupWindow, getDropClaimAvailability } from "@gozaika/utils";
 
 export { DropShareActions, LaunchCommsPanel } from "./launch-comms-actions";
+export { CuisinePassport } from "./CuisinePassport";
+export { AdventureDropCard } from "./AdventureDropCard";
+export { FoodStoryCard } from "./FoodStoryCard";
+export { ZaykaPassportCard } from "./ZaykaPassportCard";
 
 export const tokens = {
   colors: {
@@ -154,13 +158,18 @@ export function DropCard({
   drop,
   className,
   actions,
+  now,
 }: {
   readonly drop: PublicDropCard;
   readonly className?: string;
   readonly actions?: ReactNode;
+  readonly now?: Date;
 }) {
-  const claimAvailability = getDropClaimAvailability(drop);
+  const nowDate = now ?? new Date();
+  const claimAvailability = getDropClaimAvailability(drop, nowDate);
   const soldOut = claimAvailability.code === "SOLD_OUT";
+  const isBlindAdventure = drop.dropTypeCode === "BLIND_ADVENTURE";
+
   const serves =
     drop.servesMin && drop.servesMax
       ? drop.servesMin === drop.servesMax
@@ -168,20 +177,74 @@ export function DropCard({
         : `Serves ${drop.servesMin}-${drop.servesMax}`
       : null;
 
+  // FOMO signals
+  const pickupEndMs = Date.parse(drop.pickupEndAt);
+  const pickupStartMs = Date.parse(drop.pickupStartAt);
+  const msUntilClose = pickupEndMs - nowDate.getTime();
+  const closingSoon = msUntilClose > 0 && msUntilClose < 2 * 60 * 60 * 1000;
+  const closingVeryUrgent = msUntilClose > 0 && msUntilClose < 60 * 60 * 1000;
+  const goingFast = drop.quantityTotal > 0 && drop.quantityAvailable / drop.quantityTotal <= 0.3 && drop.quantityAvailable > 0;
+  const almostGone = drop.quantityAvailable > 0 && drop.quantityAvailable <= 3;
+  const isNew = nowDate.getTime() - pickupStartMs < 30 * 60 * 1000 && pickupStartMs <= nowDate.getTime();
+
+  const borderClass = goingFast && !soldOut
+    ? "border-[#FF6B35]/60 animate-pulse"
+    : isBlindAdventure
+      ? "border-[#D4A017]/60"
+      : "border-black/10";
+
   return (
-    <article className={cn("relative overflow-hidden rounded-lg border border-black/10 bg-white p-4 shadow-sm", className)}>
+    <article className={cn(
+      "relative overflow-hidden rounded-lg border bg-white p-4 shadow-sm transition hover:shadow-md",
+      borderClass,
+      className,
+    )}>
+      {/* Sold-out overlay */}
       {soldOut ? (
-        <div className="absolute inset-0 z-10 grid place-items-center bg-white/85 text-lg font-bold text-[#2D2D2D]">
-          Sold out
+        <div className="absolute inset-0 z-10 grid place-items-center bg-white/85">
+          <span className="rotate-[-15deg] rounded border-4 border-red-500 px-4 py-1 text-xl font-black text-red-600">
+            Sold Out
+          </span>
         </div>
       ) : null}
+
+      {/* Badges row */}
+      <div className="mb-2 flex flex-wrap gap-1.5">
+        {isNew && (
+          <span className="rounded-full bg-[#1A5C38] px-2 py-0.5 text-[10px] font-bold uppercase text-white tracking-wide">
+            New
+          </span>
+        )}
+        {isBlindAdventure && (
+          <span className="rounded-full border border-[#D4A017]/60 bg-[#D4A017]/10 px-2 py-0.5 text-[10px] font-bold text-[#7C5C00] tracking-wide">
+            Blind Adventure
+          </span>
+        )}
+        {almostGone && !soldOut && (
+          <span className="rounded-full bg-[#FF6B35] px-2 py-0.5 text-[10px] font-bold text-white tracking-wide">
+            Only {drop.quantityAvailable} left!
+          </span>
+        )}
+      </div>
+
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-[#1A5C38]">{drop.restaurantName}</p>
-          <h3 className="mt-1 text-xl font-semibold text-[#2D2D2D]">{drop.bagDisplayName}</h3>
-          {drop.bagShortDescription ? (
+          <h3 className="mt-1 text-xl font-semibold text-[#2D2D2D]">
+            {isBlindAdventure ? (
+              <span className="text-[#D4A017]">Mystery Cuisine</span>
+            ) : (
+              drop.bagDisplayName
+            )}
+          </h3>
+          {!isBlindAdventure && drop.bagShortDescription ? (
             <p className="mt-1 line-clamp-2 text-sm text-[#2D2D2D]/70">{drop.bagShortDescription}</p>
           ) : null}
+          {isBlindAdventure && (
+            <p className="mt-1 text-xs text-[#2D2D2D]/55">
+              Cuisine revealed after pickup. Allergens always disclosed.
+            </p>
+          )}
         </div>
         <DietaryBadge code={drop.dietaryCategoryCode} />
       </div>
@@ -191,7 +254,15 @@ export function DropCard({
       <div className="mt-4 grid gap-2 text-sm text-[#2D2D2D]/75">
         <div className="flex items-center gap-2">
           <Clock size={16} aria-hidden="true" />
-          {formatPickupWindow(drop.pickupStartAt, drop.pickupEndAt)}
+          {closingSoon ? (
+            <span aria-live="polite">
+              <span className={cn("font-semibold tabular-nums", closingVeryUrgent ? "text-red-600" : "text-[#FF6B35]")}>
+                Closes in {formatCountdown(drop.pickupEndAt, nowDate)}
+              </span>
+            </span>
+          ) : (
+            formatPickupWindow(drop.pickupStartAt, drop.pickupEndAt)
+          )}
         </div>
         <div className="flex items-center gap-2">
           <MapPin size={16} aria-hidden="true" />
@@ -206,6 +277,9 @@ export function DropCard({
         <ProgressBar available={drop.quantityAvailable} total={drop.quantityTotal} />
         <p className="mt-2 text-xs font-semibold text-[#2D2D2D]/65">
           {drop.quantityAvailable} of {drop.quantityTotal} bags remaining
+          {goingFast && !almostGone ? (
+            <span className="ml-2 text-[#FF6B35]">· Going fast</span>
+          ) : null}
         </p>
       </div>
       <div className="mt-4 flex items-center justify-between">

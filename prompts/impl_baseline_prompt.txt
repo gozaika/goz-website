@@ -1,6 +1,1108 @@
 You are working in C:\venkat\limca\gozaika\sourcecode.
 
 MODE
+- Implementation task. Audit first, then implement. Do not propose — build.
+- Preserve unrelated changes. Do not revert files you did not create.
+- Run git status --short --branch before editing. Report dirty files.
+- Run type-check after each major surface. Fix errors before proceeding.
+- Exclude apps/website from scope.
+- Do not redesign the business model, add live billing/payout flows, or expose
+  private compliance data, service-role keys, or raw provider payloads.
+- Premium language only: BAM Bags, Limited Drops, Chef's Selection,
+  off-menu discovery, smarter access.
+
+PROJECT CONTEXT
+Read before coding:
+  docs/implementation-plan.md
+  project docs/goZaika_Technology_Specification_v3.docx
+  project docs/claude_goZaika_Master_Business_Document_v3.docx
+  packages/ui/src, packages/types/src, packages/utils/src
+  apps/consumer-web/app/** (all routes)
+  apps/consumer-mobile/App.tsx and apps/consumer-mobile/src/**
+  supabase/current schema/*: latest superbase scehma.
+KEY EXISTING STRUCTURES (verified in codebase)
+  - DB: review_review table (rating_value 1–5, review_text, moderation_status_code
+        PENDING/APPROVED/REJECTED/HIDDEN, is_public flag, one per collected order)
+  - DB: review_media table (optional photos on reviews)
+  - DB: restaurant_restaurant.average_rating / rating_count (COMPUTED columns,
+        auto-maintained by trigger COMPUTED_refresh_restaurant_rating)
+  - DB: consumer_passport_stat (Zayka Passport — total_bags_collected,
+        total_restaurants_visited, current_tier_code BRONZE/SILVER/GOLD/PLATINUM)
+  - Types: PublicRestaurantProfile already has averageRating, ratingCount, latitude, longitude
+  - Types: PublicDropCard has latitude, longitude, statusCode, quantityAvailable,
+        pickupEndAt (for countdown/expiry signals)
+  - Env: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is set in .env.local
+
+
+SYNC / REBUILD SOURCE-OF-TRUTH REQUIREMENTS
+Keep the repo self-sufficient for future agents. Before final response, update all artifacts needed for another agent to understand and rebuild this slice from a fresh clone.
+
+Required updates:
+1. docs/implementation-plan.md
+   - Add or update the slice section.
+   - Include goal, scope, files/features changed, data/API changes, UX changes, security/RLS notes, out-of-scope items, verification commands, known gaps, and deployment steps.
+   - State explicitly whether a Supabase migration was added.
+   - If no migration was required, write: "No migration required."
+
+2. Supabase/database artifacts
+   - Commit every new migration under supabase/migrations.
+   - Never apply a remote Supabase change without adding the matching local migration or documented repair file.
+   - If remote schema may differ from local, update or create a schema snapshot such as docs/db/current-schema.sql or supabase/schema.sql.
+   - Document remote apply order and exact commands.
+   - Document any RLS, grants, RPCs, views, service-role boundaries, or public/private read-model changes.
+
+3. Configuration/reference docs
+   - Update docs/configuration-reference.md for any new/changed env vars, OAuth redirects, provider settings, feature flags, public keys, webhook URLs, or deployment assumptions.
+   - Do not include secrets.
+
+4. Runbooks
+   - Update relevant docs/runbooks/*.md when behavior changes.
+   - Include smoke-test steps, troubleshooting, rollback notes, and expected provider failures.
+   - Payment, notification, auth, admin, deployment, and demo-data changes must each update their relevant runbook.
+
+5. Demo/seed data
+   - Add deterministic demo seed files when needed.
+   - Register demo rows in the seed registry if the repo has one.
+   - Update cleanup instructions.
+   - Do not seed production data or real PII.
+
+6. Verification record
+   - Record commands actually run and their results in the implementation notes.
+   - Include any blocked checks and why.
+   - Include local/deployed route smoke results when relevant.
+   - Include screenshot/overflow results for UX work.
+
+7. Dirty-worktree safety
+   - Run `git status --short --branch` at the start and before final response.
+   - Report pre-existing dirty/untracked files.
+   - Preserve unrelated user/agent changes.
+   - Do not revert files you did not modify unless explicitly asked.
+
+Final response must state:
+- Which source-of-truth docs were updated.
+- Whether migrations/schema snapshots changed.
+- Whether runbooks/config/demo docs changed.
+- Verification commands and results.
+- Remaining known gaps or follow-ups.
+
+DATABASE DRIFT RULE
+Remote Supabase must never become the only source of truth. Any remote SQL, dashboard-created object, RLS policy, function, view, trigger, grant, storage bucket/policy, or seed/demo dependency introduced during this slice must be represented in committed repo artifacts before final response.
+
+
+
+BRAND COLORS
+  Saffron:  #FF6B35   (primary CTA, urgency)
+  Forest:   #1A5C38   (active/selected state, trust)
+  Gold:     #D4A017   (premium/tier signal)
+  Cream:    #FFF8F0   (page backgrounds)
+  Charcoal: #2D2D2D   (body text)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SLICE A — RESTAURANT DISCOVERY (Expedia Hotel Search model)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Target routes:
+  apps/consumer-web/app/restaurants/page.tsx
+  apps/consumer-web/app/restaurants/restaurant-directory-client.tsx
+  apps/consumer-mobile (discovery screen)
+
+DESKTOP LAYOUT (≥1024px) — mirror Expedia hotel search two-column layout:
+  Left column (280px fixed): sticky filter sidebar
+  Right column (flex): sort bar + result count + list/map toggle + result grid
+
+MOBILE LAYOUT (<1024px) — mirror Expedia mobile:
+  Full-width filter bar (collapsible drawer from bottom, triggered by "Filters" button)
+  Sticky top bar: search input + "Filters" button with active-filter count badge
+  Below: sort chips row (scrollable horizontal), then result count, then cards (1-col)
+  Floating "Map" pill button over result list (bottom-center)
+
+FILTER PANEL (save all to user profile via PATCH /api/account after 800ms debounce):
+
+  Sort by (radio):
+    Recommended (default) | Most Active Drops | Highest Rated | Nearest | Pickup Closing Soon
+
+  Active Drops (toggle switch, default ON):
+    "Show only restaurants with active drops"
+
+  Rating (checkbox group):
+    Any | 4+ Stars | 3+ Stars
+
+  Cuisine (multi-select chips, scrollable):
+    Dynamically populated from restaurants.cuisineTags — show top 12, "+ more" expander
+
+  Dietary (multi-select chips):
+    All | Veg Only | Non-Veg | Jain | Egg Only
+
+  Distance (slider 0.5km → 10km, only shown when browser geolocation granted):
+    Show distance from user to restaurant. Requires restaurant lat/lng from profile.
+
+  Neighborhood (multi-select, collapsible):
+    Dynamically populated from restaurants.neighborhoodName
+
+  Clear All Filters link (shown only when filters are non-default)
+
+RESULT CARDS — match Expedia hotel card layout:
+  - Left: restaurant image (aspect-ratio 16:9, 120px wide on desktop card).
+    Use a branded placeholder illustration (cuisine-appropriate) if no image.
+  - Right:
+    Top line: restaurant name (bold) + neighborhood (muted, truncated)
+    Second line: cuisine tag chips (max 3) + dietary badge
+    Third line: star rating (filled stars) + numeric score + review count
+       ("4.2 ★  ·  38 reviews" — show only if ratingCount > 0)
+    Fourth line: active drop indicator
+       IF activeDropCount > 0:  🟢 {n} active drop{s} · next pickup closes in {countdown}
+       IF activeDropCount == 0: "No active drops right now"
+    Bottom: CTA button "View Restaurant" (Forest green, right-aligned on desktop)
+  - Card hover: lift shadow. Corresponding map pin pulses.
+
+MAP VIEW — match Expedia map split panel:
+  On desktop: switch from 2-col grid to map-right / list-left (40/60 split).
+    The list scrolls; the map stays fixed.
+  On mobile: full-screen map overlay; bottom sheet shows the focused card.
+
+  Use @react-google-maps/api (install if not present).
+  Map center: Hyderabad (17.385, 78.4867). Zoom 12.
+  Pins: circular pills showing "{n} drop{s}" text.
+    Green  (#1A5C38)  = activeDropCount > 0, pickup not closing within 2 hours
+    Orange (#FF6B35)  = activeDropCount > 0, any drop closes within 2 hours
+    Gray   (#9CA3AF)  = activeDropCount == 0
+    Larger size when card is hovered/focused in list.
+  Clicking pin: smoothly scrolls list to that card + opens info popup above pin showing:
+    restaurant name, rating, active drop count, "View" button.
+  Restaurant coordinates come from PublicRestaurantProfile.latitude / .longitude.
+  If null, omit from map (show in list only, with "Location not set" note).
+
+RESULT COUNT & SORT BAR (sticky below filter bar / below top mobile bar):
+  "{N} restaurants · sorted by {sort label}" (left)
+  List | Map toggle buttons (right) — same as current but polished
+
+RESTAURANT PROFILE INPUT (restaurant-mgmt-web):
+  In restaurant profile/basics settings, add an "Address & Location" section:
+    Street address (text input)
+    Neighborhood (dropdown populated from DB)
+    City (read-only, "Hyderabad")
+    Lat/Lng (auto-filled via Google Maps Geocoding API from address,
+             with a small embedded map preview showing the pin)
+    Manual override checkbox: "Set location manually on map" (drag pin)
+  Save to restaurant_restaurant via existing PATCH /api/restaurant/basics endpoint.
+  Add latitude/longitude to restaurantBasicsUpdateSchema in packages/types.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SLICE B — RATINGS & REVIEWS (Expedia Guest Reviews model)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DB schema already exists (review_review, review_media). Implement the full
+review lifecycle: submission → moderation flag → public display.
+
+NEW API ROUTES (apps/consumer-web/app/api/reviews/):
+
+  POST /api/reviews
+    Body: { orderPk, ratingValue (1–5), reviewText?, categories? }
+    Auth: consumer session required
+    Guard: order must be COLLECTED status + belong to calling consumer
+           + no existing review for this orderPk (uq_review_order)
+    Insert into review_review with moderation_status_code = 'PENDING', is_public = false
+    Return: { reviewPk, message: "Review submitted for moderation" }
+
+  GET /api/restaurants/[slug]/reviews
+    Returns: approved public reviews for this restaurant
+    Pagination: ?page=1&limit=10
+    Sort: ?sort=recent|relevant|highest|lowest
+    Filter: ?dietary=VEG (filters by the order's dietary category)
+    Include: reviewer first name (masked: "Priya K."), ratingValue, reviewText,
+             bagDisplayName, createdAt, categories, mediaUrls (if any)
+
+  POST /api/reviews/[reviewPk]/media (multipart, for photo upload — future slice)
+    Stub this route with 501 Not Implemented for now.
+
+REVIEW SUBMISSION UI — shown on orders detail page after order status = COLLECTED:
+
+  "How was your experience?" prompt card (Forest green border):
+    5 large interactive stars (tap/click to select)
+    Optional text area: "Tell us about your meal..." (max 500 chars, char counter)
+    Optional category ratings (1–5 slider or star row each):
+      Food Quality | Value for Price | Pickup Experience | Packaging
+    "Submit Review" button (saffron, disabled until star selected)
+    "Skip for now" ghost button
+    After submit: show thank-you state "Your review is awaiting moderation"
+
+  On mobile (consumer-mobile): same prompt after order collected, native stars.
+
+REVIEWS DISPLAY — on restaurant detail page (apps/consumer-web/app/restaurants/[slug]):
+
+  Section header: mirror Expedia layout
+    Big score: "{avg}/5" (e.g. "4.2/5") in forest green + label ("Excellent" ≥4.0,
+                "Very Good" ≥3.5, "Good" ≥3.0, "Fair" <3.0, "Poor" <2.0)
+    "{N} verified reviews" (muted, with ⓘ tooltip "From verified BAM Bag orders only")
+
+  Category scores (4 categories, horizontal on desktop, 2×2 on mobile):
+    Compute averages from review_review.categories JSONB. Display as labeled progress bars.
+
+  Filter bar (matches Expedia):
+    [ 🔍 Search reviews ]  [ Dietary type ▾ ]  [ With photos ]   Sort: Most relevant ▾
+
+  Review cards (match Expedia layout exactly):
+    Top: "{ratingValue}/5 {label}" (bold, large)
+    Name line: "Priya K. · Veg order · May 2026"
+    Liked tags line (if categories present): "😊 Liked: Food Quality, Packaging"
+    Review text (truncated at 3 lines, "Read more" expand)
+    Bottom line: "BAM Bag: {bagDisplayName} · Verified order ⓘ"
+    If photos: horizontal scrollable thumbnail row (future, show placeholder for now)
+    Report button (ghost, small, flag icon)
+
+  Empty state: "Be the first to review — order a BAM Bag and share your experience."
+
+RESTAURANT PORTAL (apps/restaurant-mgmt-web):
+  Add "Reviews" tab to restaurant dashboard showing:
+    - Aggregate score + category breakdown (read-only)
+    - All approved reviews (read-only, they cannot edit or respond per schema)
+    - Pending reviews count
+    - "Your reviews are moderated before public display" note
+
+ADMIN (apps/admin-web):
+  Add "Reviews" queue under ops:
+    List of PENDING reviews with: reviewer name, restaurant, rating, text
+    Bulk or per-review: Approve / Reject / Hide actions
+    Approved reviews flip is_public=true (trigger auto-refreshes average_rating)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SLICE C — RESTAURANT DETAIL PAGE (Expedia Hotel Information model)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Target: apps/consumer-web/app/restaurants/[slug]/page.tsx
+
+DESKTOP LAYOUT — exact Expedia hotel detail structure:
+
+  1. BREADCRUMB: Home › Restaurants › {restaurant name}
+
+  2. PHOTO STRIP (hero area, full width):
+     - Main photo (large, left, ~60% width): restaurant brand image or cuisine illustration
+     - 2-3 thumbnail grid (right): cuisine action shots or food imagery
+     - "Show all photos" button (bottom-right of strip, triggers lightbox modal)
+     - If no photos: branded gradient with cuisine icon
+
+  3. STICKY HEADER (appears after scrolling past photo strip):
+     Restaurant name | ★ {avg} ({N} reviews) | {neighborhood} | [See reviews] [Share]
+
+  4. TWO-COLUMN BODY (max-w-7xl, gap-8):
+
+     LEFT COLUMN (flex-1):
+
+       A. KEY INFO BAR (horizontal, bordered pills):
+          📍 {neighborhood}, Hyderabad
+          🍽️ {primary cuisine}
+          🕐 Next pickup: {time range} (if active drop exists)
+          ✅ {dietary tags as badges}
+
+       B. TABS: Overview | Active Drops | Drop History | Reviews | Location
+          (sticky below key info bar on scroll)
+
+       TAB: Overview
+         - "About {restaurant name}": storyMarkdown rendered as rich text
+           (if null, show: "Chef-curated BAM Bags with full allergen disclosure and
+            pickup-only trust. Check active drops for today's selection.")
+         - Cuisine & Dietary highlights (icon grid, 2 columns, 4–6 items):
+           [Cuisine icon] Biryani  [Leaf icon] Veg options available
+           [Fire icon] {spice level range}  [Shield icon] Allergen-disclosed
+         - Pickup policy card: forest-green border, pickup instructions text
+         - "How BAM Bags work" accordion (3 steps, collapsed by default on mobile)
+
+       TAB: Active Drops
+         - Live countdown banner: "Pickup closes in {HH:MM:SS}" (real-time, red when <1hr)
+         - Drop cards in 2-col grid (DropCard component, enhanced with countdown)
+         - Empty state: "No active drops right now. Follow this restaurant for alerts."
+
+       TAB: Drop History
+         - Timeline view of past drops (reverse chronological)
+         - Each row: bag name, date, dietary badge, sold/total ratio bar
+         - "You missed this" chip on drops during which user had no order (if logged in)
+
+       TAB: Reviews
+         - Full reviews UI as defined in Slice B above
+
+       TAB: Location
+         - Embedded Google Map (400px tall, full column width)
+         - Restaurant pin with info window
+         - Pickup instructions overlay
+         - "Get directions" button (links to Google Maps deep link)
+
+     RIGHT COLUMN (w-80, sticky top-24):
+
+       CLAIM PANEL (matches Expedia "Book" sidebar):
+         ┌─────────────────────────────────┐
+         │  🟢 {N} Active Drop{s} Now       │
+         │                                  │
+         │  {bag display name}              │
+         │  ₹{price}   Pickup closes in {T} │
+         │  {dietary badge}  {spice badge}  │
+         │  {serves min}–{serves max} people │
+         │                                  │
+         │  [  Claim This Drop  ]  (saffron) │
+         │                                  │
+         │  ──────────────────────────────  │
+         │  If multiple active drops:        │
+         │  show up to 3 with "View all"     │
+         └─────────────────────────────────┘
+         Below panel:
+         ★ {avg}/5 · {N} reviews  (small, links to reviews tab)
+         📍 {neighborhood}
+         ✅ All reviews from verified BAM Bag orders
+
+MOBILE LAYOUT:
+  Stacked single column. Photo strip is a horizontal scroll carousel (swipeable).
+  Tabs become a horizontal scrollable chip row (no underline, pill style).
+  Claim panel becomes a sticky bottom bar:
+    Left: "{bag name} · ₹{price}" | Right: [Claim Drop] button (full saffron pill)
+    Collapses to thin "Claim" pill when user scrolls up. Expands on scroll down.
+
+TRANSITIONS: Tabs switch with a simple 150ms fade. No page navigation within tabs.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SLICE C-DISCOVERY — CUISINE & FOOD ADVENTURE DISCOVERY
+(Spotify Discover Weekly + Airbnb Experiences model)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OBJECTIVE
+Make goZaika the platform that gives customers stories to tell.
+The FOMO here is social identity: "I discovered a hidden Bohri kitchen in
+Kondapur that none of my friends knew existed." BAM Bags are cheap enough
+to try something unfamiliar — the platform's job is to surface what
+customers would have completely missed.
+
+IMPORTANT: This is a pure front-end + API feature. Almost all data already
+exists. Only one DB migration is required (Blind Adventure drop type).
+
+KEY DB TABLES (all existing):
+  master_cuisine         — full cuisine universe (BIRYANI, MUGHLAI, CHETTINAD,
+                           SINDHI, JAIN, STREET_FOOD, BAKERY, DESSERTS, etc.)
+  restaurant_cuisine_map — restaurant → cuisine mapping (many-to-many)
+  order_order            — user's purchase history (use status = COLLECTED)
+  consumer_passport_stat — total_bags_collected, total_restaurants_visited
+  geo_neighborhood       — neighbourhood data for geo-based discovery
+  drop_drop              — drop_type_code can gain BLIND_ADVENTURE (migration)
+
+──────────────────────────────────────
+DB MIGRATION REQUIRED (one change only)
+──────────────────────────────────────
+
+In a new Supabase migration file, extend the drop_type check constraint:
+
+  ALTER TABLE drop_drop DROP CONSTRAINT ck_drop_type;
+  ALTER TABLE drop_drop ADD CONSTRAINT ck_drop_type
+    CHECK (drop_type_code IN ('STANDARD','SPOTLIGHT','CHEF_SPECIAL','BLIND_ADVENTURE'));
+
+Add BLIND_ADVENTURE to createDropDraftSchema in packages/types/src/index.ts.
+
+──────────────────────────────────────
+NEW API ROUTES
+──────────────────────────────────────
+
+apps/consumer-web/app/api/account/discovery-profile/route.ts
+  GET — auth required
+  Returns:
+    triedCuisines: Array<{ cuisineCode, cuisineName, bagCount }>
+    untriedCuisines: Array<{ cuisineCode, cuisineName, activeDropCount }>
+    totalAvailableCuisines: number
+    triedNeighborhoods: Array<{ neighborhoodCode, neighborhoodName, bagCount }>
+    totalActiveNeighborhoods: number
+    flavourDiversityScore: number   (0–100, formula below)
+    flavourPersonalityLabel: string (e.g. "Spice Voyager")
+
+  Score formula (compute server-side):
+    cuisineBreadth  = (triedCuisines.length / totalAvailableCuisines) × 40
+    geoBreadth      = (triedNeighborhoods.length / totalActiveNeighborhoods) × 30
+    volumeDepth     = Math.min(passport.total_bags_collected, 30) / 30 × 20
+    engagement      = Math.min(approvedReviewCount, 3) / 3 × 10
+    score           = Math.round(cuisineBreadth + geoBreadth + volumeDepth + engagement)
+
+  Label thresholds:
+    0–20:  "Home Comfort"        (you know what you love)
+    21–40: "Local Explorer"      (branching out)
+    41–60: "Spice Voyager"       (boldly selective)
+    61–80: "Flavour Nomad"       (crosses borders willingly)
+    81–100:"Culinary Ambassador" (maps the unmapped)
+
+  SQL for tried cuisines:
+    SELECT DISTINCT mc.cuisine_code, mc.cuisine_name,
+           COUNT(oo.order_pk) AS bag_count
+    FROM order_order oo
+    JOIN restaurant_cuisine_map rcm ON rcm.restaurant_fk = oo.restaurant_fk
+    JOIN master_cuisine mc ON mc.master_cuisine_pk = rcm.master_cuisine_fk
+    WHERE oo.consumer_profile_fk = $userId
+      AND oo.order_status_code = 'COLLECTED'
+    GROUP BY mc.cuisine_code, mc.cuisine_name
+
+  Untried = all active master_cuisine rows NOT in the above result
+            that have at least one active drop.
+
+
+apps/consumer-web/app/api/drops/adventure-pick/route.ts
+  GET — auth optional (personalised if authed, generic if not)
+  Returns: single PublicDropCard (the "adventure pick"), plus:
+    adventureReason: string  (e.g. "You've never tried Chettinad cuisine")
+    firstTimerCount: number  (how many people tried this cuisine for first
+                              time this week — aggregate, no PII)
+  Algorithm (server-side):
+    1. Load all ACTIVE drops
+    2. If authed: exclude drops from restaurants user has COLLECTED orders at
+    3. If authed: prefer cuisines where user has 0 COLLECTED orders
+    4. Rank by: cuisine rarity on platform (fewest total city orders) DESC,
+                then quantityAvailable > 0, then pickup window not closing < 1hr
+    5. Return top result. If none, return most novel drop by cuisine rarity.
+
+
+apps/consumer-web/app/api/discovery/cuisine-stats/route.ts
+  GET — no auth required
+  Returns aggregate (no PII):
+    cuisineWeeklyFirstTimers: Array<{
+      cuisineCode, cuisineName,
+      firstTimerCount,   // COLLECTED orders from consumers with no prior
+                         // order in this cuisine, in rolling 7 days
+      totalClaimCount    // total COLLECTED orders for this cuisine, 7 days
+    }>
+    neighborhoodActivity: Array<{
+      neighborhoodName,
+      activeCuisineCount,   // distinct cuisines with active drops today
+      activeDropCount
+    }>
+  Cache: 1-hour Cache-Control header (this is a read-only aggregate).
+
+
+apps/consumer-web/app/api/discovery/share-card/route.ts
+  GET — auth required, returns image/png
+  Generates a shareable PNG card (use @vercel/og or satori):
+    - Dark forest green background
+    - "My Flavour Passport · goZaika · Hyderabad"
+    - Flavour Diversity Score (large number) + personality label
+    - "Cuisines explored this month: {list}"
+    - "{N} BAM Bags claimed"
+    - "Discover yours at gozaika.in" footer
+  Size: 1080×1080 (Instagram square)
+
+──────────────────────────────────────
+UI: CUISINE PASSPORT COMPONENT
+──────────────────────────────────────
+
+New reusable component: packages/ui/src/CuisinePassport.tsx
+
+Props:
+  triedCuisines: Array<{ cuisineCode, cuisineName, bagCount }>
+  untriedCuisines: Array<{ cuisineCode, cuisineName, activeDropCount }>
+  score: number
+  personalityLabel: string
+  onCuisineClick: (cuisineCode: string, tried: boolean) => void
+
+Layout:
+  HEADER: "Your Flavour Passport"
+  SCORE BLOCK (large, centered):
+    Big number: "{score}/100"
+    Label: "{personalityLabel}" in Gold (#D4A017)
+    Sub-text: "You've explored {triedCount} of {totalCount} cuisines"
+  CUISINE GRID (3 cols on desktop, 2 cols on mobile):
+    Each cuisine tile:
+      Tried:   coloured background (cuisine accent colour), cuisine name,
+               "{N} bags" count, checkmark icon
+      Untried: grey border, dashed, cuisine name, "Undiscovered" label,
+               IF activeDropCount > 0: saffron "Drop available" dot
+    Clicking an untried tile with active drops → navigates to
+    /drops?cuisine={cuisineCode} (filtered discovery page)
+  FOOTER: "Share your passport" button (generates share card)
+
+──────────────────────────────────────
+UI: "YOUR NEXT FOOD ADVENTURE" CARD
+──────────────────────────────────────
+
+New component: packages/ui/src/AdventureDropCard.tsx
+
+Props: drop: PublicDropCard, adventureReason: string, firstTimerCount: number
+
+Visual style (distinct from standard DropCard):
+  Background: dark forest green (#1A5C38) with subtle texture/grain CSS
+  Top label: "✦ Your next food adventure" (gold, small caps)
+  Cuisine line: "{adventureReason}" (e.g. "You've never tried Mughlai cuisine")
+  Restaurant name (white, large)
+  Neighborhood + pickup window (muted white)
+  Price chip + dietary badge
+  Social proof: "{firstTimerCount} first-time explorers this week" (small, muted)
+  CTA: "Claim the adventure" (saffron pill button, full width)
+
+Placement:
+  consumer-web home page (apps/consumer-web/app/page.tsx):
+    Show as the FIRST card when user is logged in.
+    Show as a prominent banner with "Feeling adventurous?" headline when not logged in.
+  consumer-web drops page (drop-discovery-client.tsx):
+    Show pinned at top of the list view, above cuisine filters.
+    Label it "Adventure Pick" with a compass icon.
+
+──────────────────────────────────────
+UI: NEIGHBOURHOOD FOOD STORIES CARDS
+──────────────────────────────────────
+
+These are auto-generated from cuisine-stats API data. No CMS needed in this slice.
+
+Component: packages/ui/src/FoodStoryCard.tsx
+  A compact, editorial-style card with:
+    - Neighbourhood name (large)
+    - Auto-generated story line, e.g.:
+      "Kondapur has 3 cuisine types dropping today — including one you've never tried."
+      "Banjara Hills: {N} first-time Jain cuisine explorers this month."
+    - Active drop count chip
+    - "Explore" link → /drops?neighborhood={code}
+
+Generation logic (client-side, from cuisine-stats response):
+  For each neighbourhood with activeCuisineCount ≥ 2, generate one story card.
+  Sort by: most first-time explorers DESC.
+  Show top 4 on home page in a 2×2 grid (desktop) / horizontal scroll (mobile).
+  Label section: "What's happening in your city" with a map pin icon.
+
+──────────────────────────────────────
+UI: BLIND ADVENTURE DROP TYPE
+──────────────────────────────────────
+
+Changes to DropCard component (packages/ui/src/DropCard.tsx):
+  IF drop.dropTypeCode === 'BLIND_ADVENTURE':
+    - Replace cuisine/bag name display with "Mystery Cuisine" (gold text)
+    - Show dietary category + allergen summary AS NORMAL (always required)
+    - Show a sealed envelope or mystery box icon in place of cuisine icon
+    - Add "Blind Adventure" badge (dark green pill, gold border)
+    - Card has a subtle animated gradient shimmer (CSS keyframes, slow 3s loop)
+    - Tooltip on hover/press: "The cuisine is revealed after pickup.
+      Allergens and dietary category are always disclosed."
+
+Changes to drop detail page (apps/consumer-web/app/drops/[id]/page.tsx):
+  IF BLIND_ADVENTURE: same mystery display.
+  After order reaches COLLECTED status on the order detail page:
+    Show: "You discovered {cuisine}!" with animated stamp reveal
+    Stamp: cuisine name in large text, restaurant name below, date
+    "Add to your Passport" CTA → links to /account/passport
+    "Share your discovery" CTA → opens share card
+
+Changes to restaurant portal (apps/restaurant-mgmt-web):
+  In drop creation form: add 'Blind Adventure' as a drop type option.
+  Show a warning: "Cuisine will be hidden from customers until after pickup.
+  Dietary category and allergens remain visible and are always required."
+  Only show this option if admin has enabled BLIND_ADVENTURE_ENABLED flag
+  for this restaurant (check config_flags table, else hide the option).
+
+Changes to admin (apps/admin-web):
+  In admin ops config flags, add 'BLIND_ADVENTURE_ENABLED' as a per-restaurant
+  flag (add to adminOpsConfigFlagCodes in packages/types if not present).
+  Admin must explicitly enable per restaurant.
+
+──────────────────────────────────────
+UI: DISCOVERY PROFILE PAGE
+──────────────────────────────────────
+
+New page: apps/consumer-web/app/account/discovery/page.tsx
+Route: /account/discovery
+
+Sections (top to bottom):
+  1. Flavour Diversity Score hero (score + label + sub-text)
+  2. Cuisine Passport component (CuisinePassport.tsx)
+  3. "Untried cuisines with active drops today" (calls to action per cuisine)
+  4. Neighbourhood Explorer (which areas have you ordered from? map of Hyderabad
+     with visited neighbourhoods highlighted in forest green, unvisited in grey)
+  5. "Share your passport" button → hits /api/discovery/share-card, downloads PNG
+
+Entry points to this page:
+  - Link in account page (/account): "View your Flavour Passport"
+  - Link from Zayka Passport tier card (Slice D): "Boost your Discovery Score"
+  - After a Blind Adventure COLLECTED reveal: "Add to your Passport"
+
+──────────────────────────────────────
+CONSUMER MOBILE (apps/consumer-mobile)
+──────────────────────────────────────
+
+In the Account tab (or new Passport tab per Slice D):
+  Add "Flavour Passport" section:
+    - Score + label (large display)
+    - Horizontal scroll of cuisine tiles (Tried vs Untried)
+    - "Your next adventure" card (AdventureDropCard, scrollable)
+    - "Share your passport" button → uses React Native Share API with
+      the PNG URL from /api/discovery/share-card
+
+On the Home tab:
+  Add AdventureDropCard above the "How it works" section.
+
+──────────────────────────────────────
+WORDING GUIDE (no exceptions)
+──────────────────────────────────────
+
+  Use:               "Flavour Passport" / "cuisine adventure" / "discovery" /
+                     "first-time explorer" / "uncharted kitchen" /
+                     "Blind Adventure" / "reveal your cuisine"
+
+  Never use:         "algorithm" / "recommendation engine" / "AI picked this" /
+                     "based on your data" / "personalised for you"
+                     (These phrases kill the magic. The discovery should feel
+                     serendipitous, not surveillance.)
+
+──────────────────────────────────────
+IMPLEMENTATION ORDER (C-Discovery)
+──────────────────────────────────────
+
+  Phase 1: DB migration (BLIND_ADVENTURE constraint)
+  Phase 2: /api/account/discovery-profile route + types
+  Phase 3: /api/drops/adventure-pick route
+  Phase 4: CuisinePassport + AdventureDropCard components in packages/ui
+  Phase 5: Discovery profile page (/account/discovery)
+  Phase 6: Home page + drops page integration (adventure card, food stories)
+  Phase 7: /api/discovery/cuisine-stats + FoodStoryCard
+  Phase 8: /api/discovery/share-card (PNG generation with @vercel/og)
+  Phase 9: Blind Adventure drop type (DropCard + drop detail + restaurant portal + admin flag)
+  Phase 10: Consumer mobile discovery sections
+
+──────────────────────────────────────
+VERIFICATION CHECKLIST (C-Discovery)
+──────────────────────────────────────
+
+  [ ] /api/account/discovery-profile returns correct tried/untried split
+      for a consumer with 0 orders, 1 order, and 5+ orders
+  [ ] Flavour Diversity Score is 0 for a new user and increases correctly
+  [ ] Adventure pick excludes cuisines the user has already tried (when authed)
+  [ ] Adventure pick works for unauthenticated users (shows most novel drop)
+  [ ] Blind Adventure drop card shows "Mystery Cuisine" — not the bag name
+  [ ] Allergens and dietary category ARE visible on Blind Adventure drops
+  [ ] Cuisine reveal animation plays on order detail page after COLLECTED
+  [ ] Share card PNG renders correctly at 1080×1080
+  [ ] Untried cuisine tiles with active drops show the saffron "Drop available" dot
+  [ ] Restaurant portal only shows Blind Adventure option if flag is enabled
+  [ ] npx tsc --noEmit passes in all affected apps
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SLICE D — GAMIFICATION & DISCOVERY EXPERIENCE (Duolingo+Spotify model)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OBJECTIVE: Create discovery, surprise, and FOMO without dark patterns.
+Every urgency signal must reflect real data (real countdowns, real quantities).
+
+DB: consumer_passport_stat already has total_bags_collected, total_restaurants_visited,
+current_tier_code (BRONZE/SILVER/GOLD/PLATINUM). Use these.
+
+──────────────────────────────────────
+D1 — ZAYKA PASSPORT (Duolingo Tier model)
+──────────────────────────────────────
+
+New page: apps/consumer-web/app/account/passport/page.tsx
+New screen: consumer-mobile Account tab, "My Passport" section
+
+API: GET /api/account/passport  → returns consumer_passport_stat for current user
+
+PASSPORT CARD COMPONENT (reusable, shown in account + home hero for logged-in users):
+
+  Visual: styled as a real passport — dark forest green cover, gold lettering
+  "Zayka Passport · Hyderabad" header with goZaika emblem
+
+  Tier badge (large, centered):
+    BRONZE  = warm copper badge, "Foodie Explorer"
+    SILVER  = silver badge, "Flavor Nomad"
+    GOLD    = gold badge, "Taste Connoisseur"
+    PLATINUM = platinum badge with shimmer animation, "Culinary Ambassador"
+
+  Stats row (3 tiles):
+    🎒 {total_bags_collected} Bags Claimed
+    🏠 {total_restaurants_visited} Kitchens Visited
+    ⭐ {review_count} Reviews Written
+
+  Progress to next tier (progress bar):
+    BRONZE→SILVER: 10 bags  |  SILVER→GOLD: 30 bags  |  GOLD→PLATINUM: 75 bags
+    Show: "{N} more bags to {next tier}" with saffron progress fill
+    PLATINUM: "Top tier achieved — you're a Culinary Ambassador"
+
+  Badges earned (horizontal scroll, passport-stamp aesthetic):
+    "Biryani Believer"    — claimed 3+ Biryani drops
+    "Jain Journeys"       — claimed 3+ Jain drops
+    "Early Bird"          — claimed a drop within 30 mins of going live (5× times)
+    "Collector"           — claimed 5 drops in a single week
+    "Neighborhood Hopper" — ordered from 3+ different neighborhoods
+    "Critic"              — submitted 5+ approved reviews
+    Locked badges show as greyed-out silhouettes with lock icon + hint text
+
+  "Stamp collection" — each unique restaurant visited adds an illustrated stamp
+
+TIER BENEFITS SECTION (below passport card):
+  Table or card grid showing what each tier unlocks:
+    BRONZE: standard access, standard pickup window
+    SILVER: +Early Access (30 min before public) on select drops
+    GOLD:   +Member-Only Drops (never public), priority support
+    PLATINUM: +Concierge drops, featured on platform, beta features
+
+UPGRADE ANIMATION: when tier changes (detected on page load vs cached prior tier),
+  show a full-screen confetti burst + passport flip animation + "You've reached {tier}!"
+  Store "last_seen_tier" in localStorage to trigger once.
+
+──────────────────────────────────────
+D2 — DISCOVERY FEED REDESIGN (Spotify model)
+──────────────────────────────────────
+
+Redesign apps/consumer-web/app/page.tsx (home) for logged-in users:
+
+  SECTION 1 — "Live Right Now" (real-time urgency):
+    Horizontal scroll of active drops (same DropCard) with overlaid countdown timers.
+    Live Supabase subscription (already implemented in drop-discovery-client — reuse).
+    A pulsing green dot "LIVE" badge on the section header.
+
+  SECTION 2 — "Closing Soon" (FOMO):
+    Already exists but redesign: show as large, high-contrast cards (full-width on mobile).
+    Countdown is HH:MM:SS, red font when under 60 minutes.
+    "Only {N} left" chip in bottom-left of card when quantityAvailable ≤ 5.
+    "Going fast" animated orange pulse ring on the card border when available ≤ 30% of total.
+
+  SECTION 3 — "Drops You've Missed" (emotional FOMO):
+    Show past drops the user did NOT claim (if logged in).
+    Greyed-out card style with a "Missed" stamp overlay (red, rotated).
+    "Get notified next time" CTA on each card → subscribes user to restaurant alerts.
+    Label: "You missed these — they won't be back" (drives urgency for future behavior)
+
+  SECTION 4 — "Your Kitchens" (Spotify "Your Artists"):
+    Restaurants the user has ordered from before, with their next upcoming drop.
+    "Your go-to kitchens are dropping soon" header.
+
+  SECTION 5 — "New to goZaika" (discovery):
+    Restaurants with no prior orders from this user that have active drops.
+    "Discover something new today" header with surprise messaging.
+
+  SECTION 6 — "Zayka Passport Progress" (Duolingo daily nudge):
+    Compact passport card showing tier + "{N} bags to next tier" + progress bar.
+    "Claim a drop today to keep your streak" (if streak feature active — see D3).
+
+──────────────────────────────────────
+D3 — FOMO SIGNALS ON DROP CARDS
+──────────────────────────────────────
+
+Enhance DropCard component in packages/ui:
+
+  URGENCY TIER SIGNALS (computed from drop data, no server round-trip):
+    a. "Going fast" — quantityAvailable / quantityTotal ≤ 0.3 AND available > 0
+       → orange animated border pulse
+    b. "Almost gone" — quantityAvailable ≤ 3
+       → "Only {N} left!" chip (saffron background, bottom of card)
+    c. "Closing soon" — pickupEndAt within 2 hours
+       → live HH:MM countdown (red when <60min)
+    d. "Sold out" — statusCode = SOLD_OUT or quantityAvailable = 0
+       → full card overlay: "Sold Out" stamp, greyed card, no CTA
+
+  SOCIAL PROOF (no real-time watchers count needed — avoid false signals):
+    On drop detail page only: "Claimed by {N} food lovers today" (use quantityTotal - quantityAvailable)
+
+  "NEW DROP" badge — drops published within the last 30 minutes (compare pickupStartAt to now):
+    Forest green "New" pill in top-left corner of card
+
+──────────────────────────────────────
+D4 — PUSH NOTIFICATION HOOKS (infrastructure only, no provider integration)
+──────────────────────────────────────
+
+Add to consumer profile settings:
+  "Drop Alerts" section:
+    Toggle: "Notify me when new drops go live" (stores to consumer_notification_preference)
+    Toggle: "Alert me 30 min before a drop I'm watching closes"
+    Toggle: "Remind me about my Zayka Passport progress" (weekly nudge)
+  These preferences are UI-only this slice; backend jobs read them in a future slice.
+
+──────────────────────────────────────
+D5 — GAMIFICATION SURFACE IN CONSUMER MOBILE
+──────────────────────────────────────
+
+apps/consumer-mobile/App.tsx — add 5th tab "Passport":
+  Tab icon: passport/id-card icon (Ionicons "id-card-outline")
+  Shows the Zayka Passport card (same data, native RN layout)
+  Tier badge + progress + badges (use emoji stamps on mobile for now)
+  Below: "How to level up" tips (3 items matching tier benefits)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CROSS-CUTTING REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. FILTER PERSISTENCE
+   Save filter state to Supabase consumer profile via debounced PATCH.
+   On page load, rehydrate filters from profile (SSR or client fetch).
+   localStorage fallback for unauthenticated users.
+
+2. ACCESSIBILITY
+   All filter controls: aria-label, keyboard navigable.
+   Map pins: aria-label with restaurant name and drop count.
+   Star rating inputs: role="radiogroup" with individual radio inputs.
+   Countdown timers: aria-live="polite" on the time value.
+   Avoid flashing content — no animations for users who prefer-reduced-motion.
+
+3. RESPONSIVE BREAKPOINTS
+   Mobile: < 768px (single column, bottom drawer filters, stacked layout)
+   Tablet: 768px–1023px (2-col cards, condensed filter bar, no sidebar)
+   Desktop: ≥ 1024px (full sidebar, 3-col cards on discovery, 2-col on restaurant)
+
+4. PACKAGE DISCIPLINE
+   - Add @react-google-maps/api to apps/consumer-web/package.json only.
+   - All new reusable display components go in packages/ui/src.
+   - All new shared types go in packages/types/src/index.ts.
+   - All new utility functions (countdown formatters, tier logic) go in packages/utils.
+
+5. SUPABASE RLS
+   - GET /api/restaurants/[slug]/reviews: no auth required (public, approved only).
+   - POST /api/reviews: auth required, order ownership enforced server-side.
+   - GET /api/account/passport: auth required, own passport only.
+
+6. IMPLEMENTATION ORDER (to avoid merge conflicts):
+   Phase 1: packages/types, packages/utils, packages/ui new components (no app changes yet)
+   Phase 2: API routes (consumer-web/app/api/...)
+   Phase 3: Slice B (reviews) — least dependencies
+   Phase 4: Slice C (restaurant detail page) — depends on reviews component
+   Phase 5: Slice A (discovery + map) — depends on updated card components
+   Phase 6: Slice D (gamification) — depends on passport API + DropCard enhancements
+   Phase 7: consumer-mobile updates
+
+7. VERIFICATION
+   After each phase: npx tsc --noEmit in affected app directories.
+   Confirm map renders (check NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is loaded).
+   Confirm review submit → appears in admin review queue as PENDING.
+   Confirm passport tier progress bar math is correct for each tier boundary.
+
+VISUAL & FUNCTIONAL TESTING PROTOCOL
+
+GUIDING PRINCIPLE
+Test every feature, every screen, and every layout at both desktop and mobile
+viewports immediately after implementation. Do not mark a slice as done until
+you have visually confirmed it in the browser or Expo web. Type-check and build
+passing is necessary but not sufficient — layout correctness requires visual
+confirmation with eyes on the rendered output.
+
+TOOLING
+  Web apps:    Chrome is open with the Claude in Chrome extension installed and
+               signed in. Use mcp__Claude_in_Chrome tools for all visual
+               verification on localhost.
+  Mobile apps: Both mobile apps support Expo web (react-native-web is installed).
+               Start them on their dedicated ports and test in Chrome at a
+               390×844 viewport. This gives reliable single-column layout
+               verification without requiring a physical device or simulator.
+
+STARTING THE TEST ENVIRONMENT
+  Start all 5 servers before running visual tests. Use run_in_background: true.
+
+  Web apps (load .env.local — do NOT use extra --port flags):
+    consumer-web:             npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/consumer-web run dev
+                              → http://localhost:3000
+    restaurant-mgmt-web:      npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/restaurant-mgmt-web run dev
+                              → http://localhost:3001
+    admin-web:                npx.cmd dotenv -e .env.local -- npm.cmd --workspace @gozaika/admin-web run dev
+                              → http://localhost:3002
+
+  Expo web (mobile apps in browser):
+    consumer-mobile:          npm.cmd --workspace @gozaika/consumer-mobile run web
+                              → http://localhost:8081
+    restaurant-staff-mobile:  npm.cmd --workspace @gozaika/restaurant-staff-mobile run web
+                              → http://localhost:8082
+
+  Verify all 5 ports before starting visual tests:
+    netstat -ano | grep -E ":300[012]|:808[12]"
+
+  Login credentials for test sessions:
+    consumer-web / consumer-mobile:        918106230860 / 123456
+    restaurant-mgmt-web / staff-mobile:    919000100001 / 123456
+    admin-web:                             admin.ops@gozaika.example / GozaikaDemo@123
+
+VIEWPORT SEQUENCE
+For every touched page or screen, test in this order:
+  1. Desktop 1440px:  resize to 1440×900, screenshot, check layout
+  2. Mobile  390px:   resize to 390×844,  screenshot, check layout
+  3. Tablet  768px:   resize to 768×1024, screenshot ONLY if a distinct
+                      tablet breakpoint is implemented
+
+For Expo web (ports 8081/8082): test at 390×844 only — it is a mobile-first UI.
+Chrome DevTools device emulation is acceptable if the resize tool is unavailable.
+
+TESTING CADENCE — TEST AFTER EACH SLICE, NOT ONLY AT THE END
+  After Slice B   → verify all review UI (submission, display, admin queue)
+  After Slice C-Detail  → verify restaurant detail page end-to-end
+  After Slice A   → verify discovery page, filters, map view
+  After Slice C-Discovery → verify cuisine passport, adventure card, share card
+  After Slice D   → verify gamification surfaces and urgency signals
+  After any mobile change → verify Expo web at 390px before continuing
+
+LAYOUT INTEGRITY CHECKS (apply to every tested page)
+  [ ] No horizontal overflow:  scrollWidth === clientWidth, or overflow is
+      explicitly scroll-contained (carousel, data table). Record both values.
+  [ ] No text truncation hiding critical information
+  [ ] No overlapping or clipped elements at either viewport
+  [ ] No elements that disappear or become unreachable on mobile
+  [ ] Sidebar / filter panel collapses to drawer or bottom sheet at 390px
+  [ ] Sticky elements (nav bar, claim panel, filter bar) do not obscure content
+  [ ] Cards reflow to single column at 390px, two or three columns at 1440px
+  [ ] Bottom tab bar (mobile) remains visible and all tabs are tappable
+  [ ] Chrome console: zero uncaught JS errors on page load and on interaction
+
+FEATURE-SPECIFIC TEST CHECKLISTS
+
+  SLICE A — Restaurant Search & Map Discovery
+  [ ] Filter sidebar renders as a left column at 1440px
+  [ ] Filter sidebar collapses to a "Filters" drawer button at 390px;
+      drawer opens from bottom and shows all filter controls
+  [ ] Active-filter count badge appears on the Filters button when
+      non-default filters are set
+  [ ] Cuisine chip row is horizontally scrollable without page overflow
+  [ ] Sort dropdown changes result order (verify with at least 2 options)
+  [ ] "Show only restaurants with active drops" toggle filters the result list
+  [ ] Distance slider appears when geolocation is granted; hidden otherwise
+  [ ] Neighbourhood multi-select populates from DB
+  [ ] Rating filter (4+, 3+, Any) narrows results correctly
+  [ ] "Clear All Filters" link resets all filters to defaults
+  [ ] Result count line updates when filters change
+  [ ] Map view loads Google Maps (NEXT_PUBLIC_GOOGLE_MAPS_API_KEY must be loaded)
+  [ ] Map pins appear at correct restaurant coordinates
+  [ ] Pin colour: green (active drop, not expiring), orange (expiring ≤ 2 hrs),
+      gray (no active drops)
+  [ ] Clicking a pin scrolls the list to the matching card AND opens pin popup
+  [ ] List/Map toggle button visible at both viewports
+  [ ] On mobile, map opens as full-screen overlay; bottom sheet shows focused card
+  [ ] Restaurant portal: address + lat/lng form saves correctly
+  [ ] Restaurant portal: map pin preview updates when address changes
+  [ ] Filters persist across page reload (rehydrated from profile or localStorage)
+
+  SLICE B — Ratings & Reviews
+  [ ] Review prompt card appears on order detail page after order status = COLLECTED
+  [ ] Star rating: clicking/tapping each star 1–5 highlights correctly
+  [ ] Submit button is disabled until at least one star is selected
+  [ ] Optional category sliders (Food Quality / Value / Pickup / Packaging) render
+  [ ] Submit → thank-you state shown ("awaiting moderation")
+  [ ] Review does NOT appear publicly until admin approves it
+  [ ] Reviews section on restaurant detail: overall score + label + count visible
+  [ ] Category score bars render correctly when data is present
+  [ ] Empty state shown when restaurant has zero approved reviews
+  [ ] Review card layout: score, name (masked), date, bag name, verified badge
+  [ ] "Report review" flag button is present and non-destructive
+  [ ] Search-in-reviews input filters the displayed review list
+  [ ] Dietary filter narrows reviews by the order's dietary category
+  [ ] Sort (Most Relevant / Recent / Highest / Lowest) reorders reviews
+  [ ] Admin review queue shows all PENDING reviews
+  [ ] Admin Approve action: review becomes visible on restaurant page
+  [ ] Admin Reject/Hide action: review does not appear publicly
+  [ ] Restaurant portal Reviews tab shows aggregate score (read-only, no edit)
+  [ ] Consumer mobile: review prompt card appears in order detail screen
+  [ ] Consumer mobile: star tap interaction works at 390px touch targets
+
+  SLICE C-Detail — Restaurant Detail Page
+  [ ] Photo strip renders at correct aspect ratio (no squash / no crop loss)
+  [ ] "Show all photos" button present; triggers lightbox or placeholder
+  [ ] Breadcrumb visible at 1440px; absent or minimal at 390px
+  [ ] Sticky header appears when photo strip scrolls out of view
+  [ ] Tab bar: Overview / Active Drops / Drop History / Reviews / Location
+  [ ] Tabs are horizontally scrollable at 390px (no line wrap)
+  [ ] Switching tabs changes content without page navigation
+  [ ] Right-column claim panel visible at 1440px with active drop details
+  [ ] Claim panel becomes sticky bottom bar at 390px
+  [ ] Bottom bar collapses to thin pill on upward scroll, expands on downward scroll
+  [ ] Active drop countdown timer updates in real time
+  [ ] "Only N left" chip appears when quantityAvailable ≤ 5
+  [ ] Google Maps embedded in Location tab at correct restaurant coordinates
+  [ ] "Get directions" link opens correct Google Maps URL with restaurant address
+  [ ] Drop History tab shows past drops with sell-through ratio bar
+  [ ] "You missed this" chip on past drops (logged-in user, no order for that drop)
+  [ ] Reviews tab renders full review section (same as Slice B)
+
+  SLICE C-Discovery — Cuisine & Food Adventure Discovery
+  [ ] /account/discovery page loads and shows Cuisine Passport
+  [ ] Tried cuisines are coloured/lit; untried are greyed
+  [ ] Untried cuisines with active drops show the saffron "Drop available" dot
+  [ ] Clicking an untried cuisine navigates to /drops filtered by that cuisine
+  [ ] Flavour Diversity Score is 0 for a zero-order account
+  [ ] Score increases correctly after test orders are collected
+  [ ] Personality label matches score bracket (Home Comfort / Spice Voyager etc.)
+  [ ] "Share your passport" button returns (or downloads) a 1080×1080 PNG
+  [ ] Adventure pick card: rendered with dark forest-green background
+  [ ] Adventure pick excludes cuisines test user has ≥ 1 collected order in
+  [ ] Adventure pick shows "Mystery Cuisine" when drop_type_code = BLIND_ADVENTURE
+  [ ] Adventure card appears at top of home page (logged in) and drops page
+  [ ] Neighbourhood Food Stories cards appear as a 2×2 grid (desktop) /
+      horizontal scroll (mobile) on home page
+  [ ] Blind Adventure DropCard shows "Mystery Cuisine" label, not bag name
+  [ ] Allergen summary and dietary category ARE visible on Blind Adventure cards
+  [ ] Cuisine reveal animation shows on order detail after status = COLLECTED
+  [ ] "Add to your Passport" CTA on reveal links to /account/discovery
+  [ ] Blind Adventure option absent from restaurant portal unless admin flag enabled
+  [ ] Admin config flag BLIND_ADVENTURE_ENABLED appears in admin ops flags table
+
+  SLICE D — Gamification & FOMO
+  [ ] /account/passport page loads correctly
+  [ ] Tier badge renders for BRONZE, SILVER, GOLD, PLATINUM (use test accounts
+      with different bag counts or temporarily mock the tier in the API response)
+  [ ] Progress bar count ("N more bags to Silver") is mathematically correct
+  [ ] Earned badges show in colour; locked badges show greyed silhouette + hint text
+  [ ] "Going fast" animated pulse border appears when quantity ≤ 30% of total
+  [ ] "Only N left" chip appears when quantityAvailable ≤ 3
+  [ ] Countdown timer font turns red when < 60 minutes remain
+  [ ] "Sold Out" full-card overlay: greyed card, no CTA button
+  [ ] "New Drop" badge on cards published within the last 30 minutes
+  [ ] Home feed section order: Live Now → Closing Soon → Missed Drops →
+      Your Kitchens → New to goZaika → Passport Progress
+  [ ] "Missed Drops" cards show greyed overlay + "Missed" stamp
+  [ ] "Get notified next time" CTA on missed drop cards saves preference
+  [ ] Consumer mobile Passport tab (5th tab): renders tier + progress + badges
+  [ ] Notification preference toggles in /account settings save without error
+
+EXPO WEB SPECIFIC CHECKS (ports 8081 / 8082)
+  For each Expo web screen changed:
+  [ ] Bottom tab bar fully visible at 390px, all tabs tappable
+  [ ] No horizontal overflow at 390px
+  [ ] Minimum touch target 44px on all interactive elements
+  [ ] Text is legible (no tiny gray text below 12px effective size)
+  [ ] Forms are usable (inputs not obscured by keyboard layout)
+  [ ] Loading / empty states render (not blank white screens)
+  [ ] Navigation between tabs switches view without crash
+
+  consumer-mobile specific (port 8081):
+  [ ] Home tab: Adventure pick card visible, how-it-works section below
+  [ ] Drops tab: active drops list (or CTA to web if still deferred)
+  [ ] Orders tab: order history list or empty state
+  [ ] Passport tab: Zayka Passport card + tier + progress + badge row
+  [ ] Account tab: sign-in flow, Swaad Club teaser, notification prefs
+
+  restaurant-staff-mobile specific (port 8082):
+  [ ] All existing screens remain functional after any shared-package changes
+
+OVERFLOW CHECK — run after every slice
+  In Chrome (via mcp__Claude_in_Chrome__javascript_tool on the tested page):
+    document.documentElement.scrollWidth + ' vs ' + document.documentElement.clientWidth
+  Log the result. Flag as a FAILURE if scrollWidth > clientWidth at 390px or 1440px.
+  Fix overflow before proceeding to the next slice.
+
+SCREENSHOT EVIDENCE REQUIREMENTS
+Capture and include in final response:
+  - 1× desktop screenshot (1440px) for each new or significantly changed page
+  - 1× mobile screenshot (390px) for each new or significantly changed page
+  - 1× Expo web screenshot (390px) for each changed mobile screen
+  - Before + after screenshots for any layout regression that was discovered and fixed
+
+STOP CONDITIONS — do not mark a slice complete if any of the following are true:
+  - A primary user flow is broken (discovery, claim, review, navigation)
+  - Horizontal overflow exists at 390px or 1440px
+  - A required UI element is missing or unreachable at either viewport
+  - Uncaught JS errors appear in the Chrome console on load or interaction
+  - Expo web crashes or shows a blank screen on the changed screen
+  Fix the issue first, then re-run the relevant checklist items.
+
+
+
+====
+Build supabase migrations
+
+
+
+model restuarent discovery for customers after expedia->stays for both mobile and desktop. e,g, https://www.expedia.com/Hotel-Search?destination=Chesterton%2C%20Indiana%2C%20United%20States%20of%20America&regionId=7214&flexibility=0_DAY&d1=2026-06-04&startDate=2026-06-04&d2=2026-06-05&endDate=2026-06-05&adults=2&rooms=1&sort=RECOMMENDED&theme=&userIntent=&semdtl=&categorySearch=&useRewards=true
+
+Include all relevant filters. Filter criteria must be comprehensive but easy and familiar to use. Like Expedia. Save criteria in user profile.  Follow UX layout as implemented in expedia whereever it makes sense for our use case.
+
+integrate google maps.  Restaurants should be able to provide their address in profile. Customers should be able to discover restaurants in map. Filter criteria must include distance. Map view should be like the expedia map view with pills showing drop count and pill color indicating if there is current_active_drop/current_active_drop_expiring_in_x 
+e.g. https://www.expedia.com/Hotel-Search?destination=Chesterton%2C+Indiana%2C+United+States+of+America&regionId=7214&flexibility=0_DAY&d1=2026-06-04&startDate=2026-06-04&d2=2026-06-05&endDate=2026-06-05&adults=2&rooms=1&theme=&userIntent=&semdtl=&categorySearch=&useRewards=true&pwaOverlay=map
+
+
+user enaggemnet through rating
+
+
+
+============
+You are working in C:\venkat\limca\gozaika\sourcecode.
+
+MODE
 - This is an implementation task, not a proposal task.
 - First audit, then prioritize, then make code changes unless blocked.
 - Preserve unrelated user changes.
@@ -285,16 +1387,6 @@ Audit all React Native screens/components in:
 
 If Expo device/browser testing is not available, still inspect and improve source-level UX, then run typecheck/lint/build/export commands available in package scripts.
 
-REQUIRED VISUAL TESTING
-For touched web apps:
-- Test desktop around 1440px wide.
-- Test mobile around 390px wide.
-- Record:
-  document.documentElement.scrollWidth
-  document.documentElement.clientWidth
-- Horizontal overflow is a failure unless intentionally contained in a scrollable table/list.
-- Capture screenshots for the touched pages.
-- For protected admin/restaurant routes, authenticate against deployed apps if possible. If local auth is blocked by environment, document auth redirects as expected and use deployed app screenshots when reachable.
 
 VERIFICATION COMMANDS
 Run relevant focused checks during development, then full CI at end.
@@ -337,14 +1429,20 @@ If operational testing/runbook behavior changes, update the relevant runbook:
 FINAL RESPONSE REQUIREMENTS
 Final response must include:
 - Summary of audited scope.
-- Most important UX fixes implemented.
+- Most important UX fixes implemented, slice by slice.
 - Files changed by category.
 - Any deferred UX issues with reason.
-- Verification commands run and results.
-- Screenshot/overflow summary.
-- Whether local dev servers were stopped.
+- Verification commands run and results (typecheck, lint, build, CI).
+- Screenshot evidence table:
+    | Page / Screen | Viewport | Pass/Fail | scrollWidth vs clientWidth | Notes |
+    For every slice, every main page, both 390px and 1440px.
+    For mobile apps, every changed Expo web screen at 390px.
+- Any overflow failures found and how they were resolved.
+- Chrome console error summary (must be zero uncaught errors).
+- Whether local dev servers were stopped after testing.
 - Whether deployed app smoke was completed or blocked.
 - Migration status. If no migration, state "No migration required."
+- Expo web test summary: which screens were tested, pass/fail per checklist.
 
 
 

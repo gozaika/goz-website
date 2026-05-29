@@ -163,6 +163,7 @@ export const adminOpsConfigFlagCodes = [
   "CLAIMS_ENABLED",
   "PUBLISHING_ENABLED",
   "MAX_BAGS_PER_DROP",
+  "BLIND_ADVENTURE_ENABLED",
 ] as const;
 export const refundSupportStatusCodes = [
   "REQUESTED",
@@ -1023,7 +1024,7 @@ export const createDropDraftSchema = z.object({
   pricePaise: paiseSchema.min(100),
   pickupStartAt: z.string().datetime(),
   pickupEndAt: z.string().datetime(),
-  dropTypeCode: z.enum(["STANDARD", "SPOTLIGHT", "CHEF_SPECIAL"]).default("STANDARD"),
+  dropTypeCode: z.enum(["STANDARD", "SPOTLIGHT", "CHEF_SPECIAL", "BLIND_ADVENTURE"]).default("STANDARD"),
   statusCode: z.enum(["DRAFT", "SCHEDULED", "ACTIVE"]).default("SCHEDULED"),
 });
 
@@ -1301,4 +1302,141 @@ export interface PortalDrop {
   readonly pickupStartAt: string;
   readonly pickupEndAt: string;
   readonly updatedAt: string;
+}
+
+// ─── Slice 9: Reviews ─────────────────────────────────────────────────────────
+
+export const reviewModerationStatusCodes = ["PENDING", "APPROVED", "REJECTED", "HIDDEN"] as const;
+export type ReviewModerationStatusCode = (typeof reviewModerationStatusCodes)[number];
+
+export const reviewSubmitSchema = z.object({
+  orderPk: uuidSchema,
+  ratingValue: z.number().int().min(1).max(5),
+  reviewText: z.preprocess(optionalString, z.string().trim().max(500).optional()),
+  categories: z
+    .object({
+      food_quality: z.number().int().min(1).max(5).optional(),
+      value_for_price: z.number().int().min(1).max(5).optional(),
+      pickup_experience: z.number().int().min(1).max(5).optional(),
+      packaging: z.number().int().min(1).max(5).optional(),
+    })
+    .optional(),
+});
+
+export interface ReviewCategoryScores {
+  readonly food_quality?: number;
+  readonly value_for_price?: number;
+  readonly pickup_experience?: number;
+  readonly packaging?: number;
+}
+
+export interface PublicReview {
+  readonly reviewPk: string;
+  readonly restaurantPk: string;
+  readonly ratingValue: number;
+  readonly reviewText: string | null;
+  readonly categories: ReviewCategoryScores | null;
+  readonly reviewerDisplayName: string;
+  readonly bagDisplayName: string | null;
+  readonly orderDietaryCode: string | null;
+  readonly createdAt: string;
+}
+
+export interface ReviewsPayload {
+  readonly restaurantPk: string;
+  readonly averageRating: number | null;
+  readonly ratingCount: number;
+  readonly categoryAverages: ReviewCategoryScores;
+  readonly reviews: readonly PublicReview[];
+  readonly page: number;
+  readonly totalCount: number;
+}
+
+export interface ReviewSubmitResult {
+  readonly reviewPk: string;
+  readonly message: string;
+}
+
+// ─── Slice 9: Zayka Passport ──────────────────────────────────────────────────
+
+export const passportTierCodes = ["BRONZE", "SILVER", "GOLD", "PLATINUM"] as const;
+export type PassportTierCode = (typeof passportTierCodes)[number];
+
+export interface ZaykaPassportStat {
+  readonly consumerProfilePk: string;
+  readonly totalBagsCollected: number;
+  readonly totalRestaurantsVisited: number;
+  readonly totalNeighborhoodsVisited: number;
+  readonly currentTierCode: PassportTierCode;
+  readonly reviewCount: number;
+}
+
+export interface PassportBadge {
+  readonly badgeCode: string;
+  readonly badgeName: string;
+  readonly description: string;
+  readonly earned: boolean;
+  readonly hintText: string;
+}
+
+export interface ZaykaPassportPayload {
+  readonly stat: ZaykaPassportStat;
+  readonly badges: readonly PassportBadge[];
+  readonly bagsToNextTier: number | null;
+  readonly progressPercent: number;
+  readonly nextTierCode: PassportTierCode | null;
+}
+
+// ─── Slice 9: Discovery / Cuisine Passport ────────────────────────────────────
+
+export interface CuisineStat {
+  readonly cuisineCode: string;
+  readonly cuisineName: string;
+  readonly bagCount: number;
+}
+
+export interface UntriedCuisine {
+  readonly cuisineCode: string;
+  readonly cuisineName: string;
+  readonly activeDropCount: number;
+}
+
+export interface NeighbourhoodStat {
+  readonly neighbourhoodCode: string;
+  readonly neighbourhoodName: string;
+  readonly bagCount: number;
+}
+
+export interface DiscoveryProfile {
+  readonly triedCuisines: readonly CuisineStat[];
+  readonly untriedCuisines: readonly UntriedCuisine[];
+  readonly totalAvailableCuisines: number;
+  readonly triedNeighbourhoods: readonly NeighbourhoodStat[];
+  readonly totalActiveNeighbourhoods: number;
+  readonly flavourDiversityScore: number;
+  readonly flavourPersonalityLabel: string;
+}
+
+export interface AdventurePickResult {
+  readonly drop: PublicDropCard;
+  readonly adventureReason: string;
+  readonly firstTimerCount: number;
+}
+
+export interface CuisineWeeklyFirstTimers {
+  readonly cuisineCode: string;
+  readonly cuisineName: string;
+  readonly firstTimerCount: number;
+  readonly totalClaimCount: number;
+}
+
+export interface NeighbourhoodActivity {
+  readonly neighbourhoodName: string;
+  readonly activeCuisineCount: number;
+  readonly activeDropCount: number;
+}
+
+export interface CuisineStatsResult {
+  readonly cuisineWeeklyFirstTimers: readonly CuisineWeeklyFirstTimers[];
+  readonly neighbourhoodActivity: readonly NeighbourhoodActivity[];
 }

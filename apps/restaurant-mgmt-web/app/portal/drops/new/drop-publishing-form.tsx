@@ -364,6 +364,9 @@ export function DropPublishingForm({
               <option value="STANDARD">Standard</option>
               <option value="SPOTLIGHT">Spotlight</option>
               <option value="CHEF_SPECIAL">Chef special</option>
+              {guardrails.blindAdventureEnabled && (
+                <option value="BLIND_ADVENTURE">Blind Adventure</option>
+              )}
             </select>
           </label>
           <label className="grid gap-1 text-sm font-medium">

@@ -13,6 +13,7 @@ export type RestaurantOpsGuardrails = {
   readonly claimsEnabled: boolean;
   readonly publishingEnabled: boolean;
   readonly maxBagsPerDrop: number;
+  readonly blindAdventureEnabled: boolean;
 };
 
 export async function loadDefaultRestaurant(profilePk: string): Promise<ActivePortalRestaurant | null> {
@@ -289,15 +290,37 @@ export async function loadPublicDropsByDropPks(dropPks: readonly string[]): Prom
 
 export async function loadRestaurantOpsGuardrails(restaurantPk: string): Promise<RestaurantOpsGuardrails> {
   const service = createServiceRoleSupabaseClient();
-  const [{ data: claimsEnabled }, { data: publishingEnabled }, { data: maxBagsPerDrop }] = await Promise.all([
+  const [
+    { data: claimsEnabled },
+    { data: publishingEnabled },
+    { data: maxBagsPerDrop },
+    { data: adventureFlags },
+  ] = await Promise.all([
     service.rpc("api_ops_claims_enabled", { p_restaurant_pk: restaurantPk }),
     service.rpc("api_ops_publishing_enabled", { p_restaurant_pk: restaurantPk }),
     service.rpc("api_ops_max_bags_per_drop", { p_restaurant_pk: restaurantPk }),
+    service
+      .from("config_feature_flag")
+      .select("scope_code,scope_entity_pk,is_enabled")
+      .eq("flag_code", "BLIND_ADVENTURE_ENABLED")
+      .in("scope_code", ["GLOBAL", "RESTAURANT"])
+      .limit(10),
   ]);
+
+  const hasGlobalEnable = (adventureFlags ?? []).some(
+    (f) => f.scope_code === "GLOBAL" && f.is_enabled,
+  );
+  const restaurantOverride = (adventureFlags ?? []).find(
+    (f) => f.scope_code === "RESTAURANT" && f.scope_entity_pk === restaurantPk,
+  );
+  const blindAdventureEnabled = restaurantOverride != null
+    ? Boolean(restaurantOverride.is_enabled)
+    : hasGlobalEnable;
 
   return {
     claimsEnabled: claimsEnabled !== false,
     publishingEnabled: publishingEnabled !== false,
     maxBagsPerDrop: Number(maxBagsPerDrop ?? 50),
+    blindAdventureEnabled,
   };
 }

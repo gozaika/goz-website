@@ -21,7 +21,7 @@ export default async function PortalProfilePage() {
       .maybeSingle(),
     service
       .from("restaurant_restaurant")
-      .select("restaurant_restaurant_pk,restaurant_name,primary_contact_email,primary_contact_phone_e164")
+      .select("restaurant_restaurant_pk,restaurant_name,primary_contact_email,primary_contact_phone_e164,geo_address_fk")
       .eq("restaurant_restaurant_pk", restaurant.restaurantPk)
       .single(),
     service
@@ -35,6 +35,24 @@ export default async function PortalProfilePage() {
       .maybeSingle(),
   ]);
 
+  // Load existing geo_address if linked
+  let addressRow: { line_1: string; landmark: string | null; latitude: number | null; longitude: number | null } | null = null;
+  if (restaurantRow?.geo_address_fk) {
+    const { data } = await service
+      .from("geo_address")
+      .select("line_1,landmark,latitude,longitude")
+      .eq("geo_address_pk", restaurantRow.geo_address_fk)
+      .maybeSingle();
+    if (data) {
+      addressRow = {
+        line_1: data.line_1 as string,
+        landmark: data.landmark as string | null,
+        latitude: data.latitude != null ? Number(data.latitude) : null,
+        longitude: data.longitude != null ? Number(data.longitude) : null,
+      };
+    }
+  }
+
   const initialProfile: PortalProfileState = {
     restaurantPk: restaurant.restaurantPk,
     restaurantName: restaurantRow?.restaurant_name ?? restaurant.restaurantName,
@@ -42,6 +60,10 @@ export default async function PortalProfilePage() {
     staffPhone: profile?.phone_e164 ?? actor.phone,
     primaryContactEmail: restaurantRow?.primary_contact_email ?? contact?.email_address ?? null,
     primaryContactPhone: restaurantRow?.primary_contact_phone_e164 ?? contact?.phone_e164 ?? null,
+    addressLine1: addressRow?.line_1 ?? null,
+    addressLandmark: addressRow?.landmark ?? null,
+    latitude: addressRow?.latitude ?? null,
+    longitude: addressRow?.longitude ?? null,
   };
 
   return (

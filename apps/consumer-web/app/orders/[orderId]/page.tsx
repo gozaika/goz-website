@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { issuePickupProof, loadConsumerNotifications, loadConsumerOrder } from "@/lib/orders";
 import { createClient } from "@/lib/supabase/server";
 import { PickupProofCard } from "./pickup-proof-card";
+import { ReviewSubmitCard } from "./review-submit-card";
 import { ConsumerNavLinks } from "../../consumer-nav";
 
 export const dynamic = "force-dynamic";
@@ -130,6 +131,10 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
               ) : null}
             </div>
           </section>
+
+          {order.orderStatusCode === "COLLECTED" && (
+            <ReviewSubmitCard orderPk={order.orderPk} restaurantName={order.restaurantName} />
+          )}
 
           {proof ? (
             <PickupProofCard proof={proof} />
