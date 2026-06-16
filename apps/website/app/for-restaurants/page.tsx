@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { CheckCircle, MessageCircle, PackageCheck, Percent, ShieldCheck } from 'lucide-react';
+import { CheckCircle, MessageCircle, PackageCheck, ShieldCheck, Users } from 'lucide-react';
 
 import { PartnerInterestForm } from '@/components/forms/PartnerInterestForm';
 import { Reveal } from '@/components/ui/Reveal';
@@ -12,7 +12,7 @@ import { canonical, openGraphFor, twitterFor } from '@/lib/metadata';
 export const metadata: Metadata = {
   title: 'Partner With goZaika | For Restaurants',
   description:
-    'A direct-demand platform for planned, chef-curated restaurant pickup drops: lean pilot commission, no delivery riders, and no upfront ad spend.',
+    'A customer-acquisition channel for planned, chef-curated restaurant pickup drops: lean pilot commission, no delivery riders, and no upfront ad spend.',
   ...canonical('/for-restaurants'),
   openGraph: openGraphFor(
     '/for-restaurants',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 };
 
 export default function ForRestaurantsPage(): React.ReactElement {
-  const differentiatorIcons = [ShieldCheck, Percent, PackageCheck] as const;
+  const differentiatorIcons = [ShieldCheck, Users, PackageCheck] as const;
 
   return (
     <>

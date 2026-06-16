@@ -17,6 +17,7 @@ export const homeContent = {
       'Premium restaurant partners in discussion',
       'All 14 FSSAI allergens disclosed before purchase',
       'Pickup only — kitchen-fresh, no delivery wait',
+      'Packed-time & best-before on every bag',
     ],
   },
   trustBadges: [
@@ -63,7 +64,7 @@ export const homeContent = {
   restaurantTeaser: {
     eyebrow: 'For Restaurants',
     heading: 'Your kitchen. Your curation. New customers.',
-    body: "A direct pickup-demand channel for planned, chef-curated drops. You control the bag, the timing, and the story. goZaika surfaces it to the right people — without touching your regular menu or existing diners.",
+    body: "A direct pickup-demand channel for planned, chef-curated drops. You control the bag, the timing, and the story. goZaika surfaces it to the right people — without touching your regular menu or existing diners. New diners discover your kitchen, and the ones who love it come back on their own.",
     stats: [
       { value: '12%', label: 'Commission — lowest in category' },
       { value: '0%', label: 'For the first 30 days' },
@@ -145,7 +146,7 @@ export const howItWorksContent = {
     },
     {
       heading: 'Discover (and return)',
-      body: 'Share what you got. Rate the experience. Earn Swaad Club points for your next drop. Each bag is a new restaurant, a new story, and a reason to come back.',
+      body: "Share what you got. Rate the experience. Loved a dish? Find it on the restaurant's menu and make it a regular. Earn Swaad Club points for your next drop — each bag is a new restaurant, a new story, and a reason to come back.",
       icon: '/images/step-browse-v2.svg',
     },
   ],
@@ -182,7 +183,7 @@ export const howItWorksContent = {
 } as const;
 
 export const forRestaurantsContent = {
-  title: 'The direct-demand channel for premium restaurant pickup drops.',
+  title: 'A customer-acquisition channel for premium kitchens.',
   subtitle:
     "Planned, limited, chef-curated BAM Bag drops that create pickup demand without delivery riders, upfront ad spend, or public discounting.",
   kitchenFlow: [
@@ -214,7 +215,7 @@ export const forRestaurantsContent = {
     },
     {
       title: '4. Reconcile',
-      body: 'You receive settlement reporting, release performance, and operational visibility on what moved, when, and for whom.',
+      body: 'You receive settlement reporting, release performance, and visibility on the first-time diners your drops introduced — the start of a customer list you own.',
     },
   ],
   comparisonRows: [
@@ -250,8 +251,8 @@ export const forRestaurantsContent = {
       body: 'You decide what goes out, how it is framed, and who discovers it.',
     },
     {
-      title: 'Commission that stays lean',
-      body: 'The economics are designed to create incremental demand without delivery drag.',
+      title: 'Marketing that builds your list',
+      body: "Spend that wins discerning new diners — and hands you the customer relationship, not a fee you pay to stay visible on someone else's app.",
     },
     {
       title: 'Pickup keeps operations simple',

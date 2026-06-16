@@ -22,7 +22,7 @@ export const faqs: ReadonlyArray<FaqItem> = [
     id: 'restaurant-value',
     question: 'How does goZaika help restaurants?',
     answer:
-      'goZaika gives restaurants a direct-demand channel for intentional pickup drops. Partners control the food, timing, disclosures, and brand presentation while goZaika handles discovery, payment flow, pickup verification, and settlement visibility.',
+      'goZaika gives restaurants a customer-acquisition channel for intentional pickup drops. Partners control the food, timing, disclosures, and brand presentation while goZaika handles discovery, payment flow, pickup verification, and settlement visibility.',
     category: 'restaurant',
   },
   {
