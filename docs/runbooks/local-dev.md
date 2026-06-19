@@ -71,9 +71,11 @@ limit 10;
 
 ## Mobile Native Dependencies
 
-Use Expo's installer so SDK-compatible native versions are selected:
+Both mobile apps use Expo Router. Install/start with Expo so SDK-compatible
+native versions are selected (these apps require a development build — Expo Go
+is not a valid environment):
 
 ```powershell
-npm --workspace @gozaika/consumer-mobile run expo:install-native
-npm --workspace @gozaika/restaurant-staff-mobile run expo:install-native
+npm --workspace @gozaika/consumer-mobile run dev
+npm --workspace @gozaika/restaurant-mobile run dev
 ```

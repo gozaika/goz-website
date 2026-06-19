@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "goZaika",
-    "slug": "gozaika-customer",
-    "scheme": "gozaika",
+    "name": "goZaika Partner",
+    "slug": "gozaika-restaurant",
+    "scheme": "gozaika-restaurant",
     "version": "0.1.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "platforms": [
       "ios",
       "android"
@@ -20,11 +20,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": false,
-      "bundleIdentifier": "in.gozaika.customer"
+      "supportsTablet": true,
+      "bundleIdentifier": "in.gozaika.restaurant"
     },
     "android": {
-      "package": "in.gozaika.customer",
+      "package": "in.gozaika.restaurant",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFF8F0"
