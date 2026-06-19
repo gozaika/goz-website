@@ -41,7 +41,7 @@ step("typecheck (packages + apps)", () => {
 
 // 2. Unit + contract tests for the shared packages.
 step("unit/contract tests", () => {
-  sh("npx vitest run packages/mobile-core packages/mobile-ui packages/types");
+  sh("npx vitest run packages/mobile-core packages/mobile-ui packages/types packages/supabase");
 });
 
 // 3. Route tree + metro resolution: each app must bundle.

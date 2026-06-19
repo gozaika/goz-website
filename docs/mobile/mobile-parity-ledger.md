@@ -143,7 +143,7 @@ Route-count reconciliation as of the audit:
 | **D2 (role gap)** | `apps/restaurant-mgmt-web/lib/portal-auth.ts:50` + `lib/slice3.ts:19,49` | `assertRestaurantAccess`/`loadDefaultRestaurant`/`loadActiveRestaurantsForProfile` filter `is_active` only — **`role_code` never read** | Any active member (incl. PICKUP_STAFF, FINANCE) can hit drops, templates, profile, onboarding | S4 (central role policy) — see `role-matrix-enforcement-gap.md` |
 | ~~**E1**~~ ✅ | slice9 migration `api_public_restaurant_profile` view | Referenced `ga.street_address` (non-existent); real columns are `line_1`/`line_2`/`landmark` | Public profile view / map pins | **Fixed** in `20260530000000_slice9_…sql` (selects lat/lng only) |
 | ~~**E2**~~ ✅ | slice9 migration `api_public_restaurant_reviews`, `api_restaurant_own_reviews` | Join on `oo.order_pk` instead of `oo.order_order_pk` | Both review views returned empty | **Fixed** in `20260530000000_slice9_…sql` |
-| **D3** | Cookie-only sessions | All web handlers read session from Next.js cookies; no bearer path | Mobile cannot authenticate until BFF exists | S3 (bearer foundation) |
+| ~~**D3**~~ ✅ | Cookie-only sessions | All web handlers read session from Next.js cookies; no bearer path | Mobile could not authenticate | **Addressed** in Slice 3: `resolveMobileBearerActor` + `/api/mobile/v1` bearer foundation (`GET health` + `GET me` on both surfaces). Web cookie paths untouched. |
 | **D4 (demo identity)** | seed vs README vs scripts | Three incompatible fixture stories; rich seed users have **no phone** | Phone-OTP login resolves to no rich data | S5 — see `demo-identity-reconciliation.md` |
 
 ## Excluded from parity (must NOT be marked parity rows)

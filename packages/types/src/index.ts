@@ -1440,3 +1440,6 @@ export interface CuisineStatsResult {
   readonly cuisineWeeklyFirstTimers: readonly CuisineWeeklyFirstTimers[];
   readonly neighbourhoodActivity: readonly NeighbourhoodActivity[];
 }
+
+// Mobile BFF contracts (shared spec §5.3).
+export * from "./mobile";

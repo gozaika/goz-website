@@ -1,25 +1,8 @@
-/** Stable error codes returned by the mobile BFF envelope (shared spec §5.2). */
-export type ApiErrorCode =
-  | "UNAUTHENTICATED"
-  | "FORBIDDEN"
-  | "ROLE_DENIED"
-  | "MEMBERSHIP_INACTIVE"
-  | "RESTAURANT_SUSPENDED"
-  | "RESTAURANT_SELECTION_REQUIRED"
-  | "ROLE_CHANGED"
-  | "NOT_FOUND"
-  | "CONFLICT"
-  | "VALIDATION"
-  | "RATE_LIMITED"
-  | "APP_UPDATE_REQUIRED"
-  | "SERVER_ERROR"
-  | "NETWORK"
-  | "DECODE";
+import type { FieldError, MobileErrorCode } from "@gozaika/types";
 
-export interface FieldError {
-  readonly field: string;
-  readonly message: string;
-}
+/** Stable error codes — single source of truth in @gozaika/types (shared spec §5.2). */
+export type ApiErrorCode = MobileErrorCode;
+export type { FieldError };
 
 export interface ApiErrorShape {
   readonly code: ApiErrorCode;
