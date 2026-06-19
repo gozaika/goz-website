@@ -258,8 +258,30 @@ template = "Your code is {{ .Code }}"
 max_frequency = "5s"
 
 # Use pre-defined map of phone number to OTP for testing.
+# LOCAL ONLY — no effect on hosted Supabase. Maps to the rich demo seed via
+# supabase/seed_demo/demo_test_otp_linkage.sql. See docs/mobile/demo-identity-reconciliation.md
 [auth.sms.test_otp]
 "+15555550100" = "123456"
+# Rich demo consumers (priya.demo@gozaika.dev ...)
+"+919876510001" = "100001"  # Priya Sharma   (SILVER, order O26 today)
+"+919876510002" = "100002"  # Rahul Mehta    (GOLD, VEG, O27 today)
+"+919876510003" = "100003"  # Anjali Kumar   (BRONZE)
+"+919876510004" = "100004"  # Vikram Rao     (BRONZE, NON_VEG/DAIRY, holding D14)
+"+919876510005" = "100005"  # Deepa Nair     (SILVER, holding D13)
+"+919876510006" = "100006"  # Arjun Singh    (GOLD, VEG, holding D12)
+"+919876510007" = "100007"  # Meera Patel    (BRONZE)
+"+919876510008" = "100008"  # Karthik Reddy  (PLATINUM, O28 today)
+# Rich demo restaurant owners
+"+919876520001" = "200001"  # Mohammed Bawarchi — Bawarchi Biryani Palace (OWNER)
+"+919876520002" = "200002"  # Lakshmi Sattvik   — Sattvik Kitchen (OWNER)
+"+919876520003" = "200003"  # Rajesh Smoky      — The Smoky Grill (OWNER)
+"+919876520004" = "200004"  # Venkat Andhra     — Andhra Spice Trail (OWNER)
+"+919876520005" = "200005"  # Preethi Sweet     — Sweet Bytes Bakery (OWNER)
+# Role-matrix staff on Bawarchi (added by demo_test_otp_linkage.sql)
+"+919876530001" = "300001"  # Bawarchi ADMIN
+"+919876530002" = "300002"  # Bawarchi OPERATIONS
+"+919876530003" = "300003"  # Bawarchi PICKUP_STAFF
+"+919876530004" = "300004"  # Bawarchi FINANCE
 
 # Configure logged in session timeouts.
 # [auth.sessions]
