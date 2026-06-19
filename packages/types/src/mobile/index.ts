@@ -2,3 +2,5 @@
 // servers (response building/validation) and @gozaika/mobile-core (decoding).
 export * from "./envelope";
 export * from "./dto";
+export * from "./capabilities";
+export * from "./restaurant";

@@ -176,3 +176,73 @@ export async function resolveMobileBearerActor(authorization: string | null | un
     },
   };
 }
+
+/** A resolved restaurant_team_membership row (incl. inactive, for correct denial codes). */
+export interface ResolvedMembership {
+  readonly restaurantPk: string;
+  readonly restaurantName: string;
+  readonly roleCode: string;
+  readonly restaurantStatusCode: string;
+  readonly isDefault: boolean;
+  readonly isActive: boolean;
+}
+
+function firstRelation<T>(value: T | T[] | null | undefined): T | null {
+  if (Array.isArray(value)) {
+    return value[0] ?? null;
+  }
+  return value ?? null;
+}
+
+/**
+ * Resolve every restaurant_team_membership for a profile (active and inactive),
+ * with role code and restaurant status. The caller's capability policy decides
+ * access; this only reads. Service-role; never exposes other tenants' data.
+ */
+export async function resolveRestaurantMemberships(profilePk: string): Promise<ResolvedMembership[]> {
+  assertServerOnly("resolveRestaurantMemberships");
+
+  const service = createServiceRoleSupabaseClient();
+  const { data, error } = await service
+    .from("restaurant_team_membership")
+    .select(
+      "is_active,is_default,restaurant_team_role(role_code)," +
+        "restaurant_restaurant(restaurant_restaurant_pk,restaurant_name,restaurant_status_code)",
+    )
+    .eq("iam_profile_fk", profilePk);
+
+  if (error) {
+    throw error;
+  }
+
+  type MembershipRow = {
+    readonly is_active: boolean | null;
+    readonly is_default: boolean | null;
+    readonly restaurant_team_role: { role_code: string } | { role_code: string }[] | null;
+    readonly restaurant_restaurant:
+      | { restaurant_restaurant_pk: string; restaurant_name: string; restaurant_status_code: string }
+      | { restaurant_restaurant_pk: string; restaurant_name: string; restaurant_status_code: string }[]
+      | null;
+  };
+
+  const memberships: ResolvedMembership[] = [];
+  for (const row of (data ?? []) as unknown as MembershipRow[]) {
+    const role = firstRelation(row.restaurant_team_role);
+    const restaurant = firstRelation(row.restaurant_restaurant);
+
+    if (!role?.role_code || !restaurant?.restaurant_restaurant_pk) {
+      continue;
+    }
+
+    memberships.push({
+      restaurantPk: restaurant.restaurant_restaurant_pk,
+      restaurantName: restaurant.restaurant_name,
+      roleCode: role.role_code,
+      restaurantStatusCode: restaurant.restaurant_status_code,
+      isDefault: Boolean(row.is_default),
+      isActive: Boolean(row.is_active),
+    });
+  }
+
+  return memberships;
+}
