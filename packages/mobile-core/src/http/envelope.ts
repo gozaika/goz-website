@@ -1,38 +1,12 @@
-import { z } from "zod";
+import { MOBILE_ERROR_CODES, mobileEnvelopeSchema } from "@gozaika/types";
+import type { z } from "zod";
 import { ApiError, type ApiErrorCode, type FieldError } from "./errors";
 
 /**
- * Stable BFF envelope (shared spec §5.2):
- *   success: {"ok":true,"data":{},"requestId":"uuid","serverTime":"ISO-8601"}
- *   error:   {"ok":false,"error":{code,message,retryable,fieldErrors?},"requestId"}
+ * Client-side decoding of the canonical BFF envelope (schema lives in
+ * @gozaika/types). Throws a sanitized {@link ApiError} for error envelopes,
+ * malformed envelopes, or payloads that fail the caller's data schema.
  */
-
-const fieldErrorSchema = z.object({
-  field: z.string(),
-  message: z.string(),
-});
-
-const errorBodySchema = z.object({
-  code: z.string(),
-  message: z.string(),
-  retryable: z.boolean().optional().default(false),
-  fieldErrors: z.array(fieldErrorSchema).optional(),
-});
-
-export const successEnvelopeSchema = z.object({
-  ok: z.literal(true),
-  data: z.unknown(),
-  requestId: z.string(),
-  serverTime: z.string(),
-});
-
-export const errorEnvelopeSchema = z.object({
-  ok: z.literal(false),
-  error: errorBodySchema,
-  requestId: z.string().optional(),
-});
-
-export const envelopeSchema = z.discriminatedUnion("ok", [successEnvelopeSchema, errorEnvelopeSchema]);
 
 export interface DecodedSuccess<T> {
   readonly data: T;
@@ -40,27 +14,18 @@ export interface DecodedSuccess<T> {
   readonly serverTime: string;
 }
 
-const KNOWN_CODES = new Set<ApiErrorCode>([
-  "UNAUTHENTICATED", "FORBIDDEN", "ROLE_DENIED", "MEMBERSHIP_INACTIVE", "RESTAURANT_SUSPENDED",
-  "RESTAURANT_SELECTION_REQUIRED", "ROLE_CHANGED", "NOT_FOUND", "CONFLICT", "VALIDATION",
-  "RATE_LIMITED", "APP_UPDATE_REQUIRED", "SERVER_ERROR", "NETWORK", "DECODE",
-]);
+const KNOWN_CODES = new Set<ApiErrorCode>(MOBILE_ERROR_CODES);
 
 function normalizeCode(code: string): ApiErrorCode {
   return KNOWN_CODES.has(code as ApiErrorCode) ? (code as ApiErrorCode) : "SERVER_ERROR";
 }
 
-/**
- * Decode a parsed JSON body into typed data, validating the inner payload with the
- * caller's Zod schema. Throws a sanitized {@link ApiError} for error envelopes,
- * malformed envelopes, or payloads that fail schema validation.
- */
 export function decodeEnvelope<T>(
   body: unknown,
   dataSchema: z.ZodType<T>,
   context: { readonly status: number; readonly requestId?: string },
 ): DecodedSuccess<T> {
-  const envelope = envelopeSchema.safeParse(body);
+  const envelope = mobileEnvelopeSchema.safeParse(body);
   if (!envelope.success) {
     throw new ApiError({
       code: "DECODE",

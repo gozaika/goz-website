@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "data": {
+    "actor": {
+      "authUserId": "20000000-0000-0000-0000-200000000001",
+      "profilePk": "20000000-0000-0000-0000-210000000001",
+      "email": "bawarchi.owner@gozaika.dev",
+      "phone": "+919876520001",
+      "displayName": "Mohammed Bawarchi",
+      "isConsumer": false,
+      "isRestaurantUser": true,
+      "isPlatformUser": false
+    },
+    "surface": "gozaika-restaurant"
+  },
+  "requestId": "33333333-3333-4333-8333-333333333333",
+  "serverTime": "2026-06-19T10:00:00.000Z"
+}

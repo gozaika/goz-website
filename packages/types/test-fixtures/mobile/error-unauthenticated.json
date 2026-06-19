@@ -1,0 +1,9 @@
+{
+  "ok": false,
+  "error": {
+    "code": "UNAUTHENTICATED",
+    "message": "Please sign in to continue.",
+    "retryable": false
+  },
+  "requestId": "44444444-4444-4444-8444-444444444444"
+}

@@ -1,0 +1,9 @@
+{
+  "ok": false,
+  "error": {
+    "code": "APP_UPDATE_REQUIRED",
+    "message": "Please update goZaika to continue.",
+    "retryable": false
+  },
+  "requestId": "55555555-5555-4555-8555-555555555555"
+}
