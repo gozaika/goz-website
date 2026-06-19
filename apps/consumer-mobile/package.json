@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "@gozaika/config": "*",
+    "@gozaika/mobile-core": "*",
+    "@gozaika/mobile-ui": "*",
     "@gozaika/supabase": "*",
     "@gozaika/types": "*",
     "@gozaika/utils": "*",

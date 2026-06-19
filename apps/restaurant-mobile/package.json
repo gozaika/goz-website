@@ -13,6 +13,8 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@gozaika/mobile-core": "*",
+    "@gozaika/mobile-ui": "*",
     "@gozaika/supabase": "*",
     "@gozaika/types": "*",
     "@gozaika/utils": "*",

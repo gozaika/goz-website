@@ -1,0 +1,13 @@
+# goZaika Partner — critical-path navigation smoke (Mobile Slice 2 harness).
+# Run against a development build on a device/emulator: `maestro test apps/restaurant-mobile/.maestro/smoke.yaml`
+appId: in.gozaika.restaurant
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Home"
+- tapOn: "Orders"
+- assertVisible: "Pickup counter"
+- tapOn: "Drops"
+- assertVisible: "Drops"
+- tapOn: "More"
+- assertVisible: "More"

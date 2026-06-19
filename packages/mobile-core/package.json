@@ -1,0 +1,21 @@
+{
+  "name": "@gozaika/mobile-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --pool=threads"
+  },
+  "dependencies": {
+    "@gozaika/types": "*",
+    "zod": "^4.1.12"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.74.4"
+  }
+}
