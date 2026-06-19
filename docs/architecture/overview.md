@@ -23,8 +23,8 @@ The SQL DDL is treated as the database contract. Comments in the DDL define stat
 | Consumer web | `apps/consumer-web` | Next.js App Router | Discovery, account, and Slice 3 public drop detail; claim/payment later |
 | Restaurant portal | `apps/restaurant-mgmt-web` | Next.js App Router | Zayka Pro onboarding, templates, drops, and later orders/finance/team |
 | Admin portal | `apps/admin-web` | Next.js App Router | Internal operations, config, support, finance, audits |
-| Consumer mobile | `apps/consumer-mobile` | Expo React Native | Drop alerts, claim, QR, orders, profile |
-| Staff mobile | `apps/restaurant-staff-mobile` | Expo React Native | Counter pickup verification and incident reporting |
+| Consumer mobile | `apps/consumer-mobile` | Expo Router (React Native) | Discovery, claim, QR/OTP pickup proof, orders, Passport |
+| Restaurant mobile | `apps/restaurant-mobile` | Expo Router (React Native) | Role-based portal: counter pickup, drops, dashboard, finance |
 | Marketing site | `apps/website` | Existing Next app | Current public launch website |
 
 ## Trust Boundaries

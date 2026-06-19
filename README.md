@@ -8,8 +8,8 @@ Premium-access, pickup-only BAM Bag marketplace for India. Hyderabad first.
 - `apps/consumer-web`: Next.js consumer PWA.
 - `apps/restaurant-mgmt-web`: Zayka Pro restaurant portal.
 - `apps/admin-web`: internal operations portal.
-- `apps/consumer-mobile`: Expo consumer app.
-- `apps/restaurant-staff-mobile`: Expo staff pickup app.
+- `apps/consumer-mobile`: Expo customer app (`goZaika`, `in.gozaika.customer`).
+- `apps/restaurant-mobile`: Expo restaurant app (`goZaika Partner`, `in.gozaika.restaurant`).
 - `packages/types`: Zod contracts and status constants.
 - `packages/utils`: money, pickup-window, QR, phone, consent, and safe-error helpers.
 - `packages/supabase`: Supabase client factories and storage helpers.

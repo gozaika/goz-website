@@ -1,0 +1,15 @@
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts.bak
+
+# Native build output
+/ios
+/android
+
+# Metro
+.metro-health-check*
+
+# Misc
+*.tsbuildinfo
