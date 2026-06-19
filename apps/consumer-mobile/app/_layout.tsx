@@ -1,10 +1,11 @@
+import { createQueryClientConfig } from "@gozaika/mobile-core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { brand } from "@/theme/brand";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient(createQueryClientConfig());
 
 export default function RootLayout() {
   return (
