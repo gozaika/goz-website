@@ -132,7 +132,7 @@ All 5 restaurants have `geo_address` rows with real Hyderabad lat/lng coordinate
 **To demo:**  
 Open the consumer map screen. All 5 pins appear across Hyderabad. Tap any pin to see the restaurant profile card. D11–D15 are ACTIVE drops with tonight's pickup window (18:30–21:00 IST).
 
-> ⚠️ **Known exception E1:** The `api_public_restaurant_profile` view in slice9 references `ga.street_address` which does not exist (correct columns are `line_1`, `line_2`, `landmark`). The view will error until that migration is patched. The geo coordinates are still stored correctly in `geo_address`.
+> ✅ **E1 (fixed):** `api_public_restaurant_profile` previously referenced `ga.street_address` (non-existent). The slice9 migration now selects `latitude`/`longitude` only. Map pins work.
 
 ---
 
@@ -180,7 +180,7 @@ Highlights:
 - Restaurant portal → Andhra Spice Trail → Reviews shows both APPROVED and PENDING reviews.
 - Admin moderation queue shows R06 (PENDING) and R08 (PENDING).
 
-> ⚠️ **Known exception E2:** `api_public_restaurant_reviews` and `api_restaurant_own_reviews` (slice9) join on `oo.order_pk` instead of `oo.order_order_pk`. Both views return empty until the migration is patched. The underlying `review_review` rows are correct.
+> ✅ **E2 (fixed):** `api_public_restaurant_reviews` and `api_restaurant_own_reviews` now join on `oo.order_order_pk` (was `oo.order_pk`). Both views return rows.
 
 ---
 
@@ -406,14 +406,14 @@ Deepa (O13) and Anjali (O14) had CANCELLED orders with cancellation_reason = `EM
 
 ---
 
-## Known exceptions (slice9 migration bugs — NOT fixed in seed)
+## Known exceptions (slice9 migration bugs — RESOLVED)
 
-| ID | Table / view | Bug | Impact |
+| ID | Table / view | Bug | Status |
 |---|---|---|---|
-| E1 | `api_public_restaurant_profile` | References `ga.street_address` — column doesn't exist (should be `line_1`, `line_2`, `landmark`) | View errors on SELECT; map pins break |
-| E2 | `api_public_restaurant_reviews`, `api_restaurant_own_reviews` | Join uses `oo.order_pk` — should be `oo.order_order_pk` | Views return empty; review display broken |
+| E1 | `api_public_restaurant_profile` | Referenced `ga.street_address` (non-existent); also created the view before `order_order.dietary_category_code` existed | ✅ Fixed in `20260530000000_slice9_…sql` — selects `latitude`/`longitude`; column added earlier |
+| E2 | `api_public_restaurant_reviews`, `api_restaurant_own_reviews` | Joined on `oo.order_pk` instead of `oo.order_order_pk` | ✅ Fixed in `20260530000000_slice9_…sql` |
 
-Both are single-line fixes in the slice9 migration. The underlying data rows are correct.
+Both were corrected directly in the slice9 migration (the original definitions would have failed at `CREATE VIEW`, so the corrected version is the only one that applies). The underlying data rows were always correct.
 
 ---
 

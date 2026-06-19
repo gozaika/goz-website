@@ -55,7 +55,7 @@ Route-count reconciliation as of the audit:
 | `/drops` | `(tabs)/drops` | `/api/discovery/drops` | `GET /discovery/drops` | anon | anon | S8 | Not started |
 | `/drops/[id]` | `/drops/[dropPk]` | `lib/drops` `loadPublicDrop` | `GET /discovery/drops/:id` | anon | anon | S8 | Not started |
 | `/restaurants` | `(tabs)/restaurants` | `lib/restaurants` | `GET /restaurants` | anon | anon | S8 | Not started |
-| `/restaurants/[slug]` | `/restaurants/[slug]` | `lib/restaurants`, `/api/restaurants/[slug]/reviews` | `GET /restaurants/:slug`, `/restaurants/:slug/reviews` | anon | anon | S8 ⚠️E1/E2 | Not started |
+| `/restaurants/[slug]` | `/restaurants/[slug]` | `lib/restaurants`, `/api/restaurants/[slug]/reviews` | `GET /restaurants/:slug`, `/restaurants/:slug/reviews` | anon | anon | S8 (E1/E2 ✅) | Not started |
 | `/swaad-club` | `(tabs)/account/swaad-club` | static/informational | informational (no billing) | anon | anon | S11 | Not started |
 | `/account` | `(tabs)/account` | `/api/profile`, server account | `GET/PATCH /profile`, `GET /orders` | consumer | consumer | S10 | Not started |
 | `/account/passport` | `/account/passport` | `/api/account/passport` | `GET /account/passport` | consumer | consumer | S11 | Not started |
@@ -76,7 +76,7 @@ Route-count reconciliation as of the audit:
 | `/api/discovery/cuisine-stats` | GET | `GET /discovery/cuisine-stats` | anon | anon | S8 | Not started |
 | `/api/discovery/share-card` | GET | `GET /discovery/share-card` | consumer | consumer | S11 | Not started |
 | `/api/drops/adventure-pick` | GET | `GET /discovery/drops/adventure-pick` | anon | anon (eligibility unchanged) | S8 | Not started |
-| `/api/restaurants/[slug]/reviews` | GET | `GET /restaurants/:slug/reviews` | anon | anon (public reviews only) | S8 ⚠️E2 | Not started |
+| `/api/restaurants/[slug]/reviews` | GET | `GET /restaurants/:slug/reviews` | anon | anon (public reviews only) | S8 (E2 ✅) | Not started |
 | `/api/profile` | GET/PATCH | `GET/PATCH /profile` | consumer | consumer | S10 | Not started |
 | `/api/claims` | POST | `POST /claims` + `GET /claims` (new recovery) | consumer | consumer | S9 | Not started |
 | `/api/checkout/razorpay-order` | POST | `POST /checkout/razorpay-order` | consumer | consumer (owns hold) | S9 | Not started |
@@ -141,8 +141,8 @@ Route-count reconciliation as of the audit:
 | --- | --- | --- | --- | --- |
 | **D1** | `apps/restaurant-mgmt-web/app/api/portal/bootstrap/route.ts:28` | Restaurant bootstrap calls `api_bootstrap_consumer_profile`, creating a consumer profile for restaurant actors | Tenant-boundary smear; restaurant users get spurious consumer rows | S4 (must split bootstrap) |
 | **D2 (role gap)** | `apps/restaurant-mgmt-web/lib/portal-auth.ts:50` + `lib/slice3.ts:19,49` | `assertRestaurantAccess`/`loadDefaultRestaurant`/`loadActiveRestaurantsForProfile` filter `is_active` only — **`role_code` never read** | Any active member (incl. PICKUP_STAFF, FINANCE) can hit drops, templates, profile, onboarding | S4 (central role policy) — see `role-matrix-enforcement-gap.md` |
-| **E1** | slice9 migration `api_public_restaurant_profile` view | References `ga.street_address`; real columns are `line_1`/`line_2`/`landmark` | Public restaurant profile view errors on SELECT; map pins break | S8 (fix canonical migration) |
-| **E2** | slice9 migration `api_public_restaurant_reviews`, `api_restaurant_own_reviews` | Join on `oo.order_pk` instead of `oo.order_order_pk` | Both review views return empty | S8 (fix canonical migration) |
+| ~~**E1**~~ ✅ | slice9 migration `api_public_restaurant_profile` view | Referenced `ga.street_address` (non-existent); real columns are `line_1`/`line_2`/`landmark` | Public profile view / map pins | **Fixed** in `20260530000000_slice9_…sql` (selects lat/lng only) |
+| ~~**E2**~~ ✅ | slice9 migration `api_public_restaurant_reviews`, `api_restaurant_own_reviews` | Join on `oo.order_pk` instead of `oo.order_order_pk` | Both review views returned empty | **Fixed** in `20260530000000_slice9_…sql` |
 | **D3** | Cookie-only sessions | All web handlers read session from Next.js cookies; no bearer path | Mobile cannot authenticate until BFF exists | S3 (bearer foundation) |
 | **D4 (demo identity)** | seed vs README vs scripts | Three incompatible fixture stories; rich seed users have **no phone** | Phone-OTP login resolves to no rich data | S5 — see `demo-identity-reconciliation.md` |
 

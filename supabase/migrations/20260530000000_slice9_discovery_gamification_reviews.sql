@@ -30,6 +30,11 @@ alter table review_review
 comment on column review_review.categories is
   'Optional per-category ratings. Keys: food_quality, value_for_price, pickup_experience, packaging. Values: 1–5 integer. Null when consumer did not submit category ratings.';
 
+-- 2b. Add dietary_category_code to order_order (needed by review views below)
+-- Denormalized from the template revision at claim time. Nullable; backfill not required.
+alter table order_order
+  add column if not exists dietary_category_code text;
+
 -- 3. Update api_public_restaurant_profile view to include lat/lng from geo_address
 
 drop view if exists api_public_restaurant_profile;
@@ -55,8 +60,7 @@ select
   rp.is_featured,
   rp.published_at,
   ga.latitude,
-  ga.longitude,
-  ga.street_address
+  ga.longitude
 from restaurant_restaurant r
   left join restaurant_public_profile rp on rp.restaurant_fk = r.restaurant_restaurant_pk
   left join geo_city gc on gc.geo_city_pk = r.geo_city_fk
@@ -104,7 +108,7 @@ select
   oo.dietary_category_code as order_dietary_code
 from review_review rr
   left join consumer_profile cp on cp.consumer_profile_pk = rr.consumer_profile_fk
-  left join order_order oo on oo.order_pk = rr.order_fk
+  left join order_order oo on oo.order_order_pk = rr.order_fk
   left join drop_drop d on d.drop_drop_pk = oo.drop_fk
   left join catalog_bag_template_revision rev on rev.catalog_bag_template_revision_pk = d.catalog_bag_template_revision_fk
 where rr.moderation_status_code = 'APPROVED'
@@ -147,7 +151,7 @@ select
   oo.dietary_category_code as order_dietary_code
 from review_review rr
   left join consumer_profile cp on cp.consumer_profile_pk = rr.consumer_profile_fk
-  left join order_order oo on oo.order_pk = rr.order_fk
+  left join order_order oo on oo.order_order_pk = rr.order_fk
   left join drop_drop d on d.drop_drop_pk = oo.drop_fk
   left join catalog_bag_template_revision rev on rev.catalog_bag_template_revision_pk = d.catalog_bag_template_revision_fk;
 
@@ -217,11 +221,5 @@ begin
     alter table review_review enable row level security;
   end if;
 end $$;
-
--- 7. Ensure order_order exposes dietary_category_code for the reviews view join
--- order_order.dietary_category_code is denormalized from the template revision at claim time
--- If the column doesn't exist, add it (nullable, backfill not required for new slice)
-alter table order_order
-  add column if not exists dietary_category_code text;
 
 commit;
