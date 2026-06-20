@@ -51,7 +51,7 @@ Use `npm.cmd`/`npx.cmd` in this Windows PowerShell environment when script execu
 | Mobile Slice 3 | Bearer-auth server foundation and mobile contracts | 0,2 | Complete — foundation (2026-06-19); live-token integration tests + rate limits at Slice 6 smoke |
 | Mobile Slice 4 | Restaurant authorization and bootstrap APIs | 3 | Complete — pending human authz review (2026-06-19); live multi-membership tests at Slice 6 smoke |
 | Mobile Slice 5 | Demo phone auth and deterministic test OTP fixtures | 3,4 | Not started |
-| Mobile Slice 6 | Native authentication, SecureStore and consent guards | 2,3,5 | Not started |
+| Mobile Slice 6 | Native authentication, SecureStore and consent guards | 2,3,5 | Complete — phone-OTP core (2026-06-19); Google OAuth + biometric + deep-link restore deferred; live smoke pending |
 | Mobile Slice 7 | Restaurant counter vertical slice | 4,6 | Not started |
 | Mobile Slice 8 | Customer public discovery and restaurant profiles | 3,6 | Not started |
 | Mobile Slice 9 | Customer claim, Razorpay and pickup proof | 3,6,8 | Not started |
@@ -273,6 +273,20 @@ Branch: `mobile/slice4-restaurant-authz` (off `main`). **Requires human authoriz
 **Smoke-test scenarios and cases:** Fresh phone OTP login; wrong/expired OTP; resend limit; killed-app session restore; expired refresh token; OAuth cancel/return; consumer required-consent redirect and resume; restaurant no membership/multiple membership/suspended state; sign-out leaves no private cache.
 
 **Update this implementation plan:** Record auth state diagram, SecureStore keys/version, redirect configuration, cleanup semantics, demo personas and Maestro flows. Include recovery steps for corrupted local session storage.
+
+**Completion and redevelopment record (Slice 6 — 2026-06-19)**
+
+Branch: `mobile/slice6-native-auth` (off `main`).
+
+- **Pure auth core (`@gozaika/mobile-core/auth`):** `validateIndianMobile` (wraps `normalizeIndianPhone`), OTP helpers (`isCompleteOtp`, `RESEND_COOLDOWN_SECONDS=30`, `resendSecondsRemaining`/`canResend`), and a deterministic `loginReducer` state machine (phone → otp(+cooldown) → verifying → done, with resend/edit/failure transitions). 10 unit tests.
+- **Auth state diagram:** `phone → [OTP_REQUESTED] → otp → [OTP_SUBMITTED] → verifying → [VERIFIED] → done`; `verifying → [VERIFY_FAILED] → otp (fresh cooldown)`; `otp → [EDIT_PHONE] → phone`; `* → [SIGN_OUT] → phone`.
+- **SecureStore session:** each app builds a Supabase client with `createSupabaseAuthStorage` over `expo-secure-store`, namespaced `gozaika-customer` / `gozaika-restaurant` (keys `<namespace>.<supabase-key>`, ':' sanitized). `autoRefreshToken` driven by `AppState` (start on active / stop on background). `persistSession` true, `detectSessionInUrl` false.
+- **Both apps:** `AuthProvider` + `useAuth` expose session/isReady/loginState + requestOtp/resendOtp/verifyOtp/signOut. Functional phone-OTP login screen (mobile-ui), session restore on launch, redirect on auth.
+- **Consumer:** consent gate scaffold (`acknowledgeConsent`; login → `/onboarding/consent` on first sign-in → home). **Restaurant:** best-effort membership bootstrap via the Slice 4 `POST /auth/bootstrap` (`fetchRestaurantBootstrap`), memberships + `selectedRestaurantPk` in context, surfaced in More.
+- **Sign-out cleanup:** `supabase.auth.signOut()` + `queryClient.clear()` + reset memberships/consent (token revoked, private cache dropped).
+- **Verification:** both apps `tsc --noEmit` clean; drift gate green 7/7 (both bundle).
+- **Deferred (honest gaps):** Google OAuth + deep-link callback (plumbing → Slice 16 deep links); biometric app lock (interface only / later polish); pending deep-link restoration (Slice 16); real DPDP consent capture + consent API (Slice 10, current gate is in-memory ack); restaurant no-membership/suspended UI polish (Slice 7). **Live phone-OTP login (demo OTP fixtures), killed-app restore, expired-refresh, multi-membership → the consolidated smoke (needs Supabase + device/emulator).**
+- **Recovery (corrupted local session):** sign-out clears SecureStore + cache; a hard reset is reinstall or clearing the app's SecureStore namespace.
 
 ### Mobile Slice 7 — Restaurant counter vertical slice
 
