@@ -32,7 +32,10 @@ export async function fetchRestaurantBootstrap(accessToken: string): Promise<Res
       body: {},
       dataSchema: mobileRestaurantBootstrapSchema,
     });
-    return { memberships: res.data.memberships, selectedRestaurantPk: res.data.selectedRestaurantPk };
+    // Wire schema keeps codes as strings (resilient); narrow to the DTO union at
+    // this single boundary — the server only emits valid role/status codes.
+    const memberships = res.data.memberships as unknown as readonly MobileMembershipDto[];
+    return { memberships, selectedRestaurantPk: res.data.selectedRestaurantPk };
   } catch {
     return null;
   }
