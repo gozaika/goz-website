@@ -7,8 +7,8 @@ export const metadata: Metadata = {
   title: "goZaika | BAM Bag Discovery",
   description: "Great food. No menu. No algorithm. Claim chef-curated BAM Bags in Hyderabad.",
   icons: {
-    icon: "/brand/hero-bam-bag.svg",
-    apple: "/brand/hero-bam-bag.svg",
+    icon: "/brand/gozaika-mark.svg",
+    apple: "/brand/gozaika-mark.svg",
   },
 };
 

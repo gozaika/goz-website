@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { AuthProvider } from "@/auth/AuthProvider";
 import { brand } from "@/theme/brand";
 
 const queryClient = new QueryClient(createQueryClientConfig());
@@ -10,8 +11,9 @@ const queryClient = new QueryClient(createQueryClientConfig());
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
-      <SafeAreaProvider>
-        <StatusBar style="dark" />
+      <AuthProvider>
+        <SafeAreaProvider>
+          <StatusBar style="dark" />
         <Stack
           screenOptions={{
             headerStyle: { backgroundColor: brand.white },
@@ -30,7 +32,8 @@ export default function RootLayout() {
           <Stack.Screen name="auth/login" options={{ title: "Sign in", presentation: "modal" }} />
           <Stack.Screen name="auth/callback" options={{ title: "Signing in", presentation: "modal" }} />
         </Stack>
-      </SafeAreaProvider>
+        </SafeAreaProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

@@ -26,7 +26,7 @@ export const tokens = {
 export const brandAssets = {
   logoHorizontal: "/brand/gozaika-logo-horizontal.svg",
   logoWhite: "/brand/gozaika-logo-white.svg",
-  heroBamBag: "/brand/hero-bam-bag.svg",
+  heroBamBag: "/brand/hero-bam-bag.webp",
   pickupIllustration: "/brand/pickup-illustration.svg",
 } as const;
 

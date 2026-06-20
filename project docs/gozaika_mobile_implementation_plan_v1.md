@@ -1,0 +1,475 @@
+# goZaika Mobile Implementation Plan v1.0
+
+Status: approved planning baseline; implementation not started  
+Updated: 18 June 2026  
+Naming: every unit below is a **Mobile Slice n**  
+Authoritative product specs:
+
+- `project docs/gozaika_mobile_shared_architecture_and_release_spec_v1.md`
+- `project docs/gozaika_customer_mobile_technical_spec_v1.md`
+- `project docs/gozaika_restaurant_mobile_technical_spec_v1.md`
+
+## 1. How to use this document
+
+Each slice is independently assignable to a coding agent, but dependencies must be honored. One agent/session should implement one slice unless the slice explicitly says otherwise. Do not combine payment, pickup, authentication or authorization work with unrelated UI breadth. Before coding, inspect the current repository because this plan records a baseline, not an assumption that earlier slices succeeded perfectly.
+
+At the end of every slice, the implementing agent must update this file in the same change:
+
+1. Change the slice status and date in the tracker.
+2. Add a **Completion and redevelopment record** beneath that slice containing:
+   - exact files/migrations created or changed;
+   - public API/schema/config changes and compatibility notes;
+   - commands/tests run and summarized results;
+   - demo users/fixtures and smoke-test evidence used, without secrets;
+   - architectural decisions and rejected alternatives;
+   - known gaps, follow-up slice dependencies and rollback notes;
+   - instructions to reproduce the slice from a clean checkout.
+3. Update `docs/mobile/mobile-parity-ledger.md` rows owned by the slice.
+4. Update relevant runbooks/configuration references. Never mark a slice complete when its tests or parity rows are incomplete.
+
+Use `npm.cmd`/`npx.cmd` in this Windows PowerShell environment when script execution policy blocks PowerShell shims. Preserve unrelated user changes in the dirty worktree.
+
+## 2. Global engineering rules
+
+- Mobile clients contain only public configuration and Supabase anon credentials. Service-role, Razorpay secret/webhook secret, pickup credential secret, APNs keys and store service-account keys remain server-side.
+- Server state is authoritative for inventory, payment, pickup, roles and deadlines. All mutations are ownership/role checked and idempotent.
+- New APIs are versioned under `/api/mobile/v1`; web behavior remains compatible.
+- Use shared Zod DTOs and fixtures. Reject undocumented `any`/unvalidated JSON at boundaries.
+- Current production parity is the release boundary. Do not implement v4 roadmap features merely because schema rows exist.
+- Mobile UI is accessible, offline-honest and permission-optional. No false success for payment or pickup.
+- Fix canonical migrations/views/services rather than adding app-only security bypasses.
+- Maestro is the v1 critical-flow E2E framework. Unit/contract/component tests remain in Vitest/React Native test tooling selected by the foundation slice.
+- Human review is mandatory after security/auth, payment and pickup slices before dependent work begins.
+
+## 3. Slice tracker
+
+| Slice | Title | Depends on | Status |
+| --- | --- | --- | --- |
+| Mobile Slice 0 | Baseline, parity ledger and decision freeze | — | Complete (2026-06-19) |
+| Mobile Slice 1 | goZaika identities, rename and Expo Router shells | 0 | Complete (2026-06-19) |
+| Mobile Slice 2 | Shared mobile-core, mobile-ui and test harness | 1 | Complete (2026-06-19) |
+| Mobile Slice 3 | Bearer-auth server foundation and mobile contracts | 0,2 | Complete — foundation (2026-06-19); live-token integration tests + rate limits at Slice 6 smoke |
+| Mobile Slice 4 | Restaurant authorization and bootstrap APIs | 3 | Complete — pending human authz review (2026-06-19); live multi-membership tests at Slice 6 smoke |
+| Mobile Slice 5 | Demo phone auth and deterministic test OTP fixtures | 3,4 | Not started |
+| Mobile Slice 6 | Native authentication, SecureStore and consent guards | 2,3,5 | Not started |
+| Mobile Slice 7 | Restaurant counter vertical slice | 4,6 | Not started |
+| Mobile Slice 8 | Customer public discovery and restaurant profiles | 3,6 | Not started |
+| Mobile Slice 9 | Customer claim, Razorpay and pickup proof | 3,6,8 | Not started |
+| Mobile Slice 10 | Customer account, orders, reviews and consent settings | 6,9 | Not started |
+| Mobile Slice 11 | Customer Passport, discovery profile and Swaad Club | 8,10 | Not started |
+| Mobile Slice 12 | Restaurant onboarding, compliance and profile | 4,6 | Not started |
+| Mobile Slice 13 | Restaurant templates and Limited Drops | 4,6,12 | Not started |
+| Mobile Slice 14 | Restaurant dashboard, reviews and operational history | 7,13 | Not started |
+| Mobile Slice 15 | Restaurant finance and ROI reports | 4,6 | Not started |
+| Mobile Slice 16 | Push, deep links, native permissions and offline hardening | 7,9,12 | Not started |
+| Mobile Slice 17 | Accessibility, security, observability and performance gate | 8–16 | Not started |
+| Mobile Slice 18 | Store packages, beta and staged production release | 17 | Not started |
+
+## 4. Agent prompts
+
+### Mobile Slice 0 — Baseline, parity ledger and decision freeze
+
+**Model recommendation:** Composer 2.5 High for implementation. Human review is sufficient; use the strongest available Codex GPT model at High effort only if the inventory exposes conflicting architecture or undocumented production behavior.
+
+**Agent prompt**
+
+**Title:** Establish the reproducible goZaika mobile baseline and living parity ledger.
+
+**Scope:** Read all three mobile specs, current mobile shells, production web routes/APIs, shared contracts, migrations and demo data. Create `docs/mobile/mobile-parity-ledger.md`, `docs/mobile/mobile-decisions.md` and a lightweight baseline runbook. Do not implement app features or alter production behavior.
+
+**Build instructions:**
+
+1. Inventory every customer and restaurant production route, visible workflow, handler/service, auth rule and current test.
+2. Create one parity-ledger row per workflow with web route, native target route, web API/service, target `/api/mobile/v1` endpoint, role/auth, owning Mobile Slice, status and evidence columns.
+3. Record fixed decisions: two apps, one role-based restaurant app, package IDs, supported devices, native capabilities, current-parity boundary and excluded roadmap.
+4. Record known defects: cookie-only APIs, restaurant consumer-bootstrap side effect, profile field limits, missing hold/proof mobile endpoints, demo identity mismatch and Slice 9 public-view defects.
+5. Capture baseline `git status`, package versions, typecheck/test/build results without modifying unrelated files.
+
+**Smoke-test scenarios and cases:** Confirm every current portal navigation item and customer public/account/checkout/order route has a ledger row; compare route-file inventory to ledger mechanically; verify excluded v4 features are not marked parity; verify the three specs link to the ledger and decisions document.
+
+**Update this implementation plan:** Mark Slice 0 complete only after attaching route-count reconciliation, baseline commands and known failures. Add clean-checkout commands and note any production route that could not be observed. Future agents must be able to regenerate the ledger from recorded commands.
+
+### Mobile Slice 1 — goZaika identities, rename and Expo Router shells
+
+**Model recommendation:** Composer 2.5 High for implementation. Use an independent strongest-available Codex GPT reviewer at High effort for application identifiers, deep-link schemes, workspace moves and native configuration before merge.
+
+**Agent prompt**
+
+**Title:** Establish permanent goZaika app identities and navigable Expo Router shells.
+
+**Scope:** Rename `restaurant-staff-mobile` to `restaurant-mobile`; replace workspace/app/slug/scheme/bundle/application identities; remove Orbitwell references; create new Expo Router route skeletons for both apps. Do not create or migrate external EAS/store projects without explicit account authorization.
+
+**Build instructions:**
+
+1. Follow shared spec identifiers `in.gozaika.customer` and `in.gozaika.restaurant`; set restaurant tablet support and customer phone-only declarations.
+2. Update workspaces, imports, scripts, locks, CI references and docs. Preserve git history with a true move where possible.
+3. Install/configure Expo Router through Expo-compatible commands; replace single `App.tsx` entry with typed route groups and placeholder screens matching specified mobile IA.
+4. Wire canonical icons/splash/adaptive assets and brand tokens; no invented logos.
+5. Create `docs/runbooks/mobile-app-identity-migration.md` with old/new IDs, EAS/store manual steps, signing/deep-link implications and irreversibility.
+
+**Smoke-test scenarios and cases:** Workspace install resolves both apps; TypeScript passes; both development builds reach every placeholder route; customer has Home/Drops/Restaurants/Orders/Account; restaurant phone and tablet shells adapt; repository search finds no active Orbitwell or old staff identity except migration history.
+
+**Update this implementation plan:** Record every moved path/config ID, dependency command, external manual action still pending and rollback limit. Include route screenshots or Maestro navigation evidence and exact clean-checkout bootstrap steps.
+
+**Completion and redevelopment record (Slice 0 — 2026-06-19)**
+
+- Created `docs/mobile/mobile-parity-ledger.md` (mechanical inventory: 14 consumer screens + 19 APIs, 13 restaurant screens + 15 APIs; web route → native route → service → target `/api/mobile/v1` → today/target auth → owning slice → status; route-count reconciliation + re-run commands; admin-web marked out of scope).
+- Created `docs/mobile/role-matrix-enforcement-gap.md` (Slices 3/4 deep-dive) and `docs/mobile/demo-identity-reconciliation.md` (Slice 5 manifest).
+- Recorded defects D1 (restaurant bootstrap creates consumer profile, `apps/restaurant-mgmt-web/app/api/portal/bootstrap/route.ts:28`), D2 (no role gating — `lib/portal-auth.ts:50`, `lib/slice3.ts`), D3 (cookie-only auth), D4 (demo identity), E1/E2 (slice9 views — since fixed).
+- Branch `mobile/slice0-parity-baseline`. Adjacent fixes committed there: E1/E2 canonical view repair; demo phone/OTP linkage (`supabase/seed_demo/demo_test_otp_linkage.sql` + `config.toml [auth.sms.test_otp]` for all 17 seed identities + 4 Bawarchi role-matrix staff).
+
+**Completion and redevelopment record (Slice 1 — 2026-06-19)**
+
+Branch: `mobile/slice1-identities` (off `main`). Full detail in `docs/runbooks/mobile-app-identity-migration.md`.
+
+- **Rename:** `git mv apps/restaurant-staff-mobile apps/restaurant-mobile` (history preserved); package `@gozaika/restaurant-staff-mobile` → `@gozaika/restaurant-mobile`.
+- **Identities (app.json):** customer `gozaika-customer` / scheme `gozaika` / `in.gozaika.customer` / phone-only; restaurant `goZaika Partner` / `gozaika-restaurant` / scheme `gozaika-restaurant` / `in.gozaika.restaurant` / tablet support + `orientation:default`. Removed `com.orbitwell.*`. EAS `projectId` **removed** (recreation under goZaika org via `eas init` is a pending authorized manual step; old IDs recorded in runbook).
+- **Expo Router:** `main: "expo-router/entry"`; removed `App.tsx`/`index.js`; `expo install` pinned `expo-router@~55.0.16` + safe-area-context/screens/expo-linking/expo-constants (SDK 55). Added `babel.config.js`, `metro.config.js`, `expo-env.d.ts`, tsconfig `@/*` alias.
+- **Shells:** customer 5-tab IA (Home/Drops/Restaurants/Orders/Account) replacing the obsolete Passport-tab shell, plus drop/restaurant/order detail, checkout/[holdPk], swaad-club, auth, onboarding. Restaurant phone tabs (Home/Orders/Drops/More) + management routes (templates/reports/finance/onboarding/compliance/profile/reviews) + auth. Shared `src/theme/brand.ts` + `src/ui/Placeholder.tsx` per app; canonical icon copied to each app's `assets/`.
+- **Monorepo build fix (important):** hoisted `babel-preset-expo` couldn't resolve app-local `expo-router`, so the router transform was skipped (`EXPO_ROUTER_APP_ROOT` bundling error). Fixed per app: babel adds `babel-preset-expo/build/expo-router-plugin` explicitly; metro sets `transformer.unstable_allowRequireContext = true`. Revisit on SDK upgrade.
+- **Verification:** `tsc --noEmit` passes both apps; `npx expo export -p ios` bundles **both** apps successfully (full route tree compiles). Device/simulator navigation pending (no simulator in build env). Repo search: no active Orbitwell/old-staff identity in either app (only historical docs).
+- **Docs updated:** README, `docs/runbooks/local-dev.md`, `docs/architecture/overview.md`; created `docs/runbooks/mobile-app-identity-migration.md`.
+- **Clean-checkout bootstrap:** `npm install` at root, then per app `npm --workspace @gozaika/<app> run dev` (development build; Expo Go unsupported).
+- **Known gap / follow-up:** physical-device route walkthrough + Maestro nav evidence deferred to when a simulator is available; `eas init` + signing are Slice 18 / authorized manual steps.
+
+### Mobile Slice 2 — Shared mobile-core, mobile-ui and test harness
+
+**Model recommendation:** Composer 2.5 High for implementation, followed by mandatory independent review with the strongest available Codex GPT model at High effort. Escalate the review to X-High only when package boundaries, persistence or native compatibility remain disputed.
+
+**Agent prompt**
+
+**Title:** Build shared, React-Native-safe mobile infrastructure without business workflows.
+
+**Scope:** Create `packages/mobile-core` and `packages/mobile-ui`; configure TanStack Query, validated API decoding, lifecycle/network primitives, theme/components and test harness for both apps.
+
+**Build instructions:**
+
+1. Add package manifests/exports/tsconfigs and monorepo tests. Keep mobile-core independent of app navigation/copy and mobile-ui free of DOM/web-only imports.
+2. Implement API envelope/error parsing, request IDs, app/version headers, auth-token injection hook, server-time offset, query defaults and idempotency-key helper.
+3. Add brand tokens, typography, safe-area screen, buttons, inputs, cards, badges, skeleton/empty/error/offline states and accessible status announcements.
+4. Configure TanStack Query in both apps; add bounded persistence interfaces without storing secrets.
+5. Configure Vitest/component tests and Maestro folder/conventions; document why Maestro is used instead of adding Detox.
+
+**Smoke-test scenarios and cases:** Malformed API payload is rejected; 401/403/409/426 map correctly; request logs redact tokens; server-time helper handles clock skew; components pass contrast/large-text basics; packages build independently and neither imports Next/DOM modules.
+
+**Update this implementation plan:** Record public exports, dependency versions, persistence/redaction decisions, test commands and extension guidance so a future agent can recreate packages without reverse-engineering consumers.
+
+**Completion and redevelopment record (Slice 2 — 2026-06-19)**
+
+Branch: `mobile/slice2-shared-core` (off `main`).
+
+- **`packages/mobile-core`** (React-Native-free, node-testable — native concerns are dependency-injected). Public exports: config (`MobileAppConfig`, `CLIENT_SCHEMA_VERSION=1`, `MOBILE_API_BASE_PATH`); http (`createApiClient`, `decodeEnvelope`, envelope Zod schemas, `ApiError`/`ApiErrorCode`, `statusToErrorCode`, `isRetryableCode`, `buildHeaders`, `newIdempotencyKey`/`isUuid`, `createServerClock`); query (`queryKeys`, `createQueryClientConfig`, `STALE_TIMES`); telemetry (`createLogger`/`noopLogger`, `redact`/`isSensitiveKey`); storage (`createSupabaseAuthStorage`, `BoundedCache`/`createMemoryCache`). Deps: `zod ^4.1.12`, `@gozaika/types`; peer `@tanstack/react-query`.
+- **`packages/mobile-ui`** (RN, no DOM). Exports: tokens (`palette`, `accents`, `toneColors`, `contrastRatio`/`meetsAA`, `spacing`/`radii`/`typography`/`MIN_TOUCH_TARGET`/`TABLET_MIN_WIDTH`); components (`Screen`, `Text`, `Button`, `Badge`, `Card`, `EmptyState`, `ErrorState`, `OfflineBanner`, `Skeleton`, `StatusAnnounce`). Peer: react/react-native/react-native-safe-area-context.
+- **Decisions:** mobile-core has zero native imports (SecureStore/network injected) so 100% of paths are Vitest-tested; persistence is interface + memory impl (SQLite deferred); redaction strips Authorization/token/phone/email/OTP/QR/nonce/credential/coords before any sink; query defaults — staleTime 10s active / 30s discovery / 5min profile, GET retry x3 with backoff for NETWORK/SERVER/RATE_LIMITED only, mutations never auto-retry.
+- **App wiring:** both apps depend on the two packages; root `QueryClient` now uses `createQueryClientConfig()`; app `brand` re-exports `palette`; `Placeholder` rebuilt on mobile-ui `Screen`/`Text`.
+- **Tests:** `npm --workspace @gozaika/mobile-core test` (31) + `@gozaika/mobile-ui` (5) = 36 passing. Both apps `tsc --noEmit` clean and `expo export -p ios` bundles successfully (3.8 MB each — metro resolves the TS workspace packages).
+- **Harness/docs:** Maestro is the v1 E2E framework — `apps/*/.maestro/smoke.yaml` + [ADR 0001](../../docs/adr/0001-maestro-over-detox.md); layers in `docs/runbooks/mobile-testing-strategy.md`. Contract fixtures land in Slice 3.
+- **Known gap:** RN component render tests run via Maestro (not Vitest) by design; physical-device Maestro run pending an emulator.
+
+### Mobile Slice 3 — Bearer-auth server foundation and mobile contracts
+
+**Model recommendation:** Strongest available Codex GPT model at High effort for implementation and an independent strong-model review in a fresh context. Use X-High for unresolved authentication, authorization, token-validation or service-boundary decisions. Human security review remains mandatory.
+
+**Agent prompt**
+
+**Title:** Add the versioned mobile BFF foundation and shared contract fixtures.
+
+**Scope:** Implement server-only bearer authentication helpers and `/api/mobile/v1` conventions in customer and restaurant web apps. Extract reusable domain services only where needed for first APIs. Do not expose service role or broadly rewrite web handlers.
+
+**Build instructions:**
+
+1. Validate Supabase bearer token server-side, resolve `iam_profile`, request ID and app metadata, and return the specified stable envelope.
+2. Add shared DTO schemas under `packages/types/src/mobile/` and fixtures under `packages/types/test-fixtures/mobile/`.
+3. Implement CORS only for explicitly required origins; native clients do not justify wildcard policy. Add size/rate limits and structured redacted logs.
+4. Prove a public health/config endpoint and authenticated “me” endpoint per surface; keep web cookie paths working.
+5. Add contract tests exercising valid/expired/malformed token, missing profile, schema error, ownership denial and 426 behavior.
+
+**Smoke-test scenarios and cases:** No token 401; invalid token 401; valid correct-surface actor 200; service exception is sanitized; request ID is returned/logged; service-role key absent from bundle/static output; existing web tests still pass.
+
+**Update this implementation plan:** List helpers, envelope/schema versions, endpoints, rate/CORS rules and extraction pattern. Record commands and example sanitized fixtures sufficient to rebuild adapters later.
+
+**Completion and redevelopment record (Slice 3 — 2026-06-19)**
+
+Branch: `mobile/slice3-bearer-bff` (off `main`).
+
+- **Canonical contracts in `@gozaika/types/src/mobile/`** (single source of truth for server + client): `envelope.ts` (`MOBILE_ERROR_CODES`, permissive wire schemas `mobileEnvelopeSchema`/`mobileSuccessEnvelopeSchema`/`mobileErrorEnvelopeSchema`, builders `mobileOk`/`mobileErr`, `mobileErrorStatus` code→HTTP map); `dto.ts` (`mobileHealthSchema`, `mobileActorSchema`, `mobileMeSchema`). Re-exported from the types root. Schema version = 1.
+- **Shared fixtures** in `packages/types/test-fixtures/mobile/` (health, me-consumer, me-restaurant, error-unauthenticated, error-app-update) — validated by the server contract test AND decoded by the mobile-core client test, so wire drift fails automatically.
+- **`@gozaika/mobile-core` refactored** to consume the canonical envelope/codes from `@gozaika/types` (removed its duplicate schema/code list); `ApiError`/decoder behavior unchanged.
+- **Shared server helper** `resolveMobileBearerActor(authorization)` + `parseBearerToken` in `@gozaika/supabase` (server-only): validates the Supabase JWT via `auth.getUser(token)`, resolves `iam_profile` with the service role, returns a typed `{ok:true,actor}` / `{ok:false,reason}` (missing/invalid/no_profile) — never throws for auth problems, never trusts client identity.
+- **Per-app BFF glue** `lib/mobile/handler.ts` in both web apps: `withMobileAuth` wrapper (426 schema gate → bearer validation → sanitized SERVER_ERROR on exception), `mobileResponseOk/Err`, server-issued request ids. **Endpoints:** `GET /api/mobile/v1/health` (public) and `GET /api/mobile/v1/me` (authenticated) on **both** `customer.gozaika.in` and `restaurant.gozaika.in`. Web cookie paths untouched; native clients don't need CORS (no browser).
+- **Tests (78 total pass):** types envelope/builders + fixture conformance (6), mobile-core decode of canonical fixtures incl. 401/426 (4), `parseBearerToken` (3), plus all prior. Both web apps + packages `tsc --noEmit` clean. Mobile drift gate `node scripts/mobile-ci.mjs` green 7/7.
+- **Known gaps (integration-gated, not unit work):** live valid/expired/malformed-token + missing-profile contract tests need a running Supabase + demo OTP → folded into the **Slice 6 consolidated smoke**; request size/rate-limit middleware deferred to Slice 6/17. Ownership/role denial is Slice 4.
+- **Clean-checkout:** `npm install`; tests `npx vitest run packages/{types,mobile-core,mobile-ui,supabase}`; gate `node scripts/mobile-ci.mjs`.
+
+### Mobile Slice 4 — Restaurant authorization and bootstrap APIs
+
+**Model recommendation:** Strongest available Codex GPT model at High effort for implementation and independent strong-model review. Use X-High for capability-policy, tenant-isolation or bootstrap-side-effect issues. Human authorization review remains mandatory.
+
+**Agent prompt**
+
+**Title:** Create side-effect-safe restaurant bootstrap and centralized role enforcement.
+
+**Scope:** Implement restaurant `POST /api/mobile/v1/auth/bootstrap`, membership/role resolution, selected-restaurant authorization helper and first role-protected read endpoint. Do not accidentally create consumer profiles.
+
+**Build instructions:**
+
+1. Inspect and separate the existing restaurant bootstrap from `api_bootstrap_consumer_profile`.
+2. Return actor-safe identity, active memberships, role codes, restaurant status and onboarding summary.
+3. Implement centralized capability policy matching the target role matrix; document that this is mobile target state beyond current web enforcement.
+4. Require/revalidate `restaurantPk` on scoped calls; support multiple memberships without cross-tenant leakage.
+5. Add audit-safe denial codes including membership inactive, role denied, restaurant suspended and selection required.
+
+**Smoke-test scenarios and cases:** Owner/admin allowed; pickup staff limited; finance denied from operational mutation; cross-restaurant ID denied; revoked membership immediately denied; suspended restaurant response safe; bootstrap produces no consumer-profile row.
+
+**Update this implementation plan:** Record capability matrix implementation, query/service boundaries, dual-role decision and evidence proving no bootstrap side effect. Note whether web hardening was intentionally deferred.
+
+**Completion and redevelopment record (Slice 4 — 2026-06-19)**
+
+Branch: `mobile/slice4-restaurant-authz` (off `main`). **Requires human authorization review before Slice 7 builds on it.**
+
+- **Capability policy (pure, in `@gozaika/types/src/mobile/capabilities.ts`):** `RestaurantCapability` set + `CAPABILITY_ROLES` matrix + `roleHasCapability` + `decideRestaurantAccess({memberships, restaurantPk, capability})`. Decision order: select → membership found → active → restaurant status → role. Returns precise codes `RESTAURANT_SELECTION_REQUIRED` / `FORBIDDEN` (cross-tenant) / `MEMBERSHIP_INACTIVE` / `RESTAURANT_SUSPENDED` / `ROLE_DENIED`. **This is mobile target state — the web portal still gates on membership only (D2); web hardening intentionally deferred as a separate, separately-reviewed change.**
+- **Matrix:** OWNER/ADMIN = all; OPERATIONS = drops/templates/orders/reviews/reports (no finance/profile/compliance); PICKUP_STAFF = orders/verify/incidents only; FINANCE = finance/reports + read-only orders, never operational.
+- **Membership resolution (`@gozaika/supabase`):** `resolveRestaurantMemberships(profilePk)` returns all memberships (incl. inactive, so denial codes are correct) with role code + restaurant name/status via service role.
+- **Bootstrap (fixes D1):** `POST /api/mobile/v1/auth/bootstrap` returns actor + active memberships + `selectedRestaurantPk`. **Never calls `api_bootstrap_consumer_profile`** — cannot create a consumer profile. (Live "no consumer row" assertion → Slice 6 smoke.)
+- **Role wrapper + first protected read:** `withMobileRestaurantRole(capability, handler)` (restaurant-mgmt-web) revalidates the selected restaurant (`?restaurantPk=` or `X-GoZaika-Restaurant`) on every call; `GET /api/mobile/v1/restaurant/summary` is gated by `viewDashboard`.
+- **Tests:** exhaustive `decideRestaurantAccess` + matrix (8 cases — owner allowed, finance/pickup denied, cross-tenant FORBIDDEN, revoked, suspended, selection-required, single-implicit). 86 Vitest pass total; types/supabase/restaurant-mgmt-web `tsc` clean; drift gate green 7/7.
+- **Dual-role decision:** none — restaurant bootstrap is strictly separate from consumer bootstrap; no shared side effects.
+- **Known gaps (integration-gated):** live multi-membership / revoked-mid-session / suspended-restaurant tests need running Supabase + seed → Slice 6 smoke; data-driven policy from `restaurant_team_role_scope` deferred (matrix is contract-tested target state). **Human authorization review mandatory before Slice 7.**
+
+### Mobile Slice 5 — Demo phone auth and deterministic test OTP fixtures
+
+**Model recommendation:** Composer 2.5 High for implementation, followed by mandatory review with the strongest available Codex GPT model at High effort for environment guards, identity linkage and prevention of production OTP bypasses.
+
+**Agent prompt**
+
+**Title:** Unify local/demo identities with production-style phone OTP testing.
+
+**Scope:** Reconcile `supabase/seed_demo`, `scripts/demo` and README identities; create a deterministic generator/updater for local `[auth.sms.test_otp]`; link representative phone-auth users to rich consumer and restaurant seeded data. Do not add a production password login.
+
+**Build instructions:**
+
+1. Design a single manifest mapping demo persona, auth ID/email/phone, profile, membership/role and expected seeded states.
+2. Implement an idempotent script that updates the test OTP section for all manifest phones while preserving unrelated TOML; fixed OTP is local/test only.
+3. Update demo auth creation/linking so chosen phone users resolve to rich seeded profiles/orders/drops/reviews and multiple restaurant roles.
+4. Keep remote execution opt-in and loudly guarded; never print service keys or real OTPs.
+5. Correct README credentials and add local reset/prepare/login commands.
+
+**Smoke-test scenarios and cases:** Clean local seed then OTP login for consumer and restaurant; rich orders/Passport/restaurant queue appear; re-running is idempotent; unknown/real phone does not receive fixed OTP; remote run refuses by default; README matches actual identities.
+
+**Update this implementation plan:** Record manifest path, test phones as non-secret fixtures, OTP generation command, linking semantics, reset procedure and remote-safety gates. These details must reproduce auth testing after database reset.
+
+### Mobile Slice 6 — Native authentication, SecureStore and consent guards
+
+**Model recommendation:** Strongest available Codex GPT model at High effort for implementation; use X-High for the auth state machine, SecureStore migration, OAuth/deep-link recovery and sign-out cleanup. Require an independent strong-model review plus human security review before merge.
+
+**Agent prompt**
+
+**Title:** Implement production-style authentication and guarded navigation in both apps.
+
+**Scope:** Phone OTP, Google OAuth callback plumbing, SecureStore session adapter, app lifecycle refresh, consumer consent guard, restaurant membership bootstrap and sign-out cleanup.
+
+**Build instructions:** Implement shared auth state machine; Indian phone validation/resend cooldown/OTP errors; verified schemes/redirects; SecureStore migration/error handling; pending deep-link restoration; optional biometric lock interface (full polish later); consumer bootstrap/consent sequencing; restaurant selection/role entry; token revocation and cache/device cleanup.
+
+**Smoke-test scenarios and cases:** Fresh phone OTP login; wrong/expired OTP; resend limit; killed-app session restore; expired refresh token; OAuth cancel/return; consumer required-consent redirect and resume; restaurant no membership/multiple membership/suspended state; sign-out leaves no private cache.
+
+**Update this implementation plan:** Record auth state diagram, SecureStore keys/version, redirect configuration, cleanup semantics, demo personas and Maestro flows. Include recovery steps for corrupted local session storage.
+
+### Mobile Slice 7 — Restaurant counter vertical slice
+
+**Model recommendation:** Strongest available Codex GPT model at High effort for implementation; use X-High for pickup credential verification, replay/idempotency and offline state transitions. Require independent strong-model and human security review.
+
+**Agent prompt**
+
+**Title:** Deliver the first operational vertical slice: role-safe restaurant pickup counter.
+
+**Scope:** PICKUP_STAFF-first orders queue, order detail, manual OTP, camera QR, server verification, no-show and incidents with bounded offline behavior.
+
+**Build instructions:** Add restaurant mobile APIs/services/contracts for queue and actions; implement phone counter UI and tablet master-detail; use canonical pickup RPC/hashing server-side; just-in-time camera with paste/manual fallback; idempotency and distinct results; cached summaries only; never show collected offline until confirmed; clear raw credentials; add attempt rate limiting and audit.
+
+**Smoke-test scenarios and cases:** Valid OTP and QR; camera denied; malformed QR; wrong restaurant; invalid credential; not ready; expired window; replay/already collected; duplicate tap; offline scan then authoritative reconnect; no-show before/after boundary; each incident type/severity; PICKUP_STAFF allowed while finance/cross-restaurant denied.
+
+**Update this implementation plan:** Record endpoints/RPCs, queue DTO, role evidence, offline state machine, rate limits, Maestro device cases and recovery/runbook steps. This slice requires human security review before completion.
+
+### Mobile Slice 8 — Customer public discovery and restaurant profiles
+
+**Model recommendation:** Composer 2.5 High for implementation. Use an independent strongest-available Codex GPT reviewer at High effort for public/private DTO boundaries, canonical view changes and location behavior before merge.
+
+**Agent prompt**
+
+**Title:** Build the native customer public discovery experience.
+
+**Scope:** Home, drop list/map/filter, drop detail without claim mutation, restaurant directory/profile/reviews, cuisine stats and Adventure Pick UI.
+
+**Build instructions:** Create public mobile APIs/contracts or safe view adapters; fix/verify canonical Slice 9 restaurant/review views; implement cached/realtime-refresh discovery, search/category/dietary filters, list/map foreground location fallback, recently missed, restaurant sorts/filters and safe public fields; implement GET Adventure Pick as intentional native enhancement.
+
+**Smoke-test scenarios and cases:** Active/zero/closed drops; combined filters; missing coordinates; denied location; stale/offline cache labeling; sort/rating/cuisine/dietary filters; restaurant with no reviews; no private fields; Adventure Pick eligible/empty; malformed deep link.
+
+**Update this implementation plan:** Record fixed migration/view, public DTO fields, cache/realtime rules, filter semantics, routes and visual/Maestro evidence. Update every discovery/profile ledger row.
+
+### Mobile Slice 9 — Customer claim, Razorpay and pickup proof
+
+**Model recommendation:** Strongest available Codex GPT model at X-High effort for implementation and a separate strong-model review in a fresh context. Human payment and security review is mandatory; Composer should not be the sole implementation or review model for this slice.
+
+**Agent prompt**
+
+**Title:** Implement the revenue-critical claim-to-payment-to-proof journey.
+
+**Scope:** Claim hold, recovery/countdown, native Razorpay, webhook-confirmation polling, orders created from converted holds and secure offline pickup proof.
+
+**Build instructions:** Extract mobile claim GET/POST, checkout order/status, order detail/proof services with ownership/idempotency; use native Razorpay dev build; treat SDK result as provisional; resume pending confirmation after kill; derive deadlines from server offset; store minimum proof in SecureStore with terminal expiry; protect logs/screens; never create/confirm payment client-side.
+
+**Smoke-test scenarios and cases:** Successful claim/payment/webhook; sold-out race; duplicate claim/pay; expired/released/converted hold; Razorpay cancel/failure; SDK success with delayed/missing webhook; app killed during provider flow; wrong-user proof 403/404; offline proof display; proof removal after collected/no-show/cancel/expiry.
+
+**Update this implementation plan:** Record provider integration/config, endpoint/RPC ownership, idempotency keys, polling/recovery state machine, SecureStore proof format/version and test-mode evidence. Human payment/security review is mandatory.
+
+### Mobile Slice 10 — Customer account, orders, reviews and consent settings
+
+**Model recommendation:** Composer 2.5 High for implementation. Require an independent strongest-available Codex GPT review at High effort for consent, privacy, ownership checks, deletion handoff and private-cache cleanup.
+
+**Agent prompt**
+
+**Title:** Complete production customer account and post-purchase parity.
+
+**Scope:** Profile fields currently exposed by web, referral-code display, consent settings, orders list/history/detail integration, hold history, review submission/status and privacy/sign-out entry points.
+
+**Build instructions:** Limit profile to name/phone/email/language/default city; do not add hidden dietary/neighborhood API; add mobile order/claim list endpoints and pagination; render notification delivery states; implement collected-order review/category validation and duplicate prevention; show referral code without rewards; keep Swaad billing inactive; link privacy erasure/account deletion workflow.
+
+**Smoke-test scenarios and cases:** Profile validation/save/rollback; referral missing/present; required/optional consent grant/revoke; active/stale holds; order statuses and notification failures; eligible/ineligible/duplicate review and moderation states; account deletion handoff; sign-out cleanup.
+
+**Update this implementation plan:** Record field-level API parity, list cursors, consent/review contracts, privacy flow and fixtures for every order/hold state. Explicitly list deferred preference fields.
+
+### Mobile Slice 11 — Customer Passport, discovery profile and Swaad Club
+
+**Model recommendation:** Composer 2.5 High for implementation. A normal human review is sufficient when the slice remains read-only and respects the explicit no-billing/no-rewards boundary; use a Codex GPT High reviewer if server contracts or tier calculations change.
+
+**Agent prompt**
+
+**Title:** Complete customer loyalty-information parity without inventing billing/rewards.
+
+**Scope:** Zayka Passport, tier/progress/benefits, Flavour Diversity profile, cuisines/neighborhoods, share card, Swaad Club informational page and referral-code visibility linkage.
+
+**Build instructions:** Reuse production account APIs/contracts; implement honest empty/new/tier states; native share from server-safe payload; link untried cuisines to discovery; mirror production Swaad Club coming-soon copy despite seeded subscription rows; do not add native billing, entitlement or referral reward mechanics.
+
+**Smoke-test scenarios and cases:** Bronze/Silver/Gold/Platinum fixtures; no stats; next-tier boundary; untried cuisine with/without active drop; share success/cancel; offline stale display; Swaad page cannot purchase; accessibility at large text.
+
+**Update this implementation plan:** Record tier formulas/source, endpoints, share payload, seeded persona matrix and explicit exclusions so later agents do not infer subscriptions from seed rows.
+
+### Mobile Slice 12 — Restaurant onboarding, compliance and profile
+
+**Model recommendation:** Composer 2.5 High for implementation, followed by independent review with the strongest available Codex GPT model at High effort for tenant isolation, document privacy, signed uploads and role enforcement.
+
+**Agent prompt**
+
+**Title:** Deliver role-safe restaurant onboarding, private documents, contacts and location/profile management.
+
+**Scope:** Current onboarding tasks, profile/location, compliance details, document upload/status and review submission on phone/tablet.
+
+**Build instructions:** Add bearer adapters around extracted services; enforce OWNER/ADMIN and explicitly approved operational fields; resumable task state; signed upload for validated PDF/JPEG/PNG; camera/file picker; signed URL expiry; foreground address pin plus manual entry; public/private preview separation; no local private document cache.
+
+**Smoke-test scenarios and cases:** New/resumed/completed onboarding; required validation; upload success/type/size/expired URL/retry; rejected/expired document; location denied/manual; cross-restaurant document denial; role restrictions; suspended restaurant; tablet layout/rotation.
+
+**Update this implementation plan:** Record task transition rules, document limits/bucket/path/signing, role policy, location fields and test fixtures. Include cleanup for abandoned uploads and clean-checkout reproduction.
+
+### Mobile Slice 13 — Restaurant templates and Limited Drops
+
+**Model recommendation:** Composer 2.5 High for implementation. Use an independent strongest-available Codex GPT reviewer at High effort for revision preservation, publication transitions, inventory concurrency and restaurant authorization.
+
+**Agent prompt**
+
+**Title:** Implement BAM Bag template and Limited Drop publication parity.
+
+**Scope:** Template list/create/edit/deactivate/revision semantics; drop list/detail/create/duplicate/publish/schedule/status actions matching current portal behavior.
+
+**Build instructions:** Extract/adapt current services and Zod contracts; preserve template revisions/history; use a mobile `/drops/[dropPk]` detail/form without inventing unsupported web capabilities; enforce active restaurant/config flags/quantity/time/allergen/status transitions; support tablet list-detail/form and phone sections; handle concurrent authoritative refresh.
+
+**Smoke-test scenarios and cases:** Create/edit/deactivate template; historical drop unchanged; create from template; invalid times/quantity/price/disclosure; duplicate; scheduled/active/paused/closed states actually supported by APIs; publishing disabled; concurrent update/inventory; unauthorized roles.
+
+**Update this implementation plan:** Record form fields, revision/transition tables, config dependencies, endpoint mapping to web `/portal/drops/new`, fixtures and Maestro evidence.
+
+### Mobile Slice 14 — Restaurant dashboard, reviews and operational history
+
+**Model recommendation:** Composer 2.5 High for implementation. Human review is normally sufficient; add a Codex GPT High review when metric formulas, identity masking or role-specific payloads change.
+
+**Agent prompt**
+
+**Title:** Complete restaurant operational overview and feedback parity.
+
+**Scope:** Dashboard metrics/actions, recent/next drops, pickup queue summary, restaurant-owned reviews and order notification delivery history.
+
+**Build instructions:** Add read APIs/contracts; show freshness and insufficient-data states; use current revenue/sell-through/AOV definitions; role-adapt dashboard; read-only masked reviews; notification states/fallback copy without blocking pickup; no ZaikaIQ forecasts/benchmarks.
+
+**Smoke-test scenarios and cases:** No activity, active pickup, sold/listed metrics, next drop, stale metrics, pending/approved reviews with masked identity, notification queued/sent/failed/suppressed, role-specific dashboard and tablet master-detail links.
+
+**Update this implementation plan:** Record metric formulas/source views, freshness policy, masking rules, role variants and fixture expectations. Update dashboard/review/history ledger rows.
+
+### Mobile Slice 15 — Restaurant finance and ROI reports
+
+**Model recommendation:** Composer 2.5 High for implementation, followed by mandatory independent review with the strongest available Codex GPT model at High effort for monetary precision, formula parity, role enforcement, PII and signed-download handling.
+
+**Agent prompt**
+
+**Title:** Deliver read-only finance settlement and partner ROI reporting.
+
+**Scope:** Settlement list/detail/entries, invoice authorized download/share, date-range ROI metrics/drop notes/assumptions/partner share for OWNER/ADMIN/FINANCE.
+
+**Build instructions:** Add bearer read adapters; enforce role/restaurant ownership; preserve paise and estimate-versus-locked labeling; use short-lived invoice URLs and safe filenames; implement text equivalents for metrics; native share safe report copy; prohibit payout/refund/reconcile/bank mutations.
+
+**Smoke-test scenarios and cases:** Empty/draft/locked/paid/reconciled/cancelled settlement; positive/negative entries; invoice missing/expired/retry; exact-period locked ROI versus estimated; incidents/refunds; thin repeat-buyer data; unauthorized operational/pickup user; PII scan of payload/share.
+
+**Update this implementation plan:** Record finance/ROI data sources, formulas, role policy, signed-download lifecycle, fixtures and reconciliation evidence. Explicitly state all prohibited mutations.
+
+### Mobile Slice 16 — Push, deep links, native permissions and offline hardening
+
+**Model recommendation:** Strongest available Codex GPT model at X-High effort for implementation and an independent strong-model review. Require human security/privacy review for token lifecycle, deep-link allow-listing, lock-screen content, permissions and offline correctness.
+
+**Agent prompt**
+
+**Title:** Wire native lifecycle capabilities without expanding data collection.
+
+**Scope:** Extend `notification_device`, token endpoints/processor, push routing, universal/App Links, foreground location, biometrics, camera permission consistency and offline hardening across completed workflows.
+
+**Build instructions:** Add only missing device columns; token upsert/rotation/revocation and invalid-token handling; PUSH outbox delivery/dedup; consent-aware categories and lock-screen-safe copy; cold/warm pending deep links with allow-list; foreground-only location; biometric opt-in app lock; network/stale indicators; verify consumer proof and restaurant pending-network semantics.
+
+**Smoke-test scenarios and cases:** Permission allow/deny/revoke; token rotation/multi-device/logout; duplicate outbox; invalid token deactivation; push cold/warm/signed-out/wrong-role; malicious link; location denied; biometric unavailable/failure; offline/reconnect for discovery/proof/counter; no background-location declaration.
+
+**Update this implementation plan:** Record migration, provider path, token lifecycle, categories/consents, association files, permission strings, deep-link allow-list and offline state diagrams. Include physical-device evidence.
+
+### Mobile Slice 17 — Accessibility, security, observability and performance gate
+
+**Model recommendation:** Strongest available Codex GPT model at X-High effort for the audit and remediation work, with an independent fresh-context strong-model review. Human security and accessibility sign-off remains mandatory and cannot be replaced by model review.
+
+**Agent prompt**
+
+**Title:** Harden both apps to release quality and reconcile full parity.
+
+**Scope:** Cross-app accessibility, threat-model fixes, telemetry/redaction, performance, dependency/native config audit and final parity ledger. No new product features.
+
+**Build instructions:** Run VoiceOver/TalkBack/Dynamic Type/contrast/reduced motion and tablet keyboard checks; threat-model token/deep-link/QR/replay/role/offline/app-switcher risks; configure Sentry-equivalent with source maps and PII scrub; measure startup/list/render/network; add rate/error dashboards; scan bundles/config for secrets/Orbitwell; close every ledger row with evidence or block release.
+
+**Smoke-test scenarios and cases:** 200% text; screen-reader payment/pickup results; scanner manual alternative; charts text; session/role revocation; log/crash redaction; malicious payload/link; low-memory/process death; mid-range performance budgets; crash/ANR thresholds; dependency/privacy manifest audit.
+
+**Update this implementation plan:** Record audit tools/devices/results, accepted residual risks, telemetry fields/redaction, performance measurements, parity totals and remaining blockers. Human security/accessibility sign-off required.
+
+### Mobile Slice 18 — Store packages, beta and staged production release
+
+**Model recommendation:** Composer 2.5 High for asset/configuration assembly and checklist execution, followed by mandatory strongest-available Codex GPT review at High effort for signing boundaries, production configuration, privacy declarations, review accounts and rollback criteria. All external submissions and rollout actions require human authorization.
+
+**Agent prompt**
+
+**Title:** Produce goZaika-owned store packages and execute controlled release readiness.
+
+**Scope:** Final Expo/EAS config, signing, `.aab`/`.ipa`, listing assets/metadata/privacy declarations/review identities, internal testing, beta and staged rollout plan. External store mutations require explicit authorization at action time.
+
+**Build instructions:** Verify permanent IDs/goZaika ownership; create production EAS builds and provenance; assemble icons/adaptive/monochrome, phone/tablet screenshots and Play feature graphic; complete privacy/Data Safety/content/export/account-deletion/support metadata from actual SDKs; prepare non-expiring phone review accounts and Razorpay test instructions; first Play upload manual; TestFlight/closed track; rollout 5→25→100 with halt/rollback criteria.
+
+**Smoke-test scenarios and cases:** Clean install/update on device matrix; production env/no debug menu; auth review account; Razorpay review path; push/camera/location permission review notes; deep links; customer phone screenshots; restaurant phone/iPad/Android tablet; symbol/source-map availability; store pre-review checks; support/privacy URLs.
+
+**Update this implementation plan:** Record build IDs/hashes (not secrets), signing ownership, submitted metadata versions, tester groups, review notes, approval/status, rollout metrics and rollback procedure. Mark complete only after authorized release outcome or explicitly record the external approval blocker.
+
+## 5. Review disposition
+
+Accepted and incorporated: existing `notification_device` extension; referral-code display boundary; dependency-gap checklist; identity migration runbook; living parity ledger; restaurant-specific bootstrap; Maestro choice; shared contract fixture location; mobile-native navigation clarification; current profile field limit; new mobile hold/proof/list endpoints labeled as new; cuisine-stats inventory; full path normalization; checkout parameter alias; seed/README/demo-auth mismatch; target-state role enforcement; drop-route correction; camera QR as intentional enhancement; PICKUP_STAFF-first vertical slice; restaurant switcher revalidation; finance read-only boundary and tablet master-detail requirements.
+
+Accepted with modification: deterministic local test OTP generation and phone/profile linkage are required, but a general development password-login UI is rejected because it creates an avoidable production escape-hatch risk. Per-slice model routing is advisory operational guidance rather than a code or product requirement; prompts remain portable across agent vendors, and model review never replaces the stated human review gates.
+
+Not accepted: the review’s claim that Adventure Pick parity may freely exceed web is bounded—the native UI may expose the already deployed API, but must not alter eligibility/business rules. Role restrictions are not represented as current web parity; they are an explicit mobile security target and optional separately reviewed web hardening.

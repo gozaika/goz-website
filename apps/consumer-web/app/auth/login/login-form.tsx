@@ -145,7 +145,7 @@ export function LoginForm({ nextPath }: { readonly nextPath?: string | null }) {
         <p className="mt-4 max-w-xl text-base leading-7 text-[#2D2D2D]/75">
           Sign in to claim chef-curated BAM Bags with allergen-disclosed, pickup-only trust.
         </p>
-        <BrandIllustration src="/brand/hero-bam-bag.svg" className="mt-8 max-w-md" alt="" />
+        <BrandIllustration src="/brand/hero-bam-bag.webp" className="mt-8 max-w-md" alt="" />
       </div>
 
       <div className="order-1 rounded-lg border border-black/10 bg-white p-5 shadow-sm md:order-2 md:p-6">

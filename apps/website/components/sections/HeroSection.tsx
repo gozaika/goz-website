@@ -91,14 +91,21 @@ export function HeroSection({
           <div className="ambient-glow ambient-glow-forest right-10 top-10 hidden h-48 w-48 lg:block" />
           <div className="floating-illustration relative flex items-center justify-center">
             <div className="rounded-[2rem] border border-white/50 bg-white/55 p-4 backdrop-blur-sm">
-              <Image
-                src="/images/hero-bam-bag-v2.svg"
-                alt="goZaika mystery meal bag illustration"
-                width={620}
-                height={620}
-                className="h-auto w-full max-w-xl"
-                priority
-              />
+              <picture>
+                <source
+                  media="(max-width: 639px)"
+                  srcSet="/images/hero-bam-bag-portrait-v3.webp"
+                />
+                <Image
+                  src="/images/hero-bam-bag-v3.webp"
+                  alt="A sealed goZaika BAM Bag with the canonical BAM flame-drop seal"
+                  width={620}
+                  height={620}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="h-auto w-full max-w-xl"
+                  priority
+                />
+              </picture>
             </div>
           </div>
         </div>

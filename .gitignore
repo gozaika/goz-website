@@ -2,6 +2,7 @@
 node_modules/
 
 # build outputs
+.codex-artifacts/
 .next/
 dist/
 coverage/

@@ -27,10 +27,11 @@ export function BamBagSection({
 
         <div className="premium-card premium-card-hover grid gap-5 rounded-3xl bg-white p-6">
           <Image
-            src="/images/hero-bam-bag-v2.svg"
-            alt="Illustration of a chef-curated BAM Bag"
+            src="/images/hero-bam-bag-v3.webp"
+            alt="A sealed chef-curated goZaika BAM Bag"
             width={560}
             height={560}
+            sizes="(min-width: 1024px) 40vw, 100vw"
             className="h-auto w-full rounded-2xl bg-cream p-4 transition-transform duration-300 hover:scale-[1.01]"
           />
           <div className="rounded-2xl border border-forest-light bg-cream p-5 text-sm leading-relaxed text-gray700">

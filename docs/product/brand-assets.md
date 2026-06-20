@@ -22,3 +22,19 @@ Shared React components live in `packages/ui/src/index.tsx`:
 The components default to `/brand/...` URLs. Next apps need app-local `public/brand` copies because files inside package folders are not served by Next at runtime. The `packages/ui/assets/brand` folder documents and centralizes the canonical shared copies for future app asset pipelines, including mobile.
 
 Do not modify or rename files under `apps/website` for downstream apps. Add future brand assets by copying from the website source path into the shared convention and documenting them here.
+
+## BAM Flame-Drop Mark
+
+The mark in `icons/flame.svg` is the canonical BAM flame-drop mark: a saffron flame/drop silhouette with `BAM` cut out in negative space. It may be used as a recurring flavor-discovery cue on BAM Bag packaging, tamper seals, kraft tags, social graphics, and restaurant-facing collateral.
+
+Canonical color expressions:
+- Consumer: saffron `#FF6B35` mark with warm cream/transparent negative `BAM`.
+- Premium seal: heritage gold `#D4A017` mark with forest, charcoal, or transparent negative `BAM`.
+- B2B: forest `#1A5C38` or deep teal `#194B4A` mark with warm cream negative `BAM`.
+- Tonal emboss: kraft-on-kraft relief where shadow defines the mark.
+
+Usage guardrails:
+- Preserve the exact silhouette and `BAM` relationship.
+- Do not redraw the internal `BAM` lettering.
+- Do not use neon, sale-tag, plastic, or clearance-style treatments.
+- Do not let the mark compete with the full goZaika wordmark in formal brand lockups.

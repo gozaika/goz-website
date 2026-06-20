@@ -23,3 +23,7 @@ export * from "./telemetry/logger";
 // Storage (DI adapters)
 export * from "./storage/session";
 export * from "./storage/persistence";
+
+// Auth (pure flow logic; Supabase/SecureStore wiring lives in the apps)
+export * from "./auth/phone";
+export * from "./auth/machine";
