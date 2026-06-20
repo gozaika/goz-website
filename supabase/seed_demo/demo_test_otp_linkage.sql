@@ -136,6 +136,27 @@ from (values
 join restaurant_team_role rtr on rtr.role_code = m.rolecode
 on conflict (restaurant_fk, iam_profile_fk, restaurant_team_role_fk) do nothing;
 
+-- -----------------------------------------------------------------------------
+-- 3b. GoTrue compatibility for SQL-seeded auth.users.
+-- Raw INSERTs leave instance_id NULL and token columns NULL, which makes GoTrue
+-- fail to find/scan the user during phone-OTP ("Database error finding user" /
+-- the user looking absent). Set the default instance and empty-string the token
+-- columns GoTrue scans into non-nullable Go strings. Verified necessary for
+-- local phone-OTP sign-in (2026-06-20).
+-- -----------------------------------------------------------------------------
+update auth.users
+set instance_id                = coalesce(instance_id, '00000000-0000-0000-0000-000000000000'),
+    confirmation_token         = coalesce(confirmation_token, ''),
+    recovery_token             = coalesce(recovery_token, ''),
+    email_change               = coalesce(email_change, ''),
+    email_change_token_new     = coalesce(email_change_token_new, ''),
+    email_change_token_current = coalesce(email_change_token_current, ''),
+    phone_change               = coalesce(phone_change, ''),
+    phone_change_token         = coalesce(phone_change_token, ''),
+    reauthentication_token     = coalesce(reauthentication_token, '')
+where id::text like '20000000-0000-0000-0000-1%'
+   or id::text like '20000000-0000-0000-0000-2%';
+
 commit;
 
 -- -----------------------------------------------------------------------------
