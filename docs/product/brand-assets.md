@@ -6,7 +6,10 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | goZaika horizontal logo | `apps/website/public/logos/gozaika-logo-horizontal.svg` | `packages/ui/assets/brand/gozaika-logo-horizontal.svg` | `apps/consumer-web/public/brand/gozaika-logo-horizontal.svg` | SVG logo | Login, account, shared headers | Official primary logo. |
 | goZaika white logo | `apps/website/public/logos/gozaika-logo-white.svg` | `packages/ui/assets/brand/gozaika-logo-white.svg` | `apps/consumer-web/public/brand/gozaika-logo-white.svg` | SVG logo | Dark surfaces and future portals | Preserved for shared package consumers. |
-| BAM Bag hero illustration | `apps/website/public/images/hero-bam-bag-v2.svg` | `packages/ui/assets/brand/hero-bam-bag.svg` | `apps/consumer-web/public/brand/hero-bam-bag.svg` | SVG illustration | Auth and onboarding visual support | Used as the current app mark fallback until a canonical favicon/app icon is provided from website. |
+| BAM Bag square hero | `apps/website/public/images/hero-bam-bag-v3.webp` | — | — | WebP photography | Website hero and BAM Bag explainer | Approved square master with deterministic canonical branding. |
+| BAM Bag portrait hero | `apps/website/public/images/hero-bam-bag-portrait-v3.webp` | `packages/ui/assets/brand/hero-bam-bag.webp` | `apps/consumer-web/public/brand/hero-bam-bag.webp` | WebP photography | Mobile hero, auth and onboarding visual support | Approved portrait master with deterministic canonical branding. |
+| Restaurant hero | `apps/website/public/images/restaurant-hero-v3.webp` | — | — | WebP photography | Home partner teaser and restaurant-partner page | Candidate 03; perspective-aligned logo and canonical BAM flame-drop. |
+| About / culture image | `apps/website/public/images/about-illustration-v3.webp` | — | — | WebP photography | About page | Candidate 04; shared-table scene with canonical branding. |
 | Pickup illustration | `apps/website/public/images/step-pickup-v2.svg` | `packages/ui/assets/brand/pickup-illustration.svg` | `apps/consumer-web/public/brand/pickup-illustration.svg` | SVG illustration | Future pickup/account states | Copied for Slice 2+ surfaces. |
 
 ## Convention

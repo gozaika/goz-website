@@ -50,10 +50,10 @@ export default function ForRestaurantsPage(): React.ReactElement {
           </div>
           <Reveal as="div" className="reveal-media premium-card rounded-3xl bg-white p-4" amount={0.15} delayClass="reveal-delay-160">
             <Image
-              src="/images/restaurant-hero-v2.svg"
-              alt="Restaurant partner growth illustration"
-              width={800}
-              height={600}
+              src="/images/restaurant-hero-v3.webp"
+              alt="A branded goZaika BAM Bag ready for pickup from a premium restaurant kitchen"
+              width={1536}
+              height={1024}
               className="h-auto w-full rounded-3xl transition-transform duration-300 hover:scale-[1.01]"
               priority
             />

@@ -57,10 +57,10 @@ export function RestaurantTeaserSection({
 
         <div className="premium-card rounded-3xl bg-white/6 p-4 backdrop-blur-sm">
           <Image
-            src="/images/restaurant-hero-v2.svg"
-            alt="Illustration for restaurant partners"
-            width={760}
-            height={580}
+            src="/images/restaurant-hero-v3.webp"
+            alt="A branded goZaika BAM Bag on a sunlit premium restaurant kitchen pass"
+            width={1536}
+            height={1024}
             className="h-auto w-full max-w-xl rounded-2xl transition-transform duration-300 hover:scale-[1.01]"
           />
         </div>

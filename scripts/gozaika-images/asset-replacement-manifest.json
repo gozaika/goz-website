@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "name": "goZaika website asset replacement",
+  "model": "gpt-image-2",
+  "quality": "high",
+  "referenceImage": ".codex-artifacts/gozaika-images/masters/anchors/master-style-anchor-clean.png",
+  "canonicalBrandAssets": {
+    "logo": "icons/gozaika-logo.svg",
+    "bamFlameDrop": "icons/flame.svg"
+  },
+  "styleBlock": "Premium warm editorial illustration-photography hybrid for an Indian premium food-discovery brand. Dominant warm cream (#FFF8F0) canvas; forest-green (#1A5C38) depth in shadows; deep teal (#194B4A) only for restaurant-facing depth; saffron (#FF6B35) and heritage gold (#D4A017) used only as restrained accents. Soft directional golden-hour studio lighting, gentle gold rim and smooth falloff. Shallow depth of field, crisp focal subject, generous clean negative space. Materials: eco kraft paper, brushed brass, fresh herbs, natural wood and linen. Mood: warm, premium-but-accessible, Indian-contemporary, confident, tactile and trustworthy. Never cheap, neon, plastic, greasy, cluttered, stock-photo-like, discount-led, clearance-led or surplus-led.",
+  "globalAvoid": "No generated logos, brand marks, letters, words, numbers, pseudo-text, QR codes, labels, watermarks or signatures. No real restaurant identity, identifiable face, malformed hands, visible dish branding, plastic packaging, discount/sale/clearance/leftover cues, harsh flash, oversaturation or busy background.",
+  "assets": [
+    {
+      "id": "restaurant-hero",
+      "priority": 1,
+      "group": "restaurant",
+      "classification": "generated-photography",
+      "status": "locked",
+      "selectedCandidate": "restaurant-hero-03",
+      "masterFiles": {
+        "clean": ".codex-artifacts/gozaika-images/masters/restaurant/restaurant-hero-master-clean.png",
+        "branded": ".codex-artifacts/gozaika-images/masters/restaurant/restaurant-hero-master.png",
+        "delivery": ".codex-artifacts/gozaika-images/masters/restaurant/restaurant-hero-master.webp"
+      },
+      "description": "Premium B2B restaurant kitchen-pass hero used on the home partner teaser and for-restaurants page.",
+      "currentFiles": [],
+      "replacedFiles": [
+        "apps/website/public/images/restaurant-hero-v1.svg",
+        "apps/website/public/images/restaurant-hero-v2.svg"
+      ],
+      "activeReferences": [
+        "apps/website/components/sections/RestaurantTeaserSection.tsx",
+        "apps/website/app/for-restaurants/page.tsx"
+      ],
+      "finalOutput": "apps/website/public/images/restaurant-hero-v3.webp",
+      "generation": {
+        "enabled": false,
+        "reason": "Locked to restaurant-hero-03 and deterministically branded with canonical SVG assets.",
+        "mode": "edit-reference",
+        "size": "1536x1024",
+        "candidateCount": 4,
+        "prompt": "Use the attached clean goZaika hero master as the definitive reference for palette, lighting, tactile materials, packaging construction and premium editorial finish. Create a NEW horizontal B2B restaurant composition, not a crop or extension of the reference. A calm premium Hyderabad restaurant kitchen pass at golden hour: one sealed kraft BAM Bag in crisp foreground on a spotless natural-wood and brushed-brass counter, with the same folded closure, centered blank heritage-gold tab, blank bag face and blank hanging kraft tag. A chef's torso may appear softly out of focus in the background, but keep faces and hands out of the focal plane. Suggest welcome, hospitality and new-customer discovery through warm depth and an elegant open pass, not through charts, arrows or literal growth symbols. Use deep teal and forest depth with warm cream illumination and restrained saffron/gold accents. Leave useful negative space and protect a center-safe crop for both website placements. The contents remain fully concealed."
+      },
+      "reviewGate": [
+        "Premium acquisition channel, never discount or surplus",
+        "Bag construction belongs to the approved hero family",
+        "All logo, tab and tag surfaces are blank",
+        "No readable text, faces or malformed anatomy",
+        "Works at 4:3 and responsive landscape crops"
+      ]
+    },
+    {
+      "id": "about-culture",
+      "priority": 2,
+      "group": "about",
+      "classification": "generated-photography",
+      "status": "locked",
+      "selectedCandidate": "about-culture-04",
+      "masterFiles": {
+        "clean": ".codex-artifacts/gozaika-images/masters/about/about-culture-master-clean.png",
+        "branded": ".codex-artifacts/gozaika-images/masters/about/about-culture-master.png",
+        "delivery": ".codex-artifacts/gozaika-images/masters/about/about-culture-master.webp"
+      },
+      "description": "Warm editorial image expressing Hyderabad food discovery, inclusion and shared culture.",
+      "currentFiles": [],
+      "replacedFiles": [
+        "apps/website/public/images/about-illustration-v1.svg",
+        "apps/website/public/images/about-illustration-v2.svg"
+      ],
+      "activeReferences": [
+        "apps/website/app/about/page.tsx"
+      ],
+      "finalOutput": "apps/website/public/images/about-illustration-v3.webp",
+      "generation": {
+        "enabled": false,
+        "reason": "Locked to about-culture-04 and deterministically branded with canonical SVG assets.",
+        "mode": "edit-reference",
+        "size": "1536x1024",
+        "candidateCount": 4,
+        "prompt": "Use the attached clean goZaika hero master as the definitive reference for palette, lighting, tactile materials and premium editorial finish. Create a NEW horizontal culture composition. Show an intimate contemporary Hyderabad table gathering from a high oblique editorial angle: warm cream linen, refined regional serving ware, brass accents, fresh herbs and several people implied naturally at the frame edges through shoulders and softly placed arms, with faces outside the frame or fully defocused. The scene should express discovery, generosity and great food reaching more people, with one sealed blank kraft BAM Bag as a subtle supporting cue rather than the hero. Use varied clothing colors within the restrained forest, deep-teal, saffron and cream palette. If Hyderabad is suggested, use only an abstract warm urban arch or distant haze, not a literal tourist-landmark portrait. Keep the center calm and the composition heartfelt, sophisticated and believable."
+      },
+      "reviewGate": [
+        "Inclusive and human without stock-photo staging",
+        "No anatomy defects or identifiable faces",
+        "Hyderabad cue is subtle rather than touristic",
+        "Food feels appetising but does not imply a real partner",
+        "Visual language clearly belongs with the hero master"
+      ]
+    },
+    {
+      "id": "og-home",
+      "priority": 3,
+      "group": "social",
+      "classification": "deterministic-branded-composition",
+      "status": "awaiting-compositor",
+      "description": "Homepage and default social share card.",
+      "currentFiles": [
+        "apps/website/public/images/social/og-home-v1.svg",
+        "apps/website/public/images/social/og-home-v2.svg"
+      ],
+      "activeReferences": [
+        "apps/website/lib/metadata.ts",
+        "apps/website/app/layout.tsx",
+        "apps/website/app/page.tsx",
+        "apps/website/app/insider/page.tsx",
+        "apps/website/app/how-it-works/page.tsx",
+        "apps/website/app/for-restaurants/page.tsx"
+      ],
+      "finalOutput": "apps/website/public/images/social/og-home-v3.png",
+      "composition": {
+        "size": "1200x630",
+        "imageSource": ".codex-artifacts/gozaika-images/masters/anchors/master-style-anchor-clean.png",
+        "text": [
+          "Great food. No menu. No algorithm."
+        ],
+        "brandAssets": [
+          "icons/gozaika-logo.svg",
+          "icons/flame.svg"
+        ]
+      },
+      "generation": {
+        "enabled": false,
+        "reason": "Existing approved master supplies the image; final brand and typography require deterministic layout."
+      }
+    },
+    {
+      "id": "instagram-cover",
+      "priority": 3,
+      "group": "social",
+      "classification": "deterministic-branded-composition",
+      "status": "awaiting-compositor",
+      "description": "Portrait social campaign cover.",
+      "currentFiles": [
+        "apps/website/public/images/social/instagram-cover-v1.svg",
+        "apps/website/public/images/social/instagram-cover-v2.svg"
+      ],
+      "activeReferences": [],
+      "finalOutput": "apps/website/public/images/social/instagram-cover-v3.png",
+      "composition": {
+        "size": "1080x1350",
+        "imageSource": ".codex-artifacts/gozaika-images/masters/portrait/hero-portrait-master-clean.png",
+        "text": [
+          "BAM!",
+          "बड़ा ज़ायका, आएगा मज़ा"
+        ],
+        "brandAssets": [
+          "icons/gozaika-logo.svg",
+          "icons/flame.svg"
+        ]
+      },
+      "generation": {
+        "enabled": false,
+        "reason": "Approved portrait master supplies the scene; exact Devanagari and brand geometry require deterministic layout."
+      }
+    },
+    {
+      "id": "linkedin-banner",
+      "priority": 3,
+      "group": "social",
+      "classification": "deterministic-branded-composition",
+      "status": "ready-for-background-candidates",
+      "description": "Ultra-wide B2B LinkedIn banner with a separately generated clean kitchen-pass background.",
+      "currentFiles": [
+        "apps/website/public/images/social/linkedin-banner-v1.svg",
+        "apps/website/public/images/social/linkedin-banner-v2.svg"
+      ],
+      "activeReferences": [],
+      "finalOutput": "apps/website/public/images/social/linkedin-banner-v3.png",
+      "composition": {
+        "size": "1584x396",
+        "text": [
+          "A customer-acquisition channel for premium kitchens."
+        ],
+        "brandAssets": [
+          "icons/gozaika-logo.svg",
+          "icons/flame.svg"
+        ]
+      },
+      "generation": {
+        "enabled": true,
+        "mode": "edit-reference",
+        "size": "2048x1152",
+        "candidateCount": 3,
+        "prompt": "Use the attached clean goZaika hero master as the definitive reference for palette, lighting, tactile materials, packaging construction and premium editorial finish. Create a NEW very wide B2B kitchen-pass background intended for a later 4:1 banner crop. Place one sealed blank kraft BAM Bag on the right third of a clean premium restaurant pass, with a blank heritage-gold tab, blank bag face and blank hanging tag. Preserve broad, calm deep-teal-to-forest negative space across the left two thirds for deterministic logo and headline placement. Add restrained brass and natural-wood details with soft golden light. Keep every important object inside the vertical center-safe band so a 1584 x 396 crop remains elegant. No people are required. Do not render any text or brand geometry."
+      },
+      "reviewGate": [
+        "Strong 4:1 crop with undisturbed left copy area",
+        "B2B deep-teal tone remains part of hero visual family",
+        "Bag and all brand surfaces remain blank",
+        "No text, logos or pseudo-text",
+        "Background is calm enough for deterministic typography"
+      ]
+    },
+    {
+      "id": "profile-avatar",
+      "priority": 3,
+      "group": "social",
+      "classification": "deterministic-branded-composition",
+      "status": "awaiting-compositor",
+      "description": "Canonical social profile avatar.",
+      "currentFiles": [
+        "apps/website/public/images/social/profile-avatar-v1.svg",
+        "apps/website/public/images/social/profile-avatar-v2.svg"
+      ],
+      "activeReferences": [],
+      "finalOutput": "apps/website/public/images/social/profile-avatar-v3.png",
+      "composition": {
+        "size": "400x400",
+        "brandAssets": [
+          "icons/flame.svg"
+        ]
+      },
+      "generation": {
+        "enabled": false,
+        "reason": "A functional brand avatar should be exact vector-derived composition, not generated imagery."
+      }
+    },
+    {
+      "id": "whatsapp-icon",
+      "priority": 3,
+      "group": "social",
+      "classification": "deterministic-branded-composition",
+      "status": "awaiting-compositor",
+      "description": "WhatsApp community icon.",
+      "currentFiles": [
+        "apps/website/public/images/social/whatsapp-icon-v1.svg",
+        "apps/website/public/images/social/whatsapp-icon-v2.svg"
+      ],
+      "activeReferences": [],
+      "finalOutput": "apps/website/public/images/social/whatsapp-icon-v3.png",
+      "composition": {
+        "size": "500x500",
+        "brandAssets": [
+          "icons/flame.svg"
+        ]
+      },
+      "generation": {
+        "enabled": false,
+        "reason": "A functional channel icon should be exact vector-derived composition, not generated imagery."
+      }
+    },
+    {
+      "id": "step-browse",
+      "priority": 4,
+      "group": "supporting",
+      "classification": "retained-vector-ui-art",
+      "status": "retain-v2-pending-visual-qa",
+      "description": "Browse/discover functional step icon.",
+      "currentFiles": [
+        "apps/website/public/images/step-browse-v1.svg",
+        "apps/website/public/images/step-browse-v2.svg"
+      ],
+      "activeReferences": [
+        "apps/website/lib/content.ts"
+      ],
+      "finalOutput": "apps/website/public/images/step-browse-v2.svg",
+      "generation": {
+        "enabled": false,
+        "reason": "Small UI icon must remain deterministic SVG."
+      }
+    },
+    {
+      "id": "step-buy",
+      "priority": 4,
+      "group": "supporting",
+      "classification": "retained-vector-ui-art",
+      "status": "retain-v2-pending-visual-qa",
+      "description": "Claim/purchase functional step icon.",
+      "currentFiles": [
+        "apps/website/public/images/step-buy-v1.svg",
+        "apps/website/public/images/step-buy-v2.svg"
+      ],
+      "activeReferences": [
+        "apps/website/lib/content.ts"
+      ],
+      "finalOutput": "apps/website/public/images/step-buy-v2.svg",
+      "generation": {
+        "enabled": false,
+        "reason": "Small UI icon must remain deterministic SVG."
+      }
+    },
+    {
+      "id": "step-pickup",
+      "priority": 4,
+      "group": "supporting",
+      "classification": "retained-vector-ui-art",
+      "status": "retain-v2-pending-visual-qa",
+      "description": "Pickup functional step icon.",
+      "currentFiles": [
+        "apps/website/public/images/step-pickup-v1.svg",
+        "apps/website/public/images/step-pickup-v2.svg"
+      ],
+      "activeReferences": [
+        "apps/website/lib/content.ts"
+      ],
+      "finalOutput": "apps/website/public/images/step-pickup-v2.svg",
+      "generation": {
+        "enabled": false,
+        "reason": "Small UI icon must remain deterministic SVG."
+      }
+    },
+    {
+      "id": "working-orphan",
+      "priority": 4,
+      "group": "supporting",
+      "classification": "retained-vector-ui-art",
+      "status": "delete-orphan",
+      "description": "Unused historical working illustration.",
+      "currentFiles": [
+        "apps/website/public/images/working.svg"
+      ],
+      "activeReferences": [],
+      "finalOutput": null,
+      "generation": {
+        "enabled": false,
+        "reason": "Unused orphan; no replacement required."
+      }
+    }
+  ]
+}

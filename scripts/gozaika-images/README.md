@@ -1,78 +1,69 @@
-# goZaika Image Generation Scripts
+# goZaika Image Production
 
-This folder contains the review-gated image generation helper for the goZaika marketing asset set.
+The approved P0 square and portrait heroes are locked. Remaining website and
+social assets are controlled by:
 
-## Dry Run
+- `asset-replacement-manifest.json` — executable inventory, classification,
+  prompts, priorities, outputs and review gates.
+- `generate-asset-set.mjs` — dry-run-first reference-generation runner.
+- `compose-p0-master.mjs` — deterministic canonical branding for the locked P0
+  portrait master.
+- `compose-restaurant-master.mjs` — deterministic canonical branding for the
+  locked restaurant hero candidate 03.
+- `compose-about-master.mjs` — deterministic canonical branding for the locked
+  About/culture candidate 04.
+- `generate-images.mjs` — archived P0 candidate workflow retained only for
+  provenance/reproduction.
 
-Run this first. It makes no paid image calls.
+The detailed production contract is:
 
-```powershell
-npm run image:dry-run
-```
+`project docs/gozaika_asset_replacement_spec_v1.md`
 
-Optional live model validation, still no image generation:
-
-```powershell
-npm run image:dry-run:live
-```
-
-`image:dry-run:live` requires `OPENAI_API_KEY` in your environment or `.env.local`.
-
-## First Paid Milestone: P0 Square
-
-After the dry run looks good:
-
-```powershell
-npm run image:p0-square
-```
-
-This generates six square P0 hero candidates, writes raw PNGs, saves metadata, and creates an HTML contact sheet under:
-
-```text
-.codex-artifacts/gozaika-images/working/contact-sheets/p0-square.html
-```
-
-Review those candidates before generating portrait or any P1/P2 assets.
-
-## Second Paid Milestone: P0 Portrait
-
-Only after the square direction is selected:
+## Free validation
 
 ```powershell
-npm run image:p0-portrait
+npm.cmd run image:assets:list
+npm.cmd run image:assets:dry-run
 ```
 
-This generates four dedicated `1024x1536` portrait candidates through the
-Images edit/reference endpoint. It uploads:
-
-```text
-.codex-artifacts/gozaika-images/masters/anchors/master-style-anchor-clean.png
-```
-
-The clean square is a high-fidelity visual reference, not a crop template. The
-portrait prompt requests a new native vertical composition and keeps the gold
-tab, bag face, and hanging tag blank. Apply `icons/flame.svg` and
-`icons/gozaika-logo.svg` deterministically only after selecting the portrait
-winner.
-
-After selecting a portrait candidate, copy it to the master system as the clean
-portrait and run:
+Optional live model-access validation makes no image-generation call but does
+require `OPENAI_API_KEY`:
 
 ```powershell
-node scripts/gozaika-images/compose-p0-master.mjs
+npm.cmd run image:assets:dry-run:live
 ```
 
-This applies the canonical SVG logo and BAM flame-drop deterministically. The
-image model is never trusted to redraw either brand asset.
+## Paid review gates
 
-Candidate PNGs and contact sheets live under `working/` and may be deleted after
-selection. Locked masters, prompts, the manifest, and the API usage log live in
-their own durable folders.
+Run one priority at a time and review its contact sheet before continuing:
+
+```powershell
+npm.cmd run image:assets:restaurant
+npm.cmd run image:assets:about
+npm.cmd run image:assets:social
+```
+
+The social command makes paid calls only for LinkedIn background candidates.
+OG, Instagram, profile-avatar and WhatsApp assets are deterministic composition
+jobs and therefore produce no paid generation calls.
+
+Do not use `image:assets:all` for normal production. It exists for controlled
+reproduction after all individual directions have already been approved.
+
+## Output hygiene
+
+- Candidates and contact sheets: `.codex-artifacts/gozaika-images/working/`
+- Prompt and manifest snapshots: `.codex-artifacts/gozaika-images/generation/`
+- Approved masters only: `.codex-artifacts/gozaika-images/masters/`
+
+Delete `working/` after selections are locked. Never wire a candidate directly
+into an application.
 
 ## Safety
 
-- The script refuses paid calls unless the command includes `--yes-paid`.
-- The script validates the configured model before paid calls.
-- Existing candidate files are skipped by default.
-- Use `--force` only when you intentionally want to regenerate.
-- The script never logs `OPENAI_API_KEY`.
+- Paid calls require `--yes-paid`.
+- The configured model is validated before paid execution.
+- Existing candidates are skipped unless `--force` is supplied.
+- API keys are never written to logs or manifests.
+- The image model never renders the final logo, BAM flame-drop, QR, label or
+  marketing typography.

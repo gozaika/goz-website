@@ -39,10 +39,10 @@ export default function AboutPage(): React.ReactElement {
             </Reveal>
             <Reveal as="div" className="reveal-media premium-card rounded-3xl bg-white p-4" amount={0.15} delayClass="reveal-delay-160">
               <Image
-                src="/images/about-illustration-v1.svg"
-                alt="About goZaika visual showing curated bag on kitchen counter"
-                width={800}
-                height={600}
+                src="/images/about-illustration-v3.webp"
+                alt="Friends sharing an abundant Hyderabad meal beside a branded goZaika BAM Bag"
+                width={1536}
+                height={1024}
                 className="h-auto w-full rounded-3xl transition-transform duration-300 hover:scale-[1.01]"
               />
             </Reveal>
