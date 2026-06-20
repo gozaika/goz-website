@@ -1,6 +1,7 @@
 import {
   resolveMobileBearerActor,
   resolveRestaurantMemberships,
+  resolveRestaurantRoleScopes,
   type ResolvedMembership,
   type ResolvedMobileActor,
 } from "@gozaika/supabase";
@@ -9,6 +10,7 @@ import {
   type MembershipView,
   type RestaurantCapability,
   type RestaurantTeamRoleCode,
+  type RoleScopeMap,
 } from "@gozaika/types";
 import { NextResponse } from "next/server";
 import { mobileResponseErr, newRequestId } from "./handler";
@@ -66,10 +68,13 @@ export function withMobileRestaurantRole(
         isActive: m.isActive,
       }));
 
+      // Data-driven: resolve role -> scopes from the DB (restaurant_team_role_scope).
+      const roleScopes = (await resolveRestaurantRoleScopes()) as unknown as RoleScopeMap;
       const decision = decideRestaurantAccess({
         memberships: views,
         restaurantPk: selectedRestaurantPk(req),
         capability,
+        roleScopes,
       });
       if (!decision.ok) {
         return mobileResponseErr(decision.code, decision.message, requestId);

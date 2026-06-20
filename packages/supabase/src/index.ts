@@ -246,3 +246,47 @@ export async function resolveRestaurantMemberships(profilePk: string): Promise<R
 
   return memberships;
 }
+
+/**
+ * Resolve the global role -> scope-code map from `restaurant_team_role_scope`
+ * (the data-driven capability source). Cached process-wide with a short TTL since
+ * the mapping is global and changes rarely (only via migration). Service-role read.
+ */
+let roleScopeCache: { readonly at: number; readonly map: Map<string, Set<string>> } | null = null;
+const ROLE_SCOPE_TTL_MS = 5 * 60_000;
+
+export async function resolveRestaurantRoleScopes(): Promise<Map<string, Set<string>>> {
+  assertServerOnly("resolveRestaurantRoleScopes");
+
+  if (roleScopeCache && Date.now() - roleScopeCache.at < ROLE_SCOPE_TTL_MS) {
+    return roleScopeCache.map;
+  }
+
+  const service = createServiceRoleSupabaseClient();
+  const { data, error } = await service
+    .from("restaurant_team_role_scope")
+    .select("restaurant_team_role(role_code),master_scope(scope_code)");
+  if (error) {
+    throw error;
+  }
+
+  type RoleScopeRow = {
+    readonly restaurant_team_role: { role_code: string } | { role_code: string }[] | null;
+    readonly master_scope: { scope_code: string } | { scope_code: string }[] | null;
+  };
+
+  const map = new Map<string, Set<string>>();
+  for (const row of (data ?? []) as unknown as RoleScopeRow[]) {
+    const role = firstRelation(row.restaurant_team_role)?.role_code;
+    const scope = firstRelation(row.master_scope)?.scope_code;
+    if (!role || !scope) {
+      continue;
+    }
+    const set = map.get(role) ?? new Set<string>();
+    set.add(scope);
+    map.set(role, set);
+  }
+
+  roleScopeCache = { at: Date.now(), map };
+  return map;
+}

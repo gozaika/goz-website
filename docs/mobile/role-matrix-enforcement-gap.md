@@ -109,7 +109,7 @@ The defect **D2** is: the existing web portal (`apps/restaurant-mgmt-web`) autho
 What this means concretely while D2 is open:
 - The **mobile BFF is the only role-correct restaurant surface.** Any actor with an active membership can still exercise any web-portal action regardless of role (e.g. a `PICKUP_STAFF` or `FINANCE` member can publish drops via the *web* portal).
 - This is acceptable for now because: the pilot's restaurant operators are trusted owners/admins; the high-risk *new* surface (mobile) is hardened; and web hardening is a mechanical follow-up.
-- **Web hardening is a separate, explicitly-tested change** — apply the same `decideRestaurantAccess` policy (now data-driven from `restaurant_team_role_scope`, see §8) to the web handlers in its own PR with its own review. It must **not** be folded into a mobile slice, and the mobile slices must never be represented as having fixed web authorization.
+- **Web hardening is a separate, explicitly-tested change** — apply the same `decideRestaurantAccess` policy (now data-driven from `restaurant_team_role_scope` via `resolveRestaurantRoleScopes`) to the web handlers in its own PR with its own review. It must **not** be folded into a mobile slice, and the mobile slices must never be represented as having fixed web authorization.
 
 Tracked as ledger defect **D2** (status: addressed-for-mobile / web-deferred). Re-open as a dedicated hardening task before any non-trusted web operator is onboarded.
 
