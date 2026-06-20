@@ -22,12 +22,12 @@ export const metadata: Metadata = {
     '/insider',
     'goZaika Insider — Drop Alerts on WhatsApp',
     'Be first to know when a BAM Bag drops near you. Banjara Hills, Jubilee Hills, HITEC City, Kondapur.',
-    '/images/social/og-home-v2.svg',
+    '/images/social/og-home-v3.png',
   ),
   twitter: twitterFor(
     'goZaika Insider — Drop Alerts on WhatsApp',
     'Be first to know when a BAM Bag drops near you in Hyderabad.',
-    '/images/social/og-home-v2.svg',
+    '/images/social/og-home-v3.png',
   ),
 };
 

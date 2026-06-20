@@ -18,12 +18,12 @@ export const metadata: Metadata = {
     '/for-restaurants',
     'Partner With goZaika',
     'Create pickup demand, protect margin, and preserve your brand.',
-    '/images/social/og-home-v1.svg',
+    '/images/social/og-home-v3.png',
   ),
   twitter: twitterFor(
     'Partner With goZaika',
     'Create pickup demand, protect margin, and preserve your brand.',
-    '/images/social/og-home-v1.svg',
+    '/images/social/og-home-v3.png',
   ),
 };
 

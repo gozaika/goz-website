@@ -48,7 +48,7 @@ const localBusinessSchema = {
     "India's first mystery meal-drop marketplace. Chef-curated BAM Bags from Hyderabad's finest kitchens, pickup-only.",
   url: BASE_URL,
   logo: `${BASE_URL}/logos/gozaika-logo-color.svg`,
-  image: `${BASE_URL}/images/social/og-home-v2.svg`,
+  image: `${BASE_URL}/images/social/og-home-v3.png`,
   telephone: null,
   email: 'contact@gozaika.in',
   address: {

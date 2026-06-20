@@ -14,12 +14,12 @@ export const metadata: Metadata = {
     '/how-it-works',
     'How a BAM Bag Works | goZaika',
     'A trust-first journey from discovery to pickup.',
-    '/images/social/og-home-v1.svg',
+    '/images/social/og-home-v3.png',
   ),
   twitter: twitterFor(
     'How a BAM Bag Works | goZaika',
     'A trust-first journey from discovery to pickup.',
-    '/images/social/og-home-v1.svg',
+    '/images/social/og-home-v3.png',
   ),
 };
 

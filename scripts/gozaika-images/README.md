@@ -12,6 +12,8 @@ social assets are controlled by:
   locked restaurant hero candidate 03.
 - `compose-about-master.mjs` — deterministic canonical branding for the locked
   About/culture candidate 04.
+- `compose-social-assets.mjs` — deterministic OG, Instagram and channel-icon
+  layouts, plus final LinkedIn composition after its background is selected.
 - `generate-images.mjs` — archived P0 candidate workflow retained only for
   provenance/reproduction.
 
@@ -46,6 +48,23 @@ npm.cmd run image:assets:social
 The social command makes paid calls only for LinkedIn background candidates.
 OG, Instagram, profile-avatar and WhatsApp assets are deterministic composition
 jobs and therefore produce no paid generation calls.
+
+The current LinkedIn candidate is locked. The social generation command now
+reports zero paid calls unless that manifest entry is deliberately re-enabled
+for a future campaign refresh.
+
+Build those four assets locally at any time with:
+
+```powershell
+npm.cmd run image:assets:social:compose
+```
+
+After selecting a generated LinkedIn background, add it to the deterministic
+set with:
+
+```powershell
+node scripts/gozaika-images/compose-social-assets.mjs --linkedin-background <candidate.png>
+```
 
 Do not use `image:assets:all` for normal production. It exists for controlled
 reproduction after all individual directions have already been approved.

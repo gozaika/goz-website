@@ -35,6 +35,7 @@
     "image:assets:restaurant": "node scripts/gozaika-images/generate-asset-set.mjs --phase generate --asset restaurant-hero --yes-paid",
     "image:assets:about": "node scripts/gozaika-images/generate-asset-set.mjs --phase generate --asset about-culture --yes-paid",
     "image:assets:social": "node scripts/gozaika-images/generate-asset-set.mjs --phase generate --group social --yes-paid",
+    "image:assets:social:compose": "node scripts/gozaika-images/compose-social-assets.mjs",
     "image:assets:all": "node scripts/gozaika-images/generate-asset-set.mjs --phase generate --all --yes-paid"
   },
   "engines": {

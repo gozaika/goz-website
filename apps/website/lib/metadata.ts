@@ -34,7 +34,7 @@ export function openGraphFor(
   path: string,
   title: string,
   description: string,
-  imagePath = '/images/social/og-home-v2.svg',
+  imagePath = '/images/social/og-home-v3.png',
 ): Metadata['openGraph'] {
   return {
     title,
@@ -65,7 +65,7 @@ export function openGraphFor(
 export function twitterFor(
   title: string,
   description: string,
-  imagePath = '/images/social/og-home-v2.svg',
+  imagePath = '/images/social/og-home-v3.png',
 ): Metadata['twitter'] {
   return {
     card: 'summary_large_image',

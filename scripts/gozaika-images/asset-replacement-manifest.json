@@ -93,9 +93,10 @@
       "priority": 3,
       "group": "social",
       "classification": "deterministic-branded-composition",
-      "status": "awaiting-compositor",
+      "status": "locked",
       "description": "Homepage and default social share card.",
-      "currentFiles": [
+      "currentFiles": [],
+      "replacedFiles": [
         "apps/website/public/images/social/og-home-v1.svg",
         "apps/website/public/images/social/og-home-v2.svg"
       ],
@@ -110,7 +111,7 @@
       "finalOutput": "apps/website/public/images/social/og-home-v3.png",
       "composition": {
         "size": "1200x630",
-        "imageSource": ".codex-artifacts/gozaika-images/masters/anchors/master-style-anchor-clean.png",
+        "imageSource": ".codex-artifacts/gozaika-images/masters/anchors/master-style-anchor-branded.png",
         "text": [
           "Great food. No menu. No algorithm."
         ],
@@ -129,9 +130,10 @@
       "priority": 3,
       "group": "social",
       "classification": "deterministic-branded-composition",
-      "status": "awaiting-compositor",
+      "status": "locked",
       "description": "Portrait social campaign cover.",
-      "currentFiles": [
+      "currentFiles": [],
+      "replacedFiles": [
         "apps/website/public/images/social/instagram-cover-v1.svg",
         "apps/website/public/images/social/instagram-cover-v2.svg"
       ],
@@ -139,7 +141,7 @@
       "finalOutput": "apps/website/public/images/social/instagram-cover-v3.png",
       "composition": {
         "size": "1080x1350",
-        "imageSource": ".codex-artifacts/gozaika-images/masters/portrait/hero-portrait-master-clean.png",
+        "imageSource": ".codex-artifacts/gozaika-images/masters/portrait/hero-portrait-master.png",
         "text": [
           "BAM!",
           "बड़ा ज़ायका, आएगा मज़ा"
@@ -159,9 +161,16 @@
       "priority": 3,
       "group": "social",
       "classification": "deterministic-branded-composition",
-      "status": "ready-for-background-candidates",
+      "status": "locked",
+      "selectedCandidate": "linkedin-banner-02",
+      "masterFiles": {
+        "clean": ".codex-artifacts/gozaika-images/masters/social/linkedin-banner-background-master.png",
+        "branded": ".codex-artifacts/gozaika-images/masters/social/linkedin-banner-v3.png",
+        "delivery": "apps/website/public/images/social/linkedin-banner-v3.png"
+      },
       "description": "Ultra-wide B2B LinkedIn banner with a separately generated clean kitchen-pass background.",
-      "currentFiles": [
+      "currentFiles": [],
+      "replacedFiles": [
         "apps/website/public/images/social/linkedin-banner-v1.svg",
         "apps/website/public/images/social/linkedin-banner-v2.svg"
       ],
@@ -178,7 +187,8 @@
         ]
       },
       "generation": {
-        "enabled": true,
+        "enabled": false,
+        "reason": "Locked to linkedin-banner-02 and deterministically composed with canonical SVG branding and proofread copy.",
         "mode": "edit-reference",
         "size": "2048x1152",
         "candidateCount": 3,
@@ -197,9 +207,10 @@
       "priority": 3,
       "group": "social",
       "classification": "deterministic-branded-composition",
-      "status": "awaiting-compositor",
+      "status": "locked",
       "description": "Canonical social profile avatar.",
-      "currentFiles": [
+      "currentFiles": [],
+      "replacedFiles": [
         "apps/website/public/images/social/profile-avatar-v1.svg",
         "apps/website/public/images/social/profile-avatar-v2.svg"
       ],
@@ -221,9 +232,10 @@
       "priority": 3,
       "group": "social",
       "classification": "deterministic-branded-composition",
-      "status": "awaiting-compositor",
+      "status": "locked",
       "description": "WhatsApp community icon.",
-      "currentFiles": [
+      "currentFiles": [],
+      "replacedFiles": [
         "apps/website/public/images/social/whatsapp-icon-v1.svg",
         "apps/website/public/images/social/whatsapp-icon-v2.svg"
       ],

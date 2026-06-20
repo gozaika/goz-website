@@ -21,12 +21,12 @@ export const metadata: Metadata = {
     '/',
     'goZaika — Discover. Pickup. Devour.',
     'Premium-access mystery meal drops from trusted restaurants.',
-    '/images/social/og-home-v2.svg',
+    '/images/social/og-home-v3.png',
   ),
   twitter: twitterFor(
     'goZaika — Discover. Pickup. Devour.',
     'Premium-access mystery meal drops from trusted restaurants.',
-    '/images/social/og-home-v2.svg',
+    '/images/social/og-home-v3.png',
   ),
 };
 
