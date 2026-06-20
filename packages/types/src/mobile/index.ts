@@ -4,3 +4,4 @@ export * from "./envelope";
 export * from "./dto";
 export * from "./capabilities";
 export * from "./restaurant";
+export * from "./discovery";
