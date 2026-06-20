@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "data": [
+    {
+      "dropPk": "20000000-0000-0000-0000-700000000011",
+      "dropTitle": "Bawarchi Biryani BAM Bag",
+      "dropTypeCode": "STANDARD",
+      "restaurantPk": "20000000-0000-0000-0000-300000000001",
+      "restaurantName": "Bawarchi Biryani Palace",
+      "restaurantSlug": "bawarchi-biryani-palace",
+      "restaurantHeadline": "Secunderabad's Hyderabadi institution",
+      "cityName": "Hyderabad",
+      "neighborhoodName": "Secunderabad",
+      "latitude": 17.4435,
+      "longitude": 78.4987,
+      "bagDisplayName": "Hyderabadi Dum Biryani",
+      "bagShortDescription": "Slow-cooked dum biryani with raita",
+      "dietaryCategoryCode": "NON_VEG",
+      "spiceLevelCode": "HOT",
+      "servesMin": 1,
+      "servesMax": 2,
+      "maxHoldingMinutes": 120,
+      "holdingGuidanceText": "Best enjoyed within 2 hours",
+      "minMenuValuePaise": 30000,
+      "allergenSummaryText": "Contains dairy",
+      "allergenCodes": ["DAIRY"],
+      "pricePaise": 14900,
+      "pickupStartAt": "2026-06-20T13:00:00.000Z",
+      "pickupEndAt": "2026-06-20T15:30:00.000Z",
+      "quantityTotal": 12,
+      "quantityAvailable": 9,
+      "statusCode": "ACTIVE"
+    }
+  ],
+  "requestId": "66666666-6666-4666-8666-666666666666",
+  "serverTime": "2026-06-20T10:00:00.000Z"
+}

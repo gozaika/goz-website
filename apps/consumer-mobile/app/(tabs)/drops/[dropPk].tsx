@@ -1,14 +1,65 @@
+import { Badge, Button, Card, ErrorState, palette, Screen, Skeleton, spacing, Text } from "@gozaika/mobile-ui";
+import { formatPaise } from "@gozaika/utils";
 import { useLocalSearchParams } from "expo-router";
-import { Placeholder } from "@/ui/Placeholder";
+import { View } from "react-native";
+import { useDrop } from "@/api/discovery";
 
 export default function DropDetailScreen() {
   const { dropPk } = useLocalSearchParams<{ dropPk: string }>();
+  const { data: drop, isLoading, isError, refetch } = useDrop(dropPk ?? "");
+
+  if (isError) {
+    return (
+      <Screen scroll={false}>
+        <ErrorState message="We couldn't load this drop." onRetry={() => refetch()} />
+      </Screen>
+    );
+  }
+  if (isLoading || !drop) {
+    return (
+      <Screen contentStyle={{ gap: spacing.md }}>
+        <Skeleton height={28} width="70%" />
+        <Skeleton height={90} />
+        <Skeleton height={60} />
+      </Screen>
+    );
+  }
+
+  const soldOut = drop.quantityAvailable <= 0;
+
   return (
-    <Placeholder
-      title="Drop detail"
-      subtitle={`Allergen disclosure, pickup window and claim CTA for "${dropPk ?? ""}". Claim → Razorpay → pickup proof arrive in Mobile Slice 9.`}
-      slice="Slice 8 / 9"
-      links={[{ label: "Continue to checkout", href: "/checkout/H01" }]}
-    />
+    <Screen contentStyle={{ gap: spacing.md }}>
+      <Text variant="caption" color={palette.muted}>
+        {drop.restaurantName}
+        {drop.neighborhoodName ? ` · ${drop.neighborhoodName}` : ""}
+      </Text>
+      <Text variant="title">{drop.bagDisplayName}</Text>
+      {drop.bagShortDescription ? (
+        <Text variant="body" color={palette.muted}>
+          {drop.bagShortDescription}
+        </Text>
+      ) : null}
+
+      <View style={{ flexDirection: "row", gap: spacing.xs, flexWrap: "wrap" }}>
+        <Badge label={drop.dietaryCategoryCode} tone={drop.dietaryCategoryCode === "VEG" ? "success" : "neutral"} />
+        {drop.spiceLevelCode ? <Badge label={drop.spiceLevelCode} tone="neutral" /> : null}
+        <Badge label={soldOut ? "Sold out" : `${drop.quantityAvailable} of ${drop.quantityTotal} left`} tone={soldOut ? "danger" : "info"} />
+      </View>
+
+      {/* Allergen disclosure appears BEFORE the claim CTA (customer spec §3.3). */}
+      <Card>
+        <Text variant="label">Allergens</Text>
+        <Text variant="body" color={palette.charcoal}>
+          {drop.allergenSummaryText ?? (drop.allergenCodes.length > 0 ? drop.allergenCodes.join(", ") : "No allergen information provided — do not assume safety.")}
+        </Text>
+      </Card>
+
+      <Text variant="label" color={palette.charcoal}>
+        {formatPaise(drop.pricePaise)} · pickup {new Date(drop.pickupStartAt).toLocaleTimeString()}–{new Date(drop.pickupEndAt).toLocaleTimeString()}
+      </Text>
+
+      {/* Claim → Razorpay → proof arrive in Slice 9. */}
+      <Button label="Sign in to claim" disabled accent={palette.forest} />
+    </Screen>
   );
 }

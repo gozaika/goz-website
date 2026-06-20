@@ -1,0 +1,19 @@
+# goZaika customer — navigation smoke for a LOCAL expo-dev-client build already
+# loaded (bundle fetched, dev menu dismissed). For CI, use a preview build with
+# smoke.yaml + launchApp. Asserts on tab labels + per-screen titles.
+# Run: maestro test apps/consumer-mobile/.maestro/smoke-devclient.yaml
+appId: in.gozaika.customer
+---
+- tapOn:
+    text: "Continue"
+    optional: true
+- assertVisible: "Home"
+- tapOn: "Drops"
+- assertVisible: "Limited Drops"
+- tapOn: "Restaurants"
+- assertVisible: "Restaurants"
+- tapOn: "Orders"
+- assertVisible: "Your orders"
+- tapOn: "Account"
+- assertVisible: "Account"
+- tapOn: "Home"
