@@ -1,9 +1,11 @@
-import { mobileHealthSchema, mobileMeSchema } from "@gozaika/types";
+import { counterOrdersDataSchema, mobileHealthSchema, mobileMeSchema, pickupVerifyResultSchema } from "@gozaika/types";
 import { describe, expect, it } from "vitest";
+import counterOrders from "../../../types/test-fixtures/mobile/counter-orders.json";
 import errUpdate from "../../../types/test-fixtures/mobile/error-app-update.json";
 import errUnauth from "../../../types/test-fixtures/mobile/error-unauthenticated.json";
 import health from "../../../types/test-fixtures/mobile/health.json";
 import meConsumer from "../../../types/test-fixtures/mobile/me-consumer.json";
+import pickupVerify from "../../../types/test-fixtures/mobile/pickup-verify-success.json";
 import { decodeEnvelope } from "./envelope";
 import { ApiError } from "./errors";
 
@@ -40,5 +42,17 @@ describe("mobile-core decodes the canonical fixtures", () => {
     } catch (error) {
       expect((error as ApiError).requiresAppUpdate).toBe(true);
     }
+  });
+
+  it("decodes the restaurant counter queue payload", () => {
+    const result = decodeEnvelope(counterOrders, counterOrdersDataSchema, { status: 200 });
+    expect(result.data.orders).toHaveLength(2);
+    expect(result.data.orders[0]?.orderStatusCode).toBe("READY_FOR_PICKUP");
+  });
+
+  it("decodes the pickup verification result payload", () => {
+    const result = decodeEnvelope(pickupVerify, pickupVerifyResultSchema, { status: 200 });
+    expect(result.data.resultCode).toBe("SUCCESS");
+    expect(result.data.orderStatusCode).toBe("COLLECTED");
   });
 });

@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "data": {
+    "restaurantPk": "30000000-0000-0000-0000-000000000001",
+    "orders": [
+      {
+        "orderPk": "40000000-0000-0000-0000-000000000001",
+        "orderNumber": "GZ-2026-000123",
+        "orderStatusCode": "READY_FOR_PICKUP",
+        "dropTitle": "Evening Thali Surplus",
+        "bagDisplayName": "BAM Bag · Veg Thali",
+        "dietaryCategoryCode": "VEG",
+        "spiceLevelCode": "MEDIUM",
+        "allergenSummaryText": "Contains dairy, gluten",
+        "quantity": 1,
+        "paidAmountPaise": 14900,
+        "currencyCode": "INR",
+        "pickupWindowStartAt": "2026-06-20T12:30:00.000Z",
+        "pickupWindowEndAt": "2026-06-20T13:30:00.000Z",
+        "collectedAt": null,
+        "pickupVerificationAttemptCount": 0,
+        "lastPickupVerificationResultCode": null,
+        "incidentCount": 0
+      },
+      {
+        "orderPk": "40000000-0000-0000-0000-000000000002",
+        "orderNumber": "GZ-2026-000124",
+        "orderStatusCode": "COLLECTED",
+        "dropTitle": "Evening Thali Surplus",
+        "bagDisplayName": "BAM Bag · Egg Biryani",
+        "dietaryCategoryCode": "EGG_ONLY",
+        "spiceLevelCode": "HOT",
+        "allergenSummaryText": null,
+        "quantity": 2,
+        "paidAmountPaise": 29800,
+        "currencyCode": "INR",
+        "pickupWindowStartAt": "2026-06-20T12:30:00.000Z",
+        "pickupWindowEndAt": "2026-06-20T13:30:00.000Z",
+        "collectedAt": "2026-06-20T12:48:11.000Z",
+        "pickupVerificationAttemptCount": 1,
+        "lastPickupVerificationResultCode": "SUCCESS",
+        "incidentCount": 0
+      }
+    ]
+  },
+  "requestId": "11111111-1111-1111-1111-111111111111",
+  "serverTime": "2026-06-20T12:45:00.000Z"
+}

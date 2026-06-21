@@ -52,7 +52,7 @@ Use `npm.cmd`/`npx.cmd` in this Windows PowerShell environment when script execu
 | Mobile Slice 4 | Restaurant authorization and bootstrap APIs | 3 | Complete — pending human authz review (2026-06-19); live multi-membership tests at Slice 6 smoke |
 | Mobile Slice 5 | Demo phone auth and deterministic test OTP fixtures | 3,4 | Not started |
 | Mobile Slice 6 | Native authentication, SecureStore and consent guards | 2,3,5 | Complete — phone-OTP core (2026-06-19); Google OAuth + biometric + deep-link restore deferred; live smoke pending |
-| Mobile Slice 7 | Restaurant counter vertical slice | 4,6 | Not started |
+| Mobile Slice 7 | Restaurant counter vertical slice | 4,6 | Built — human security review pending |
 | Mobile Slice 8 | Customer public discovery and restaurant profiles | 3,6 | Not started |
 | Mobile Slice 9 | Customer claim, Razorpay and pickup proof | 3,6,8 | Not started |
 | Mobile Slice 10 | Customer account, orders, reviews and consent settings | 6,9 | Not started |
@@ -303,6 +303,24 @@ Branch: `mobile/slice6-native-auth` (off `main`).
 **Smoke-test scenarios and cases:** Valid OTP and QR; camera denied; malformed QR; wrong restaurant; invalid credential; not ready; expired window; replay/already collected; duplicate tap; offline scan then authoritative reconnect; no-show before/after boundary; each incident type/severity; PICKUP_STAFF allowed while finance/cross-restaurant denied.
 
 **Update this implementation plan:** Record endpoints/RPCs, queue DTO, role evidence, offline state machine, rate limits, Maestro device cases and recovery/runbook steps. This slice requires human security review before completion.
+
+#### Status — core vertical built 2026-06-20 (branch `mobile/slice7-counter`). ⚠️ NOT MERGED — awaiting human security review.
+
+**Endpoints (BFF, `/api/mobile/v1`, all via `withMobileRestaurantRole`):**
+- `GET /orders` — capability `viewOrders`; scoped to the selected restaurant (revalidated every request); reuses the shared `loadRestaurantPickupOrders` loader (view → tenant-scoped legacy fallback) so the wire shape cannot drift from the web portal page.
+- `POST /orders/:id/pickup/verify` — capability `verifyPickup`; tenant-checks the order→restaurant; reuses the canonical `resolvePickupCredential` (SHA-256 over `PICKUP_CREDENTIAL_SECRET`) + RPC `api_verify_order_pickup`. A *completed* verification (any `resultCode`) returns `ok:true` with the result so the app renders distinct states; only transport/validation/RPC failures are error envelopes.
+- `POST /orders/:id/no-show` — capability `verifyPickup`; RPC `api_mark_order_no_show` (server rejects early no-shows).
+- `POST /orders/:id/incidents` — capability `manageIncidents`; RPC `api_create_order_incident` (+ best-effort P1/P2 alert enqueue), `p_source_code: "RESTAURANT_MOBILE"`.
+
+**Contracts:** `packages/types/src/mobile/counter.ts` (`counterOrdersDataSchema`/`CounterOrder`, `pickupVerifyResultSchema`, `noShowResultSchema`, `incidentCreatedSchema`, request DTOs). Fixtures `counter-orders.json` + `pickup-verify-success.json`; validated server-side (`counter.test.ts`) and cross-decoded client-side (`mobile-core/.../contract.test.ts`).
+
+**Role evidence:** denial codes flow from `decideRestaurantAccess` (data-driven scopes). FINANCE → `ROLE_DENIED` on verify/incidents (FINANCE lacks `ORDER_VERIFY_PICKUP`/`INCIDENT_MANAGE`); PICKUP_STAFF allowed on verify/no-show/incidents; cross-restaurant order → `FORBIDDEN` via the per-order tenant check; suspended/inactive → `RESTAURANT_SUSPENDED`/`MEMBERSHIP_INACTIVE`.
+
+**Native UI (`restaurant-mobile`):** `(tabs)/orders/index.tsx` queue (status badges, pickup window, amount, incident count, offline banner, empty/error states) + `(tabs)/orders/[orderId].tsx` detail with manual OTP verify, no-show and incident forms. Server-authoritative throughout; **never-false-collected** — a `NETWORK` failure shows an explicit "Not confirmed — no network" warning and never marks collected. Hooks in `src/api/counter.ts` (idempotency keys on writes, queue invalidation on success).
+
+**Deferred to follow-ups (flag in security review):** camera QR scan (expo-camera; manual OTP is the verified baseline now), tablet master-detail layout, server-side per-actor attempt rate-limiting + verification audit surfacing, true offline write queue (current behavior is fail-safe, not store-and-forward), and the live device Maestro matrix (valid/denied/malformed/replay/boundary cases). **Web authorization (D2) remains deferred — these mobile endpoints do not change web handlers.**
+
+**Mandatory before merge:** human security review of credential hashing/clearing, idempotency/replay handling, the role-denial matrix on live Supabase, and the offline never-false-collected invariant.
 
 ### Mobile Slice 8 — Customer public discovery and restaurant profiles
 

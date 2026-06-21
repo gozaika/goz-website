@@ -97,7 +97,7 @@ Route-count reconciliation as of the audit:
 | `/` | redirect to `/dashboard` or login | — | — | n/a | n/a | S1 | Not started |
 | `/auth/login` | `/auth/login` | Supabase Auth | Supabase Auth | anon | anon | S6 | Not started |
 | `/portal/dashboard` | `/dashboard` | server + `lib/*` (**no API today**) | `GET /dashboard` (new) | member | role: all but unauth | S14 | Not started |
-| `/portal/orders` | `/orders` + `/orders?mode=counter` | `/api/portal/orders/*` actions; **no list API** | `GET /orders` (new) + actions | member | role: OWNER/ADMIN/OPS/PICKUP | S7 | Not started |
+| `/portal/orders` | `/orders` + `/orders?mode=counter` | `/api/portal/orders/*` actions; **no list API** | `GET /orders` (new) + actions | member | role: OWNER/ADMIN/OPS/PICKUP | S7 | Built (review pending) |
 | `/portal/drops` | `/drops` | `/api/portal/drops` | `GET /drops` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Not started |
 | `/portal/drops/new` | `/drops/new` + `/drops/[dropPk]` | `/api/portal/drops`, `/drops/[id]` | `POST /drops`, `GET/PATCH /drops/:id` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Not started |
 | `/portal/templates` | `/templates` | `/api/portal/templates*` | `GET/POST /templates`, `PATCH/DELETE /templates/:id` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Not started |
@@ -123,11 +123,11 @@ Route-count reconciliation as of the audit:
 | `/api/portal/templates/[id]` | PATCH/DELETE | `PATCH/DELETE /templates/:id` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Not started |
 | `/api/portal/drops` | GET/POST | `GET/POST /drops` | member ⚠️ (active+publishing checked, role not) | role: OWNER/ADMIN/OPS | S13 | Not started |
 | `/api/portal/drops/[id]` | GET/PATCH | `GET/PATCH /drops/:id` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Not started |
-| `/api/portal/orders/[orderId]/pickup/verify` | POST | `POST /orders/:id/pickup/verify` | member (tenant-scoped via active restaurants) ⚠️ | role: OWNER/ADMIN/OPS/PICKUP | S7 | Not started |
-| `/api/portal/orders/[orderId]/no-show` | POST | `POST /orders/:id/no-show` | member ⚠️ | role: OWNER/ADMIN/OPS/PICKUP | S7 | Not started |
-| `/api/portal/orders/[orderId]/incidents` | POST | `POST /orders/:id/incidents` | member ⚠️ | role: OWNER/ADMIN/OPS/PICKUP | S7 | Not started |
+| `/api/portal/orders/[orderId]/pickup/verify` | POST | `POST /orders/:id/pickup/verify` | member (tenant-scoped via active restaurants) ⚠️ | role: OWNER/ADMIN/OPS/PICKUP | S7 | Built (review pending) |
+| `/api/portal/orders/[orderId]/no-show` | POST | `POST /orders/:id/no-show` | member ⚠️ | role: OWNER/ADMIN/OPS/PICKUP | S7 | Built (review pending) |
+| `/api/portal/orders/[orderId]/incidents` | POST | `POST /orders/:id/incidents` | member ⚠️ | role: OWNER/ADMIN/OPS/PICKUP | S7 | Built (review pending) |
 | `/api/portal/profile` | GET/PATCH | `GET/PATCH /profile` | member ⚠️ | role: OWNER/ADMIN | S12 | Not started |
-| _new_ `GET /orders` (queue list) | GET | mobile-only; web renders server-side | n/a | role: OWNER/ADMIN/OPS/PICKUP | S7 | Not started |
+| _new_ `GET /orders` (queue list) | GET | mobile-only; web renders server-side | n/a | role: OWNER/ADMIN/OPS/PICKUP | S7 | Built (review pending) |
 | _new_ `GET /finance/settlements,/:id,/invoices/:id` | GET | mobile-only; web renders via `lib/finance` | n/a | role: OWNER/ADMIN/FINANCE | S15 | Not started |
 | _new_ `GET /reports/roi` | GET | mobile-only; web renders via `lib/roi-report` | n/a | role: OWNER/ADMIN/OPS/FINANCE | S15 | Not started |
 | _new_ `GET /dashboard`, `GET /reviews` | GET | mobile-only read APIs | n/a | role-scoped | S14 | Not started |

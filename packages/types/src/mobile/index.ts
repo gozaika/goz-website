@@ -5,3 +5,4 @@ export * from "./dto";
 export * from "./capabilities";
 export * from "./restaurant";
 export * from "./discovery";
+export * from "./counter";
