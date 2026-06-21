@@ -1,0 +1,36 @@
+# Slice 7 counter flow for a LOCAL expo-dev-client build already loaded (bundle
+# fetched). No launchApp/clearState (that would wipe the dev-launcher's Metro URL).
+# For CI/preview builds use counter-pickup.yaml. Preconditions: BFF up + seed applied.
+# Run: maestro test apps/restaurant-mobile/.maestro/counter-pickup-devclient.yaml
+appId: in.gozaika.restaurant
+---
+- tapOn:
+    text: "Continue"
+    optional: true
+
+# Assumes already signed in as Bawarchi PICKUP_STAFF (session persists in the dev
+# client). For a from-scratch login flow use counter-pickup.yaml (clearState).
+# Open the pickup queue and the seeded order.
+- tapOn: "Orders"
+- assertVisible: "Pickup counter"
+- tapOn:
+    text: "GZ-SMOKE-0001"
+- assertVisible: "Verify pickup"
+
+# Wrong OTP -> distinct INVALID result (never collected).
+- tapOn:
+    text: "or enter 6-digit OTP"
+- eraseText
+- inputText: "000000"
+- hideKeyboard
+- tapOn: "Verify & mark collected"
+- assertVisible: "INVALID CODE"
+
+# Correct OTP -> server marks collected. Erase the prior wrong OTP first.
+- tapOn:
+    text: "or enter 6-digit OTP"
+- eraseText
+- inputText: "246810"
+- hideKeyboard
+- tapOn: "Verify & mark collected"
+- assertVisible: "Collected"

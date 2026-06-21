@@ -1,13 +1,12 @@
+import { Screen } from "@gozaika/mobile-ui";
 import { useLocalSearchParams } from "expo-router";
-import { Placeholder } from "@/ui/Placeholder";
+import { OrderActionsPanel } from "@/counter/OrderActionsPanel";
 
 export default function OrderDetailScreen() {
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
   return (
-    <Placeholder
-      title="Order detail"
-      subtitle={`Verification, no-show and incident actions for order "${orderId ?? ""}". Server-authoritative pickup RPC arrives in Mobile Slice 7.`}
-      slice="Slice 7"
-    />
+    <Screen>
+      <OrderActionsPanel orderId={orderId ?? ""} />
+    </Screen>
   );
 }

@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "data": {
+    "orderPk": "40000000-0000-0000-0000-000000000001",
+    "orderNumber": "GZ-2026-000123",
+    "resultCode": "SUCCESS",
+    "orderStatusCode": "COLLECTED",
+    "collectedAt": "2026-06-20T12:49:02.000Z",
+    "message": "Pickup verified. Order marked collected."
+  },
+  "requestId": "22222222-2222-2222-2222-222222222222",
+  "serverTime": "2026-06-20T12:49:02.000Z"
+}

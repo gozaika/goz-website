@@ -52,7 +52,7 @@ Use `npm.cmd`/`npx.cmd` in this Windows PowerShell environment when script execu
 | Mobile Slice 4 | Restaurant authorization and bootstrap APIs | 3 | Complete — pending human authz review (2026-06-19); live multi-membership tests at Slice 6 smoke |
 | Mobile Slice 5 | Demo phone auth and deterministic test OTP fixtures | 3,4 | Not started |
 | Mobile Slice 6 | Native authentication, SecureStore and consent guards | 2,3,5 | Complete — phone-OTP core (2026-06-19); Google OAuth + biometric + deep-link restore deferred; live smoke pending |
-| Mobile Slice 7 | Restaurant counter vertical slice | 4,6 | Not started |
+| Mobile Slice 7 | Restaurant counter vertical slice | 4,6 | DONE — signed off 2026-06-21 (docs/mobile/slice7-signoff.md), merged to main |
 | Mobile Slice 8 | Customer public discovery and restaurant profiles | 3,6 | Not started |
 | Mobile Slice 9 | Customer claim, Razorpay and pickup proof | 3,6,8 | Not started |
 | Mobile Slice 10 | Customer account, orders, reviews and consent settings | 6,9 | Not started |
@@ -303,6 +303,36 @@ Branch: `mobile/slice6-native-auth` (off `main`).
 **Smoke-test scenarios and cases:** Valid OTP and QR; camera denied; malformed QR; wrong restaurant; invalid credential; not ready; expired window; replay/already collected; duplicate tap; offline scan then authoritative reconnect; no-show before/after boundary; each incident type/severity; PICKUP_STAFF allowed while finance/cross-restaurant denied.
 
 **Update this implementation plan:** Record endpoints/RPCs, queue DTO, role evidence, offline state machine, rate limits, Maestro device cases and recovery/runbook steps. This slice requires human security review before completion.
+
+#### Status — core vertical built 2026-06-20 (branch `mobile/slice7-counter`). ⚠️ NOT MERGED — awaiting human security review.
+
+**Endpoints (BFF, `/api/mobile/v1`, all via `withMobileRestaurantRole`):**
+- `GET /orders` — capability `viewOrders`; scoped to the selected restaurant (revalidated every request); reuses the shared `loadRestaurantPickupOrders` loader (view → tenant-scoped legacy fallback) so the wire shape cannot drift from the web portal page.
+- `POST /orders/:id/pickup/verify` — capability `verifyPickup`; tenant-checks the order→restaurant; reuses the canonical `resolvePickupCredential` (SHA-256 over `PICKUP_CREDENTIAL_SECRET`) + RPC `api_verify_order_pickup`. A *completed* verification (any `resultCode`) returns `ok:true` with the result so the app renders distinct states; only transport/validation/RPC failures are error envelopes.
+- `POST /orders/:id/no-show` — capability `verifyPickup`; RPC `api_mark_order_no_show` (server rejects early no-shows).
+- `POST /orders/:id/incidents` — capability `manageIncidents`; RPC `api_create_order_incident` (+ best-effort P1/P2 alert enqueue), `p_source_code: "RESTAURANT_MOBILE"`.
+
+**Contracts:** `packages/types/src/mobile/counter.ts` (`counterOrdersDataSchema`/`CounterOrder`, `pickupVerifyResultSchema`, `noShowResultSchema`, `incidentCreatedSchema`, request DTOs). Fixtures `counter-orders.json` + `pickup-verify-success.json`; validated server-side (`counter.test.ts`) and cross-decoded client-side (`mobile-core/.../contract.test.ts`).
+
+**Role evidence:** denial codes flow from `decideRestaurantAccess` (data-driven scopes). FINANCE → `ROLE_DENIED` on verify/incidents (FINANCE lacks `ORDER_VERIFY_PICKUP`/`INCIDENT_MANAGE`); PICKUP_STAFF allowed on verify/no-show/incidents; cross-restaurant order → `FORBIDDEN` via the per-order tenant check; suspended/inactive → `RESTAURANT_SUSPENDED`/`MEMBERSHIP_INACTIVE`.
+
+**Native UI (`restaurant-mobile`):** `(tabs)/orders/index.tsx` queue (status badges, pickup window, amount, incident count, offline banner, empty/error states) + `(tabs)/orders/[orderId].tsx` detail with manual OTP verify, no-show and incident forms. Server-authoritative throughout; **never-false-collected** — a `NETWORK` failure shows an explicit "Not confirmed — no network" warning and never marks collected. Hooks in `src/api/counter.ts` (idempotency keys on writes, queue invalidation on success).
+
+**Live evidence (local Supabase, real bearer tokens):**
+- `scripts/smoke/slice7-role-smoke.mjs` → **9/9**: FINANCE `ROLE_DENIED` on verify/incidents but allowed on `GET /orders`; PICKUP_STAFF allowed; cross-restaurant `FORBIDDEN`; no-token `UNAUTHENTICATED`.
+- `scripts/smoke/slice7-verify-smoke.mjs` → **6/6**: wrong→`INVALID_CODE`, correct→`SUCCESS`, replay same key→`SUCCESS` (deduped, no double-collect), re-verify→`ALREADY_COLLECTED`, 5 failures then `RATE_LIMITED`.
+- **On-emulator Maestro run PASSED** (dev-client rebuild with expo-camera, Pixel_7): login → queue → open order → wrong OTP shows `INVALID CODE` → correct OTP → order flips to `Collected`. Flow: `.maestro/counter-pickup-devclient.yaml` (signed-in) / `counter-pickup.yaml` (full login). The device run **caught a real contract bug**: `spiceLevelCode` can be `null` (drops needn't set spice) but the wire schema declared it non-nullable → client `DECODE` failure on the live queue; fixed (schema + type + UI now nullable-safe).
+- See `docs/mobile/slice7-counter-runbook.md`.
+
+**Deferred batch — implemented 2026-06-21 (decisions signed off):**
+- **Idempotency/replay (B):** client sends a stable per-action idempotency key (reused on retry, rotates on new OTP/reason); raw OTP cleared on terminal result. Server idempotency-replay confirmed (RPC returns the prior result for a repeated key).
+- **Rate-limit + audit:** `recentFailedVerifyCount` throttles to 5 failed verifies/order/10-min → `RATE_LIMITED`; prior-attempt count + last result surfaced in the detail UI.
+- **Camera QR (C-safe):** `expo-camera` just-in-time scanner with manual-OTP fallback; server re-validates/hashes the payload. Bundles in `expo export`.
+- **Tablet master-detail:** queue+detail two-pane at ≥900px (`OrderActionsPanel` shared by the phone route and the tablet pane).
+- **Offline (C):** kept **fail-safe** (no store-and-forward) per sign-off — verification stays online-only; a network failure never collects.
+- **Seed + Maestro:** `supabase/seed_demo/slice7_counter_pickup_order.sql` (verifiable `GZ-SMOKE-0001`) + `apps/restaurant-mobile/.maestro/counter-pickup.yaml`.
+
+**Remaining before merge:** human security sign-off (the on-emulator Maestro run is now done and passed). **Web authorization (D2) remains deferred — these mobile endpoints do not change web handlers.**
 
 ### Mobile Slice 8 — Customer public discovery and restaurant profiles
 

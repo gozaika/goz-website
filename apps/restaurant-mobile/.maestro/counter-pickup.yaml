@@ -1,0 +1,56 @@
+# goZaika Partner — Slice 7 pickup counter flow (login -> verify -> result states).
+#
+# Preconditions (see docs/mobile/slice7-counter-runbook.md):
+#   1. A dev-client build that includes expo-camera (native rebuild after Slice 7),
+#      with Metro serving and EXPO_PUBLIC_RESTAURANT_API_ORIGIN reachable.
+#   2. BFF up with the pickup credential secret matching the seed.
+#   3. Seeded: supabase/seed_demo/slice7_counter_pickup_order.sql
+#      (order GZ-SMOKE-0001 on Bawarchi, OTP 246810). Re-seed before each run.
+#
+# Run: maestro test apps/restaurant-mobile/.maestro/counter-pickup.yaml
+appId: in.gozaika.restaurant
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    text: "Continue"
+    optional: true
+
+# Sign in as Bawarchi PICKUP_STAFF (single membership -> auto-selected).
+- tapOn: "More"
+- tapOn: "Sign in"
+- assertVisible: "Partner sign in"
+- tapOn: "Mobile number"
+- inputText: "9876530003"
+- hideKeyboard
+- tapOn: "Send code"
+- assertVisible: "Enter code"
+- tapOn: "6-digit code"
+- inputText: "300003"
+- hideKeyboard
+- tapOn: "Verify"
+
+# Open the pickup queue and the seeded order.
+- tapOn: "Orders"
+- assertVisible: "Pickup counter"
+- tapOn:
+    text: "GZ-SMOKE-0001"
+- assertVisible: "Verify pickup"
+
+# Wrong OTP -> distinct INVALID result (never collected).
+- tapOn:
+    text: "or enter 6-digit OTP"
+- eraseText
+- inputText: "000000"
+- hideKeyboard
+- tapOn: "Verify & mark collected"
+- assertVisible: "INVALID CODE"
+
+# Correct OTP -> server marks collected. Erase the prior wrong OTP first.
+- tapOn:
+    text: "or enter 6-digit OTP"
+- eraseText
+- inputText: "246810"
+- hideKeyboard
+- tapOn: "Verify & mark collected"
+- assertVisible: "Collected"
