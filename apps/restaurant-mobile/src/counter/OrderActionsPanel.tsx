@@ -101,7 +101,8 @@ export function OrderActionsPanel({ orderId }: { readonly orderId: string }) {
       <Card>
         <Text variant="heading">{order.bagDisplayName}</Text>
         <Text variant="caption" color={palette.muted}>
-          {order.dietaryCategoryCode} · {order.spiceLevelCode} · Qty {order.quantity}
+          {order.dietaryCategoryCode}
+          {order.spiceLevelCode ? ` · ${order.spiceLevelCode}` : ""} · Qty {order.quantity}
         </Text>
         {order.allergenSummaryText ? (
           <Text variant="caption" color={palette.muted}>

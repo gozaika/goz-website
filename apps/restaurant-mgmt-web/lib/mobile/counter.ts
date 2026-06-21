@@ -19,7 +19,7 @@ export function toCounterOrder(order: RestaurantOrderSummary): CounterOrder {
     dropTitle: order.dropTitle,
     bagDisplayName: order.bagDisplayName,
     dietaryCategoryCode: order.dietaryCategoryCode as DietaryCategoryCode,
-    spiceLevelCode: order.spiceLevelCode as SpiceLevelCode,
+    spiceLevelCode: (order.spiceLevelCode ?? null) as SpiceLevelCode | null,
     allergenSummaryText: order.allergenSummaryText,
     quantity: order.quantity,
     paidAmountPaise: order.paidAmountPaise,

@@ -321,6 +321,7 @@ Branch: `mobile/slice6-native-auth` (off `main`).
 **Live evidence (local Supabase, real bearer tokens):**
 - `scripts/smoke/slice7-role-smoke.mjs` → **9/9**: FINANCE `ROLE_DENIED` on verify/incidents but allowed on `GET /orders`; PICKUP_STAFF allowed; cross-restaurant `FORBIDDEN`; no-token `UNAUTHENTICATED`.
 - `scripts/smoke/slice7-verify-smoke.mjs` → **6/6**: wrong→`INVALID_CODE`, correct→`SUCCESS`, replay same key→`SUCCESS` (deduped, no double-collect), re-verify→`ALREADY_COLLECTED`, 5 failures then `RATE_LIMITED`.
+- **On-emulator Maestro run PASSED** (dev-client rebuild with expo-camera, Pixel_7): login → queue → open order → wrong OTP shows `INVALID CODE` → correct OTP → order flips to `Collected`. Flow: `.maestro/counter-pickup-devclient.yaml` (signed-in) / `counter-pickup.yaml` (full login). The device run **caught a real contract bug**: `spiceLevelCode` can be `null` (drops needn't set spice) but the wire schema declared it non-nullable → client `DECODE` failure on the live queue; fixed (schema + type + UI now nullable-safe).
 - See `docs/mobile/slice7-counter-runbook.md`.
 
 **Deferred batch — implemented 2026-06-21 (decisions signed off):**
@@ -331,7 +332,7 @@ Branch: `mobile/slice6-native-auth` (off `main`).
 - **Offline (C):** kept **fail-safe** (no store-and-forward) per sign-off — verification stays online-only; a network failure never collects.
 - **Seed + Maestro:** `supabase/seed_demo/slice7_counter_pickup_order.sql` (verifiable `GZ-SMOKE-0001`) + `apps/restaurant-mobile/.maestro/counter-pickup.yaml`.
 
-**Remaining before merge:** human security sign-off, and the on-emulator Maestro run (needs a dev-client rebuild for the new `expo-camera` native module — runbook documents it). **Web authorization (D2) remains deferred — these mobile endpoints do not change web handlers.**
+**Remaining before merge:** human security sign-off (the on-emulator Maestro run is now done and passed). **Web authorization (D2) remains deferred — these mobile endpoints do not change web handlers.**
 
 ### Mobile Slice 8 — Customer public discovery and restaurant profiles
 

@@ -28,7 +28,8 @@ function OrderCardBody({ order }: { readonly order: CounterOrder }) {
       </View>
       <Text variant="body">{order.bagDisplayName}</Text>
       <Text variant="caption" color={palette.muted}>
-        {order.dietaryCategoryCode} · {order.spiceLevelCode} · Qty {order.quantity}
+        {order.dietaryCategoryCode}
+        {order.spiceLevelCode ? ` · ${order.spiceLevelCode}` : ""} · Qty {order.quantity}
       </Text>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <Text variant="caption" color={palette.muted}>

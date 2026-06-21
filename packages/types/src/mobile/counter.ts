@@ -29,7 +29,7 @@ export const counterOrderWireSchema = z.object({
   dropTitle: z.string(),
   bagDisplayName: z.string(),
   dietaryCategoryCode: z.string(),
-  spiceLevelCode: z.string(),
+  spiceLevelCode: z.string().nullable(),
   allergenSummaryText: z.string().nullable(),
   quantity: z.number(),
   paidAmountPaise: z.number(),
@@ -55,7 +55,7 @@ export interface CounterOrder {
   readonly dropTitle: string;
   readonly bagDisplayName: string;
   readonly dietaryCategoryCode: DietaryCategoryCode;
-  readonly spiceLevelCode: SpiceLevelCode;
+  readonly spiceLevelCode: SpiceLevelCode | null;
   readonly allergenSummaryText: string | null;
   readonly quantity: number;
   readonly paidAmountPaise: number;
