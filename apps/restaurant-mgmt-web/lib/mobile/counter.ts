@@ -29,6 +29,7 @@ export function toCounterOrder(order: RestaurantOrderSummary): CounterOrder {
     collectedAt: order.collectedAt,
     pickupVerificationAttemptCount: order.pickupVerificationAttemptCount ?? 0,
     lastPickupVerificationResultCode: order.lastPickupVerificationResultCode as PickupVerificationResultCode | null,
+    lastPickupVerificationAt: order.lastPickupVerificationAt ?? null,
     incidentCount: order.incidentCount ?? 0,
   };
 }
@@ -44,6 +45,30 @@ export async function loadOrderRestaurantFk(service: SupabaseClient, orderPk: st
     throw error;
   }
   return data?.restaurant_fk ?? null;
+}
+
+/**
+ * Count failed (non-SUCCESS) pickup verification attempts for an order in a rolling
+ * window — the OTP brute-force throttle. Reads `order_pickup_verification_event`
+ * (the same audit table the RPC writes). A successful collection ends the flow so
+ * only failures are counted.
+ */
+export async function recentFailedVerifyCount(
+  service: SupabaseClient,
+  orderPk: string,
+  windowMinutes = 10,
+): Promise<number> {
+  const since = new Date(Date.now() - windowMinutes * 60_000).toISOString();
+  const { count, error } = await service
+    .from("order_pickup_verification_event")
+    .select("order_pickup_verification_event_pk", { count: "exact", head: true })
+    .eq("order_fk", orderPk)
+    .neq("verification_result_code", "SUCCESS")
+    .gte("recorded_at", since);
+  if (error) {
+    throw error;
+  }
+  return count ?? 0;
 }
 
 /** Translate a pickup/no-show/incident RPC error into a mobile envelope code + message. */

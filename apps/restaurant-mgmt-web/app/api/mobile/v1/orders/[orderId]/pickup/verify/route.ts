@@ -2,8 +2,11 @@ import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { pickupVerificationRequestSchema, type PickupVerifyResultDto } from "@gozaika/types";
 import { mobileResponseErr, mobileResponseOk } from "@/lib/mobile/handler";
 import { withMobileRestaurantRole } from "@/lib/mobile/restaurant-auth";
-import { loadOrderRestaurantFk, mobileRpcError } from "@/lib/mobile/counter";
+import { loadOrderRestaurantFk, mobileRpcError, recentFailedVerifyCount } from "@/lib/mobile/counter";
 import { createPickupActionIdempotencyKey, resolvePickupCredential } from "@/lib/pickup-verification";
+
+/** OTP brute-force throttle: max failed verification attempts per order per window. */
+const MAX_FAILED_VERIFY_ATTEMPTS = 5;
 
 type PickupRpcRow = {
   readonly order_pk: string;
@@ -37,6 +40,16 @@ export async function POST(req: Request, { params }: { readonly params: Promise<
     }
     if (ownerRestaurantPk !== restaurantPk) {
       return mobileResponseErr("FORBIDDEN", "This order belongs to another restaurant.", requestId);
+    }
+
+    // Throttle OTP guessing before resolving the credential or touching the RPC.
+    const failedAttempts = await recentFailedVerifyCount(service, orderId);
+    if (failedAttempts >= MAX_FAILED_VERIFY_ATTEMPTS) {
+      return mobileResponseErr(
+        "RATE_LIMITED",
+        "Too many failed attempts for this order. Wait a few minutes before trying again.",
+        requestId,
+      );
     }
 
     const parsed = pickupVerificationRequestSchema.safeParse(await req.json().catch(() => ({})));

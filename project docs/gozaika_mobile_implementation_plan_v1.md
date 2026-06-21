@@ -318,9 +318,20 @@ Branch: `mobile/slice6-native-auth` (off `main`).
 
 **Native UI (`restaurant-mobile`):** `(tabs)/orders/index.tsx` queue (status badges, pickup window, amount, incident count, offline banner, empty/error states) + `(tabs)/orders/[orderId].tsx` detail with manual OTP verify, no-show and incident forms. Server-authoritative throughout; **never-false-collected** — a `NETWORK` failure shows an explicit "Not confirmed — no network" warning and never marks collected. Hooks in `src/api/counter.ts` (idempotency keys on writes, queue invalidation on success).
 
-**Deferred to follow-ups (flag in security review):** camera QR scan (expo-camera; manual OTP is the verified baseline now), tablet master-detail layout, server-side per-actor attempt rate-limiting + verification audit surfacing, true offline write queue (current behavior is fail-safe, not store-and-forward), and the live device Maestro matrix (valid/denied/malformed/replay/boundary cases). **Web authorization (D2) remains deferred — these mobile endpoints do not change web handlers.**
+**Live evidence (local Supabase, real bearer tokens):**
+- `scripts/smoke/slice7-role-smoke.mjs` → **9/9**: FINANCE `ROLE_DENIED` on verify/incidents but allowed on `GET /orders`; PICKUP_STAFF allowed; cross-restaurant `FORBIDDEN`; no-token `UNAUTHENTICATED`.
+- `scripts/smoke/slice7-verify-smoke.mjs` → **6/6**: wrong→`INVALID_CODE`, correct→`SUCCESS`, replay same key→`SUCCESS` (deduped, no double-collect), re-verify→`ALREADY_COLLECTED`, 5 failures then `RATE_LIMITED`.
+- See `docs/mobile/slice7-counter-runbook.md`.
 
-**Mandatory before merge:** human security review of credential hashing/clearing, idempotency/replay handling, the role-denial matrix on live Supabase, and the offline never-false-collected invariant.
+**Deferred batch — implemented 2026-06-21 (decisions signed off):**
+- **Idempotency/replay (B):** client sends a stable per-action idempotency key (reused on retry, rotates on new OTP/reason); raw OTP cleared on terminal result. Server idempotency-replay confirmed (RPC returns the prior result for a repeated key).
+- **Rate-limit + audit:** `recentFailedVerifyCount` throttles to 5 failed verifies/order/10-min → `RATE_LIMITED`; prior-attempt count + last result surfaced in the detail UI.
+- **Camera QR (C-safe):** `expo-camera` just-in-time scanner with manual-OTP fallback; server re-validates/hashes the payload. Bundles in `expo export`.
+- **Tablet master-detail:** queue+detail two-pane at ≥900px (`OrderActionsPanel` shared by the phone route and the tablet pane).
+- **Offline (C):** kept **fail-safe** (no store-and-forward) per sign-off — verification stays online-only; a network failure never collects.
+- **Seed + Maestro:** `supabase/seed_demo/slice7_counter_pickup_order.sql` (verifiable `GZ-SMOKE-0001`) + `apps/restaurant-mobile/.maestro/counter-pickup.yaml`.
+
+**Remaining before merge:** human security sign-off, and the on-emulator Maestro run (needs a dev-client rebuild for the new `expo-camera` native module — runbook documents it). **Web authorization (D2) remains deferred — these mobile endpoints do not change web handlers.**
 
 ### Mobile Slice 8 — Customer public discovery and restaurant profiles
 

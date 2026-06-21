@@ -32,7 +32,13 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "goZaika Partner uses the camera to scan a customer's pickup QR code at the counter."
+        }
+      ]
     ],
     "extra": {
       "router": {}

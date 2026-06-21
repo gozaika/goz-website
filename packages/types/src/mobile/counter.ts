@@ -39,6 +39,7 @@ export const counterOrderWireSchema = z.object({
   collectedAt: z.string().nullable(),
   pickupVerificationAttemptCount: z.number(),
   lastPickupVerificationResultCode: z.string().nullable(),
+  lastPickupVerificationAt: z.string().nullable(),
   incidentCount: z.number(),
 });
 
@@ -64,6 +65,7 @@ export interface CounterOrder {
   readonly collectedAt: string | null;
   readonly pickupVerificationAttemptCount: number;
   readonly lastPickupVerificationResultCode: PickupVerificationResultCode | null;
+  readonly lastPickupVerificationAt: string | null;
   readonly incidentCount: number;
 }
 
