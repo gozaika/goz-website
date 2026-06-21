@@ -57,7 +57,7 @@ Use `npm.cmd`/`npx.cmd` in this Windows PowerShell environment when script execu
 | Mobile Slice 9 | Customer claim, Razorpay and pickup proof | 3,6,8 | Not started |
 | Mobile Slice 10 | Customer account, orders, reviews and consent settings | 6,9 | Not started |
 | Mobile Slice 11 | Customer Passport, discovery profile and Swaad Club | 8,10 | Not started |
-| Mobile Slice 12 | Restaurant onboarding, compliance and profile | 4,6 | Not started |
+| Mobile Slice 12 | Restaurant onboarding, compliance and profile | 4,6 | Core built (profile read + basics edit); onboarding/docs remainder |
 | Mobile Slice 13 | Restaurant templates and Limited Drops | 4,6,12 | Not started |
 | Mobile Slice 14 | Restaurant dashboard, reviews and operational history | 7,13 | Not started |
 | Mobile Slice 15 | Restaurant finance and ROI reports | 4,6 | Not started |
