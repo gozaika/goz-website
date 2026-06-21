@@ -21,6 +21,7 @@ export async function PATCH(req: Request) {
     }
 
     const service = createServiceRoleSupabaseClient();
+    const now = new Date().toISOString();
     const { error } = await service
       .from("restaurant_restaurant")
       .update({
@@ -30,7 +31,9 @@ export async function PATCH(req: Request) {
         primary_contact_email: parsed.data.primaryContactEmail,
         primary_contact_phone_e164: parsed.data.primaryContactPhoneE164 ?? null,
         pickup_instructions: parsed.data.pickupInstructions ?? null,
-        updated_at: new Date().toISOString(),
+        geo_city_fk: parsed.data.cityPk ?? null,
+        geo_neighborhood_fk: parsed.data.neighborhoodPk ?? null,
+        updated_at: now,
       })
       .eq("restaurant_restaurant_pk", restaurantPk);
 
@@ -40,6 +43,23 @@ export async function PATCH(req: Request) {
       }
       console.error("mobile_restaurant_basics_update_failed", { requestId, message: error.message });
       return mobileResponseErr("SERVER_ERROR", "Could not save the restaurant basics.", requestId);
+    }
+
+    // Public story/headline live on restaurant_public_profile (one row per restaurant).
+    if (parsed.data.headline !== undefined || parsed.data.storyMarkdown !== undefined) {
+      const { error: publicError } = await service.from("restaurant_public_profile").upsert(
+        {
+          restaurant_fk: restaurantPk,
+          headline: parsed.data.headline ?? null,
+          story_markdown: parsed.data.storyMarkdown ?? null,
+          updated_at: now,
+        },
+        { onConflict: "restaurant_fk" },
+      );
+      if (publicError) {
+        console.error("mobile_restaurant_public_profile_update_failed", { requestId, message: publicError.message });
+        return mobileResponseErr("SERVER_ERROR", "Saved basics, but could not save the public story.", requestId);
+      }
     }
 
     const profile = await loadRestaurantProfile(service, restaurantPk, true);

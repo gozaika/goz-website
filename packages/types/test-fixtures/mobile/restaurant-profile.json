@@ -9,8 +9,12 @@
     "pickupInstructions": "Collect from the counter near the main entrance.",
     "primaryContactEmail": "ops@bawarchi.example",
     "primaryContactPhoneE164": "+919876520001",
+    "cityPk": "10000000-0000-0000-0000-000000000001",
     "cityName": "Hyderabad",
+    "neighborhoodPk": "10000000-0000-0000-0000-000000000009",
     "neighborhoodName": "Banjara Hills",
+    "headline": "Legendary Hyderabadi biryani, surplus-priced",
+    "storyMarkdown": "Family-run since 1992. We cook fresh daily and list what's left.",
     "compliance": {
       "statusCode": "APPROVED",
       "fssaiPresent": true,

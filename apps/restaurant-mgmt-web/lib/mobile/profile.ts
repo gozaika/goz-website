@@ -9,8 +9,15 @@ type RestaurantRow = {
   readonly pickup_instructions: string | null;
   readonly primary_contact_email: string | null;
   readonly primary_contact_phone_e164: string | null;
+  readonly geo_city_fk: string | null;
+  readonly geo_neighborhood_fk: string | null;
   readonly geo_city: { city_name: string } | { city_name: string }[] | null;
   readonly geo_neighborhood: { neighborhood_name: string } | { neighborhood_name: string }[] | null;
+};
+
+type PublicProfileRow = {
+  readonly headline: string | null;
+  readonly story_markdown: string | null;
 };
 
 type ComplianceRow = {
@@ -41,7 +48,7 @@ export async function loadRestaurantProfile(
     .from("restaurant_restaurant")
     .select(
       "restaurant_name,restaurant_slug,legal_entity_name,restaurant_status_code,pickup_instructions," +
-        "primary_contact_email,primary_contact_phone_e164," +
+        "primary_contact_email,primary_contact_phone_e164,geo_city_fk,geo_neighborhood_fk," +
         "geo_city:geo_city_fk(city_name),geo_neighborhood:geo_neighborhood_fk(neighborhood_name)",
     )
     .eq("restaurant_restaurant_pk", restaurantPk)
@@ -54,11 +61,18 @@ export async function loadRestaurantProfile(
     return null;
   }
 
-  const { data: compliance } = await service
-    .from("restaurant_compliance")
-    .select("compliance_status_code,fssai_license_number,fssai_license_expiry_date,gstin,pan_number,last_reviewed_at")
-    .eq("restaurant_fk", restaurantPk)
-    .maybeSingle<ComplianceRow>();
+  const [{ data: compliance }, { data: publicProfile }] = await Promise.all([
+    service
+      .from("restaurant_compliance")
+      .select("compliance_status_code,fssai_license_number,fssai_license_expiry_date,gstin,pan_number,last_reviewed_at")
+      .eq("restaurant_fk", restaurantPk)
+      .maybeSingle<ComplianceRow>(),
+    service
+      .from("restaurant_public_profile")
+      .select("headline,story_markdown")
+      .eq("restaurant_fk", restaurantPk)
+      .maybeSingle<PublicProfileRow>(),
+  ]);
 
   return {
     restaurantPk,
@@ -69,8 +83,12 @@ export async function loadRestaurantProfile(
     pickupInstructions: restaurant.pickup_instructions,
     primaryContactEmail: restaurant.primary_contact_email,
     primaryContactPhoneE164: restaurant.primary_contact_phone_e164,
+    cityPk: restaurant.geo_city_fk,
     cityName: firstRel(restaurant.geo_city)?.city_name ?? null,
+    neighborhoodPk: restaurant.geo_neighborhood_fk,
     neighborhoodName: firstRel(restaurant.geo_neighborhood)?.neighborhood_name ?? null,
+    headline: publicProfile?.headline ?? null,
+    storyMarkdown: publicProfile?.story_markdown ?? null,
     compliance: {
       statusCode: (compliance?.compliance_status_code ?? null) as RestaurantComplianceStatusCode | null,
       fssaiPresent: Boolean(compliance?.fssai_license_number),

@@ -2,9 +2,61 @@ import { ApiError } from "@gozaika/mobile-core";
 import { Badge, Button, Card, EmptyState, ErrorState, Screen, Text, palette, toneColors } from "@gozaika/mobile-ui";
 import type { RestaurantComplianceStatusCode, RestaurantProfileData } from "@gozaika/types";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, TextInput, View } from "react-native";
-import { useRestaurantProfile, useUpdateRestaurantBasics } from "@/api/profile";
+import { ActivityIndicator, Modal, Pressable, ScrollView, TextInput, View } from "react-native";
+import { useGeoOptions, useRestaurantProfile, useUpdateRestaurantBasics } from "@/api/profile";
 import { useAuth } from "@/auth/useAuth";
+
+function SelectModal({
+  label,
+  value,
+  placeholder,
+  options,
+  onSelect,
+}: {
+  readonly label: string;
+  readonly value: string | null;
+  readonly placeholder: string;
+  readonly options: readonly { readonly key: string; readonly label: string }[];
+  readonly onSelect: (key: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = options.find((o) => o.key === value);
+  return (
+    <View style={{ gap: 4 }}>
+      <Text variant="caption" color={palette.muted}>
+        {label}
+      </Text>
+      <Pressable onPress={() => setOpen(true)} style={inputStyle}>
+        <Text variant="body" color={selected ? palette.charcoal : palette.muted}>
+          {selected?.label ?? placeholder}
+        </Text>
+      </Pressable>
+      <Modal visible={open} animationType="slide" transparent onRequestClose={() => setOpen(false)}>
+        <Pressable onPress={() => setOpen(false)} style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.35)", justifyContent: "flex-end" }}>
+          <View style={{ backgroundColor: palette.white, borderTopLeftRadius: 16, borderTopRightRadius: 16, maxHeight: "70%", padding: 16 }}>
+            <Text variant="heading">{label}</Text>
+            <ScrollView>
+              {options.map((o) => (
+                <Pressable
+                  key={o.key}
+                  onPress={() => {
+                    onSelect(o.key);
+                    setOpen(false);
+                  }}
+                  style={{ paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: palette.border }}
+                >
+                  <Text variant="body" color={o.key === value ? palette.forest : palette.charcoal}>
+                    {o.label}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+        </Pressable>
+      </Modal>
+    </View>
+  );
+}
 
 const inputStyle = {
   borderWidth: 1,
@@ -43,10 +95,20 @@ function Field({ label, value }: { readonly label: string; readonly value: strin
 
 function EditBasics({ profile, restaurantPk }: { readonly profile: RestaurantProfileData; readonly restaurantPk: string }) {
   const update = useUpdateRestaurantBasics(restaurantPk);
+  const geo = useGeoOptions(restaurantPk, true);
   const [name, setName] = useState(profile.restaurantName);
   const [email, setEmail] = useState(profile.primaryContactEmail ?? "");
   const [phone, setPhone] = useState(profile.primaryContactPhoneE164 ?? "");
   const [pickup, setPickup] = useState(profile.pickupInstructions ?? "");
+  const [cityPk, setCityPk] = useState<string | null>(profile.cityPk);
+  const [neighborhoodPk, setNeighborhoodPk] = useState<string | null>(profile.neighborhoodPk);
+  const [headline, setHeadline] = useState(profile.headline ?? "");
+  const [story, setStory] = useState(profile.storyMarkdown ?? "");
+
+  const cityOptions = (geo.data?.cities ?? []).map((c) => ({ key: c.cityPk, label: c.cityName }));
+  const neighborhoodOptions = (geo.data?.neighborhoods ?? [])
+    .filter((n) => n.cityPk === cityPk)
+    .map((n) => ({ key: n.neighborhoodPk, label: n.neighborhoodName }));
 
   return (
     <Card>
@@ -82,10 +144,48 @@ function EditBasics({ profile, restaurantPk }: { readonly profile: RestaurantPro
         placeholderTextColor={palette.muted}
         multiline
       />
+      <SelectModal
+        label="City"
+        value={cityPk}
+        placeholder={geo.isLoading ? "Loading…" : "Select a city"}
+        options={cityOptions}
+        onSelect={(key) => {
+          setCityPk(key);
+          setNeighborhoodPk(null);
+        }}
+      />
+      <SelectModal
+        label="Neighborhood"
+        value={neighborhoodPk}
+        placeholder={cityPk ? "Select a neighborhood" : "Pick a city first"}
+        options={neighborhoodOptions}
+        onSelect={setNeighborhoodPk}
+      />
+      <Text variant="caption" color={palette.muted}>
+        Public headline
+      </Text>
+      <TextInput
+        style={inputStyle}
+        value={headline}
+        onChangeText={setHeadline}
+        placeholder="A short line customers see (min 8 chars)"
+        placeholderTextColor={palette.muted}
+      />
+      <Text variant="caption" color={palette.muted}>
+        Public story
+      </Text>
+      <TextInput
+        style={[inputStyle, { minHeight: 88 }]}
+        value={story}
+        onChangeText={setStory}
+        placeholder="Tell customers about your kitchen"
+        placeholderTextColor={palette.muted}
+        multiline
+      />
       <Button
         label="Save basics"
         accent={palette.forest}
-        disabled={name.trim().length < 2 || !email.includes("@")}
+        disabled={name.trim().length < 2 || !email.includes("@") || (headline.trim().length > 0 && headline.trim().length < 8)}
         loading={update.isPending}
         onPress={() =>
           update.mutate({
@@ -95,6 +195,10 @@ function EditBasics({ profile, restaurantPk }: { readonly profile: RestaurantPro
             primaryContactEmail: email.trim(),
             primaryContactPhoneE164: phone.trim() || undefined,
             pickupInstructions: pickup.trim() || undefined,
+            cityPk: cityPk,
+            neighborhoodPk: neighborhoodPk,
+            headline: headline.trim() || undefined,
+            storyMarkdown: story.trim() || undefined,
           })
         }
       />
@@ -163,6 +267,8 @@ export default function ProfileScreen() {
         <Field label="Contact email" value={profile.primaryContactEmail} />
         <Field label="Contact phone" value={profile.primaryContactPhoneE164} />
         <Field label="Pickup instructions" value={profile.pickupInstructions} />
+        <Field label="Public headline" value={profile.headline} />
+        <Field label="Public story" value={profile.storyMarkdown} />
       </Card>
 
       <Card>

@@ -28,12 +28,36 @@ export const restaurantProfileDataSchema = z.object({
   pickupInstructions: z.string().nullable(),
   primaryContactEmail: z.string().nullable(),
   primaryContactPhoneE164: z.string().nullable(),
+  cityPk: z.string().nullable(),
   cityName: z.string().nullable(),
+  neighborhoodPk: z.string().nullable(),
   neighborhoodName: z.string().nullable(),
+  headline: z.string().nullable(),
+  storyMarkdown: z.string().nullable(),
   compliance: restaurantComplianceSummaryWireSchema,
   /** Whether the actor's role may edit basics (drives the mobile edit affordance). */
   canEditBasics: z.boolean(),
 });
+
+/** Active city + neighborhood options for the location pickers (`GET restaurant/geo-options`). */
+export const geoOptionsDataSchema = z.object({
+  cities: z.array(z.object({ cityPk: z.string(), cityName: z.string() })),
+  neighborhoods: z.array(z.object({ neighborhoodPk: z.string(), cityPk: z.string(), neighborhoodName: z.string() })),
+});
+
+export interface GeoCityOption {
+  readonly cityPk: string;
+  readonly cityName: string;
+}
+export interface GeoNeighborhoodOption {
+  readonly neighborhoodPk: string;
+  readonly cityPk: string;
+  readonly neighborhoodName: string;
+}
+export interface GeoOptionsData {
+  readonly cities: readonly GeoCityOption[];
+  readonly neighborhoods: readonly GeoNeighborhoodOption[];
+}
 
 export interface RestaurantComplianceSummary {
   readonly statusCode: RestaurantComplianceStatusCode | null;
@@ -53,8 +77,12 @@ export interface RestaurantProfileData {
   readonly pickupInstructions: string | null;
   readonly primaryContactEmail: string | null;
   readonly primaryContactPhoneE164: string | null;
+  readonly cityPk: string | null;
   readonly cityName: string | null;
+  readonly neighborhoodPk: string | null;
   readonly neighborhoodName: string | null;
+  readonly headline: string | null;
+  readonly storyMarkdown: string | null;
   readonly compliance: RestaurantComplianceSummary;
   readonly canEditBasics: boolean;
 }
@@ -68,4 +96,8 @@ export interface RestaurantBasicsUpdateRequest {
   readonly primaryContactEmail: string;
   readonly primaryContactPhoneE164?: string;
   readonly pickupInstructions?: string;
+  readonly cityPk?: string | null;
+  readonly neighborhoodPk?: string | null;
+  readonly headline?: string;
+  readonly storyMarkdown?: string;
 }

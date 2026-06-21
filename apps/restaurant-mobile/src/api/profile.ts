@@ -1,11 +1,29 @@
 import { STALE_TIMES } from "@gozaika/mobile-core";
 import {
+  geoOptionsDataSchema,
   restaurantProfileDataSchema,
+  type GeoOptionsData,
   type RestaurantBasicsUpdateRequest,
   type RestaurantProfileData,
 } from "@gozaika/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "./client";
+
+/** Active city + neighborhood options for the location pickers. */
+export function useGeoOptions(restaurantPk: string | null, enabled: boolean) {
+  return useQuery({
+    queryKey: ["portal", "geo-options"] as const,
+    enabled: enabled && Boolean(restaurantPk),
+    staleTime: STALE_TIMES.profile,
+    queryFn: async (): Promise<GeoOptionsData> => {
+      const res = await apiClient.request("/restaurant/geo-options", {
+        dataSchema: geoOptionsDataSchema,
+        restaurantPk: restaurantPk ?? undefined,
+      });
+      return res.data as unknown as GeoOptionsData;
+    },
+  });
+}
 
 function profileKey(restaurantPk: string | null) {
   return ["portal", "profile", restaurantPk ?? "none"] as const;
