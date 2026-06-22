@@ -31,6 +31,7 @@
     "ci": "dotenv -e .env.local -- npm run lint --workspaces --if-present && dotenv -e .env.local -- npm run typecheck --workspaces --if-present && dotenv -e .env.local -- npm run test --workspaces --if-present && dotenv -e .env.local -- npm run build --workspaces --if-present",
     "test:mobile-gate": "node scripts/mobile-ci.mjs",
     "test:functional": "node scripts/functional/run.mjs",
+    "db:seed:functional": "node scripts/functional/seed.mjs",
     "image:assets:list": "node scripts/gozaika-images/generate-asset-set.mjs --list",
     "image:assets:dry-run": "node scripts/gozaika-images/generate-asset-set.mjs --phase dry-run",
     "image:assets:dry-run:live": "node scripts/gozaika-images/generate-asset-set.mjs --phase dry-run --validate-live",

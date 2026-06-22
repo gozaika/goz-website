@@ -3,10 +3,10 @@
   Resolves local Supabase keys, starts the BFF against local Supabase, waits for
   health, runs the functional suites, then tears the BFF down.
 
-  Usage:
-    pwsh scripts/functional/run.ps1                # all suites
-    pwsh scripts/functional/run.ps1 -Filter finance
-    pwsh scripts/functional/run.ps1 -KeepServer    # leave the BFF running
+  Usage (Windows PowerShell 5.1 or PowerShell 7):
+    powershell -ExecutionPolicy Bypass -File scripts/functional/run.ps1
+    powershell -ExecutionPolicy Bypass -File scripts/functional/run.ps1 -Filter finance
+    powershell -ExecutionPolicy Bypass -File scripts/functional/run.ps1 -KeepServer
 
   Assumes local Supabase is up (npx supabase start) and the demo seed is applied.
 #>
@@ -38,8 +38,9 @@ $env:SUPABASE_URL = $kv['API_URL']
 $env:BFF_ORIGIN = "http://127.0.0.1:$Port"
 
 Write-Host "Starting BFF on port $Port..." -ForegroundColor Cyan
-$bff = Start-Process -PassThru -WindowStyle Hidden -FilePath "npm" `
-  -ArgumentList @("run", "-w", "@gozaika/restaurant-mgmt-web", "dev", "--", "-p", "$Port")
+# Use cmd.exe so npm's .cmd shim resolves under both Windows PowerShell 5.1 and PS7.
+$bff = Start-Process -PassThru -WindowStyle Hidden -FilePath "cmd.exe" `
+  -ArgumentList @("/c", "npm", "run", "-w", "@gozaika/restaurant-mgmt-web", "dev", "--", "-p", "$Port")
 
 try {
   $ready = $false
@@ -52,9 +53,10 @@ try {
   if (-not $ready) { throw "BFF did not become healthy on port $Port." }
   Write-Host "BFF ready. Running functional harness..." -ForegroundColor Green
 
-  $args = @("scripts/functional/run.mjs")
-  if ($Filter) { $args += @("--filter", $Filter) }
-  node @args
+  # NOTE: do not use $args — it is a reserved automatic variable in PowerShell.
+  $nodeArgs = @("scripts/functional/run.mjs")
+  if ($Filter) { $nodeArgs += @("--filter", $Filter) }
+  node @nodeArgs
   $code = $LASTEXITCODE
 } finally {
   if (-not $KeepServer -and $bff -and -not $bff.HasExited) {
