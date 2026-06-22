@@ -59,7 +59,7 @@ Use `npm.cmd`/`npx.cmd` in this Windows PowerShell environment when script execu
 | Mobile Slice 11 | Customer Passport, discovery profile and Swaad Club | 8,10 | Not started |
 | Mobile Slice 12 | Restaurant onboarding, compliance and profile | 4,6 | Profile vertical built (read + basics/location/story edit, geo-options); onboarding + compliance/document upload remainder |
 | Mobile Slice 13 | Restaurant templates and Limited Drops | 4,6,12 | Core built (templates/drops read + publish drop); template authoring + drop edit remainder |
-| Mobile Slice 14 | Restaurant dashboard, reviews and operational history | 7,13 | Not started |
+| Mobile Slice 14 | Restaurant dashboard, reviews and operational history | 7,13 | Dashboard built (role-shaped FULL/QUEUE_ONLY/SUMMARY); reviews + ops history remainder |
 | Mobile Slice 15 | Restaurant finance and ROI reports | 4,6 | Not started |
 | Mobile Slice 16 | Push, deep links, native permissions and offline hardening | 7,9,12 | Not started |
 | Mobile Slice 17 | Accessibility, security, observability and performance gate | 8–16 | Not started |

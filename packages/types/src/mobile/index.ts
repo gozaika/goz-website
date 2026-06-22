@@ -8,3 +8,4 @@ export * from "./discovery";
 export * from "./counter";
 export * from "./profile";
 export * from "./catalog";
+export * from "./dashboard";

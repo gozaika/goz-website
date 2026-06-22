@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "data": {
+    "restaurantPk": "20000000-0000-0000-0000-300000000001",
+    "restaurantName": "Bawarchi Biryani Palace",
+    "statusCode": "ACTIVE",
+    "roleCode": "OWNER",
+    "variant": "FULL",
+    "publishingEnabled": true,
+    "financials": {
+      "todayRevenuePaise": 74500,
+      "soldBags": 5,
+      "listedBags": 20,
+      "sellThroughBps": 2500,
+      "aovPaise": 14900
+    },
+    "operations": {
+      "activeDrops": 1,
+      "scheduledDrops": 1,
+      "availableBags": 15,
+      "pickupReadyCount": 3,
+      "collectedTodayCount": 7,
+      "nextDrop": {
+        "dropPk": "50000000-0000-0000-0000-000000000002",
+        "dropTitle": "Late Night Biryani",
+        "pickupStartAt": "2026-06-21T20:00:00.000Z",
+        "quantityAvailable": 15,
+        "quantityTotal": 15
+      }
+    }
+  },
+  "requestId": "55555555-5555-5555-5555-555555555555",
+  "serverTime": "2026-06-21T10:00:00.000Z"
+}
