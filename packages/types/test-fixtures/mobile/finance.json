@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "data": {
+    "settlements": [
+      {
+        "settlementRunPk": "60000000-0000-0000-0000-000000000001",
+        "periodStartAt": "2026-06-01T00:00:00.000Z",
+        "periodEndAt": "2026-06-15T00:00:00.000Z",
+        "statusCode": "PAID",
+        "orderCount": 42,
+        "grossSalesPaise": 626000,
+        "refundPaise": 14900,
+        "commissionPaise": 62600,
+        "paymentFeePaise": 12500,
+        "taxPaise": 11268,
+        "netPayoutPaise": 524000,
+        "paidAt": "2026-06-17T09:00:00.000Z",
+        "maskedPayoutAccount": "HDFC ****4321",
+        "invoiceNumber": "INV-2026-0007",
+        "invoiceStatusCode": "ISSUED",
+        "invoiceAmountPaise": 62600
+      }
+    ]
+  },
+  "requestId": "66666666-6666-6666-6666-666666666666",
+  "serverTime": "2026-06-21T10:00:00.000Z"
+}
