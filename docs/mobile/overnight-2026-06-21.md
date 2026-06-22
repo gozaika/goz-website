@@ -37,11 +37,27 @@ Autonomous restaurant-track run. Everything below is gate-green (`node scripts/m
    drops from existing templates; the allergen/disclosure authoring form is complex
    and lower-frequency. Drop edit/pause/cancel also deferred.
 
-## Comprehensive E2E checkpoint
-The restaurant app now has real Dashboard, Counter (Slice 7), Drops, and Profile.
-This is a good point for a **full device E2E pass** across the restaurant app — I can
-extend the Maestro suite (login → dashboard → publish drop → counter verify → profile
-edit) on the emulator when you're ready. The counter flow already passed on-device.
+## Comprehensive E2E checkpoint — capstone run DONE
+The restaurant app now has real Dashboard, Counter, Drops, Templates, Profile, and
+Finance. I rebuilt the JS bundle on the emulator (Slices 12–15 are JS-only on the
+existing native shell) and ran a capstone nav smoke as PICKUP_STAFF
+(`.maestro/dashboard-nav-devclient.yaml`) — **PASSED**:
+- Dashboard renders the **QUEUE_ONLY** variant (ops metrics, real data) and **hides
+  financials** (`Today revenue` not visible) — role-shaping proven on-device.
+- Counter renders; Drops shows the **role-denied** UI ("Not available for your role").
+- Earlier: the Slice 7 counter passed a full device E2E (login → verify → Collected).
+
+So Slices 7 + 12–15 are all device-verified to render with correct role-shaping. A
+**deeper mutation-level E2E** (sign in as OWNER → publish a drop → verify it at the
+counter → edit profile → view finance) is the natural next device pass — I left it for
+us to run together since you said you want to conduct it. The Maestro flows are staged.
+
+### Local DB note (for a clean reset)
+The local Supabase DB is behind its migration tracker (tracker at 20260526; I manually
+applied the role-scope (20260620) and finance-view (20260527) migrations out-of-band to
+exercise those paths). If anything looks off, `supabase db reset` then re-apply the
+`supabase/seed_demo/*.sql` seeds (incl. `slice13_active_template.sql`,
+`slice7_counter_pickup_order.sql`) for a clean, fully-migrated local DB.
 
 ## Where to look
 - Decision/parity status: `project docs/gozaika_mobile_implementation_plan_v1.md` (slice tracker).

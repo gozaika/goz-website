@@ -1,0 +1,26 @@
+# Slice 12-15 capstone nav smoke for a loaded dev client signed in as PICKUP_STAFF.
+# Proves the role-shaped dashboard (QUEUE_ONLY: ops metrics, NO financials), the
+# counter, and the role-denied drops UI all render on-device. No mutations.
+# Run: maestro test apps/restaurant-mobile/.maestro/dashboard-nav-devclient.yaml
+appId: in.gozaika.restaurant
+---
+- tapOn:
+    text: "Continue"
+    optional: true
+
+# Dashboard — QUEUE_ONLY variant for PICKUP_STAFF (ops metrics, no financials).
+- assertVisible: "Today at"
+- assertVisible: "Pickup-ready"
+- assertNotVisible: "Today revenue"
+
+# Counter renders.
+- tapOn: "Orders"
+- assertVisible: "Pickup counter"
+
+# Drops is role-denied for PICKUP_STAFF (role-shaped UI).
+- tapOn: "Drops"
+- assertVisible: "Not available for your role"
+
+# Back to the dashboard.
+- tapOn: "Home"
+- assertVisible: "Today at"
