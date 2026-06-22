@@ -14,14 +14,19 @@ below Maestro device E2E.
 - **dashboard (Slice 14)** — role-shaped variants (FULL / QUEUE_ONLY / SUMMARY) + section presence.
 - **finance (Slice 15)** — `viewFinance` gating; masked-payout-only invariant.
 
-## Run it (turnkey, Windows PowerShell 5.1 or PS7)
-Starts the BFF, runs the suites, tears down. Use `powershell` (you do **not** need
-to install `pwsh`):
+## Run it (turnkey)
+Starts the BFF, runs the suites, tears down. Works on PowerShell 7 (`pwsh`,
+recommended) or stock Windows PowerShell 5.1 (`powershell`):
 ```powershell
-npm run db:seed:functional                                                  # one-time per DB
-powershell -ExecutionPolicy Bypass -File scripts/functional/run.ps1         # all suites
-powershell -ExecutionPolicy Bypass -File scripts/functional/run.ps1 -Filter finance
-powershell -ExecutionPolicy Bypass -File scripts/functional/run.ps1 -KeepServer
+npm run db:seed:functional                  # one-time per DB
+
+# PowerShell 7:
+pwsh scripts/functional/run.ps1             # all suites
+pwsh scripts/functional/run.ps1 -Filter finance
+pwsh scripts/functional/run.ps1 -KeepServer
+
+# or Windows PowerShell 5.1:
+powershell -ExecutionPolicy Bypass -File scripts/functional/run.ps1
 ```
 Prereqs: local Supabase running (`npx supabase start`). `npm run db:seed:functional`
 applies the seeds the harness needs (active template + counter order). Cold/unmigrated
