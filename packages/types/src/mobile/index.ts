@@ -10,3 +10,4 @@ export * from "./profile";
 export * from "./catalog";
 export * from "./dashboard";
 export * from "./finance";
+export * from "./checkout";
