@@ -22,20 +22,21 @@ export async function PATCH(req: Request) {
 
     const service = createServiceRoleSupabaseClient();
     const now = new Date().toISOString();
-    const { error } = await service
-      .from("restaurant_restaurant")
-      .update({
-        restaurant_name: parsed.data.restaurantName,
-        restaurant_slug: parsed.data.restaurantSlug,
-        legal_entity_name: parsed.data.legalEntityName ?? null,
-        primary_contact_email: parsed.data.primaryContactEmail,
-        primary_contact_phone_e164: parsed.data.primaryContactPhoneE164 ?? null,
-        pickup_instructions: parsed.data.pickupInstructions ?? null,
-        geo_city_fk: parsed.data.cityPk ?? null,
-        geo_neighborhood_fk: parsed.data.neighborhoodPk ?? null,
-        updated_at: now,
-      })
-      .eq("restaurant_restaurant_pk", restaurantPk);
+    const update: Record<string, unknown> = {
+      restaurant_name: parsed.data.restaurantName,
+      restaurant_slug: parsed.data.restaurantSlug,
+      legal_entity_name: parsed.data.legalEntityName ?? null,
+      primary_contact_email: parsed.data.primaryContactEmail,
+      primary_contact_phone_e164: parsed.data.primaryContactPhoneE164 ?? null,
+      pickup_instructions: parsed.data.pickupInstructions ?? null,
+      updated_at: now,
+    };
+    // geo_city_fk / geo_neighborhood_fk are NOT NULL — only update them when a
+    // location is supplied; a partial PATCH that omits them leaves it intact.
+    if (parsed.data.cityPk) update.geo_city_fk = parsed.data.cityPk;
+    if (parsed.data.neighborhoodPk) update.geo_neighborhood_fk = parsed.data.neighborhoodPk;
+
+    const { error } = await service.from("restaurant_restaurant").update(update).eq("restaurant_restaurant_pk", restaurantPk);
 
     if (error) {
       if (error.message.includes("duplicate") || error.code === "23505") {
