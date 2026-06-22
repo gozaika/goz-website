@@ -7,3 +7,4 @@ export * from "./restaurant";
 export * from "./discovery";
 export * from "./counter";
 export * from "./profile";
+export * from "./catalog";
