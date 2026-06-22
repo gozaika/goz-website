@@ -63,6 +63,38 @@ at runtime.
    sign). It does NOT bypass: hold ownership/validity/expiry, amount derivation,
    idempotency, or order creation — all run exactly as in production.
 
+## Consumer-mobile client (built 2026-06-22, autonomous)
+- **Drop detail** (`(tabs)/drops/[dropPk].tsx`): "Claim a bag" when signed in →
+  `useClaim` (POST /claims) → navigate to `/checkout/<holdPk>`; "Sign in to claim"
+  otherwise. Sold-out disables the CTA.
+- **Checkout** (`checkout/[holdPk].tsx`): `useCheckoutOrder` drives the branch by
+  server `mode`. `"simulated"` → a "Demo · simulated payment" screen with Confirm /
+  Simulate-failure → `useSimulatePayment` → on success **poll `/checkout/status`**
+  until the order exists → "Order confirmed". `"razorpay"` → a stub surface (real RN
+  Razorpay checkout drops in behind the same screen later). Hooks in `src/api/checkout.ts`.
+
+### Client decisions (this autonomous pass)
+- **Order confirmation is shown in-place** in the checkout screen using
+  `/checkout/status` + the checkout summary — avoids a new consumer order-detail
+  endpoint for now.
+- **Status is polled** (2s) after payment, mirroring the real Razorpay async/webhook
+  flow, even though the simulator captures synchronously. The client never trusts the
+  mutation's word for "paid"; the order's existence in `status` is the source of truth.
+- **Idempotency:** new key per claim attempt (button disabled while pending);
+  `intent:<holdPk>` stable key for the checkout-order POST so re-renders reuse the intent.
+- **Discreet by construction:** the simulated screen only renders when the server
+  returns `mode: "simulated"`. No client gesture/flag — it follows the server's config.
+
+### ⏸ PAUSED for review: pickup-proof delivery
+The order's pickup OTP is stored **hash-only** (`order_order.pickup_otp_hash`); the
+plaintext reaches the customer via the notification pipeline. Surfacing the actual
+OTP/QR in the customer app (to show at the Slice 7 counter) needs a design call:
+(a) rely on the existing notification (SMS/email) — no app change; or (b) add an
+**order-owner-only** proof endpoint that re-issues/returns the OTP. (b) has security
+implications (re-exposing a pickup credential) and should be reviewed. **Until then the
+checkout success screen says "your pickup code is on its way" rather than displaying an
+OTP.** No code is blocked elsewhere by this; only the on-device proof display waits.
+
 ## Real Razorpay provider (stub until keys)
 The `checkout/order` real branch mirrors `consumer-web/app/api/checkout/razorpay-order`
 (create intent → POST `api.razorpay.com/v1/orders` with `keyId:secret` → return payload).

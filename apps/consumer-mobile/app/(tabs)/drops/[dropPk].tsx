@@ -1,13 +1,19 @@
+import { ApiError } from "@gozaika/mobile-core";
 import { Badge, Button, Card, ErrorState, palette, ProductMedia, Screen, Skeleton, spacing, Text } from "@gozaika/mobile-ui";
 import { formatPaise } from "@gozaika/utils";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { View } from "react-native";
+import { useClaim } from "@/api/checkout";
 import { useDrop } from "@/api/discovery";
+import { useAuth } from "@/auth/useAuth";
 import { mediaFallbacks } from "@/ui/mediaFallbacks";
 
 export default function DropDetailScreen() {
   const { dropPk } = useLocalSearchParams<{ dropPk: string }>();
   const { data: drop, isLoading, isError, refetch } = useDrop(dropPk ?? "");
+  const { session } = useAuth();
+  const router = useRouter();
+  const claim = useClaim();
 
   if (isError) {
     return (
@@ -72,8 +78,28 @@ export default function DropDetailScreen() {
         {new Date(drop.pickupEndAt).toLocaleTimeString()}
       </Text>
 
-      {/* Claim, Razorpay, and pickup proof arrive in the owning mobile slice. */}
-      <Button label="Sign in to claim" disabled accent={palette.forest} />
+      {/* Claim → hold → checkout (Slice 9). */}
+      {!session ? (
+        <Button label="Sign in to claim" accent={palette.forest} onPress={() => router.push("/auth/login")} />
+      ) : (
+        <Button
+          label={soldOut ? "Sold out" : "Claim a bag"}
+          accent={palette.forest}
+          disabled={soldOut}
+          loading={claim.isPending}
+          onPress={() =>
+            claim.mutate(
+              { dropPk: drop.dropPk },
+              { onSuccess: (result) => router.push(`/checkout/${result.holdPk}`) },
+            )
+          }
+        />
+      )}
+      {claim.isError ? (
+        <Text variant="caption" color={palette.dangerFg}>
+          {claim.error instanceof ApiError ? claim.error.message : "Could not hold a bag. Please try again."}
+        </Text>
+      ) : null}
     </Screen>
   );
 }
