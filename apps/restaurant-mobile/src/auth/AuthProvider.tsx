@@ -124,6 +124,9 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     setMemberships([]);
     setSelectedRestaurantPk(null);
     queryClient.clear();
+    // Reset the login flow so a fresh sign-in starts at the phone step, not an
+    // old OTP/done step carried from the previous session.
+    dispatch({ type: "EDIT_PHONE" });
   }, [queryClient]);
 
   return (

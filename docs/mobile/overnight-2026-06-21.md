@@ -52,6 +52,21 @@ So Slices 7 + 12–15 are all device-verified to render with correct role-shapin
 counter → edit profile → view finance) is the natural next device pass — I left it for
 us to run together since you said you want to conduct it. The Maestro flows are staged.
 
+### Comprehensive OWNER device E2E — PASSED (2026-06-22)
+`.maestro/owner-e2e-devclient.yaml` drives the full restaurant app on the emulator
+as the Bawarchi OWNER, EXIT=0 (61/61 steps): sign out → OWNER sign-in → **FULL
+dashboard** (financials) → **publish a Limited Drop** (template → price → ACTIVE →
+publish) → **counter verify** (wrong OTP → INVALID CODE, correct OTP → Collected) →
+**edit profile** (save basics) → **finance**. Two real fixes surfaced:
+- `signOut` now resets the login flow (`dispatch EDIT_PHONE`) so re-login starts at
+  the phone step, not an old OTP step (`AuthProvider.tsx`).
+- Added placeholders to the new-drop bags/price inputs (`drops/new.tsx`).
+Maestro lessons (for future flows): full-text node matching (wrap partial/numbered
+text in `.*`), tab/link disambiguation (the dashboard "Drops" card vs the tab; the
+More-screen blurb containing "FINANCE"), `extendedWaitUntil`/`scrollUntilVisible`
+for network-gated + below-the-fold elements, and one BFF with the seed-matching
+`PICKUP_CREDENTIAL_SECRET`.
+
 ### Local DB note (for a clean reset)
 The local Supabase DB is behind its migration tracker (tracker at 20260526; I manually
 applied the role-scope (20260620) and finance-view (20260527) migrations out-of-band to

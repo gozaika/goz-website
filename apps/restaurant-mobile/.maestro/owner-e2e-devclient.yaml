@@ -1,0 +1,115 @@
+# Comprehensive OWNER device E2E (loaded dev client). One connected journey across
+# the whole restaurant app: sign out -> OWNER sign in -> FULL dashboard -> publish a
+# drop -> verify a pickup at the counter -> edit profile -> view finance.
+#
+# Prereqs: BFF up with PICKUP_CREDENTIAL_SECRET=local-smoke-pickup-secret-0123456789-abcdef,
+# Metro serving, and `npm run db:seed:functional` applied (active template + GZ-SMOKE-0001).
+# Run: maestro test apps/restaurant-mobile/.maestro/owner-e2e-devclient.yaml
+appId: in.gozaika.restaurant
+---
+- tapOn:
+    text: "Continue"
+    optional: true
+
+# --- Sign out any cached session, then sign in as the Bawarchi OWNER ---
+# signOut() is async + replaces the route after it resolves, so synchronize on the
+# signed-out Home ("Select a restaurant") before navigating to Sign in.
+- tapOn: "More"
+- tapOn:
+    text: "Sign out"
+    optional: true
+- tapOn: "Home"
+- assertVisible: "Select a restaurant"
+- tapOn: "More"
+- assertVisible: "Sign in"
+- tapOn: "Sign in"
+- assertVisible: "Partner sign in"
+- tapOn: "Mobile number"
+- inputText: "9876520001"
+- hideKeyboard
+- tapOn: "Send code"
+- assertVisible: "Enter code"
+- tapOn: "6-digit code"
+- inputText: "200001"
+- hideKeyboard
+- tapOn: "Verify"
+
+# --- Dashboard: OWNER sees the FULL variant (financials present) ---
+- assertVisible: "Today at"
+- assertVisible: "Today revenue"
+- assertVisible: "Sell-through"
+- assertVisible: "Pickup-ready"
+
+# --- Publish a Limited Drop from the active template ---
+# "Drops" is ambiguous (dashboard metric card + tab) — tap the Drops tab by position.
+- tapOn:
+    point: "62%, 95%"
+- assertVisible: "Limited Drops"
+- tapOn: "New drop"
+- extendedWaitUntil:
+    visible: ".*Choose a template.*"
+    timeout: 15000
+- tapOn:
+    text: "BAM Bag · Veg Thali"
+- assertVisible: ".*Quantity & price.*"
+- tapOn:
+    text: "e.g. 149"
+- inputText: "149"
+- hideKeyboard
+- tapOn: "ACTIVE"
+- scrollUntilVisible:
+    element:
+      text: "Publish drop"
+    direction: DOWN
+- tapOn: "Publish drop"
+- extendedWaitUntil:
+    visible: "Limited Drops"
+    timeout: 15000
+
+# --- Verify a pickup at the counter (wrong OTP -> INVALID, correct -> Collected) ---
+- tapOn: "Orders"
+- extendedWaitUntil:
+    visible: "Pickup counter"
+    timeout: 15000
+- tapOn:
+    text: "GZ-SMOKE-0001"
+- assertVisible: "Verify pickup"
+- tapOn:
+    text: "or enter 6-digit OTP"
+- eraseText
+- inputText: "000000"
+- hideKeyboard
+- tapOn: "Verify & mark collected"
+- assertVisible: "INVALID CODE"
+- tapOn:
+    text: "or enter 6-digit OTP"
+- eraseText
+- inputText: "246810"
+- hideKeyboard
+- tapOn: "Verify & mark collected"
+- assertVisible: "Collected"
+
+# --- Edit the restaurant profile (OWNER can edit basics) ---
+- tapOn: "More"
+- tapOn: "Profile →"
+- extendedWaitUntil:
+    visible: "Edit basics"
+    timeout: 15000
+- tapOn: "Edit basics"
+- scrollUntilVisible:
+    element:
+      text: "Save basics"
+    direction: DOWN
+- tapOn: "Save basics"
+- scrollUntilVisible:
+    element:
+      text: ".*Basics saved.*"
+    direction: DOWN
+- back
+
+# --- View finance settlements (OWNER has viewFinance) ---
+- tapOn: "Finance →"
+- extendedWaitUntil:
+    visible: "Finance"
+    timeout: 15000
+- back

@@ -119,11 +119,25 @@ export default function NewDropScreen() {
           <Text variant="caption" color={palette.muted}>
             Bags
           </Text>
-          <TextInput style={inputStyle} value={quantity} onChangeText={(v) => setQuantity(v.replace(/\D/g, ""))} keyboardType="number-pad" />
+          <TextInput
+            style={inputStyle}
+            value={quantity}
+            onChangeText={(v) => setQuantity(v.replace(/\D/g, ""))}
+            keyboardType="number-pad"
+            placeholder="e.g. 10"
+            placeholderTextColor={palette.muted}
+          />
           <Text variant="caption" color={palette.muted}>
             Price per bag (₹)
           </Text>
-          <TextInput style={inputStyle} value={rupees} onChangeText={(v) => setRupees(v.replace(/\D/g, ""))} keyboardType="number-pad" />
+          <TextInput
+            style={inputStyle}
+            value={rupees}
+            onChangeText={(v) => setRupees(v.replace(/\D/g, ""))}
+            keyboardType="number-pad"
+            placeholder="e.g. 149"
+            placeholderTextColor={palette.muted}
+          />
 
           <Text variant="heading">3 · Pickup window</Text>
           {win ? (
