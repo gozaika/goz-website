@@ -6,3 +6,4 @@ export * from "./capabilities";
 export * from "./restaurant";
 export * from "./discovery";
 export * from "./counter";
+export * from "./profile";
