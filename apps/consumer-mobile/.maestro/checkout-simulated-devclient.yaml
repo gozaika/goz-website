@@ -1,0 +1,50 @@
+# Consumer payment demo flow (loaded dev client): browse a drop -> sign in -> claim
+# -> simulated checkout -> order confirmed. Validated on-device 2026-06-22 (text-driven).
+#
+# Prereqs: consumer BFF up on the app's CUSTOMER_API_ORIGIN with
+# PAYMENTS_SIMULATOR_ENABLED=true, Metro serving, and a claimable PUBLIC ACTIVE drop
+# seeded (e.g. publish one via the restaurant app / slice13 seed).
+# Run: maestro test apps/consumer-mobile/.maestro/checkout-simulated-devclient.yaml
+appId: in.gozaika.customer
+---
+- tapOn:
+    text: "Continue"
+    optional: true
+
+# Open a drop and sign in (signed-out CTA -> login).
+- tapOn: "Drops"
+- tapOn:
+    text: "BAM Bag"
+- assertVisible: "Sign in to claim"
+- tapOn: "Sign in to claim"
+- assertVisible: "Mobile number"
+- tapOn: "Mobile number"
+- inputText: "9876510001"
+- hideKeyboard
+- tapOn: "Send code"
+- assertVisible: "Enter code"
+- tapOn: "6-digit code"
+- inputText: "100001"
+- hideKeyboard
+- tapOn: "Verify"
+
+# First sign-in shows the DPDP consent gate.
+- tapOn:
+    text: "Agree and continue"
+    optional: true
+
+# Claim a bag -> simulated checkout -> confirm -> order confirmed.
+- tapOn: "Drops"
+- tapOn:
+    text: "BAM Bag"
+- extendedWaitUntil:
+    visible: "Claim a bag"
+    timeout: 15000
+- tapOn: "Claim a bag"
+- extendedWaitUntil:
+    visible: ".*simulated payment.*"
+    timeout: 15000
+- tapOn: "Confirm payment"
+- extendedWaitUntil:
+    visible: "Order confirmed"
+    timeout: 20000

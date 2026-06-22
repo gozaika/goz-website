@@ -85,6 +85,17 @@ at runtime.
 - **Discreet by construction:** the simulated screen only renders when the server
   returns `mode: "simulated"`. No client gesture/flag — it follows the server's config.
 
+### On-device validation (2026-06-22)
+The full demo flow was driven on the emulator (consumer dev client + consumer BFF
+with the simulator on): browse drop → "Sign in to claim" → phone-OTP sign-in →
+DPDP consent → "Claim a bag" → **SimulatedCheckoutScreen** ("Demo · simulated
+payment", ₹149, Confirm / Simulate-failure) → "Confirm payment" → status polling →
+**"Order confirmed — ₹149 paid"** with the pickup-proof placeholder. The BFF log
+confirms the client polled `/checkout/status` until the real order existed. Captured
+as `apps/consumer-mobile/.maestro/checkout-simulated-devclient.yaml`. (Validated via
+UI-hierarchy dumps + BFF logs rather than screenshots — the session's image budget was
+exhausted; the Maestro flow re-runs it visually.)
+
 ### ⏸ PAUSED for review: pickup-proof delivery
 The order's pickup OTP is stored **hash-only** (`order_order.pickup_otp_hash`); the
 plaintext reaches the customer via the notification pipeline. Surfacing the actual
