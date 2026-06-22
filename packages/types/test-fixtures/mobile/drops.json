@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "data": {
+    "drops": [
+      {
+        "dropPk": "50000000-0000-0000-0000-000000000001",
+        "dropTitle": "Evening Thali Surplus",
+        "statusCode": "ACTIVE",
+        "quantityTotal": 20,
+        "quantityHeld": 5,
+        "quantityAvailable": 15,
+        "pricePaise": 14900,
+        "pickupStartAt": "2026-06-21T12:30:00.000Z",
+        "pickupEndAt": "2026-06-21T13:30:00.000Z"
+      },
+      {
+        "dropPk": "50000000-0000-0000-0000-000000000002",
+        "dropTitle": "Late Night Biryani",
+        "statusCode": "SCHEDULED",
+        "quantityTotal": 15,
+        "quantityHeld": 0,
+        "quantityAvailable": 15,
+        "pricePaise": 19900,
+        "pickupStartAt": "2026-06-21T20:00:00.000Z",
+        "pickupEndAt": "2026-06-21T21:30:00.000Z"
+      }
+    ]
+  },
+  "requestId": "44444444-4444-4444-4444-444444444444",
+  "serverTime": "2026-06-21T10:00:00.000Z"
+}
