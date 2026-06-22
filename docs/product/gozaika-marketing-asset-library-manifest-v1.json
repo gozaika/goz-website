@@ -44,8 +44,6 @@
     { "id": "fallback-drop-default", "class": "product-fallback", "source": "apps/consumer-mobile/assets/drop-default.png", "destination": "mobile/fallbacks/drop-default-1200x900.png" },
     { "id": "fallback-restaurant-cover", "class": "product-fallback", "source": "apps/consumer-mobile/assets/restaurant-cover-default.png", "destination": "mobile/fallbacks/restaurant-cover-default-1600x900.png" },
     { "id": "mobile-identity-qa", "class": "quality-evidence", "source": "output/marketing/mobile-identity/qa/qa-report.md", "destination": "mobile/qa/qa-report-v1.2.md" },
-    { "id": "mobile-identity-hashes", "class": "quality-evidence", "source": "output/marketing/mobile-identity/qa/qa-report.json", "destination": "mobile/qa/qa-report-v1.2.json" },
-    { "id": "mobile-identity-spec", "class": "specification", "source": "docs/product/gozaika-mobile-identity-and-product-fallback-spec-v1.md", "destination": "../specifications/gozaika-mobile-identity-and-product-fallback-spec-v1.md" },
-    { "id": "restaurant-sales-kit-spec", "class": "specification", "source": "docs/product/gozaika-restaurant-sales-kit-spec-v1.md", "destination": "../specifications/gozaika-restaurant-sales-kit-spec-v1.md" }
+    { "id": "mobile-identity-hashes", "class": "quality-evidence", "source": "output/marketing/mobile-identity/qa/qa-report.json", "destination": "mobile/qa/qa-report-v1.2.json" }
   ]
 }

@@ -13,7 +13,6 @@ This library is a distribution copy of approved assets. The source repository re
 - `social/` contains final deterministic marketing compositions.
 - `ui/` contains retained vector interface illustrations; these are not photographic generation references.
 - `mobile/` contains customer/partner launcher, adaptive, notification, splash, and truthful product-fallback masters.
-- `specifications/` contains the controlling agent briefs for the next mobile-identity and restaurant-sales-kit projects.
 - Do not overwrite released files. Add a new version and update `manifest.json`.
 
 The canonical mark name is **BAM flame-drop mark**. Its internal negative-space `BAM` is part of the geometry.
@@ -21,6 +20,8 @@ The canonical mark name is **BAM flame-drop mark**. Its internal negative-space 
 ## Source of truth
 
 The canonical logo and mark live at `sourcecode/icons/`. Approved visual masters live at `sourcecode/.codex-artifacts/gozaika-images/masters/`, and website delivery copies live at `sourcecode/apps/website/public/`.
+
+Specifications, build scripts, copy sources, claim ledgers, and localization inputs remain solely in the source repository and are not duplicated into this distribution library.
 
 ## Generation rule
 
