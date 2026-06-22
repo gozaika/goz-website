@@ -2,8 +2,8 @@
 # the whole restaurant app: sign out -> OWNER sign in -> FULL dashboard -> publish a
 # drop -> verify a pickup at the counter -> edit profile -> view finance.
 #
-# Prereqs: BFF up with PICKUP_CREDENTIAL_SECRET=local-smoke-pickup-secret-0123456789-abcdef,
-# Metro serving, and `npm run db:seed:functional` applied (active template + GZ-SMOKE-0001).
+# Prereqs: BFF up with the pickup credential secret matching the seed, Metro serving,
+# and `npm run db:seed:functional` applied (active template + GZ-SMOKE-0001).
 # Run: maestro test apps/restaurant-mobile/.maestro/owner-e2e-devclient.yaml
 appId: in.gozaika.restaurant
 ---
