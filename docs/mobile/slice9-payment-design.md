@@ -96,7 +96,20 @@ as `apps/consumer-mobile/.maestro/checkout-simulated-devclient.yaml`. (Validated
 UI-hierarchy dumps + BFF logs rather than screenshots — the session's image budget was
 exhausted; the Maestro flow re-runs it visually.)
 
-### ⏸ PAUSED for review: pickup-proof delivery
+### RESOLVED (2026-06-22): pickup proof = notification (Slice 10)
+Decision: deliver the pickup code by **notification** (forwardable for delegated
+pickup), confirmed by the owner. A key finding reinforces this: the existing
+`issuePickupProof()` (consumer-web) **rotates** the credential on every call (new
+OTP + new `pickup_otp_hash`). Showing/issuing it in-app would therefore **invalidate
+the texted code** the customer already forwarded to their driver. So the mobile order
+detail deliberately **does not** call `issuePickupProof`; it shows
+"your code was texted — forward it to whoever's collecting" + a **Resend** that
+re-enqueues the notification via `api_enqueue_order_notifications` (no rotation). Built
+in Slice 10 (`consumer-mobile (tabs)/orders/[orderPk]`, BFF `/orders/:id/resend-pickup`).
+Demo note: in local dev (no SMS gateway) the code lands in the notification outbox /
+inbucket; retrieve it there for counter verification.
+
+### (historical) PAUSED for review: pickup-proof delivery
 The order's pickup OTP is stored **hash-only** (`order_order.pickup_otp_hash`); the
 plaintext reaches the customer via the notification pipeline. Surfacing the actual
 OTP/QR in the customer app (to show at the Slice 7 counter) needs a design call:

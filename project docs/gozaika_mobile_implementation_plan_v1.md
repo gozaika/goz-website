@@ -55,7 +55,7 @@ Use `npm.cmd`/`npx.cmd` in this Windows PowerShell environment when script execu
 | Mobile Slice 7 | Restaurant counter vertical slice | 4,6 | DONE — signed off 2026-06-21 (docs/mobile/slice7-signoff.md), merged to main |
 | Mobile Slice 8 | Customer public discovery and restaurant profiles | 3,6 | Not started |
 | Mobile Slice 9 | Customer claim, Razorpay and pickup proof | 3,6,8 | Core built (claim->simulated checkout->order, gated simulator); real Razorpay stubbed (keys ~1mo); pickup-proof display paused for review |
-| Mobile Slice 10 | Customer account, orders, reviews and consent settings | 6,9 | Not started |
+| Mobile Slice 10 | Customer account, orders, reviews and consent settings | 6,9 | Orders built (list + detail, notification pickup-proof + resend, RLS-scoped); account exists; reviews + consent-settings remainder |
 | Mobile Slice 11 | Customer Passport, discovery profile and Swaad Club | 8,10 | Not started |
 | Mobile Slice 12 | Restaurant onboarding, compliance and profile | 4,6 | Profile vertical built (read + basics/location/story edit, geo-options); onboarding + compliance/document upload remainder |
 | Mobile Slice 13 | Restaurant templates and Limited Drops | 4,6,12 | Core built (templates/drops read + publish drop); template authoring + drop edit remainder |

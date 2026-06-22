@@ -11,3 +11,4 @@ export * from "./catalog";
 export * from "./dashboard";
 export * from "./finance";
 export * from "./checkout";
+export * from "./orders";

@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "data": {
+    "orders": [
+      {
+        "orderPk": "d79a87af-bffa-4bda-a682-9559e21beaf6",
+        "orderNumber": "GZ-2026-000777",
+        "orderStatusCode": "CONFIRMED",
+        "paymentStatusCode": "PAID",
+        "restaurantName": "Bawarchi Biryani Palace",
+        "restaurantSlug": "bawarchi-biryani-palace",
+        "dropTitle": "Evening Thali Surplus",
+        "bagDisplayName": "BAM Bag · Veg Thali",
+        "dietaryCategoryCode": "VEG",
+        "spiceLevelCode": "MEDIUM",
+        "allergenSummaryText": "Contains dairy, gluten",
+        "pickupInstructions": "Collect from the counter near the main entrance.",
+        "quantity": 1,
+        "paidAmountPaise": 14900,
+        "currencyCode": "INR",
+        "pickupWindowStartAt": "2026-06-22T12:30:00.000Z",
+        "pickupWindowEndAt": "2026-06-22T13:30:00.000Z",
+        "collectedAt": null,
+        "createdAt": "2026-06-22T11:05:00.000Z"
+      }
+    ]
+  },
+  "requestId": "77777777-7777-7777-7777-777777777777",
+  "serverTime": "2026-06-22T11:06:00.000Z"
+}
