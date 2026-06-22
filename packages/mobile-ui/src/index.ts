@@ -15,3 +15,6 @@ export * from "./components/ErrorState";
 export * from "./components/OfflineBanner";
 export * from "./components/Skeleton";
 export * from "./components/StatusAnnounce";
+export * from "./components/ProductMedia";
+export * from "./components/RestaurantAvatar";
+export * from "./fallback";

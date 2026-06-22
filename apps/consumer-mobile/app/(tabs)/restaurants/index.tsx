@@ -1,7 +1,8 @@
-import { Badge, Card, EmptyState, ErrorState, palette, Screen, Skeleton, spacing, Text } from "@gozaika/mobile-ui";
+import { Badge, Card, EmptyState, ErrorState, palette, ProductMedia, Screen, Skeleton, spacing, Text } from "@gozaika/mobile-ui";
 import { useRouter } from "expo-router";
 import { FlatList, Pressable, View } from "react-native";
 import { useRestaurants } from "@/api/discovery";
+import { mediaFallbacks } from "@/ui/mediaFallbacks";
 
 export default function RestaurantsScreen() {
   const router = useRouter();
@@ -31,16 +32,23 @@ export default function RestaurantsScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#FFF8F0" }}>
+    <View style={{ flex: 1, backgroundColor: palette.cream }}>
       <FlatList
         data={data}
-        keyExtractor={(r) => r.restaurantPk}
+        keyExtractor={(restaurant) => restaurant.restaurantPk}
         contentContainerStyle={{ padding: spacing.lg, gap: spacing.md }}
         refreshing={isRefetching}
         onRefresh={() => refetch()}
         renderItem={({ item }) => (
           <Pressable accessibilityRole="button" onPress={() => router.push(`/restaurants/${item.restaurantSlug}`)}>
             <Card>
+              <ProductMedia
+                media={item.coverImage}
+                fallbackSource={mediaFallbacks.restaurantCover}
+                aspectRatio={16 / 9}
+                accessibilityLabel={item.coverImage?.alt ?? `${item.restaurantName} restaurant`}
+                testID={`restaurant-media-${item.restaurantPk}`}
+              />
               <Text variant="heading">{item.restaurantName}</Text>
               <Text variant="caption" color={palette.muted}>
                 {item.neighborhoodName ?? item.cityName ?? ""}
@@ -48,8 +56,8 @@ export default function RestaurantsScreen() {
               </Text>
               {item.cuisineTags.length > 0 ? (
                 <View style={{ flexDirection: "row", gap: spacing.xs, flexWrap: "wrap" }}>
-                  {item.cuisineTags.slice(0, 3).map((c) => (
-                    <Badge key={c} label={c} tone="neutral" />
+                  {item.cuisineTags.slice(0, 3).map((cuisine) => (
+                    <Badge key={cuisine} label={cuisine} tone="neutral" />
                   ))}
                 </View>
               ) : null}

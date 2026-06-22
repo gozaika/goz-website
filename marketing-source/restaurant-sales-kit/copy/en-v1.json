@@ -1,0 +1,54 @@
+{
+  "version": "1.0",
+  "status": "safe-draft",
+  "headline": "Bring new guests to your counter.",
+  "subheadline": "goZaika helps curious diners discover a limited, chef-curated BAM Bag, reserve it, and pick it up directly from your restaurant.",
+  "pillars": [
+    {
+      "title": "Be discovered",
+      "body": "Introduce your kitchen to diners looking for something worth showing up for."
+    },
+    {
+      "title": "Create a counter moment",
+      "body": "Pickup brings the guest into your restaurant - with no delivery handoff."
+    },
+    {
+      "title": "Stay in control",
+      "body": "You set the quantity, pickup window, and required food disclosures."
+    }
+  ],
+  "steps": [
+    { "number": "01", "title": "Publish", "body": "Create a limited BAM Bag release with timing and disclosures." },
+    { "number": "02", "title": "Reserve", "body": "A diner discovers and reserves the pickup in goZaika." },
+    { "number": "03", "title": "Pick up", "body": "Your team verifies the handoff at the counter." }
+  ],
+  "controls": [
+    "Your restaurant name and story stay visible.",
+    "You choose when and how many BAM Bags to release.",
+    "Pickup windows protect kitchen rhythm.",
+    "Dietary and allergen information is declared before purchase.",
+    "You can pause releases when operations require it."
+  ],
+  "is": [
+    "A restaurant-led discovery channel",
+    "Limited, planned pickup releases",
+    "A simple QR-led counter handoff",
+    "Curated discovery without clearance framing"
+  ],
+  "isNot": [
+    "A delivery marketplace",
+    "A public discount menu",
+    "A promise about specific bag contents",
+    "A replacement for your restaurant brand"
+  ],
+  "readiness": [
+    "Valid FSSAI and operating details",
+    "Reliable pickup-window staffing",
+    "Accurate dietary and allergen disclosures",
+    "A named owner for releases and handoffs"
+  ],
+  "cta": "Book a 15-minute partner walkthrough.",
+  "url": "gozaika.in/for-restaurants",
+  "email": "partners@gozaika.in",
+  "commercialNote": "Commercial terms are discussed during partner qualification."
+}

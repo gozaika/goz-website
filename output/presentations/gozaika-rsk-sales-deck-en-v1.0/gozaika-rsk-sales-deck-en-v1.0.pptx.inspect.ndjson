@@ -1,0 +1,138 @@
+{"kind":"deck","id":"pr/vsnfsn","name":"Deck"}
+{"kind":"layout","layoutId":"c8963c46-c3c4-4c56-95b1-1e7d9001fc53","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"2e0b0a6a-5b7d-480e-8819-bcec427661d9","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/dhveik","slide":1,"title":"Bring new guests","textShapes":4}
+{"kind":"shape","id":"sh/m94fu18j","slide":1,"bbox":[612,0,90,720]}
+{"kind":"textbox","id":"sh/83itgfml","slide":1,"text":"Bring new guests\nto your counter.","textPreview":"Bring new guests | to your counter.","textChars":33,"textLines":2,"bbox":[72,190,510,190]}
+{"kind":"textbox","id":"sh/xobm58z2","slide":1,"text":"A curated pickup discovery channel for distinctive food drops.","textPreview":"A curated pickup discovery channel for distinctive food drops.","textChars":62,"textLines":1,"bbox":[72,410,480,76]}
+{"kind":"shape","id":"sh/qxs72x4n","slide":1,"bbox":[72,532,270,38]}
+{"kind":"textbox","id":"sh/fil0rqd4","slide":1,"text":"Restaurant partner introduction","textPreview":"Restaurant partner introduction","textChars":31,"textLines":1,"bbox":[86,540,242,22]}
+{"kind":"textbox","id":"sh/4zidonyd","slide":1,"text":"English sales deck  •  v1.0","textPreview":"English sales deck  •  v1.0","textChars":27,"textLines":1,"bbox":[72,606,360,22]}
+{"kind":"image","id":"im/g3ex0nux","slide":1,"name":"","geometry":"rect","alt":"A premium goZaika restaurant pickup scene","bbox":[642,0,638,720]}
+{"kind":"image","id":"im/yxobm58z","slide":1,"name":"","geometry":"rect","alt":"goZaika logo","bbox":[72,54,220,58]}
+{"kind":"notes","id":"nt/dhveik","slide":1,"text":""}
+{"kind":"slide","id":"sl/pddxku","slide":2,"title":"THE PROPOSITION","textShapes":10}
+{"kind":"textbox","id":"sh/yhgn29gr","slide":2,"text":"THE PROPOSITION","textPreview":"THE PROPOSITION","textChars":15,"textLines":1,"bbox":[72,56,420,28]}
+{"kind":"textbox","id":"sh/58z25kb6","slide":2,"text":"Curated discovery.\nOperational control.","textPreview":"Curated discovery. | Operational control.","textChars":39,"textLines":2,"bbox":[72,104,590,132]}
+{"kind":"textbox","id":"sh/gn29gr2p","slide":2,"text":"goZaika helps diners discover limited food drops, reserve a pickup, and collect directly from the restaurant.","textPreview":"goZaika helps diners discover limited food drops, reserve a pickup, and collect directly from the restaurant.","textChars":109,"textLines":1,"bbox":[72,262,565,86]}
+{"kind":"shape","id":"sh/nuxc3ylc","slide":2,"bbox":[702,120,220,410]}
+{"kind":"shape","id":"sh/y90je9cv","slide":2,"bbox":[702,120,220,12]}
+{"kind":"textbox","id":"sh/5wjudg7a","slide":2,"text":"IS","textPreview":"IS","textChars":2,"textLines":1,"bbox":[726,164,172,24]}
+{"kind":"textbox","id":"sh/gbq1oryt","slide":2,"text":"Pickup-first discovery\nRestaurant-defined drops\nDirect counter collection","textPreview":"Pickup-first discovery | Restaurant-defined drops | Direct counter collection","textChars":73,"textLines":3,"bbox":[726,224,172,180]}
+{"kind":"shape","id":"sh/nqxs72x4","slide":2,"bbox":[950,120,220,410]}
+{"kind":"shape","id":"sh/u54zidon","slide":2,"bbox":[950,120,220,12]}
+{"kind":"textbox","id":"sh/cbulwval","slide":2,"text":"IS NOT","textPreview":"IS NOT","textChars":6,"textLines":1,"bbox":[974,164,172,24]}
+{"kind":"textbox","id":"sh/5sneloj2","slide":2,"text":"A leftovers marketplace\nA delivery fleet\nA promise of guaranteed demand","textPreview":"A leftovers marketplace | A delivery fleet | A promise of guaranteed demand","textChars":71,"textLines":3,"bbox":[974,224,172,180]}
+{"kind":"textbox","id":"sh/nqxs72x4","slide":2,"text":"The BAM flavor drop marks the moment a distinctive drop becomes discoverable.","textPreview":"The BAM flavor drop marks the moment a distinctive drop becomes discoverable.","textChars":77,"textLines":1,"bbox":[214,462,430,72]}
+{"kind":"textbox","id":"sh/czed8v6p","slide":2,"text":"gozaika.in  •  partners@gozaika.in","textPreview":"gozaika.in  •  partners@gozaika.in","textChars":34,"textLines":1,"bbox":[72,674,520,22]}
+{"kind":"textbox","id":"sh/5kb6xkf6","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1150,674,58,22]}
+{"kind":"image","id":"im/9knih4by","slide":2,"name":"","geometry":"rect","alt":"BAM flavor-drop mark","bbox":[72,430,118,142]}
+{"kind":"notes","id":"nt/pddxku","slide":2,"text":""}
+{"kind":"slide","id":"sl/zy0z7r","slide":3,"title":"DINER EXPERIENCE","textShapes":17}
+{"kind":"textbox","id":"sh/gr2p8nqx","slide":3,"text":"DINER EXPERIENCE","textPreview":"DINER EXPERIENCE","textChars":16,"textLines":1,"bbox":[72,56,420,28]}
+{"kind":"textbox","id":"sh/r65wjudg","slide":3,"text":"Three clear moments from interest to pickup.","textPreview":"Three clear moments from interest to pickup.","textChars":44,"textLines":1,"bbox":[72,98,800,58]}
+{"kind":"shape","id":"sh/ylc7u54z","slide":3,"bbox":[72,220,244,306]}
+{"kind":"textbox","id":"sh/5o7qpg3e","slide":3,"text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[96,244,46,28]}
+{"kind":"textbox","id":"sh/g3ex0nux","slide":3,"text":"Discover","textPreview":"Discover","textChars":8,"textLines":1,"bbox":[96,300,196,38]}
+{"kind":"textbox","id":"sh/nih4byhg","slide":3,"text":"See a curated drop and its pickup details.","textPreview":"See a curated drop and its pickup details.","textChars":42,"textLines":1,"bbox":[96,366,192,86]}
+{"kind":"textbox","id":"sh/yxobm58z","slide":3,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[319,344,28,32]}
+{"kind":"shape","id":"sh/9s36hcrm","slide":3,"bbox":[350,220,244,306]}
+{"kind":"textbox","id":"sh/g7adsji5","slide":3,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[374,244,46,28]}
+{"kind":"textbox","id":"sh/y1kre1w7","slide":3,"text":"Reserve","textPreview":"Reserve","textChars":7,"textLines":1,"bbox":[374,300,196,38]}
+{"kind":"textbox","id":"sh/rmhk3q5o","slide":3,"text":"Choose an available pickup window and quantity.","textPreview":"Choose an available pickup window and quantity.","textChars":47,"textLines":1,"bbox":[374,366,192,86]}
+{"kind":"textbox","id":"sh/g7adsji5","slide":3,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[597,344,28,32]}
+{"kind":"shape","id":"sh/9s36hcrm","slide":3,"bbox":[628,220,244,306]}
+{"kind":"textbox","id":"sh/yd0z6103","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[652,244,46,28]}
+{"kind":"textbox","id":"sh/rytsvu9k","slide":3,"text":"Collect","textPreview":"Collect","textChars":7,"textLines":1,"bbox":[652,300,196,38]}
+{"kind":"textbox","id":"sh/gfmlkjm1","slide":3,"text":"Pick up directly at the restaurant counter.","textPreview":"Pick up directly at the restaurant counter.","textChars":43,"textLines":1,"bbox":[652,366,192,86]}
+{"kind":"shape","id":"sh/ylc7u54z","slide":3,"bbox":[72,568,132,38]}
+{"kind":"textbox","id":"sh/r65wjudg","slide":3,"text":"Pickup only","textPreview":"Pickup only","textChars":11,"textLines":1,"bbox":[86,576,104,22]}
+{"kind":"shape","id":"sh/fa9w3m94","slide":3,"bbox":[218,568,190,38]}
+{"kind":"textbox","id":"sh/qpg3ex0n","slide":3,"text":"No delivery handoff","textPreview":"No delivery handoff","textChars":19,"textLines":1,"bbox":[232,576,162,22]}
+{"kind":"textbox","id":"sh/xczed8v6","slide":3,"text":"gozaika.in  •  partners@gozaika.in","textPreview":"gozaika.in  •  partners@gozaika.in","textChars":34,"textLines":1,"bbox":[72,674,520,22]}
+{"kind":"textbox","id":"sh/8v6psfil","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1150,674,58,22]}
+{"kind":"image","id":"im/idonyd0z","slide":3,"name":"","geometry":"roundRect","alt":"goZaika diner pickup lifestyle","bbox":[938,176,270,388]}
+{"kind":"notes","id":"nt/zy0z7r","slide":3,"text":""}
+{"kind":"slide","id":"sl/4ygeg9","slide":4,"title":"RESTAURANT WORKFLOW","textShapes":11}
+{"kind":"shape","id":"sh/4nap4r65","slide":4,"bbox":[446,0,82,720]}
+{"kind":"textbox","id":"sh/t83itgfm","slide":4,"text":"RESTAURANT WORKFLOW","textPreview":"RESTAURANT WORKFLOW","textChars":19,"textLines":1,"bbox":[72,56,420,28]}
+{"kind":"textbox","id":"sh/m58z25kb","slide":4,"text":"You define the drop.\nWe structure discovery.","textPreview":"You define the drop. | We structure discovery.","textChars":44,"textLines":2,"bbox":[552,108,610,120]}
+{"kind":"shape","id":"sh/bq1oryts","slide":4,"bbox":[552,282,96,42]}
+{"kind":"textbox","id":"sh/4byhgn29","slide":4,"text":"SET","textPreview":"SET","textChars":3,"textLines":1,"bbox":[566,292,68,20]}
+{"kind":"textbox","id":"sh/twra5gbq","slide":4,"text":"Choose the item, available quantity, pickup window, and disclosures.","textPreview":"Choose the item, available quantity, pickup window, and disclosures.","textChars":68,"textLines":1,"bbox":[674,283,474,58]}
+{"kind":"shape","id":"sh/m1cfa9w3","slide":4,"bbox":[552,376,96,42]}
+{"kind":"textbox","id":"sh/bm58z25k","slide":4,"text":"REVIEW","textPreview":"REVIEW","textChars":6,"textLines":1,"bbox":[566,386,68,20]}
+{"kind":"textbox","id":"sh/val87ed8","slide":4,"text":"Confirm the listing details before the drop is published.","textPreview":"Confirm the listing details before the drop is published.","textChars":57,"textLines":1,"bbox":[674,377,474,58]}
+{"kind":"shape","id":"sh/6psfil0r","slide":4,"bbox":[552,470,96,42]}
+{"kind":"textbox","id":"sh/dcbulwva","slide":4,"text":"FULFIL","textPreview":"FULFIL","textChars":6,"textLines":1,"bbox":[566,480,68,20]}
+{"kind":"textbox","id":"sh/kre1w7mp","slide":4,"text":"Prepare confirmed reservations for direct counter collection.","textPreview":"Prepare confirmed reservations for direct counter collection.","textChars":61,"textLines":1,"bbox":[674,471,474,58]}
+{"kind":"shape","id":"sh/vixczed8","slide":4,"bbox":[552,588,308,38]}
+{"kind":"textbox","id":"sh/2x4nap4r","slide":4,"text":"No POS replacement required initially","textPreview":"No POS replacement required initially","textChars":37,"textLines":1,"bbox":[566,596,280,22]}
+{"kind":"textbox","id":"sh/donyd0z6","slide":4,"text":"gozaika.in  •  partners@gozaika.in","textPreview":"gozaika.in  •  partners@gozaika.in","textChars":34,"textLines":1,"bbox":[72,674,520,22]}
+{"kind":"textbox","id":"sh/k3q5o7qp","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1150,674,58,22]}
+{"kind":"image","id":"im/e1w7mp0b","slide":4,"name":"","geometry":"rect","alt":"Restaurant team preparing a distinctive food experience","bbox":[0,0,492,720]}
+{"kind":"notes","id":"nt/4ygeg9","slide":4,"text":""}
+{"kind":"slide","id":"sl/0e3w5r","slide":5,"title":"PARTNER CONTROLS","textShapes":17}
+{"kind":"textbox","id":"sh/w7mp0bi9","slide":5,"text":"PARTNER CONTROLS","textPreview":"PARTNER CONTROLS","textChars":16,"textLines":1,"bbox":[72,56,420,28]}
+{"kind":"textbox","id":"sh/7mp0bi9s","slide":5,"text":"Built around the realities of a live kitchen.","textPreview":"Built around the realities of a live kitchen.","textChars":45,"textLines":1,"bbox":[72,100,850,58]}
+{"kind":"shape","id":"sh/e1w7mp0b","slide":5,"bbox":[72,206,542,154]}
+{"kind":"shape","id":"sh/pg3ex0nu","slide":5,"bbox":[96,234,50,50]}
+{"kind":"textbox","id":"sh/wval87ed","slide":5,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[107,246,28,24]}
+{"kind":"textbox","id":"sh/7adsji5s","slide":5,"text":"Quantity","textPreview":"Quantity","textChars":8,"textLines":1,"bbox":[168,232,390,32]}
+{"kind":"textbox","id":"sh/epkzupwb","slide":5,"text":"Set the number available for each drop.","textPreview":"Set the number available for each drop.","textChars":39,"textLines":1,"bbox":[168,278,390,54]}
+{"kind":"shape","id":"sh/lc7u54zi","slide":5,"bbox":[646,206,542,154]}
+{"kind":"shape","id":"sh/wra5gbq1","slide":5,"bbox":[670,234,50,50]}
+{"kind":"textbox","id":"sh/upwb2hwf","slide":5,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[681,246,28,24]}
+{"kind":"textbox","id":"sh/nap4r65w","slide":5,"text":"Timing","textPreview":"Timing","textChars":6,"textLines":1,"bbox":[742,232,390,32]}
+{"kind":"textbox","id":"sh/cvixczed","slide":5,"text":"Define pickup windows your team can support.","textPreview":"Define pickup windows your team can support.","textChars":44,"textLines":1,"bbox":[742,278,390,54]}
+{"kind":"shape","id":"sh/5gbq1ory","slide":5,"bbox":[72,392,542,154]}
+{"kind":"shape","id":"sh/udg7adsj","slide":5,"bbox":[96,420,50,50]}
+{"kind":"textbox","id":"sh/nyd0z610","slide":5,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[107,432,28,24]}
+{"kind":"textbox","id":"sh/cj6tovah","slide":5,"text":"Disclosure","textPreview":"Disclosure","textChars":10,"textLines":1,"bbox":[168,418,390,32]}
+{"kind":"textbox","id":"sh/54zidony","slide":5,"text":"Provide accurate ingredients and allergen information.","textPreview":"Provide accurate ingredients and allergen information.","textChars":54,"textLines":1,"bbox":[168,464,390,54]}
+{"kind":"shape","id":"sh/u9knih4b","slide":5,"bbox":[646,392,542,154]}
+{"kind":"shape","id":"sh/judg7ads","slide":5,"bbox":[670,420,50,50]}
+{"kind":"textbox","id":"sh/fil0rqd4","slide":5,"text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[681,432,28,24]}
+{"kind":"textbox","id":"sh/qxs72x4n","slide":5,"text":"Readiness","textPreview":"Readiness","textChars":9,"textLines":1,"bbox":[742,418,390,32]}
+{"kind":"textbox","id":"sh/xobm58z2","slide":5,"text":"Publish only when the team and counter are prepared.","textPreview":"Publish only when the team and counter are prepared.","textChars":52,"textLines":1,"bbox":[742,464,390,54]}
+{"kind":"textbox","id":"sh/83itgfml","slide":5,"text":"Operational details are agreed during onboarding; restaurants remain responsible for food safety and listing accuracy.","textPreview":"Operational details are agreed during onboarding; restaurants remain responsible for food safety and listing accuracy.","textChars":118,"textLines":1,"bbox":[72,598,1050,36]}
+{"kind":"textbox","id":"sh/fu18jqh0","slide":5,"text":"gozaika.in  •  partners@gozaika.in","textPreview":"gozaika.in  •  partners@gozaika.in","textChars":34,"textLines":1,"bbox":[72,674,520,22]}
+{"kind":"textbox","id":"sh/m94fu18j","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1150,674,58,22]}
+{"kind":"notes","id":"nt/0e3w5r","slide":5,"text":""}
+{"kind":"slide","id":"sl/yc1ovn","slide":6,"title":"PILOT READINESS","textShapes":17}
+{"kind":"textbox","id":"sh/idonyd0z","slide":6,"text":"PILOT READINESS","textPreview":"PILOT READINESS","textChars":15,"textLines":1,"bbox":[72,56,420,28]}
+{"kind":"textbox","id":"sh/t47y1kre","slide":6,"text":"A useful first conversation starts here.","textPreview":"A useful first conversation starts here.","textChars":40,"textLines":1,"bbox":[72,98,720,54]}
+{"kind":"shape","id":"sh/0je9cvix","slide":6,"bbox":[72,202,42,42]}
+{"kind":"textbox","id":"sh/b6xkf6dc","slide":6,"text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[82,209,22,24]}
+{"kind":"textbox","id":"sh/il0rqd4v","slide":6,"text":"A distinctive item suited to scheduled pickup","textPreview":"A distinctive item suited to scheduled pickup","textChars":45,"textLines":1,"bbox":[138,206,560,42]}
+{"kind":"shape","id":"sh/tcj6tova","slide":6,"bbox":[72,280,42,42]}
+{"kind":"textbox","id":"sh/0rqd4vmt","slide":6,"text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[82,287,22,24]}
+{"kind":"textbox","id":"sh/bi9s36hc","slide":6,"text":"A realistic quantity and pickup window","textPreview":"A realistic quantity and pickup window","textChars":38,"textLines":1,"bbox":[138,284,560,42]}
+{"kind":"shape","id":"sh/ixczed8v","slide":6,"bbox":[72,358,42,42]}
+{"kind":"textbox","id":"sh/s72x4nap","slide":6,"text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[82,365,22,24]}
+{"kind":"textbox","id":"sh/lszqtcj6","slide":6,"text":"Clear ingredient and allergen disclosures","textPreview":"Clear ingredient and allergen disclosures","textChars":41,"textLines":1,"bbox":[138,362,560,42]}
+{"kind":"shape","id":"sh/a5gbq1or","slide":6,"bbox":[72,436,42,42]}
+{"kind":"textbox","id":"sh/3m94fu18","slide":6,"text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[82,443,22,24]}
+{"kind":"textbox","id":"sh/sji5snel","slide":6,"text":"A counter workflow for confirmed reservations","textPreview":"A counter workflow for confirmed reservations","textChars":45,"textLines":1,"bbox":[138,440,560,42]}
+{"kind":"shape","id":"sh/h4byhgn2","slide":6,"bbox":[786,182,422,340]}
+{"kind":"textbox","id":"sh/adsji5sn","slide":6,"text":"COMMERCIAL NOTE","textPreview":"COMMERCIAL NOTE","textChars":15,"textLines":1,"bbox":[822,222,330,24]}
+{"kind":"textbox","id":"sh/3ylc7u54","slide":6,"text":"Commercial terms are discussed during partner qualification.","textPreview":"Commercial terms are discussed during partner qualification.","textChars":60,"textLines":1,"bbox":[822,274,326,104]}
+{"kind":"textbox","id":"sh/svu9knih","slide":6,"text":"No numeric pricing, revenue, demand, or conversion promise is implied in this deck.","textPreview":"No numeric pricing, revenue, demand, or conversion promise is implied in this deck.","textChars":83,"textLines":1,"bbox":[822,414,326,64]}
+{"kind":"shape","id":"sh/hgn29gr2","slide":6,"bbox":[72,558,174,38]}
+{"kind":"textbox","id":"sh/l87ed8ba","slide":6,"text":"Clear before clever","textPreview":"Clear before clever","textChars":19,"textLines":1,"bbox":[86,566,146,22]}
+{"kind":"shape","id":"sh/sneloj2t","slide":6,"bbox":[264,558,212,38]}
+{"kind":"textbox","id":"sh/32lszqtc","slide":6,"text":"Specific before sweeping","textPreview":"Specific before sweeping","textChars":24,"textLines":1,"bbox":[278,566,184,22]}
+{"kind":"textbox","id":"sh/ahoza1gv","slide":6,"text":"gozaika.in  •  partners@gozaika.in","textPreview":"gozaika.in  •  partners@gozaika.in","textChars":34,"textLines":1,"bbox":[72,674,520,22]}
+{"kind":"textbox","id":"sh/lkjm1cfa","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1150,674,58,22]}
+{"kind":"notes","id":"nt/yc1ovn","slide":6,"text":""}
+{"kind":"slide","id":"sl/ptwk91","slide":7,"title":"Let’s see whether your next drop belongs on goZaika.","textShapes":5}
+{"kind":"shape","id":"sh/1032lszq","slide":7,"bbox":[714,0,82,720]}
+{"kind":"textbox","id":"sh/jm1cfa9w","slide":7,"text":"Let’s see whether your next drop belongs on goZaika.","textPreview":"Let’s see whether your next drop belongs on goZaika.","textChars":52,"textLines":1,"bbox":[72,186,580,154]}
+{"kind":"textbox","id":"sh/u18jqh0f","slide":7,"text":"Start with one item, one pickup window, and an honest operational conversation.","textPreview":"Start with one item, one pickup window, and an honest operational conversation.","textChars":79,"textLines":1,"bbox":[72,384,546,72]}
+{"kind":"shape","id":"sh/1orytsvu","slide":7,"bbox":[72,520,482,82]}
+{"kind":"textbox","id":"sh/c7u54zid","slide":7,"text":"partners@gozaika.in","textPreview":"partners@gozaika.in","textChars":19,"textLines":1,"bbox":[96,538,434,28]}
+{"kind":"textbox","id":"sh/nap4r65w","slide":7,"text":"gozaika.in/for-restaurants","textPreview":"gozaika.in/for-restaurants","textChars":26,"textLines":1,"bbox":[96,570,434,20]}
+{"kind":"textbox","id":"sh/upwb2hwf","slide":7,"text":"Restaurant partner introduction  •  English v1.0","textPreview":"Restaurant partner introduction  •  English v1.0","textChars":48,"textLines":1,"bbox":[72,654,500,20]}
+{"kind":"image","id":"im/nyd0z610","slide":7,"name":"","geometry":"rect","alt":"goZaika BAM Bag master image","bbox":[756,0,524,720]}
+{"kind":"image","id":"im/54zidony","slide":7,"name":"","geometry":"rect","alt":"goZaika logo","bbox":[72,54,220,58]}
+{"kind":"notes","id":"nt/ptwk91","slide":7,"text":""}

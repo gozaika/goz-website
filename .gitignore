@@ -25,3 +25,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# stray root prebuild artifacts (real prebuild lives in apps/*/android, which is ignored)
+/android/
+/app.json
+
+# scratch
+/tmp/

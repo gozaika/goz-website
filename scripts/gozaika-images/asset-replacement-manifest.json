@@ -1,6 +1,8 @@
 {
   "schemaVersion": 1,
   "name": "goZaika website asset replacement",
+  "status": "complete",
+  "completedAt": "2026-06-21",
   "model": "gpt-image-2",
   "quality": "high",
   "referenceImage": ".codex-artifacts/gozaika-images/masters/anchors/master-style-anchor-clean.png",
@@ -257,11 +259,13 @@
       "priority": 4,
       "group": "supporting",
       "classification": "retained-vector-ui-art",
-      "status": "retain-v2-pending-visual-qa",
+      "status": "locked-retained",
       "description": "Browse/discover functional step icon.",
       "currentFiles": [
-        "apps/website/public/images/step-browse-v1.svg",
         "apps/website/public/images/step-browse-v2.svg"
+      ],
+      "replacedFiles": [
+        "apps/website/public/images/step-browse-v1.svg"
       ],
       "activeReferences": [
         "apps/website/lib/content.ts"
@@ -269,7 +273,7 @@
       "finalOutput": "apps/website/public/images/step-browse-v2.svg",
       "generation": {
         "enabled": false,
-        "reason": "Small UI icon must remain deterministic SVG."
+        "reason": "Visual QA passed at native and small UI sizes; retain deterministic v2 SVG."
       }
     },
     {
@@ -277,11 +281,13 @@
       "priority": 4,
       "group": "supporting",
       "classification": "retained-vector-ui-art",
-      "status": "retain-v2-pending-visual-qa",
+      "status": "locked-retained",
       "description": "Claim/purchase functional step icon.",
       "currentFiles": [
-        "apps/website/public/images/step-buy-v1.svg",
         "apps/website/public/images/step-buy-v2.svg"
+      ],
+      "replacedFiles": [
+        "apps/website/public/images/step-buy-v1.svg"
       ],
       "activeReferences": [
         "apps/website/lib/content.ts"
@@ -289,7 +295,7 @@
       "finalOutput": "apps/website/public/images/step-buy-v2.svg",
       "generation": {
         "enabled": false,
-        "reason": "Small UI icon must remain deterministic SVG."
+        "reason": "Visual QA passed at native and small UI sizes; retain deterministic v2 SVG."
       }
     },
     {
@@ -297,11 +303,13 @@
       "priority": 4,
       "group": "supporting",
       "classification": "retained-vector-ui-art",
-      "status": "retain-v2-pending-visual-qa",
+      "status": "locked-retained",
       "description": "Pickup functional step icon.",
       "currentFiles": [
-        "apps/website/public/images/step-pickup-v1.svg",
         "apps/website/public/images/step-pickup-v2.svg"
+      ],
+      "replacedFiles": [
+        "apps/website/public/images/step-pickup-v1.svg"
       ],
       "activeReferences": [
         "apps/website/lib/content.ts"
@@ -309,7 +317,7 @@
       "finalOutput": "apps/website/public/images/step-pickup-v2.svg",
       "generation": {
         "enabled": false,
-        "reason": "Small UI icon must remain deterministic SVG."
+        "reason": "Visual QA passed at native and small UI sizes; retain deterministic v2 SVG."
       }
     },
     {
@@ -317,16 +325,17 @@
       "priority": 4,
       "group": "supporting",
       "classification": "retained-vector-ui-art",
-      "status": "delete-orphan",
+      "status": "deleted",
       "description": "Unused historical working illustration.",
-      "currentFiles": [
+      "currentFiles": [],
+      "replacedFiles": [
         "apps/website/public/images/working.svg"
       ],
       "activeReferences": [],
       "finalOutput": null,
       "generation": {
         "enabled": false,
-        "reason": "Unused orphan; no replacement required."
+        "reason": "Unused orphan deleted during project closeout; no replacement required."
       }
     }
   ]

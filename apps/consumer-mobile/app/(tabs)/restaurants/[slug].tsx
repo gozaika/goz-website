@@ -1,13 +1,14 @@
-import { Badge, ErrorState, palette, Screen, Skeleton, spacing, Text } from "@gozaika/mobile-ui";
+import { Badge, ErrorState, palette, ProductMedia, Screen, Skeleton, spacing, Text } from "@gozaika/mobile-ui";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { View } from "react-native";
 import { useRestaurant } from "@/api/discovery";
 import { DropCard } from "@/ui/DropCard";
+import { mediaFallbacks } from "@/ui/mediaFallbacks";
 
 export default function RestaurantProfileScreen() {
   const router = useRouter();
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  const { data: r, isLoading, isError, refetch } = useRestaurant(slug ?? "");
+  const { data: restaurant, isLoading, isError, refetch } = useRestaurant(slug ?? "");
 
   if (isError) {
     return (
@@ -16,7 +17,7 @@ export default function RestaurantProfileScreen() {
       </Screen>
     );
   }
-  if (isLoading || !r) {
+  if (isLoading || !restaurant) {
     return (
       <Screen contentStyle={{ gap: spacing.md }}>
         <Skeleton height={28} width="60%" />
@@ -27,32 +28,41 @@ export default function RestaurantProfileScreen() {
 
   return (
     <Screen contentStyle={{ gap: spacing.md }}>
-      <Text variant="title">{r.restaurantName}</Text>
+      <ProductMedia
+        media={restaurant.coverImage}
+        fallbackSource={mediaFallbacks.restaurantCover}
+        aspectRatio={16 / 9}
+        accessibilityLabel={restaurant.coverImage?.alt ?? `${restaurant.restaurantName} restaurant`}
+        testID={`restaurant-profile-media-${restaurant.restaurantPk}`}
+      />
+      <Text variant="title">{restaurant.restaurantName}</Text>
       <Text variant="caption" color={palette.muted}>
-        {r.neighborhoodName ?? r.cityName ?? ""}
-        {r.ratingCount > 0 ? ` · ${r.averageRating?.toFixed(1)}★ (${r.ratingCount})` : ""}
+        {restaurant.neighborhoodName ?? restaurant.cityName ?? ""}
+        {restaurant.ratingCount > 0 ? ` · ${restaurant.averageRating?.toFixed(1)}★ (${restaurant.ratingCount})` : ""}
       </Text>
-      {r.headline ? (
+      {restaurant.headline ? (
         <Text variant="body" color={palette.muted}>
-          {r.headline}
+          {restaurant.headline}
         </Text>
       ) : null}
-      {r.cuisineTags.length > 0 ? (
+      {restaurant.cuisineTags.length > 0 ? (
         <View style={{ flexDirection: "row", gap: spacing.xs, flexWrap: "wrap" }}>
-          {r.cuisineTags.map((c) => (
-            <Badge key={c} label={c} tone="neutral" />
+          {restaurant.cuisineTags.map((cuisine) => (
+            <Badge key={cuisine} label={cuisine} tone="neutral" />
           ))}
         </View>
       ) : null}
-      {r.storyMarkdown ? <Text variant="body">{r.storyMarkdown}</Text> : null}
+      {restaurant.storyMarkdown ? <Text variant="body">{restaurant.storyMarkdown}</Text> : null}
 
       <Text variant="heading">Active drops</Text>
-      {r.activeDrops.length === 0 ? (
+      {restaurant.activeDrops.length === 0 ? (
         <Text variant="body" color={palette.muted}>
           No active drops right now.
         </Text>
       ) : (
-        r.activeDrops.map((d) => <DropCard key={d.dropPk} drop={d} onPress={() => router.push(`/drops/${d.dropPk}`)} />)
+        restaurant.activeDrops.map((drop) => (
+          <DropCard key={drop.dropPk} drop={drop} onPress={() => router.push(`/drops/${drop.dropPk}`)} />
+        ))
       )}
       <Text variant="caption" color={palette.muted}>
         Always check allergen information before pickup.

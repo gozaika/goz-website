@@ -1,0 +1,17 @@
+string_id,surface,english_source,context,max_chars,hi_IN,hi_status,te_IN,te_status
+rsk.headline,all,"Bring new guests to your counter.",Primary restaurant-acquisition headline,44,,human-review-required,,human-review-required
+rsk.subheadline,print,"goZaika helps curious diners discover a limited, chef-curated BAM Bag, reserve it, and pick it up directly from your restaurant.",Front-page explainer; preserve pickup-only meaning,145,,human-review-required,,human-review-required
+rsk.pillar.discover.title,all,"Be discovered",Benefit title,24,,human-review-required,,human-review-required
+rsk.pillar.discover.body,all,"Introduce your kitchen to diners looking for something worth showing up for.",Do not imply guaranteed demand,90,,human-review-required,,human-review-required
+rsk.pillar.counter.title,all,"Create a counter moment",Benefit title,30,,human-review-required,,human-review-required
+rsk.pillar.counter.body,all,"Pickup brings the guest into your restaurant - with no delivery handoff.",Preserve pickup-only operating model,84,,human-review-required,,human-review-required
+rsk.pillar.control.title,all,"Stay in control",Benefit title,24,,human-review-required,,human-review-required
+rsk.pillar.control.body,all,"You set the quantity, pickup window, and required food disclosures.",Restaurant-control claim; do not broaden,78,,human-review-required,,human-review-required
+rsk.cta,all,"Book a 15-minute partner walkthrough.",CTA; retain duration,52,,human-review-required,,human-review-required
+rsk.commercial_note,all,"Commercial terms are discussed during partner qualification.",Mandatory whenever pricing could be inferred,72,,human-review-required,,human-review-required
+rsk.is.curated,print,"A restaurant-led discovery channel",Definition,42,,human-review-required,,human-review-required
+rsk.is.pickup,print,"Limited, planned pickup releases",Definition,42,,human-review-required,,human-review-required
+rsk.is_not.delivery,print,"A delivery marketplace",Explicit exclusion,34,,human-review-required,,human-review-required
+rsk.is_not.discount,print,"A public discount menu",Avoid clearance framing,34,,human-review-required,,human-review-required
+rsk.deck.close,deck,"Let’s see whether your next drop belongs on goZaika.",Closing invitation; not a guarantee,64,,human-review-required,,human-review-required
+rsk.whatsapp.headline,whatsapp,"A better reason to visit your counter.",Digital headline,46,,human-review-required,,human-review-required

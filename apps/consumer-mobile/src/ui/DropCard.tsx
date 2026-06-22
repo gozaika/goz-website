@@ -1,13 +1,20 @@
 import type { MobilePublicDropCard } from "@gozaika/types";
-import { Badge, Card, palette, spacing, Text } from "@gozaika/mobile-ui";
+import { Badge, Card, palette, ProductMedia, spacing, Text } from "@gozaika/mobile-ui";
 import { formatPaise } from "@gozaika/utils";
 import { Pressable, View } from "react-native";
+import { mediaFallbacks } from "./mediaFallbacks";
 
 export function DropCard({ drop, onPress }: { readonly drop: MobilePublicDropCard; readonly onPress?: () => void }) {
   const soldOut = drop.quantityAvailable <= 0;
   return (
     <Pressable accessibilityRole="button" onPress={onPress}>
       <Card>
+        <ProductMedia
+          media={drop.image}
+          fallbackSource={mediaFallbacks.drop}
+          accessibilityLabel={drop.image?.alt ?? `${drop.bagDisplayName} from ${drop.restaurantName}`}
+          testID={`drop-media-${drop.dropPk}`}
+        />
         <Text variant="caption" color={palette.muted}>
           {drop.restaurantName}
           {drop.neighborhoodName ? ` · ${drop.neighborhoodName}` : ""}

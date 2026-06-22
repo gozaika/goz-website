@@ -54,19 +54,17 @@ generated as raster imagery.
 | Locked | LinkedIn banner | `social/linkedin-banner-v1.svg`, `social/linkedin-banner-v2.svg` | Marketing library; no live page reference | Generated photography with deterministic composition | `social/linkedin-banner-v3.png`, 1584 x 396 | Candidate 02 selected; exact logo, BAM flame-drop and proofread B2B copy applied |
 | Locked | Profile avatar | `social/profile-avatar-v1.svg`, `social/profile-avatar-v2.svg` | Marketing library; no live page reference | Deterministic branded composition | `social/profile-avatar-v3.png`, 400 x 400 | Built from exact BAM flame-drop and controlled brand field; no AI call |
 | Locked | WhatsApp icon | `social/whatsapp-icon-v1.svg`, `social/whatsapp-icon-v2.svg` | Marketing library; no live page reference | Deterministic branded composition | `social/whatsapp-icon-v3.png`, 500 x 500 | Built from exact BAM flame-drop and controlled brand field; no AI call |
-| 4 | Browse step icon | `step-browse-v1.svg`, `step-browse-v2.svg` | Home and how-it-works flows | Retained vector UI art | Refined `step-browse-v3.svg` only if visual QA finds a real issue | Keep v2 for now; never raster-generate |
-| 4 | Claim/buy step icon | `step-buy-v1.svg`, `step-buy-v2.svg` | Home and how-it-works flows | Retained vector UI art | Refined `step-buy-v3.svg` only if needed | Keep v2 for now; never raster-generate |
-| 4 | Pickup step icon | `step-pickup-v1.svg`, `step-pickup-v2.svg` | Home and how-it-works flows | Retained vector UI art | Refined `step-pickup-v3.svg` only if needed | Keep v2 for now; never raster-generate |
-| 4 | `working.svg` | `working.svg` | No live reference | Retained vector UI art | None | Delete as an orphan during final cleanup |
+| Locked | Browse step icon | `step-browse-v1.svg`, `step-browse-v2.svg` | Home and how-it-works flows | Retained vector UI art | `step-browse-v2.svg` | Visual QA passed; v1 removed |
+| Locked | Claim/buy step icon | `step-buy-v1.svg`, `step-buy-v2.svg` | Home and how-it-works flows | Retained vector UI art | `step-buy-v2.svg` | Visual QA passed; v1 removed |
+| Locked | Pickup step icon | `step-pickup-v1.svg`, `step-pickup-v2.svg` | Home and how-it-works flows | Retained vector UI art | `step-pickup-v2.svg` | Visual QA passed; v1 removed |
+| Deleted | `working.svg` | `working.svg` | No live reference | Orphan | None | Removed during final cleanup |
 
 The default Next/Vercel starter SVG files under `public/` are unused boilerplate,
 not campaign assets. Remove them during the same final cleanup only after a
 repository-wide reference check.
 
-Inventory also found one metadata defect that is not an image-generation job:
-`apps/website/app/layout.tsx` declares `/logos/gozaika-logo-color.svg`, but that
-file does not exist. During v3 integration, point structured-data `logo` to the
-canonical horizontal logo that actually ships under `public/logos/`.
+The structured-data logo defect found during inventory was corrected to use the
+canonical horizontal logo that ships under `public/logos/`.
 
 ## 4. Priority and approval gates
 

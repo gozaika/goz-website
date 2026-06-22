@@ -4,6 +4,17 @@ import { z } from "zod";
 // PublicDropCard / PublicRestaurantProfile (codes kept permissive as strings).
 // The BFF returns the same shapes the web `lib/drops` / `lib/restaurants` produce.
 
+export const mobileMediaAssetSchema = z.object({
+  url: z.string().url(),
+  width: z.number().int().positive().nullable().default(null),
+  height: z.number().int().positive().nullable().default(null),
+  alt: z.string().trim().min(1).max(240).nullable().default(null),
+  blurhash: z.string().trim().min(6).max(200).nullable().default(null),
+});
+export type MobileMediaAsset = z.infer<typeof mobileMediaAssetSchema>;
+
+const optionalMediaAssetSchema = z.preprocess((value) => value ?? null, mobileMediaAssetSchema.nullable());
+
 export const publicDropCardSchema = z.object({
   dropPk: z.string(),
   dropTitle: z.string(),
@@ -33,6 +44,7 @@ export const publicDropCardSchema = z.object({
   quantityTotal: z.number(),
   quantityAvailable: z.number(),
   statusCode: z.string(),
+  image: optionalMediaAssetSchema,
 });
 export type MobilePublicDropCard = z.infer<typeof publicDropCardSchema>;
 
@@ -55,6 +67,8 @@ export const publicRestaurantProfileSchema = z.object({
   pastDropCount: z.number(),
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
+  coverImage: optionalMediaAssetSchema,
+  logoImage: optionalMediaAssetSchema,
   activeDrops: z.array(publicDropCardSchema),
   pastDrops: z.array(publicDropCardSchema),
 });

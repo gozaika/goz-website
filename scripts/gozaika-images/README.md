@@ -1,5 +1,8 @@
 # goZaika Image Production
 
+Status: complete as of 2026-06-21. All generated assets are locked, supporting
+UI vectors passed visual QA, and working candidates have been removed.
+
 The approved P0 square and portrait heroes are locked. Remaining website and
 social assets are controlled by:
 
