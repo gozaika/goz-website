@@ -84,6 +84,13 @@ export const consentPurposeCodes = [
 ] as const;
 
 export const consentStateCodes = ["GRANTED", "REVOKED"] as const;
+
+/**
+ * Canonical DPDP consent policy version. Stamped on every consent event so a
+ * later policy change can require fresh consent. Web onboarding/account capture
+ * and the mobile consent BFF must agree on this value.
+ */
+export const CONSENT_POLICY_VERSION = "2026-04-27" as const;
 export const pickupVerificationMethodCodes = ["OTP_ENTRY", "QR_SCAN"] as const;
 export const pickupVerificationResultCodes = [
   "SUCCESS",

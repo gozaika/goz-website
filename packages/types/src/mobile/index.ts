@@ -14,3 +14,4 @@ export * from "./checkout";
 export * from "./orders";
 export * from "./passport";
 export * from "./reports";
+export * from "./consent";

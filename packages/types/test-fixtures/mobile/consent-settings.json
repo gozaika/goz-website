@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "requestId": "44444444-4444-4444-4444-444444444444",
+  "serverTime": "2026-06-23T08:00:00.000Z",
+  "data": {
+    "currentPolicyVersion": "2026-04-27",
+    "settings": [
+      { "purposeCode": "OPERATIONAL", "purposeName": "Operational", "description": "Core service: account, orders, pickup coordination, safety and support.", "isRequiredForService": true, "displayOrder": 10, "stateCode": "GRANTED", "recordedAt": "2026-06-01T10:00:00.000Z", "policyVersion": "2026-04-27" },
+      { "purposeCode": "MARKETING", "purposeName": "Marketing", "description": "Product updates, new drop announcements, campaigns and goZaika news.", "isRequiredForService": false, "displayOrder": 20, "stateCode": "REVOKED", "recordedAt": "2026-06-02T10:00:00.000Z", "policyVersion": "2026-04-27" },
+      { "purposeCode": "ANALYTICS", "purposeName": "Analytics", "description": "Privacy-aware product analytics used to improve discovery, reliability and safety.", "isRequiredForService": false, "displayOrder": 30, "stateCode": "GRANTED", "recordedAt": "2026-06-02T10:00:00.000Z", "policyVersion": "2026-04-27" },
+      { "purposeCode": "REFERRAL_COMMS", "purposeName": "Referral Communications", "description": "Messages about referral invitations, status and rewards.", "isRequiredForService": false, "displayOrder": 40, "stateCode": null, "recordedAt": null, "policyVersion": null },
+      { "purposeCode": "WHATSAPP_TRANSACTIONAL", "purposeName": "WhatsApp Transactional", "description": "WhatsApp messages for OTP, order confirmation, pickup reminders and support.", "isRequiredForService": false, "displayOrder": 50, "stateCode": "GRANTED", "recordedAt": "2026-06-02T10:00:00.000Z", "policyVersion": "2026-04-27" },
+      { "purposeCode": "WHATSAPP_MARKETING", "purposeName": "WhatsApp Marketing", "description": "Promotional WhatsApp messages for drops, Swaad Club and campaigns.", "isRequiredForService": false, "displayOrder": 60, "stateCode": null, "recordedAt": null, "policyVersion": null }
+    ]
+  }
+}

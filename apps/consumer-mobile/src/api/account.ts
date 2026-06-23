@@ -1,11 +1,15 @@
 import { queryKeys, STALE_TIMES } from "@gozaika/mobile-core";
 import {
+  consentSettingsDataSchema,
   discoveryProfileSchema,
   zaykaPassportPayloadSchema,
+  type ConsentPurposeCode,
+  type ConsentSettingsData,
+  type ConsentStateCode,
   type DiscoveryProfile,
   type ZaykaPassportPayload,
 } from "@gozaika/types";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "./client";
 
 /** The signed-in consumer's Zayka Passport (tier card, bags, badges). */
@@ -29,5 +33,30 @@ export function useDiscoveryProfile() {
       const res = await apiClient.request("/account/discovery-profile", { dataSchema: discoveryProfileSchema });
       return res.data as unknown as DiscoveryProfile;
     },
+  });
+}
+
+/** The signed-in consumer's DPDP consent settings (all purposes + latest state). */
+export function useConsentSettings() {
+  return useQuery({
+    queryKey: queryKeys.account.consent(),
+    staleTime: STALE_TIMES.active,
+    queryFn: async (): Promise<ConsentSettingsData> => {
+      const res = await apiClient.request("/account/consent", { dataSchema: consentSettingsDataSchema });
+      return res.data as unknown as ConsentSettingsData;
+    },
+  });
+}
+
+/** Toggle one consent purpose. The server stamps the policy version + source and
+ *  returns the refreshed settings, which we write straight into the cache. */
+export function useUpdateConsent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { readonly purposeCode: ConsentPurposeCode; readonly state: ConsentStateCode }): Promise<ConsentSettingsData> => {
+      const res = await apiClient.request("/account/consent", { method: "POST", body: input, dataSchema: consentSettingsDataSchema });
+      return res.data as unknown as ConsentSettingsData;
+    },
+    onSuccess: (data) => queryClient.setQueryData(queryKeys.account.consent(), data),
   });
 }

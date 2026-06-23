@@ -10,7 +10,7 @@ export default function AccountScreen() {
     <Screen contentStyle={{ gap: spacing.md, justifyContent: "center" }}>
       <Text variant="title">Account</Text>
       <Text variant="body" color={palette.muted}>
-        Profile, referral code, consent settings, holds and reviews arrive in Mobile Slice 10.
+        Your loyalty, flavour profile and privacy controls. Reviews and profile editing arrive next.
       </Text>
 
       {session ? (
@@ -23,6 +23,9 @@ export default function AccountScreen() {
           </Link>
           <Link href="/account/discovery" style={{ color: palette.forest, fontWeight: "700", fontSize: 15 }}>
             Flavour Diversity profile →
+          </Link>
+          <Link href="/account/consent" style={{ color: palette.forest, fontWeight: "700", fontSize: 15 }}>
+            Privacy & consent →
           </Link>
           <Button
             label="Sign out"

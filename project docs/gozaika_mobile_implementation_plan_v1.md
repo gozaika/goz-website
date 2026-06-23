@@ -55,7 +55,7 @@ Use `npm.cmd`/`npx.cmd` in this Windows PowerShell environment when script execu
 | Mobile Slice 7 | Restaurant counter vertical slice | 4,6 | DONE — signed off 2026-06-21 (docs/mobile/slice7-signoff.md), merged to main |
 | Mobile Slice 8 | Customer public discovery and restaurant profiles | 3,6 | Not started |
 | Mobile Slice 9 | Customer claim, Razorpay and pickup proof | 3,6,8 | Core built (claim->simulated checkout->order, gated simulator); real Razorpay stubbed (keys ~1mo); pickup-proof display paused for review |
-| Mobile Slice 10 | Customer account, orders, reviews and consent settings | 6,9 | Orders built (list + detail, notification pickup-proof + resend, RLS-scoped); account exists; reviews + consent-settings remainder |
+| Mobile Slice 10 | Customer account, orders, reviews and consent settings | 6,9 | Orders + **DPDP consent settings** built (live-proven; all 6 purposes, required-locked, erasure link-out); profile-edit + reviews remainder |
 | Mobile Slice 11 | Customer Passport, discovery profile and Swaad Club | 8,10 | Done (live-proven) |
 | Mobile Slice 12 | Restaurant onboarding, compliance and profile | 4,6 | Profile vertical built (read + basics/location/story edit, geo-options); onboarding + compliance/document upload remainder |
 | Mobile Slice 13 | Restaurant templates and Limited Drops | 4,6,12 | Core built (templates/drops read + publish drop); template authoring + drop edit remainder |
@@ -381,6 +381,8 @@ Branch: `mobile/slice6-native-auth` (off `main`).
 **Smoke-test scenarios and cases:** Profile validation/save/rollback; referral missing/present; required/optional consent grant/revoke; active/stale holds; order statuses and notification failures; eligible/ineligible/duplicate review and moderation states; account deletion handoff; sign-out cleanup.
 
 **Update this implementation plan:** Record field-level API parity, list cursors, consent/review contracts, privacy flow and fixtures for every order/hold state. Explicitly list deferred preference fields.
+
+**Status — Orders + DPDP consent settings Done (2026-06-23, live-proven). Profile-edit + reviews remainder.** Consent decisions (owner-approved): expose **all 6 purposes** (operational locked-on); WhatsApp toggles shown + recorded now despite dry-run; account deletion is **link-out only** (no in-app erasure automation — stays clear of the legal HUMAN_REVIEW gate in `docs/runbooks/privacy-erasure.md`). No-drift: shared `consumer-web/lib/consent.ts#loadConsentSettings` (merges `api_latest_consents` + `privacy_consent_purpose`); canonical `CONSENT_POLICY_VERSION` in `@gozaika/types`. BFF `app/api/mobile/v1/account/consent` (GET settings, POST single-purpose toggle via `api_capture_consents` on the user token; server stamps policy version + ACCOUNT_SETTINGS source; refuses revoking required purposes). Contract `packages/types/src/mobile/consent.ts` (permissive wire GET + strict capture request) + fixture + test. Screen `consumer-mobile/app/(tabs)/account/consent.tsx` (per-purpose Switch, required locked, last-event date, privacy-policy + data-deletion link-outs to gozaika.in / contact@gozaika.in). Gate 7/7; live smoke `scripts/smoke/slice10-consent-smoke.mjs` 7/7. **Deferred:** profile field editing, referral-code display, review submission/moderation, hold history.
 
 ### Mobile Slice 11 — Customer Passport, discovery profile and Swaad Club
 
