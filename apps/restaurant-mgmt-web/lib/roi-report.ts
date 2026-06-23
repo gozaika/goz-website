@@ -17,6 +17,8 @@ import {
   rateToBasisPoints,
   rateTone,
 } from "@gozaika/utils";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { mapFinanceSettlementSummary } from "./finance";
 
 export type RoiDropDetailDbRow = {
   readonly restaurant_fk: string;
@@ -352,6 +354,76 @@ export function buildRoiReport(input: {
     noteRows: input.noteRows,
     partnerCopy: buildPartnerCopy(baseSummary),
   };
+}
+
+/**
+ * Load + build the weekly ROI report for one restaurant over a period. Runs the
+ * three canonical reporting views (drop detail / report notes / settlement
+ * summary), maps them, and assembles via `buildRoiReport`. Shared by the web
+ * portal reports page (cookie client) and the mobile BFF (service-role client,
+ * already tenant-gated by `withMobileRestaurantRole`) so the two surfaces cannot
+ * drift. Read-only: no payment/settlement state is mutated.
+ */
+export async function loadRoiReport(
+  supabase: SupabaseClient,
+  input: {
+    readonly restaurantPk: string;
+    readonly restaurantName: string;
+    readonly periodStartAt: string;
+    readonly periodEndAt: string;
+  },
+): Promise<RoiReportPayload> {
+  const [
+    { data: dropData, error: dropError },
+    { data: noteData, error: noteError },
+    { data: settlementData, error: settlementError },
+  ] = await Promise.all([
+    supabase
+      .from("api_restaurant_roi_drop_detail")
+      .select("*")
+      .eq("restaurant_fk", input.restaurantPk)
+      .gte("pickup_start_at", input.periodStartAt)
+      .lt("pickup_start_at", input.periodEndAt)
+      .order("pickup_start_at", { ascending: false }),
+    supabase
+      .from("api_restaurant_roi_report_note")
+      .select("*")
+      .eq("restaurant_fk", input.restaurantPk)
+      .gte("occurred_at", input.periodStartAt)
+      .lt("occurred_at", input.periodEndAt)
+      .order("occurred_at", { ascending: false }),
+    supabase
+      .from("api_restaurant_finance_settlement_summary")
+      .select("*")
+      .eq("restaurant_fk", input.restaurantPk)
+      .gte("period_end_at", input.periodStartAt)
+      .lte("period_start_at", input.periodEndAt)
+      .limit(20),
+  ]);
+
+  if (dropError) throw new Error("Could not load ROI report drop metrics.");
+  if (noteError) throw new Error("Could not load ROI report notes.");
+  if (settlementError) throw new Error("Could not load settlement context for ROI report.");
+
+  const settlements = (settlementData ?? []).map(mapFinanceSettlementSummary).map((settlement) => ({
+    settlementRunPk: settlement.settlementRunPk,
+    restaurantPk: settlement.restaurantPk,
+    periodStartAt: settlement.periodStartAt,
+    periodEndAt: settlement.periodEndAt,
+    settlementStatusCode: settlement.settlementStatusCode,
+    netPayoutPaise: settlement.netPayoutPaise,
+    lockedAt: settlement.lockedAt,
+  }));
+
+  return buildRoiReport({
+    restaurantPk: input.restaurantPk,
+    restaurantName: input.restaurantName,
+    periodStartAt: input.periodStartAt,
+    periodEndAt: input.periodEndAt,
+    dropRows: ((dropData ?? []) as RoiDropDetailDbRow[]).map(mapRoiDrop),
+    noteRows: ((noteData ?? []) as RoiNoteDbRow[]).map(mapRoiNote),
+    settlements,
+  });
 }
 
 export function settlementBasisLabel(summary: RoiReportSummary): string {

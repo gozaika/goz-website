@@ -60,7 +60,7 @@ Use `npm.cmd`/`npx.cmd` in this Windows PowerShell environment when script execu
 | Mobile Slice 12 | Restaurant onboarding, compliance and profile | 4,6 | Profile vertical built (read + basics/location/story edit, geo-options); onboarding + compliance/document upload remainder |
 | Mobile Slice 13 | Restaurant templates and Limited Drops | 4,6,12 | Core built (templates/drops read + publish drop); template authoring + drop edit remainder |
 | Mobile Slice 14 | Restaurant dashboard, reviews and operational history | 7,13 | Dashboard built (role-shaped FULL/QUEUE_ONLY/SUMMARY); reviews + ops history remainder |
-| Mobile Slice 15 | Restaurant finance and ROI reports | 4,6 | Finance settlements read built (role-gated viewFinance); ROI report + invoice download remainder |
+| Mobile Slice 15 | Restaurant finance and ROI reports | 4,6 | Finance settlements + **ROI report** built (role-gated viewFinance/viewReports, partner-safe share, live-proven); invoice download remainder |
 | Mobile Slice 16 | Push, deep links, native permissions and offline hardening | 7,9,12 | Not started |
 | Mobile Slice 17 | Accessibility, security, observability and performance gate | 8–16 | Not started |
 | Mobile Slice 18 | Store packages, beta and staged production release | 17 | Not started |
@@ -463,6 +463,8 @@ Branch: `mobile/slice6-native-auth` (off `main`).
 **Smoke-test scenarios and cases:** Empty/draft/locked/paid/reconciled/cancelled settlement; positive/negative entries; invoice missing/expired/retry; exact-period locked ROI versus estimated; incidents/refunds; thin repeat-buyer data; unauthorized operational/pickup user; PII scan of payload/share.
 
 **Update this implementation plan:** Record finance/ROI data sources, formulas, role policy, signed-download lifecycle, fixtures and reconciliation evidence. Explicitly state all prohibited mutations.
+
+**Status — ROI report Done (2026-06-22, live-proven). Invoice download still remainder.** No-drift extraction: the web portal reports page (`restaurant-mgmt-web/app/portal/reports/page.tsx`) and the new mobile BFF (`app/api/mobile/v1/reports/roi`) now share `lib/roi-report.ts#loadRoiReport` (the three canonical views `api_restaurant_roi_drop_detail` / `api_restaurant_roi_report_note` / `api_restaurant_finance_settlement_summary` → `mapRoiDrop`/`mapRoiNote` → `buildRoiReport`). BFF gated by `viewReports` (OWNER/ADMIN/MANAGER), service-role read after the role wrapper enforces tenant; period from `?start=&end=` (defaults to trailing 7 days). Contract `packages/types/src/mobile/reports.ts` (permissive wire Zod for `RoiReportPayload`) + fixture + `reports.test.ts` (incl. a PII-scan assertion on partner copy). Screen `restaurant-mobile/app/reports.tsx`: metric cards, drop performance, exceptions, next actions, and a **partner-safe `Share`** (counts/totals only — no names/phones/emails/pickup codes). Read-only: no payout/refund/reconcile/bank mutation. Gate 7/7. Live smoke `scripts/smoke/slice15-roi-smoke.mjs` 5/5 (OWNER→200 well-formed payload incl. honest INSUFFICIENT_DATA empty state; PICKUP_STAFF→403 ROLE_DENIED; unauth→401). Note: the ROI drop-detail view inner-joins `catalog_bag_template_revision`, so demo drops without that linkage produce the empty state; the metrics math itself is covered by `buildRoiReport` unit tests + the rich contract fixture.
 
 ### Mobile Slice 16 — Push, deep links, native permissions and offline hardening
 

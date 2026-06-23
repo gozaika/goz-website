@@ -1,0 +1,123 @@
+{
+  "ok": true,
+  "requestId": "33333333-3333-3333-3333-333333333333",
+  "serverTime": "2026-06-22T08:00:00.000Z",
+  "data": {
+    "summary": {
+      "restaurantPk": "20000000-0000-0000-0000-300000000001",
+      "restaurantName": "Bawarchi",
+      "periodStartAt": "2026-06-16T00:00:00.000Z",
+      "periodEndAt": "2026-06-22T23:59:59.999Z",
+      "dropsListedCount": 3,
+      "bagsListedCount": 60,
+      "bagsSoldCount": 47,
+      "sellThroughBps": 7833,
+      "gmvPaise": 1175000,
+      "estimatedNetRecoveryPaise": 1102300,
+      "netRecoveryBasisCode": "ESTIMATED",
+      "settlementRunPk": null,
+      "settlementStatusCode": null,
+      "settlementLockedAt": null,
+      "pickupCompletedCount": 41,
+      "noShowCount": 4,
+      "pickupCompletionBps": 9111,
+      "openPickupOrderCount": 2,
+      "refundDebitPaise": 25000,
+      "paymentFeePaise": 23500,
+      "paymentTaxPaise": 4230,
+      "incidentCount": 1,
+      "firstTimeBuyerCount": 18,
+      "repeatBuyerCount": 29,
+      "repeatBuyerDataAvailable": true,
+      "dataFreshnessAt": "2026-06-22T08:00:00.000Z",
+      "insightCodes": ["PICKUP_WINDOW_OPEN", "SETTLEMENT_NOT_LOCKED", "REFUNDS_OR_DEBITS_PRESENT", "INCIDENTS_PRESENT", "SELL_THROUGH_STRONG"],
+      "metricCards": [
+        { "code": "bags", "label": "Bags sold", "valueText": "47 / 60", "helperText": "3 Limited Drops listed", "tone": "success" },
+        { "code": "sell_through", "label": "Sell-through", "valueText": "78.3%", "helperText": "Strong based on sold/listed bags", "tone": "success" },
+        { "code": "gmv", "label": "GMV", "valueText": "₹11,750", "helperText": "Webhook-confirmed captured order value", "tone": "success" },
+        { "code": "net", "label": "Net recovery", "valueText": "₹11,023", "helperText": "Estimated for pilot reporting", "tone": "success" },
+        { "code": "pickup", "label": "Pickup completion", "valueText": "91.1%", "helperText": "41 collected, 4 no-show", "tone": "success" },
+        { "code": "exceptions", "label": "Incidents/refunds", "valueText": "1 / ₹250", "helperText": "Incident count and refund/debit value", "tone": "warning" }
+      ],
+      "assumptions": [
+        "Net recovery is reporting guidance: GMV minus visible refunds/debits and captured provider fee/tax. It is not a payout instruction.",
+        "The 30-day zero-commission pilot is treated as commission-free unless a locked settlement says otherwise.",
+        "Repeat-buyer signals are counts only. Consumer names, phone numbers, emails, and pickup credentials are not included."
+      ],
+      "nextActions": [
+        "Repeat the best-performing pickup window and BAM Bag mix next week.",
+        "Wait for open pickup windows to close before treating pickup completion as final."
+      ]
+    },
+    "dropRows": [
+      {
+        "restaurantPk": "20000000-0000-0000-0000-300000000001",
+        "restaurantName": "Bawarchi",
+        "dropPk": "40000000-0000-0000-0000-000000000010",
+        "dropTitle": "Friday Biryani Drop",
+        "bagDisplayName": "Chef's BAM Bag",
+        "dropStatusCode": "COMPLETED",
+        "pickupStartAt": "2026-06-20T12:00:00.000Z",
+        "pickupEndAt": "2026-06-20T14:00:00.000Z",
+        "quantityListed": 20,
+        "quantitySold": 18,
+        "quantityCollected": 16,
+        "noShowCount": 2,
+        "openPickupOrderCount": 0,
+        "sellThroughBps": 9000,
+        "gmvPaise": 450000,
+        "estimatedNetRecoveryPaise": 423000,
+        "refundDebitPaise": 0,
+        "paymentFeePaise": 9000,
+        "paymentTaxPaise": 1620,
+        "incidentCount": 0,
+        "firstTimeBuyerCount": 7,
+        "repeatBuyerCount": 11,
+        "settlementRunPk": null,
+        "settlementStatusCode": null,
+        "latestOrderCreatedAt": "2026-06-20T11:30:00.000Z",
+        "updatedAt": "2026-06-20T14:05:00.000Z"
+      }
+    ],
+    "noteRows": [
+      {
+        "rowPk": "50000000-0000-0000-0000-000000000001",
+        "restaurantPk": "20000000-0000-0000-0000-300000000001",
+        "restaurantName": "Bawarchi",
+        "orderPk": "60000000-0000-0000-0000-000000000001",
+        "orderNumber": "GZ-2026-0042",
+        "dropPk": "40000000-0000-0000-0000-000000000010",
+        "noteTypeCode": "REFUND",
+        "severityCode": "LOW",
+        "statusCode": "RESOLVED",
+        "amountPaise": 25000,
+        "titleText": "Partial refund — late pickup",
+        "descriptionText": "Customer arrived after window; goodwill partial refund issued.",
+        "occurredAt": "2026-06-20T15:00:00.000Z"
+      }
+    ],
+    "partnerCopy": {
+      "title": "goZaika weekly partner report",
+      "periodLabel": "16/06/2026 - 22/06/2026",
+      "restaurantName": "Bawarchi",
+      "generatedAt": "2026-06-22T08:00:00.000Z",
+      "summaryLines": [
+        "47 of 60 BAM Bags sold across 3 Limited Drops.",
+        "Sell-through: 78.3%. GMV: ₹11,750.",
+        "Net recovery: ₹11,023 (pilot estimate).",
+        "Pickup: 41 collected, 4 no-show, 2 still open.",
+        "Exceptions: 1 incidents and ₹250 refunds/debits.",
+        "Buyer signal: 18 first-time and 29 repeat buyer signals."
+      ],
+      "assumptionLines": [
+        "Net recovery is reporting guidance: GMV minus visible refunds/debits and captured provider fee/tax. It is not a payout instruction.",
+        "The 30-day zero-commission pilot is treated as commission-free unless a locked settlement says otherwise.",
+        "Repeat-buyer signals are counts only. Consumer names, phone numbers, emails, and pickup credentials are not included."
+      ],
+      "nextActionLines": [
+        "Repeat the best-performing pickup window and BAM Bag mix next week.",
+        "Wait for open pickup windows to close before treating pickup completion as final."
+      ]
+    }
+  }
+}

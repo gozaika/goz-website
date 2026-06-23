@@ -2,17 +2,12 @@ import { formatBasisPoints, formatPaise } from "@gozaika/utils";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
-import { mapFinanceSettlementSummary } from "@/lib/finance";
 import {
-  buildRoiReport,
   dateInputValue,
-  mapRoiDrop,
-  mapRoiNote,
+  loadRoiReport,
   parseRoiPeriod,
   periodLabel,
   settlementBasisLabel,
-  type RoiDropDetailDbRow,
-  type RoiNoteDbRow,
 } from "@/lib/roi-report";
 import { loadActiveRestaurantsForProfile } from "@/lib/slice3";
 import { createClient } from "@/lib/supabase/server";
@@ -43,52 +38,11 @@ export default async function PortalReportsPage({
   const period = parseRoiPeriod(params);
   const supabase = await createClient();
 
-  const [{ data: dropData, error: dropError }, { data: noteData, error: noteError }, { data: settlementData, error: settlementError }] =
-    await Promise.all([
-      supabase
-        .from("api_restaurant_roi_drop_detail")
-        .select("*")
-        .eq("restaurant_fk", restaurant.restaurantPk)
-        .gte("pickup_start_at", period.periodStartAt)
-        .lt("pickup_start_at", period.periodEndAt)
-        .order("pickup_start_at", { ascending: false }),
-      supabase
-        .from("api_restaurant_roi_report_note")
-        .select("*")
-        .eq("restaurant_fk", restaurant.restaurantPk)
-        .gte("occurred_at", period.periodStartAt)
-        .lt("occurred_at", period.periodEndAt)
-        .order("occurred_at", { ascending: false }),
-      supabase
-        .from("api_restaurant_finance_settlement_summary")
-        .select("*")
-        .eq("restaurant_fk", restaurant.restaurantPk)
-        .gte("period_end_at", period.periodStartAt)
-        .lte("period_start_at", period.periodEndAt)
-        .limit(20),
-    ]);
-
-  if (dropError) throw new Error("Could not load ROI report drop metrics.");
-  if (noteError) throw new Error("Could not load ROI report notes.");
-  if (settlementError) throw new Error("Could not load settlement context for ROI report.");
-
-  const settlements = (settlementData ?? []).map(mapFinanceSettlementSummary).map((settlement) => ({
-    settlementRunPk: settlement.settlementRunPk,
-    restaurantPk: settlement.restaurantPk,
-    periodStartAt: settlement.periodStartAt,
-    periodEndAt: settlement.periodEndAt,
-    settlementStatusCode: settlement.settlementStatusCode,
-    netPayoutPaise: settlement.netPayoutPaise,
-    lockedAt: settlement.lockedAt,
-  }));
-  const report = buildRoiReport({
+  const report = await loadRoiReport(supabase, {
     restaurantPk: restaurant.restaurantPk,
     restaurantName: restaurant.restaurantName,
     periodStartAt: period.periodStartAt,
     periodEndAt: period.periodEndAt,
-    dropRows: ((dropData ?? []) as RoiDropDetailDbRow[]).map(mapRoiDrop),
-    noteRows: ((noteData ?? []) as RoiNoteDbRow[]).map(mapRoiNote),
-    settlements,
   });
 
   return (
