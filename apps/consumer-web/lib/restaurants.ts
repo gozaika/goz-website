@@ -1,4 +1,5 @@
 import type { DietaryCategoryCode, PublicDropCard, PublicRestaurantProfile } from "@gozaika/types";
+import { publicStorageUrl, STORAGE_BUCKETS } from "@gozaika/supabase";
 import { createClient } from "@/lib/supabase/server";
 import { loadPublicDrops } from "./drops";
 
@@ -15,7 +16,29 @@ type PublicRestaurantRow = {
   readonly story_markdown: string | null;
   readonly latitude: number | string | null;
   readonly longitude: number | string | null;
+  readonly hero_bucket_name: string | null;
+  readonly hero_object_path: string | null;
+  readonly hero_width_px: number | null;
+  readonly hero_height_px: number | null;
+  readonly hero_alt_text: string | null;
+  readonly logo_bucket_name: string | null;
+  readonly logo_object_path: string | null;
+  readonly logo_width_px: number | null;
+  readonly logo_height_px: number | null;
+  readonly logo_alt_text: string | null;
 };
+
+function mapImage(
+  bucket: string | null,
+  objectPath: string | null,
+  width: number | null,
+  height: number | null,
+  alt: string | null,
+): PublicRestaurantProfile["coverImage"] {
+  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!baseUrl || bucket !== STORAGE_BUCKETS.publicMedia || !objectPath) return null;
+  return { url: publicStorageUrl(baseUrl, bucket, objectPath), width, height, alt, blurhash: null };
+}
 
 const cuisineKeywords = [
   "Biryani",
@@ -67,6 +90,8 @@ function mapRestaurant(row: PublicRestaurantRow, drops: readonly PublicDropCard[
     pastDropCount: pastDrops.length,
     latitude: row.latitude != null ? Number(row.latitude) : null,
     longitude: row.longitude != null ? Number(row.longitude) : null,
+    coverImage: mapImage(row.hero_bucket_name, row.hero_object_path, row.hero_width_px, row.hero_height_px, row.hero_alt_text),
+    logoImage: mapImage(row.logo_bucket_name, row.logo_object_path, row.logo_width_px, row.logo_height_px, row.logo_alt_text),
     activeDrops,
     pastDrops,
   };
@@ -107,6 +132,16 @@ export async function loadPublicRestaurants(): Promise<PublicRestaurantProfile[]
           story_markdown: null,
           latitude: drop.latitude,
           longitude: drop.longitude,
+          hero_bucket_name: null,
+          hero_object_path: null,
+          hero_width_px: null,
+          hero_height_px: null,
+          hero_alt_text: null,
+          logo_bucket_name: null,
+          logo_object_path: null,
+          logo_width_px: null,
+          logo_height_px: null,
+          logo_alt_text: null,
         },
         drops,
         generatedAtMs,

@@ -7,6 +7,7 @@ import { Clock3, Pause, Play, Save, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState } from "react";
 import type { RestaurantOpsGuardrails } from "@/lib/slice3";
+import { ProductMediaUploader } from "../../_components/product-media-uploader";
 
 type Feedback = {
   readonly kind: "success" | "error";
@@ -49,12 +50,14 @@ export function DropPublishingForm({
   drops,
   launchDrops,
   restaurantName,
+  restaurantPk,
   guardrails,
 }: {
   readonly templates: readonly PortalBagTemplate[];
   readonly drops: readonly PortalDrop[];
   readonly launchDrops: readonly PublicDropCard[];
   readonly restaurantName: string;
+  readonly restaurantPk: string;
   readonly guardrails: RestaurantOpsGuardrails;
 }) {
   const router = useRouter();
@@ -294,11 +297,21 @@ export function DropPublishingForm({
         ) : null}
 
         {successLaunchDrop ? (
-          <LaunchCommsPanel
-            title="Published drop sharing"
-            publicUrl={createPublicDropUrl(successLaunchDrop.dropPk)}
-            alertText={generateManualDropAlertText(successLaunchDrop)}
-          />
+          <div className="grid gap-4">
+            <LaunchCommsPanel
+              title="Published drop sharing"
+              publicUrl={createPublicDropUrl(successLaunchDrop.dropPk)}
+              alertText={generateManualDropAlertText(successLaunchDrop)}
+            />
+            <ProductMediaUploader
+              restaurantPk={restaurantPk}
+              dropPk={successLaunchDrop.dropPk}
+              targetCode="DROP_PRIMARY"
+              label="Drop image"
+              guidance="Optional. A verified 4:3 rendition overrides the reusable template image for this drop only. Avoid showing exact contents unless they are guaranteed."
+              initialMedia={successLaunchDrop.image ?? null}
+            />
+          </div>
         ) : null}
 
         <label className="grid gap-1 text-sm font-medium">
@@ -419,6 +432,19 @@ export function DropPublishingForm({
                     Close
                   </button>
                 </div>
+                <details className="mt-3 rounded-md border border-black/10 p-2">
+                  <summary className="cursor-pointer text-xs font-semibold text-[#1A5C38]">Manage drop image</summary>
+                  <div className="mt-2">
+                    <ProductMediaUploader
+                      restaurantPk={restaurantPk}
+                      dropPk={drop.dropPk}
+                      targetCode="DROP_PRIMARY"
+                      label="Drop image"
+                      guidance="Optional 4:3 public image for this release. Replacement uses a new immutable URL."
+                      initialMedia={launchDropsByPk.get(drop.dropPk)?.image ?? null}
+                    />
+                  </div>
+                </details>
                 {launchDropsByPk.has(drop.dropPk) ? (
                   <div className="mt-3">
                     {(() => {

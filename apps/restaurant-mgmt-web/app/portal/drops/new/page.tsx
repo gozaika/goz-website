@@ -42,7 +42,7 @@ export default async function NewDropPage() {
           Publish scheduled or active inventory to consumer discovery. Holds are visible for launch support, but they are not paid orders yet.
         </p>
         <div className="mt-6">
-          <DropPublishingForm templates={templates} drops={drops} launchDrops={launchDrops} restaurantName={restaurant.restaurantName} guardrails={guardrails} />
+          <DropPublishingForm templates={templates} drops={drops} launchDrops={launchDrops} restaurantPk={restaurant.restaurantPk} restaurantName={restaurant.restaurantName} guardrails={guardrails} />
         </div>
       </section>
     </PortalChrome>

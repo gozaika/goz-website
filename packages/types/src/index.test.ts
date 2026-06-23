@@ -8,6 +8,7 @@ import {
   restaurantComplianceUpdateSchema,
   restaurantDocumentStatusCodes,
   restaurantDocumentUploadRequestSchema,
+  productMediaUploadRequestSchema,
   restaurantStatusCodes,
   orderStatusCodes,
   notificationRetryRequestSchema,
@@ -280,6 +281,46 @@ describe("API schemas", () => {
         fileName: "license.exe",
         mimeType: "application/x-msdownload",
         sizeBytes: 100,
+      }).success,
+    ).toBe(false);
+  });
+
+  it("enforces product-media target ownership shape and upload bounds", () => {
+    const restaurantPk = "11111111-1111-4111-8111-111111111111";
+    const dropPk = "22222222-2222-4222-8222-222222222222";
+
+    expect(
+      productMediaUploadRequestSchema.safeParse({
+        restaurantPk,
+        targetCode: "DROP_PRIMARY",
+        dropPk,
+        fileName: "chef-drop.jpg",
+        mimeType: "image/jpeg",
+        sizeBytes: 1_000_000,
+        altText: "A sealed BAM Bag on the restaurant pickup counter",
+      }).success,
+    ).toBe(true);
+
+    expect(
+      productMediaUploadRequestSchema.safeParse({
+        restaurantPk,
+        targetCode: "DROP_PRIMARY",
+        fileName: "missing-drop.jpg",
+        mimeType: "image/jpeg",
+        sizeBytes: 100,
+        altText: "Missing ownership target",
+      }).success,
+    ).toBe(false);
+
+    expect(
+      productMediaUploadRequestSchema.safeParse({
+        restaurantPk,
+        targetCode: "RESTAURANT_HERO",
+        dropPk,
+        fileName: "wrong-target.png",
+        mimeType: "image/png",
+        sizeBytes: 9 * 1024 * 1024,
+        altText: "Restaurant dining room",
       }).success,
     ).toBe(false);
   });

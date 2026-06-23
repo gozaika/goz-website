@@ -4,6 +4,7 @@ import { publicStorageUrl, STORAGE_BUCKETS } from "./index";
 describe("storage helpers", () => {
   it("keeps private document storage separate from public media", () => {
     expect(STORAGE_BUCKETS.privateDocuments).not.toBe(STORAGE_BUCKETS.publicMedia);
+    expect(STORAGE_BUCKETS.mediaIngest).not.toBe(STORAGE_BUCKETS.publicMedia);
   });
 
   it("encodes public object paths", () => {

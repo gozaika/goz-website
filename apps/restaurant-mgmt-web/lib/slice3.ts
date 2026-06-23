@@ -1,4 +1,5 @@
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
+import { publicStorageUrl, STORAGE_BUCKETS } from "@gozaika/supabase";
 import type { PortalBagTemplate, PortalDrop, PublicDropCard } from "@gozaika/types";
 
 export type ActivePortalRestaurant = {
@@ -132,9 +133,25 @@ type PublicDropRow = {
   readonly min_menu_value_paise: number | string | null;
   readonly allergen_summary_text: string | null;
   readonly allergen_codes: readonly string[] | null;
+  readonly image_bucket_name: string | null;
+  readonly image_object_path: string | null;
+  readonly image_width_px: number | null;
+  readonly image_height_px: number | null;
+  readonly image_alt_text: string | null;
 };
 
 function mapPublicDrop(row: PublicDropRow): PublicDropCard {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const image =
+    supabaseUrl && row.image_bucket_name === STORAGE_BUCKETS.publicMedia && row.image_object_path
+      ? {
+          url: publicStorageUrl(supabaseUrl, row.image_bucket_name, row.image_object_path),
+          width: row.image_width_px,
+          height: row.image_height_px,
+          alt: row.image_alt_text,
+          blurhash: null,
+        }
+      : null;
   return {
     dropPk: row.drop_drop_pk,
     dropTitle: row.drop_title,
@@ -164,6 +181,7 @@ function mapPublicDrop(row: PublicDropRow): PublicDropCard {
     quantityTotal: row.quantity_total,
     quantityAvailable: row.computed_quantity_available,
     statusCode: row.drop_status_code,
+    image,
   };
 }
 

@@ -4,6 +4,8 @@ import { Button } from "@gozaika/ui";
 import { safeErrorMessage } from "@gozaika/utils";
 import { Mail, MapPin, Phone, Store, UserRound } from "lucide-react";
 import { useState } from "react";
+import type { PublicMediaAsset } from "@gozaika/types";
+import { ProductMediaUploader } from "../_components/product-media-uploader";
 
 export interface PortalProfileState {
   readonly restaurantPk: string;
@@ -16,6 +18,8 @@ export interface PortalProfileState {
   readonly addressLandmark: string | null;
   readonly latitude: number | null;
   readonly longitude: number | null;
+  readonly heroMedia: PublicMediaAsset | null;
+  readonly logoMedia: PublicMediaAsset | null;
 }
 
 export function PortalProfileClient({ initialProfile }: { readonly initialProfile: PortalProfileState }) {
@@ -134,6 +138,23 @@ export function PortalProfileClient({ initialProfile }: { readonly initialProfil
           {saving ? "Saving..." : "Save profile"}
         </Button>
       </div>
+
+      <section className="grid gap-5 lg:grid-cols-2">
+        <ProductMediaUploader
+          restaurantPk={initialProfile.restaurantPk}
+          targetCode="RESTAURANT_HERO"
+          label="Restaurant cover image"
+          guidance="Shown on restaurant discovery and profile surfaces. Landscape images work best; the verified rendition is cropped to 16:9."
+          initialMedia={initialProfile.heroMedia}
+        />
+        <ProductMediaUploader
+          restaurantPk={initialProfile.restaurantPk}
+          targetCode="RESTAURANT_LOGO"
+          label="Restaurant logo"
+          guidance="Use the authentic restaurant mark on a transparent or simple background. It is fitted inside a square without cropping."
+          initialMedia={initialProfile.logoMedia}
+        />
+      </section>
 
       {/* Address & Location */}
       <section className="rounded-lg border border-black/10 bg-white p-5">

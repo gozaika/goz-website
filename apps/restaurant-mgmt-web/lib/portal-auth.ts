@@ -2,6 +2,7 @@ import { createServiceRoleSupabaseClient, STORAGE_BUCKETS } from "@gozaika/supab
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { canRoleManageProductMedia } from "./product-media-policy";
 
 export interface PortalActor {
   readonly authUserId: string;
@@ -60,6 +61,26 @@ export async function assertRestaurantAccess(restaurantPk: string, profilePk: st
 
   return Boolean(data);
 }
+
+export async function assertRestaurantMediaAccess(
+  restaurantPk: string,
+  profilePk: string,
+  targetCode: "RESTAURANT_HERO" | "RESTAURANT_LOGO" | "DROP_PRIMARY",
+): Promise<boolean> {
+  const service = createServiceRoleSupabaseClient();
+  const { data } = await service
+    .from("restaurant_team_membership")
+    .select("restaurant_team_role(role_code)")
+    .eq("restaurant_fk", restaurantPk)
+    .eq("iam_profile_fk", profilePk)
+    .eq("is_active", true)
+    .limit(1)
+    .maybeSingle();
+  const relation = data?.restaurant_team_role;
+  const roleCode = (Array.isArray(relation) ? relation[0] : relation)?.role_code ?? null;
+  return canRoleManageProductMedia(roleCode, targetCode);
+}
+
 
 export function createPrivateDocumentPath(restaurantPk: string, documentTypeCode: string, fileName: string): string {
   const extension = fileName.includes(".") ? fileName.split(".").pop()?.toLowerCase() : "bin";

@@ -972,6 +972,52 @@ export const restaurantDocumentUploadRequestSchema = z.object({
   expiresAt: z.preprocess(optionalString, z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()),
 });
 
+export const productMediaTargetCodes = ["RESTAURANT_HERO", "RESTAURANT_LOGO", "DROP_PRIMARY"] as const;
+export type ProductMediaTargetCode = (typeof productMediaTargetCodes)[number];
+
+export const productMediaUploadRequestSchema = z
+  .object({
+    restaurantPk: uuidSchema,
+    targetCode: z.enum(productMediaTargetCodes),
+    dropPk: uuidSchema.optional().nullable(),
+    fileName: z.string().trim().min(1).max(180),
+    mimeType: z.enum(["image/jpeg", "image/png", "image/webp"]),
+    sizeBytes: z.number().int().min(1).max(8 * 1024 * 1024),
+    altText: z.string().trim().min(1).max(240),
+  })
+  .refine((value) => value.targetCode !== "DROP_PRIMARY" || Boolean(value.dropPk), {
+    message: "Drop primary media requires a drop identifier.",
+    path: ["dropPk"],
+  })
+  .refine((value) => value.targetCode === "DROP_PRIMARY" || value.dropPk == null, {
+    message: "Restaurant media cannot include a drop identifier.",
+    path: ["dropPk"],
+  });
+
+export const productMediaCompleteRequestSchema = z.object({
+  uploadPk: uuidSchema,
+});
+
+export const productMediaUploadTicketSchema = z.object({
+  uploadPk: uuidSchema,
+  bucket: z.literal("media-ingest"),
+  path: z.string().min(1),
+  token: z.string().min(1),
+  expiresAt: z.string().datetime(),
+});
+
+export const productMediaResultSchema = z.object({
+  storageObjectPk: uuidSchema,
+  targetCode: z.enum(productMediaTargetCodes),
+  media: z.object({
+    url: z.string().url(),
+    width: z.number().int().positive(),
+    height: z.number().int().positive(),
+    alt: z.string().min(1).max(240),
+    blurhash: z.null(),
+  }),
+});
+
 export const adminDocumentReviewSchema = z
   .object({
     statusCode: z.enum(["APPROVED", "REJECTED"]),
@@ -1067,6 +1113,14 @@ export interface SiteRoute {
   readonly indexable: boolean;
 }
 
+export interface PublicMediaAsset {
+  readonly url: string;
+  readonly width: number | null;
+  readonly height: number | null;
+  readonly alt: string | null;
+  readonly blurhash: string | null;
+}
+
 export interface PublicDropCard {
   readonly dropPk: string;
   readonly dropTitle: string;
@@ -1096,6 +1150,7 @@ export interface PublicDropCard {
   readonly quantityTotal: number;
   readonly quantityAvailable: number;
   readonly statusCode: DropStatusCode;
+  readonly image?: PublicMediaAsset | null;
 }
 
 export interface PublicRestaurantProfile {
@@ -1117,6 +1172,8 @@ export interface PublicRestaurantProfile {
   readonly pastDropCount: number;
   readonly latitude: number | null;
   readonly longitude: number | null;
+  readonly coverImage?: PublicMediaAsset | null;
+  readonly logoImage?: PublicMediaAsset | null;
   readonly activeDrops: readonly PublicDropCard[];
   readonly pastDrops: readonly PublicDropCard[];
 }

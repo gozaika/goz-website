@@ -1,4 +1,5 @@
 import type { PublicDropCard } from "@gozaika/types";
+import { publicStorageUrl, STORAGE_BUCKETS } from "@gozaika/supabase";
 import { createClient } from "@/lib/supabase/server";
 
 type PublicDropRow = {
@@ -28,7 +29,24 @@ type PublicDropRow = {
   readonly min_menu_value_paise: number | string | null;
   readonly allergen_summary_text: string | null;
   readonly allergen_codes: readonly string[] | null;
+  readonly image_bucket_name: string | null;
+  readonly image_object_path: string | null;
+  readonly image_width_px: number | null;
+  readonly image_height_px: number | null;
+  readonly image_alt_text: string | null;
 };
+
+function mapImage(row: PublicDropRow): PublicDropCard["image"] {
+  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!baseUrl || row.image_bucket_name !== STORAGE_BUCKETS.publicMedia || !row.image_object_path) return null;
+  return {
+    url: publicStorageUrl(baseUrl, row.image_bucket_name, row.image_object_path),
+    width: row.image_width_px,
+    height: row.image_height_px,
+    alt: row.image_alt_text,
+    blurhash: null,
+  };
+}
 
 function mapDrop(row: PublicDropRow): PublicDropCard {
   return {
@@ -60,6 +78,7 @@ function mapDrop(row: PublicDropRow): PublicDropCard {
     quantityTotal: row.quantity_total,
     quantityAvailable: row.computed_quantity_available,
     statusCode: row.drop_status_code,
+    image: mapImage(row),
   };
 }
 

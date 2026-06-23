@@ -89,6 +89,7 @@ export function createServiceRoleSupabaseClient(): SupabaseClient {
 
 export const STORAGE_BUCKETS = {
   publicMedia: "public-media",
+  mediaIngest: "media-ingest",
   privateDocuments: "private-documents",
   exports: "exports",
 } as const;
