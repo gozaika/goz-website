@@ -16,21 +16,24 @@ established conventions below and the authoritative docs; never re-derive from m
 Everything below is on `main`, gate-green, live-proven. Confirm with
 `git log --oneline -20` and `node scripts/mobile-ci.mjs` (expect 7/7).
 
-- **Done + merged:** foundation 0–6; **Slice 7** counter (signed off); **Slice 8** customer discovery; **Slice 9** customer payment (gated simulator; real Razorpay stubbed); **Slice 10 orders**; restaurant **12** profile / **13** drops-core / **14** dashboard / **15** finance-read cores.
+- **Done + merged:** foundation 0–6; **Slice 7** counter (signed off); **Slice 8** customer discovery; **Slice 9** customer payment (gated simulator; real Razorpay stubbed); **Slice 10 orders**; **Slice 11** Passport / Flavour-Diversity / Swaad Club (live-proven); **Slice 15** restaurant finance-read **+ ROI report** (live-proven); restaurant **12** profile / **13** drops-core / **14** dashboard cores.
+- **Slice 11 no-drift note:** web account routes + mobile BFF share `consumer-web/lib/passport.ts` + `lib/discovery-profile.ts`. Screens `account/{passport,discovery}.tsx` + `swaad-club.tsx` (coming-soon only — **no native billing**). Smoke: `node scripts/smoke/slice11-passport-smoke.mjs` (BFF on :3003).
+- **Slice 15 no-drift note:** web portal reports page + mobile BFF share `restaurant-mgmt-web/lib/roi-report.ts#loadRoiReport`. Screen `restaurant-mobile/app/reports.tsx` (read-only; partner-safe Share, counts only). Smoke: `node scripts/smoke/slice15-roi-smoke.mjs` (BFF on :3001).
+- **Product media:** the hero/logo/drop-image pipeline is **adopted into `main`** (single-agent ownership now). See `docs/runbooks/product-media-rollout.md`. Gate #5 (verify a real uploaded drop image renders through discovery + falls back on null/failed) is still pending.
 - **Customer app** (consumer-mobile): discovery → claim → simulated pay → order → orders list/detail all work on-device.
 - **Restaurant app** (restaurant-mobile): dashboard, counter, drops, profile, finance all work on-device (full OWNER E2E passed).
 
 ## Next-up order (build one vertical at a time, commit+push each)
-1. **Slice 11** — Passport / discovery profile / Swaad Club (web APIs `consumer-web/app/api/account/*` + types `ZaykaPassportPayload`/`DiscoveryProfile` exist; mobile screens `consumer-mobile/app/(tabs)/account/{passport,discovery}.tsx`, `app/swaad-club.tsx` are placeholders). **Extract a shared `buildPassportPayload` lib so web + mobile don't drift.**
-2. **Slice 15 ROI report** — reuse `consumer/restaurant lib/roi-report.ts` (`buildRoiReport`).
+1. ~~**Slice 11** — Passport / discovery profile / Swaad Club.~~ ✅ Done 2026-06-22 (shared `buildPassportPayload`/`buildDiscoveryProfile` lib; live-proven).
+2. ~~**Slice 15 ROI report** — reuse `lib/roi-report.ts`.~~ ✅ Done 2026-06-22 (shared `loadRoiReport`; live-proven; invoice download still remainder).
 3. **Slice 13 drop edit** (pause/cancel/activate) + **Slice 14 reviews/ops-history**.
 4. **Slice 10 reviews + consent-settings**.
 5. **Slice 12 onboarding wizard** (the new-restaurant flow).
 6. **Slice 16** push/deep-links/offline → **17** a11y/security/perf gate → **18** release prep.
-7. **Product media gate #5** (owner asked to keep product-media work last): verify a real uploaded drop image flows through discovery into the consumer app and still falls back on null/failed media.
+7. **Product media gate #5**: verify a real uploaded drop image flows through discovery into the consumer app and still falls back on null/failed media.
 
 ## ⏸ Review-gated — do NOT build without the owner
-- **Slice 12 document upload** — writes the private-documents storage bucket; security-sensitive (see `docs/runbooks/product-media-rollout.md` for the pipeline the other agent built).
+- **Slice 12 document upload** — writes the private-documents storage bucket; security-sensitive (the product-media pipeline in `docs/runbooks/product-media-rollout.md` is the reference pattern, now in `main`).
 - **Real Razorpay RN checkout** — needs the owner's India keys (~1 month). It's stubbed behind the same client interface; dropping in keys + flipping `PAYMENTS_SIMULATOR_ENABLED=false` activates it.
 
 ## Conventions (follow exactly — this is how we avoid drift)
@@ -39,9 +42,24 @@ Everything below is on `main`, gate-green, live-proven. Confirm with
 - **Reuse canonical RPCs/loaders** (don't reinvent): e.g. `api_convert_paid_hold_to_order`, `loadPortalDrops`, `api_create_inventory_hold`, `api_consumer_order_summary`. Mirror the existing web handler's validation.
 - **Gate every change:** `node scripts/mobile-ci.mjs` must stay **7/7** (typecheck all + vitest + expo export both apps + drift scans: no Orbitwell, no banned copy [`leftover|\bstale\b|\bcheap\b|clearance|…`], no server secrets in mobile/Maestro files).
 - **Live-prove** each vertical with a quick BFF smoke (mint a demo token, hit the endpoints) — patterns in `scripts/smoke/slice*-smoke.mjs` and `scripts/functional/`.
-- **Commit discipline:** stage ONLY your slice's files (another agent is actively building **product media** — `apps/restaurant-mgmt-web/lib/product-media*`, `app/api/portal/media/`, `supabase/migrations/20260622000000_product_media_pipeline.sql`; leave those untouched). End commit messages with the Co-Authored-By trailer. Update the slice tracker in the plan in the same commit. We are NOT live → merging to `main` + pushing per slice is fine, EXCEPT the review-gated items above.
+- **Commit discipline:** single-agent ownership of the whole monorepo now (the parallel product-media track has been merged into `main`). Commit per vertical with a focused file set + the Co-Authored-By trailer, and update the slice tracker in the plan in the same commit. We are NOT live → merging to `main` + pushing per slice is fine, EXCEPT the review-gated items above.
 - **Demo identities (test_otp):** consumers `+9198765100xx`/`1000xx` (Priya = …01/100001); restaurant OWNER `+919876520001`/`200001`, role staff `+9198765300xx`/`3000xx` on Bawarchi (`20000000-0000-0000-0000-300000000001`).
-- **Local env quirks:** local Supabase DB is behind its migration tracker (role-scope `20260620` + finance-view `20260527` were applied out-of-band); `supabase db reset` + `npm run db:seed:functional` gives a clean fully-migrated DB. Run the BFF with one matching `PICKUP_CREDENTIAL_SECRET` (= the seed's) for counter verify.
+- **Local env (clean as of 2026-06-22):** the local DB was fully reset to a clean migrated state. Full reseed recipe after any `supabase db reset`: apply `supabase/seed_demo/`{`demo_seed.sql`,`demo_seed_part2_catalog_drops.sql`,`demo_seed_part3_orders_reviews.sql`,`demo_seed_part4_functions.sql`,`demo_test_otp_linkage.sql`,`demo_prepare.sql`} (via `docker exec -i <supabase_db_*> psql -U postgres -d postgres`), then `node scripts/functional/seed.mjs` (slice13 + slice7, both green now). Local Supabase keys come from `npx supabase status -o env`; run the BFF with `PICKUP_CREDENTIAL_SECRET` matching the counter seed for verify. Note: `.env.local` at repo root points at **cloud** — for local smokes, override `NEXT_PUBLIC_SUPABASE_URL`/`SUPABASE_URL`/keys to the local values.
+
+## Headless / overnight autonomous mode (`scripts/autorun-overnight.ps1`)
+When invoked unattended (no human to approve or answer), follow everything above PLUS:
+- **Relay convention (prevents redo):** after each committed vertical, update this file's
+  **Current state** + **Next-up** so the *next* fresh run continues, never repeats. The
+  git history + this file are the only memory across runs.
+- **Print a hard-stop sentinel and end** (the loop watches for it) when any of these hit —
+  emit exactly `AUTORUN_HALT: <reason>` and stop:
+  - you reach a **review-gated** item (Slice 12 document upload, real Razorpay) — do NOT build it;
+  - the gate (`node scripts/mobile-ci.mjs`) fails and you can't fix it cleanly;
+  - the only remaining work would touch another agent's **product-media** files;
+  - **all buildable slices are done**.
+- **Never exit with an uncommitted tree:** either finish + commit the vertical, or
+  `git restore`/`git clean` your partial edits before halting. A half-built vertical left
+  on disk is the one thing that can cause drift on the next run.
 
 ## Verify / run
 - Gate: `node scripts/mobile-ci.mjs`
