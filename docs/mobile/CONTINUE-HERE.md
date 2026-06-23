@@ -19,6 +19,7 @@ Everything below is on `main`, gate-green, live-proven. Confirm with
 - **Done + merged:** foundation 0–6; **Slice 7** counter (signed off); **Slice 8** customer discovery; **Slice 9** customer payment (gated simulator; real Razorpay stubbed); **Slice 10 orders**; **Slice 11** Passport / Flavour-Diversity / Swaad Club (live-proven); **Slice 15** restaurant finance-read **+ ROI report** (live-proven); restaurant **12** profile / **13** drops-core / **14** dashboard cores.
 - **Slice 11 no-drift note:** web account routes + mobile BFF share `consumer-web/lib/passport.ts` + `lib/discovery-profile.ts`. Screens `account/{passport,discovery}.tsx` + `swaad-club.tsx` (coming-soon only — **no native billing**). Smoke: `node scripts/smoke/slice11-passport-smoke.mjs` (BFF on :3003).
 - **Slice 15 no-drift note:** web portal reports page + mobile BFF share `restaurant-mgmt-web/lib/roi-report.ts#loadRoiReport`. Screen `restaurant-mobile/app/reports.tsx` (read-only; partner-safe Share, counts only). Smoke: `node scripts/smoke/slice15-roi-smoke.mjs` (BFF on :3001).
+- **Slice 10 consent:** DPDP consent settings live — shared `consumer-web/lib/consent.ts#loadConsentSettings`, BFF `/api/mobile/v1/account/consent`, screen `account/consent.tsx` (all 6 purposes, operational locked, erasure link-out only). Decisions in [[project-slice10-consent-decisions]]. Smoke: `node scripts/smoke/slice10-consent-smoke.mjs`. Remainder of Slice 10: profile-edit, referral display, reviews.
 - **Product media:** the hero/logo/drop-image pipeline is **adopted into `main`** (single-agent ownership now). See `docs/runbooks/product-media-rollout.md`. Gate #5 (verify a real uploaded drop image renders through discovery + falls back on null/failed) is still pending.
 - **Customer app** (consumer-mobile): discovery → claim → simulated pay → order → orders list/detail all work on-device.
 - **Restaurant app** (restaurant-mobile): dashboard, counter, drops, profile, finance all work on-device (full OWNER E2E passed).
@@ -27,7 +28,7 @@ Everything below is on `main`, gate-green, live-proven. Confirm with
 1. ~~**Slice 11** — Passport / discovery profile / Swaad Club.~~ ✅ Done 2026-06-22 (shared `buildPassportPayload`/`buildDiscoveryProfile` lib; live-proven).
 2. ~~**Slice 15 ROI report** — reuse `lib/roi-report.ts`.~~ ✅ Done 2026-06-22 (shared `loadRoiReport`; live-proven; invoice download still remainder).
 3. **Slice 13 drop edit** (pause/cancel/activate) + **Slice 14 reviews/ops-history**.
-4. **Slice 10 reviews + consent-settings**.
+4. **Slice 10** — ~~consent-settings~~ ✅ Done 2026-06-23. Remainder: reviews submission/status + profile-edit/referral display.
 5. **Slice 12 onboarding wizard** (the new-restaurant flow).
 6. **Slice 16** push/deep-links/offline → **17** a11y/security/perf gate → **18** release prep.
 7. **Product media gate #5**: verify a real uploaded drop image flows through discovery into the consumer app and still falls back on null/failed media.
