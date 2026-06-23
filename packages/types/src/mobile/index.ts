@@ -15,3 +15,4 @@ export * from "./orders";
 export * from "./passport";
 export * from "./reports";
 export * from "./consent";
+export * from "./documents";

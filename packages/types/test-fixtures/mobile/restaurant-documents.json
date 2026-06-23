@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "requestId": "55555555-5555-5555-5555-555555555555",
+  "serverTime": "2026-06-23T08:00:00.000Z",
+  "data": {
+    "documents": [
+      { "documentPk": "70000000-0000-0000-0000-0000000000e1", "documentTypeCode": "FSSAI_LICENSE", "documentTypeName": "FSSAI License", "statusCode": "APPROVED", "documentNumber": "12345678901234", "issuedAt": "2025-04-01", "expiresAt": "2027-03-31", "rejectionReason": null, "originalFilename": "fssai-license.pdf", "mimeType": "application/pdf", "uploadedAt": "2026-06-01T10:00:00.000Z" },
+      { "documentPk": "70000000-0000-0000-0000-0000000000e2", "documentTypeCode": "GST_CERTIFICATE", "documentTypeName": "GST Certificate", "statusCode": "PENDING_REVIEW", "documentNumber": "36ABCDE1234F1Z5", "issuedAt": null, "expiresAt": null, "rejectionReason": null, "originalFilename": "gst-certificate.pdf", "mimeType": "application/pdf", "uploadedAt": "2026-06-20T09:30:00.000Z" },
+      { "documentPk": "70000000-0000-0000-0000-0000000000e3", "documentTypeCode": "BANK_CANCELLED_CHEQUE", "documentTypeName": "Cancelled Cheque", "statusCode": "REJECTED", "documentNumber": null, "issuedAt": null, "expiresAt": null, "rejectionReason": "Image too blurry to read the account number.", "originalFilename": "cheque.jpg", "mimeType": "image/jpeg", "uploadedAt": "2026-06-18T14:00:00.000Z" }
+    ]
+  }
+}

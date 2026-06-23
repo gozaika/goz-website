@@ -57,7 +57,7 @@ Use `npm.cmd`/`npx.cmd` in this Windows PowerShell environment when script execu
 | Mobile Slice 9 | Customer claim, Razorpay and pickup proof | 3,6,8 | Core built (claim->simulated checkout->order, gated simulator); real Razorpay stubbed (keys ~1mo); pickup-proof display paused for review |
 | Mobile Slice 10 | Customer account, orders, reviews and consent settings | 6,9 | Orders + **DPDP consent settings** built (live-proven; all 6 purposes, required-locked, erasure link-out); profile-edit + reviews remainder |
 | Mobile Slice 11 | Customer Passport, discovery profile and Swaad Club | 8,10 | Done (live-proven) |
-| Mobile Slice 12 | Restaurant onboarding, compliance and profile | 4,6 | Profile vertical built (read + basics/location/story edit, geo-options); onboarding + compliance/document upload remainder |
+| Mobile Slice 12 | Restaurant onboarding, compliance and profile | 4,6 | Profile + **compliance document upload** built (private bucket, signed upload/download, manageCompliance, live-proven); onboarding wizard remainder |
 | Mobile Slice 13 | Restaurant templates and Limited Drops | 4,6,12 | Core built (templates/drops read + publish drop); template authoring + drop edit remainder |
 | Mobile Slice 14 | Restaurant dashboard, reviews and operational history | 7,13 | Dashboard built (role-shaped FULL/QUEUE_ONLY/SUMMARY); reviews + ops history remainder |
 | Mobile Slice 15 | Restaurant finance and ROI reports | 4,6 | Finance settlements + **ROI report** built (role-gated viewFinance/viewReports, partner-safe share, live-proven); invoice download remainder |
@@ -417,6 +417,8 @@ Branch: `mobile/slice6-native-auth` (off `main`).
 **Smoke-test scenarios and cases:** New/resumed/completed onboarding; required validation; upload success/type/size/expired URL/retry; rejected/expired document; location denied/manual; cross-restaurant document denial; role restrictions; suspended restaurant; tablet layout/rotation.
 
 **Update this implementation plan:** Record task transition rules, document limits/bucket/path/signing, role policy, location fields and test fixtures. Include cleanup for abandoned uploads and clean-checkout reproduction.
+
+**Status — Compliance document upload Done (2026-06-23, live-proven; owner-approved off the review gate). Onboarding wizard remainder.** Approved security posture: gated by `manageCompliance` (OWNER/ADMIN); reads tenant-scoped via the role wrapper; document detail enforces `restaurant_fk === restaurantPk` (cross-tenant denied); non-public `private-documents` bucket; short-lived signed upload + 5-min signed download; **no local cache** (open-on-demand). BFF `app/api/mobile/v1/restaurant/documents` (GET metadata list, POST signed-upload ticket → PENDING_REVIEW) + `[documentId]/signed-url`. Mirrors the web `documents/sign-upload` + `[id]/signed-url`; reuses `createPrivateDocumentPath`/`privateDocumentBucket`. Contract `packages/types/src/mobile/documents.ts` (reuses `restaurantDocumentUploadRequestSchema`; list never embeds bytes/URLs) + fixture + test. Screen `restaurant-mobile/app/compliance.tsx` (7 doc types, status badge, expo-document-picker → uploadToSignedUrl, replace = new version for review, signed-URL view). Admin moderation stays on the existing web admin queue. Gate 7/7; live smoke `scripts/smoke/slice12-documents-smoke.mjs` 7/7 (sign→upload→list PENDING_REVIEW→signed download fetchable; bogus→404; PICKUP_STAFF→403 ROLE_DENIED; unauth→401). **Deferred:** the resumable onboarding wizard + location pin.
 
 ### Mobile Slice 13 — Restaurant templates and Limited Drops
 
