@@ -74,7 +74,7 @@ export function ReviewSubmitCard({
       <p className="text-xs font-bold uppercase tracking-wide text-[#D4A017]">How was it?</p>
       <h2 className="mt-1 text-base font-bold text-[#2D2D2D]">Rate your BAM Bag from {restaurantName}</h2>
       <p className="mt-1 text-xs text-[#2D2D2D]/60">
-        Only verified BAM Bag orders can leave reviews. Your name will be masked (e.g. "Priya K.").
+        Only verified BAM Bag orders can leave reviews. Your name will be masked (e.g. &ldquo;Priya K.&rdquo;).
       </p>
 
       {/* Star selector */}

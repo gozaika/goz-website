@@ -2,9 +2,8 @@
 
 import { EmptyState, RestaurantCard } from "@gozaika/ui";
 import type { PublicRestaurantProfile } from "@gozaika/types";
-import { ratingLabel } from "@gozaika/utils";
 import { Filter, Map, LayoutGrid, Search, Star, X } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 
 // Simple map view — uses Google Maps Embed API; no npm package required
 function MapView({
@@ -14,7 +13,8 @@ function MapView({
   readonly restaurants: readonly PublicRestaurantProfile[];
   readonly onClose: () => void;
 }) {
-  const now = Date.now();
+  // Snapshot the time once at mount — calling Date.now() during render is impure.
+  const [now] = useState(() => Date.now());
   const twoHoursMs = 2 * 60 * 60 * 1000;
 
   // Restaurants with coordinates
@@ -33,15 +33,6 @@ function MapView({
   const centerLat = 17.385;
   const centerLng = 78.4867;
   const apiKey = typeof window !== "undefined" ? (window as Window & { NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?: string }).NEXT_PUBLIC_GOOGLE_MAPS_API_KEY : "";
-
-  // Build markers string for embed
-  const markerParams = located
-    .slice(0, 20)
-    .map((r) => {
-      const color = pinColor(r);
-      return `markers=color:${color}%7C${r.latitude},${r.longitude}`;
-    })
-    .join("&");
 
   const embedSrc = apiKey
     ? `https://www.google.com/maps/embed/v1/view?key=${apiKey}&center=${centerLat},${centerLng}&zoom=12`

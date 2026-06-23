@@ -1,6 +1,6 @@
 "use client";
 
-import { AllergenChips, DietaryBadge, DropCard } from "@gozaika/ui";
+import { DietaryBadge, DropCard } from "@gozaika/ui";
 import type { PublicRestaurantProfile, PublicReview, ReviewsPayload } from "@gozaika/types";
 import { formatCountdown, formatPaise, ratingLabel } from "@gozaika/utils";
 import { useEffect, useRef, useState } from "react";
@@ -87,16 +87,22 @@ function ReviewCard({ review }: { readonly review: PublicReview }) {
 
 function ReviewsSection({ restaurantSlug }: { readonly restaurantSlug: string }) {
   const [payload, setPayload] = useState<ReviewsPayload | null>(null);
-  const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState("recent");
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
+
+  const currentKey = `${restaurantSlug}:${sort}`;
+  // Loading is derived: while the latest fetched key trails the current one,
+  // a request is in flight. Avoids calling setState synchronously in the effect.
+  const loading = loadedKey !== currentKey;
 
   useEffect(() => {
-    setLoading(true);
+    let cancelled = false;
     fetch(`/api/restaurants/${restaurantSlug}/reviews?limit=10&sort=${sort}`)
       .then((r) => r.json())
-      .then((json) => { if (json.ok) setPayload(json.data as ReviewsPayload); })
-      .finally(() => setLoading(false));
-  }, [restaurantSlug, sort]);
+      .then((json) => { if (!cancelled && json.ok) setPayload(json.data as ReviewsPayload); })
+      .finally(() => { if (!cancelled) setLoadedKey(currentKey); });
+    return () => { cancelled = true; };
+  }, [restaurantSlug, sort, currentKey]);
 
   if (loading) return <p className="py-4 text-sm text-[#2D2D2D]/60">Loading reviews…</p>;
 
@@ -297,7 +303,7 @@ export function RestaurantDetailClient({
                   <h2 className="text-xl font-bold text-[#2D2D2D]">About {restaurant.restaurantName}</h2>
                   <p className="mt-3 leading-7 text-[#2D2D2D]/75">
                     Chef-curated BAM Bags with full allergen disclosure and pickup-only trust.
-                    Check active drops for today's selection.
+                    Check active drops for today&apos;s selection.
                   </p>
                 </section>
               )}
@@ -447,7 +453,7 @@ export function RestaurantDetailClient({
             {restaurant.activeDrops.length === 0 ? (
               <div className="text-center">
                 <p className="text-sm font-semibold text-[#2D2D2D]/60">No active drops right now</p>
-                <p className="mt-1 text-xs text-[#2D2D2D]/45">Check back when the next Chef's Selection goes live.</p>
+                <p className="mt-1 text-xs text-[#2D2D2D]/45">Check back when the next Chef&apos;s Selection goes live.</p>
               </div>
             ) : (
               <>

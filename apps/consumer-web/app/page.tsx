@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DropCard, EmptyState, FoodStoryCard, ShellHeader, ZaykaPassportCard } from "@gozaika/ui";
+import { DropCard, EmptyState, FoodStoryCard, ShellHeader } from "@gozaika/ui";
 import { loadPublicDrops } from "@/lib/drops";
 import { loadPublicRestaurants } from "@/lib/restaurants";
 import { ConsumerNavLinks } from "./consumer-nav";
@@ -168,7 +168,7 @@ export default async function HomePage() {
         <section className="mx-auto max-w-7xl px-4 pb-8">
           <div className="mb-4 flex items-center gap-2">
             <span aria-hidden="true">📍</span>
-            <h2 className="text-xl font-bold text-[#2D2D2D]">What's happening in your city</h2>
+            <h2 className="text-xl font-bold text-[#2D2D2D]">What&apos;s happening in your city</h2>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             {foodStories.map((story) => (

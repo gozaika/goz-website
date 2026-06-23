@@ -49,7 +49,7 @@ export const GET = withMobileRestaurantRole("manageCompliance", async ({ restaur
     return mobileResponseErr("SERVER_ERROR", "Could not load your documents.", requestId);
   }
 
-  const documents = ((data ?? []) as DocRow[]).map((row) => {
+  const documents = ((data ?? []) as unknown as DocRow[]).map((row) => {
     const type = first(row.master_document_type);
     const status = first(row.master_document_status);
     const obj = first(row.storage_object);
