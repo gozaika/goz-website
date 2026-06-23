@@ -20,6 +20,7 @@ Everything below is on `main`, gate-green, live-proven. Confirm with
 - **Slice 11 no-drift note:** web account routes + mobile BFF share `consumer-web/lib/passport.ts` + `lib/discovery-profile.ts`. Screens `account/{passport,discovery}.tsx` + `swaad-club.tsx` (coming-soon only — **no native billing**). Smoke: `node scripts/smoke/slice11-passport-smoke.mjs` (BFF on :3003).
 - **Slice 15 no-drift note:** web portal reports page + mobile BFF share `restaurant-mgmt-web/lib/roi-report.ts#loadRoiReport`. Screen `restaurant-mobile/app/reports.tsx` (read-only; partner-safe Share, counts only). Smoke: `node scripts/smoke/slice15-roi-smoke.mjs` (BFF on :3001).
 - **Slice 10 consent:** DPDP consent settings live — shared `consumer-web/lib/consent.ts#loadConsentSettings`, BFF `/api/mobile/v1/account/consent`, screen `account/consent.tsx` (all 6 purposes, operational locked, erasure link-out only). Decisions in [[project-slice10-consent-decisions]]. Smoke: `node scripts/smoke/slice10-consent-smoke.mjs`. Remainder of Slice 10: profile-edit, referral display, reviews.
+- **Slice 12 compliance docs:** private document upload live (owner-approved off the review gate) — BFF `/api/mobile/v1/restaurant/documents` (+`[id]/signed-url`), screen `restaurant-mobile/app/compliance.tsx` (7 types, `manageCompliance`, `private-documents` bucket, signed URLs, no cache, expo-document-picker). Smoke: `node scripts/smoke/slice12-documents-smoke.mjs`. Remainder of Slice 12: the resumable onboarding wizard + location pin.
 - **Product media:** the hero/logo/drop-image pipeline is **adopted into `main`** (single-agent ownership now). See `docs/runbooks/product-media-rollout.md`. Gate #5 (verify a real uploaded drop image renders through discovery + falls back on null/failed) is still pending.
 - **Customer app** (consumer-mobile): discovery → claim → simulated pay → order → orders list/detail all work on-device.
 - **Restaurant app** (restaurant-mobile): dashboard, counter, drops, profile, finance all work on-device (full OWNER E2E passed).
@@ -29,13 +30,14 @@ Everything below is on `main`, gate-green, live-proven. Confirm with
 2. ~~**Slice 15 ROI report** — reuse `lib/roi-report.ts`.~~ ✅ Done 2026-06-22 (shared `loadRoiReport`; live-proven; invoice download still remainder).
 3. **Slice 13 drop edit** (pause/cancel/activate) + **Slice 14 reviews/ops-history**.
 4. **Slice 10** — ~~consent-settings~~ ✅ Done 2026-06-23. Remainder: reviews submission/status + profile-edit/referral display.
-5. **Slice 12 onboarding wizard** (the new-restaurant flow).
+5. **Slice 12 onboarding wizard** (the new-restaurant flow) — document upload ✅ done 2026-06-23; resumable wizard + location pin remain.
 6. **Slice 16** push/deep-links/offline → **17** a11y/security/perf gate → **18** release prep.
 7. **Product media gate #5**: verify a real uploaded drop image flows through discovery into the consumer app and still falls back on null/failed media.
 
 ## ⏸ Review-gated — do NOT build without the owner
-- **Slice 12 document upload** — writes the private-documents storage bucket; security-sensitive (the product-media pipeline in `docs/runbooks/product-media-rollout.md` is the reference pattern, now in `main`).
-- **Real Razorpay RN checkout** — needs the owner's India keys (~1 month). It's stubbed behind the same client interface; dropping in keys + flipping `PAYMENTS_SIMULATOR_ENABLED=false` activates it.
+- ~~**Slice 12 document upload**~~ ✅ Done 2026-06-23 (owner approved the security posture; restaurant-facing upload + status shipped). In-app **admin moderation** of documents is still web-only by design.
+- **In-app data erasure automation** — DPDP legal HUMAN_REVIEW (retention/exemptions) required before any automated erasure. Decided-deferred; the shipped consent screen uses a link-out instead.
+- **Real Razorpay RN checkout** — needs the owner's India keys (~1 month). Decided-deferred; stubbed behind the simulator — dropping in keys + flipping `PAYMENTS_SIMULATOR_ENABLED=false` activates it.
 
 ## Conventions (follow exactly — this is how we avoid drift)
 - **Contracts** live in `packages/types/src/mobile/*.ts`: permissive Zod **wire** schema (`z.string()` for code fields) + precise **TS DTO**; narrow `as unknown as` at the client boundary. Add a fixture in `packages/types/test-fixtures/mobile/` + a `*.test.ts`.
