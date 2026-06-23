@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "requestId": "11111111-1111-1111-1111-111111111111",
+  "serverTime": "2026-06-22T08:00:00.000Z",
+  "data": {
+    "stat": {
+      "consumerProfilePk": "10000000-0000-0000-0000-000000000001",
+      "totalBagsCollected": 12,
+      "totalRestaurantsVisited": 5,
+      "totalNeighborhoodsVisited": 3,
+      "currentTierCode": "SILVER",
+      "reviewCount": 2
+    },
+    "badges": [
+      { "badgeCode": "BIRYANI_BELIEVER", "badgeName": "Biryani Believer", "description": "Claimed 3+ Biryani drops", "earned": false, "hintText": "Claim 3 Biryani drops" },
+      { "badgeCode": "JAIN_JOURNEYS", "badgeName": "Jain Journeys", "description": "Claimed 3+ Jain drops", "earned": false, "hintText": "Claim 3 Jain drops" },
+      { "badgeCode": "EARLY_BIRD", "badgeName": "Early Bird", "description": "Claimed a drop within 30 mins of going live (5× times)", "earned": false, "hintText": "Claim 5 drops within 30 min of live" },
+      { "badgeCode": "COLLECTOR", "badgeName": "Collector", "description": "Claimed 5 drops in a single week", "earned": false, "hintText": "Claim 5 drops in one week" },
+      { "badgeCode": "NEIGHBORHOOD_HOPPER", "badgeName": "Neighborhood Hopper", "description": "Ordered from 3+ different neighborhoods", "earned": true, "hintText": "Order from 3 different neighbourhoods" },
+      { "badgeCode": "CRITIC", "badgeName": "Critic", "description": "Submitted 5+ approved reviews", "earned": false, "hintText": "Submit 5 approved reviews" }
+    ],
+    "bagsToNextTier": 18,
+    "progressPercent": 10,
+    "nextTierCode": "GOLD"
+  }
+}

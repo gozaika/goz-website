@@ -56,7 +56,7 @@ Use `npm.cmd`/`npx.cmd` in this Windows PowerShell environment when script execu
 | Mobile Slice 8 | Customer public discovery and restaurant profiles | 3,6 | Not started |
 | Mobile Slice 9 | Customer claim, Razorpay and pickup proof | 3,6,8 | Core built (claim->simulated checkout->order, gated simulator); real Razorpay stubbed (keys ~1mo); pickup-proof display paused for review |
 | Mobile Slice 10 | Customer account, orders, reviews and consent settings | 6,9 | Orders built (list + detail, notification pickup-proof + resend, RLS-scoped); account exists; reviews + consent-settings remainder |
-| Mobile Slice 11 | Customer Passport, discovery profile and Swaad Club | 8,10 | Not started |
+| Mobile Slice 11 | Customer Passport, discovery profile and Swaad Club | 8,10 | Done (live-proven) |
 | Mobile Slice 12 | Restaurant onboarding, compliance and profile | 4,6 | Profile vertical built (read + basics/location/story edit, geo-options); onboarding + compliance/document upload remainder |
 | Mobile Slice 13 | Restaurant templates and Limited Drops | 4,6,12 | Core built (templates/drops read + publish drop); template authoring + drop edit remainder |
 | Mobile Slice 14 | Restaurant dashboard, reviews and operational history | 7,13 | Dashboard built (role-shaped FULL/QUEUE_ONLY/SUMMARY); reviews + ops history remainder |
@@ -395,6 +395,8 @@ Branch: `mobile/slice6-native-auth` (off `main`).
 **Build instructions:** Reuse production account APIs/contracts; implement honest empty/new/tier states; native share from server-safe payload; link untried cuisines to discovery; mirror production Swaad Club coming-soon copy despite seeded subscription rows; do not add native billing, entitlement or referral reward mechanics.
 
 **Smoke-test scenarios and cases:** Bronze/Silver/Gold/Platinum fixtures; no stats; next-tier boundary; untried cuisine with/without active drop; share success/cancel; offline stale display; Swaad page cannot purchase; accessibility at large text.
+
+**Status — Done (2026-06-22, live-proven).** No-drift extraction: web account routes (`consumer-web/app/api/account/{passport,discovery-profile}`) and the new mobile BFF (`consumer-web/app/api/mobile/v1/account/{passport,discovery-profile}`) now share `consumer-web/lib/passport.ts` (`buildPassportPayload` + `getConsumerPkByUserId` + `ALL_PASSPORT_BADGES`) and `lib/discovery-profile.ts` (`buildDiscoveryProfile`), so badge catalog, tier maths and diversity score cannot drift. Mobile BFF is RLS-scoped through the user's bearer token (no service-role cross-tenant read). Contracts: `packages/types/src/mobile/passport.ts` (permissive wire Zod for `ZaykaPassportPayload`/`DiscoveryProfile`) + fixtures + `passport.test.ts`. Screens: `passport.tsx` (tier card, progress bar, stats, 6-badge grid), `discovery.tsx` (diversity score, tried/untried cuisines linking to drops, neighbourhoods), `swaad-club.tsx` (coming-soon positioning mirror — **no native billing/entitlement**). Gate 7/7. Live smoke `scripts/smoke/slice11-passport-smoke.mjs` 7/7 vs local Supabase (Priya: SILVER, 7 bags, 70% → GOLD; unauth → 401).
 
 **Update this implementation plan:** Record tier formulas/source, endpoints, share payload, seeded persona matrix and explicit exclusions so later agents do not infer subscriptions from seed rows.
 

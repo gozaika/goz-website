@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "requestId": "22222222-2222-2222-2222-222222222222",
+  "serverTime": "2026-06-22T08:00:00.000Z",
+  "data": {
+    "triedCuisines": [
+      { "cuisineCode": "HYDERABADI", "cuisineName": "Hyderabadi", "bagCount": 4 },
+      { "cuisineCode": "SOUTH_INDIAN", "cuisineName": "South Indian", "bagCount": 2 }
+    ],
+    "untriedCuisines": [
+      { "cuisineCode": "NORTH_INDIAN", "cuisineName": "North Indian", "activeDropCount": 2 },
+      { "cuisineCode": "CHINESE", "cuisineName": "Indo-Chinese", "activeDropCount": 0 }
+    ],
+    "totalAvailableCuisines": 8,
+    "triedNeighbourhoods": [
+      { "neighbourhoodCode": "JUBILEE_HILLS", "neighbourhoodName": "Jubilee Hills", "bagCount": 3 },
+      { "neighbourhoodCode": "GACHIBOWLI", "neighbourhoodName": "Gachibowli", "bagCount": 1 }
+    ],
+    "totalActiveNeighbourhoods": 6,
+    "flavourDiversityScore": 34,
+    "flavourPersonalityLabel": "Local Explorer"
+  }
+}

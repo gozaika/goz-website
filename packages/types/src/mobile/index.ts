@@ -12,3 +12,4 @@ export * from "./dashboard";
 export * from "./finance";
 export * from "./checkout";
 export * from "./orders";
+export * from "./passport";
