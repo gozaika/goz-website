@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "goZaika store-launch manifest",
+  "type": "object",
+  "required": ["version", "generatedAt", "repo", "apps"],
+  "properties": {
+    "version": { "type": "integer" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "repo": {
+      "type": "object",
+      "required": ["branch", "commit"],
+      "properties": {
+        "branch": { "type": "string" },
+        "commit": { "type": "string" }
+      }
+    },
+    "ownership": {
+      "type": "object",
+      "description": "Lane split between source-code agent and Codex.",
+      "properties": {
+        "codeSide": { "type": "array", "items": { "type": "string" } },
+        "codex": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "apps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["appId", "listingName", "bundleId", "screenshots"],
+        "properties": {
+          "appId": { "type": "string", "enum": ["gozaika", "gozaika-partner"] },
+          "listingName": { "type": "string" },
+          "bundleId": { "type": "string" },
+          "supportsTablet": { "type": "boolean" },
+          "screenshots": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["slot", "status"],
+              "properties": {
+                "slot": { "type": "string" },
+                "rawPath": { "type": ["string", "null"] },
+                "width": { "type": ["integer", "null"] },
+                "height": { "type": ["integer", "null"] },
+                "status": { "type": "string", "enum": ["captured", "gap", "web-fallback"] },
+                "caveats": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "caveats": { "type": "array", "items": { "type": "string" } }
+  }
+}

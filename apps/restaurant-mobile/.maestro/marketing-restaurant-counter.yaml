@@ -1,0 +1,76 @@
+# Marketing capture — Video B: Restaurant Counter (restaurant-mobile).
+# Storyboard: .codex-artifacts/gozaika-marketing-videos/storyboards/restaurant-counter.md
+# Captions:   .codex-artifacts/gozaika-marketing-videos/captions/restaurant-counter.json
+#
+# Persona: marketing.restaurant.imran  (Bawarchi PICKUP_STAFF)
+#   phone 9876530003 / OTP 300003  (LOCAL test_otp; never a real credential)
+# Order: GZ-SMOKE-0001 on Bawarchi Biryani Palace, pinned READY_FOR_PICKUP with an
+#   open window + known pickup OTP 246810 by `npm run db:seed:marketing-videos`.
+#
+# Preconditions (see capture README):
+#   1. restaurant-mobile loaded (dev-client: Metro + EXPO_PUBLIC_RESTAURANT_API_ORIGIN reachable;
+#      preview/standalone: prepend `launchApp: { clearState: true }`).
+#   2. Restaurant BFF up with PICKUP_CREDENTIAL_SECRET=local-smoke-pickup-secret-0123456789-abcdef
+#      against the LOCAL Supabase.
+#   3. `npm run db:seed:marketing-videos` applied.
+# Devclient-safe: no launchApp/clearState.
+#
+# Raw video:  maestro record apps/restaurant-mobile/.maestro/marketing-restaurant-counter.yaml \
+#               .codex-artifacts/gozaika-marketing-videos/raw/restaurant-counter/restaurant-counter.mp4
+# Test/verify: maestro test apps/restaurant-mobile/.maestro/marketing-restaurant-counter.yaml
+appId: in.gozaika.restaurant
+---
+- tapOn:
+    text: "Continue"
+    optional: true
+
+# Sign in as PICKUP_STAFF only if needed (single membership → auto-selected).
+- tapOn: "More"
+- runFlow:
+    when:
+      visible: "Sign in"
+    commands:
+      - tapOn: "Sign in"
+      - assertVisible: "Partner sign in"
+      - tapOn: "Mobile number"
+      - inputText: "9876530003"
+      - hideKeyboard
+      - tapOn: "Send code"
+      - assertVisible: "Enter code"
+      - tapOn: "6-digit code"
+      - inputText: "300003"
+      - hideKeyboard
+      - tapOn: "Verify"
+
+# Scene 1 — Pickup queue
+- tapOn: "Orders"
+- extendedWaitUntil:
+    visible: "Pickup counter"
+    timeout: 15000
+- extendedWaitUntil:
+    visible: "GZ-SMOKE-0001"
+    timeout: 15000
+- takeScreenshot: ".codex-artifacts/gozaika-marketing-videos/screenshots/restaurant-counter/restaurant-counter-001"
+
+# Scene 2 — Open the order
+- tapOn:
+    text: "GZ-SMOKE-0001"
+- extendedWaitUntil:
+    visible: "Verify pickup"
+    timeout: 15000
+- takeScreenshot: ".codex-artifacts/gozaika-marketing-videos/screenshots/restaurant-counter/restaurant-counter-002"
+
+# Scene 3 — Enter the customer's pickup code and verify
+- tapOn:
+    text: "or enter 6-digit OTP"
+- eraseText
+- inputText: "246810"
+- hideKeyboard
+- takeScreenshot: ".codex-artifacts/gozaika-marketing-videos/screenshots/restaurant-counter/restaurant-counter-003"
+- tapOn: "Verify & mark collected"
+
+# Scene 4 — Collected
+- extendedWaitUntil:
+    visible: "Collected"
+    timeout: 20000
+- takeScreenshot: ".codex-artifacts/gozaika-marketing-videos/screenshots/restaurant-counter/restaurant-counter-004"

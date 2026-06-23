@@ -12,6 +12,26 @@ established conventions below and the authoritative docs; never re-derive from m
 5. `docs/mobile/slice9-payment-design.md` — payment + gated simulator + the pickup-proof = notification decision.
 6. The three specs in `project docs/` (shared / customer / restaurant).
 
+## Store launch readiness (code-side lane — 2026-06-23)
+Closed-beta store package for **goZaika** + **goZaika Partner**. Plan:
+`project docs/gozaika_mobile_store_launch_readiness_plan_v1.md`. Lane split: **source-code
+agent** owns raw screenshots/videos, seed/reviewer data, EAS/build evidence, QA evidence,
+caveats; **Codex** owns store copy, privacy drafts, polished creatives, final Play review.
+- **Package:** `.codex-artifacts/gozaika-store-launch/` (README + manifest.json + CAVEATS.md +
+  `release/` {eas-config-audit, signing-credentials-checklist, submission-checklist,
+  qa-evidence} + `reviewer/` {test-accounts.json, 2 reviewer-note drafts} + `graphics/`
+  {icon-splash-qa} + `screenshots/raw/` {gozaika 5/8 w/ dev overlay, gozaika-partner 4/8 clean,
+  _web-fallback, INDEX.md}). Tooling: `scripts/store-launch/` + `npm run store:validate:assets`
+  / `store:capture:screenshots`. Validator: **0 hard fails** (warnings = documented caveats).
+- **App identity locked:** `in.gozaika.customer` / `in.gozaika.restaurant`, Expo SDK 55, eas.json
+  3 profiles. **Open EAS gaps:** G1 no `projectId` (run `eas init`), G3 empty `submit` creds,
+  G7 prod env not pinned, G2 no `runtimeVersion`; Apple deferred. See eas-config-audit.md.
+- **Top caveats:** C1 customer raw shots carry the Expo dev-client gear overlay → recapture
+  from preview/production build; C2 1080×2400 exceeds Play 2:1 → crop to 1080×1920; C3 partner
+  native dashboard/drops/profile/reports/finance not yet captured (capture as OWNER); R1
+  reviewer creds validated against local seed only; P4 account-deletion public URL missing.
+- **Next:** close G1/G3/G7 → production build → recapture (C1/C3/C4) → hand raw+caveats to Codex.
+
 ## Current state (2026-06-22)
 Everything below is on `main`, gate-green, live-proven. Confirm with
 `git log --oneline -20` and `node scripts/mobile-ci.mjs` (expect 7/7).

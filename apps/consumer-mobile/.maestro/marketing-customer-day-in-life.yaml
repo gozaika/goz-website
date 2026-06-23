@@ -1,0 +1,125 @@
+# Marketing capture — Video A: Customer Day-In-Life (consumer-mobile).
+# Storyboard: .codex-artifacts/gozaika-marketing-videos/storyboards/customer-day-in-life.md
+# Captions:   .codex-artifacts/gozaika-marketing-videos/captions/customer-day-in-life.json
+#
+# Persona: marketing.consumer.asha  (Karthik Reddy slot — PLATINUM Passport)
+#   phone 9876510008 / OTP 100008  (LOCAL test_otp; never a real credential)
+# Hero drop: "Full Veg Thali Bag" from Sattvik Kitchen (drop_title "Evening Veg Thali —
+#   15 Bags Ready"), guaranteed ACTIVE + claimable by `npm run db:seed:marketing-videos`.
+#   Chosen because this consumer slot has no prior order of this bag (collision-free orders list).
+#
+# Preconditions (see capture README):
+#   1. consumer-mobile loaded (dev-client: Metro serving + EXPO_PUBLIC_CUSTOMER_API_ORIGIN reachable;
+#      preview/standalone: prepend `launchApp: { clearState: true }`).
+#   2. Customer BFF up with PAYMENTS_SIMULATOR_ENABLED=true against the LOCAL Supabase.
+#   3. `npm run db:seed:marketing-videos` applied.
+# Devclient-safe: no launchApp/clearState (that would wipe the dev-launcher's Metro URL).
+#
+# Raw video:  maestro record apps/consumer-mobile/.maestro/marketing-customer-day-in-life.yaml \
+#               .codex-artifacts/gozaika-marketing-videos/raw/customer-day-in-life/customer-day-in-life.mp4
+# Test/verify + per-scene stills:
+#             maestro test apps/consumer-mobile/.maestro/marketing-customer-day-in-life.yaml
+appId: in.gozaika.customer
+---
+- tapOn:
+    text: "Continue"
+    optional: true
+
+# Scene 1 — Discover (Home)
+- extendedWaitUntil:
+    visible: "Browse drops"
+    timeout: 15000
+- takeScreenshot: ".codex-artifacts/gozaika-marketing-videos/screenshots/customer-day-in-life/customer-day-in-life-001"
+- tapOn: "Browse drops"
+
+# Scene 2 — Browse the active drops (scroll the list until the hero card is on screen)
+- scrollUntilVisible:
+    element:
+      text: "Full Veg Thali Bag"
+    direction: DOWN
+    timeout: 20000
+- takeScreenshot: ".codex-artifacts/gozaika-marketing-videos/screenshots/customer-day-in-life/customer-day-in-life-002"
+
+# Open the hero drop
+- tapOn: "Full Veg Thali Bag"
+- assertVisible: "Allergens"
+
+# Sign in only if needed (signed-out drop detail shows "Sign in to claim").
+- runFlow:
+    when:
+      visible: "Sign in to claim"
+    commands:
+      - tapOn: "Sign in to claim"
+      - extendedWaitUntil:
+          visible: "Mobile number"
+          timeout: 15000
+      - tapOn: "Mobile number"
+      - inputText: "9876510008"
+      - hideKeyboard
+      - tapOn: "Send code"
+      - assertVisible: "Enter code"
+      - tapOn: "6-digit code"
+      - inputText: "100008"
+      - hideKeyboard
+      - tapOn: "Verify"
+      # First sign-in shows the DPDP consent gate.
+      - tapOn:
+          text: "Agree and continue"
+          optional: true
+      # Back on Home → reopen the hero drop, now claimable.
+      - extendedWaitUntil:
+          visible: "Browse drops"
+          timeout: 15000
+      - tapOn: "Browse drops"
+      - scrollUntilVisible:
+          element:
+            text: "Full Veg Thali Bag"
+          direction: DOWN
+          timeout: 20000
+      - tapOn: "Full Veg Thali Bag"
+
+# Scene 3 — Drop detail with trust cues + claim CTA
+- extendedWaitUntil:
+    visible: "Claim a bag"
+    timeout: 15000
+- takeScreenshot: ".codex-artifacts/gozaika-marketing-videos/screenshots/customer-day-in-life/customer-day-in-life-003"
+
+# Scene 4 — Claim → simulated checkout → Order confirmed
+- tapOn: "Claim a bag"
+- extendedWaitUntil:
+    visible: "Confirm payment"
+    timeout: 20000
+- tapOn: "Confirm payment"
+- extendedWaitUntil:
+    visible: "Order confirmed"
+    timeout: 20000
+- takeScreenshot: ".codex-artifacts/gozaika-marketing-videos/screenshots/customer-day-in-life/customer-day-in-life-004"
+
+# Scene 5 — Pickup proof. The pickup code is delivered by SMS (a deliberate security
+# decision — not an in-app QR), and the confirmation screen states this in its Pickup card.
+# (The consumer orders list is display-only in this build, so the order-detail "Show your
+# pickup code" screen is not reached by a card tap — the confirmation screen carries the
+# same pickup-proof message.)
+- extendedWaitUntil:
+    visible: ".*pickup code is on its way.*"
+    timeout: 15000
+- takeScreenshot: ".codex-artifacts/gozaika-marketing-videos/screenshots/customer-day-in-life/customer-day-in-life-005"
+
+# Scene 6 — Zayka Passport (tabs + the account text link are tappable)
+- tapOn: "Done"
+- extendedWaitUntil:
+    visible: "Your orders"
+    timeout: 15000
+- tapOn: "Account"
+- waitForAnimationToEnd
+# The account entry point is a text link "Zayka Passport →" — match it as a regex (Maestro
+# matches the full node text, so the trailing arrow must be covered).
+- extendedWaitUntil:
+    visible: ".*Zayka Passport.*"
+    timeout: 20000
+- tapOn:
+    text: ".*Zayka Passport.*"
+- extendedWaitUntil:
+    visible: "Current tier"
+    timeout: 20000
+- takeScreenshot: ".codex-artifacts/gozaika-marketing-videos/screenshots/customer-day-in-life/customer-day-in-life-006"

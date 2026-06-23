@@ -1,0 +1,68 @@
+# Marketing capture — Video C (supplemental mobile b-roll): Restaurant kitchen setup.
+# Storyboard: .codex-artifacts/gozaika-marketing-videos/storyboards/restaurant-onboarding.md
+# Captions:   .codex-artifacts/gozaika-marketing-videos/captions/restaurant-onboarding.json
+#
+# NOTE: the PRIMARY onboarding capture for Video C is WEB (Playwright on restaurant-mgmt-web)
+# because the resumable onboarding wizard is not built on mobile yet. This flow captures the
+# real native kitchen-management surface that DOES exist (Slice 12): the dashboard kitchen
+# identity + the private Compliance documents screen — usable as supplemental b-roll.
+#
+# Persona: marketing.restaurant.meera  (Bawarchi OWNER — has manageCompliance)
+#   phone 9876520001 / OTP 200001  (LOCAL test_otp; never a real credential)
+#
+# Preconditions (see capture README):
+#   1. restaurant-mobile loaded (dev-client: Metro + EXPO_PUBLIC_RESTAURANT_API_ORIGIN reachable;
+#      preview/standalone: prepend `launchApp: { clearState: true }`).
+#   2. Restaurant BFF up against the LOCAL Supabase.
+#   3. `npm run db:seed:marketing-videos` applied.
+# Devclient-safe: no launchApp/clearState.
+#
+# Raw video:  maestro record apps/restaurant-mobile/.maestro/marketing-restaurant-onboarding.yaml \
+#               .codex-artifacts/gozaika-marketing-videos/raw/restaurant-onboarding/restaurant-onboarding-mobile.mp4
+# Test/verify: maestro test apps/restaurant-mobile/.maestro/marketing-restaurant-onboarding.yaml
+appId: in.gozaika.restaurant
+---
+- tapOn:
+    text: "Continue"
+    optional: true
+
+# Sign in as OWNER only if needed.
+- tapOn: "More"
+- runFlow:
+    when:
+      visible: "Sign in"
+    commands:
+      - tapOn: "Sign in"
+      - assertVisible: "Partner sign in"
+      - tapOn: "Mobile number"
+      - inputText: "9876520001"
+      - hideKeyboard
+      - tapOn: "Send code"
+      - assertVisible: "Enter code"
+      - tapOn: "6-digit code"
+      - inputText: "200001"
+      - hideKeyboard
+      - tapOn: "Verify"
+
+# Scene b1 — Kitchen identity (dashboard "Today at {restaurant}")
+- tapOn: "Home"
+- extendedWaitUntil:
+    visible: "Today at"
+    timeout: 15000
+- takeScreenshot: ".codex-artifacts/gozaika-marketing-videos/screenshots/restaurant-onboarding/restaurant-onboarding-m01"
+
+# Scene b2 — Private compliance documents (Slice 12)
+# NOTE: requires a dev-client/preview build that includes expo-document-picker (Slice 12).
+# The currently-installed dev client predates it; rebuild (`expo run:android`) before capturing
+# this beat, or the compliance route throws "Cannot find native module 'ExpoDocumentPicker'".
+# The More-screen entry is a text link "Compliance →" — match as a regex (full-text match).
+- tapOn: "More"
+- extendedWaitUntil:
+    visible: ".*Compliance.*"
+    timeout: 15000
+- tapOn:
+    text: ".*Compliance.*"
+- extendedWaitUntil:
+    visible: "Compliance documents"
+    timeout: 15000
+- takeScreenshot: ".codex-artifacts/gozaika-marketing-videos/screenshots/restaurant-onboarding/restaurant-onboarding-m02"

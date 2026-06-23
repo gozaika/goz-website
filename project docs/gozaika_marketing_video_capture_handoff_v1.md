@@ -4,7 +4,7 @@ Date: 2026-06-23
 
 Audience: the implementation agent currently owning source code and mobile app completion.
 
-Purpose: create deterministic storyboards, demo data, automated capture scripts, and raw visual assets for four short goZaika product-marketing videos. A later editing pass will use ffmpeg to add final styling, captions, pacing, music, and platform-specific exports.
+Purpose: create deterministic storyboards, demo data, automated capture scripts, raw visual assets for four short goZaika product-marketing videos, and the shared screenshot/copy/reviewer artifacts needed for closed-beta mobile store readiness. A later editing pass will use ffmpeg and image-composition tooling to add final styling, captions, pacing, music, store screenshot framing, and platform-specific exports.
 
 ## 1. Strategic Direction
 
@@ -39,6 +39,8 @@ Required deliverables:
 6. A capture runner that produces raw video clips and screenshots into a stable artifact directory.
 7. A manifest mapping every raw clip to its storyboard scene, caption IDs, route, user, viewport, and expected duration.
 8. Verification notes confirming the flows run cleanly and no private credentials or real customer data are present.
+9. Store-readiness screenshot manifests and raw screenshots for both listings: `goZaika` and `goZaika Partner`.
+10. Store listing copy drafts, reviewer notes, privacy/compliance declaration drafts, and release-checklist evidence as defined in `project docs/gozaika_mobile_store_launch_readiness_plan_v1.md`.
 
 Suggested output root:
 
@@ -84,6 +86,7 @@ apps/restaurant-mobile/.maestro/marketing-restaurant-counter.yaml
 apps/restaurant-mobile/.maestro/marketing-restaurant-onboarding.yaml
 apps/restaurant-mgmt-web/tests/marketing-video/restaurant-management.spec.ts
 apps/admin-web/tests/marketing-video/restaurant-onboarding.spec.ts
+project docs/gozaika_mobile_store_launch_readiness_plan_v1.md
 ```
 
 Adjust paths if the app structure has changed, but preserve the intent and document the final paths in the artifact README.
@@ -525,18 +528,42 @@ The ffmpeg polish pass will then:
    - `project docs/gozaika_mobile_shared_architecture_and_release_spec_v1.md`
    - `project docs/gozaika_mobile_implementation_plan_v1.md`
    - `project docs/gozaika_asset_replacement_spec_v1.md`
+   - `project docs/gozaika_mobile_store_launch_readiness_plan_v1.md`
    - `docs/adr/0001-maestro-over-detox.md`
 2. Draft the four storyboards first.
 3. Draft caption JSON next, before recording.
 4. Implement deterministic seed data.
 5. Add Maestro flows for mobile journeys.
 6. Add Playwright capture scripts for web/admin/restaurant management.
-7. Run capture once and inspect screenshots manually.
-8. Fix demo data, screen pauses, or selectors until the raw footage looks presentation-worthy.
-9. Generate manifest and README.
-10. Hand back the artifact paths and caveats.
+7. Extend the capture plan into store screenshots for both apps using the same seeded state and personas.
+8. Draft store copy, screenshot captions, reviewer notes, privacy declarations and launch checklist evidence.
+9. Run capture once and inspect screenshots manually.
+10. Fix demo data, screen pauses, or selectors until the raw footage and store screenshots look presentation-worthy.
+11. Generate manifest and README.
+12. Hand back the artifact paths and caveats.
 
-## 13. Open Questions For The Implementation Agent
+## 13. Store Launch Readiness Roll-In
+
+Store readiness is now part of this workstream because it shares the same visual state, demo data, capture scripts, reviewer accounts and brand rules as the marketing videos. Treat the store launch as closed beta / internal beta readiness, not merely proof-only collateral.
+
+Authoritative companion plan:
+
+```text
+project docs/gozaika_mobile_store_launch_readiness_plan_v1.md
+```
+
+Additional package outputs expected from the implementation agent:
+
+- Screenshot capture plan and raw screenshots for two store listings: `goZaika` and `goZaika Partner`.
+- Store asset inventory covering icon QA, splash QA, Google Play feature graphics, App Store screenshots, Play Store screenshots, optional preview videos, restaurant tablet/iPad screenshots and future localized variants.
+- Store listing copy deck with app name/subtitle, short description, full description, keywords, category, release notes, support URL, marketing URL, privacy policy URL and terms URL.
+- Reviewer notes covering demo phones/OTP codes, restaurant account, customer account, payment simulator/test path, pickup verification script and seeded remote beta data.
+- Privacy/compliance draft pack for Apple privacy labels, Google Data Safety, account deletion, DPDP consent/deletion wording, restaurant camera usage and later Slice 16 push/location declarations.
+- Production release checklist covering EAS ownership, app identifiers, signing credentials, store accounts, push credentials, App Links/Universal Links, production Supabase/BFF/storage/function configuration, crash reporting, source maps and final QA gates.
+
+Do not publish or submit to any store from this workstream. The expected output is a handoff-ready readiness package with exact missing decisions and evidence.
+
+## 14. Open Questions For The Implementation Agent
 
 Please answer these in the handoff README:
 
@@ -546,4 +573,6 @@ Please answer these in the handoff README:
 - Is restaurant onboarding self-serve in the restaurant mobile app, restaurant web app, or admin-assisted?
 - Which reporting view is strongest for the restaurant management video: dashboard, ZaikaIQ, ROI report, finance, or orders?
 - Are the video flows safe to run repeatedly against local / staging data?
-
+- Are both store listings blocked only by account enrollment/signing/review policy work, or are there product gaps that would prevent a closed-beta submission?
+- Which public URLs already exist on `gozaika.in`, and which legal/support/account-deletion URLs must still be created before review?
+- Which store screenshots can be captured natively today, and which require web fallback or placeholder staging until the remaining slices land?

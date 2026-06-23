@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gozaika.in/schemas/marketing-video-manifest.json",
+  "title": "goZaika Marketing Video Capture Manifest",
+  "type": "object",
+  "required": ["version", "generatedAt", "repo", "videos"],
+  "additionalProperties": true,
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "artifactRoot": { "type": "string" },
+    "repo": {
+      "type": "object",
+      "required": ["branch", "commit"],
+      "properties": {
+        "branch": { "type": "string" },
+        "commit": { "type": "string" }
+      }
+    },
+    "videos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["videoId", "title", "status", "rawClips"],
+        "properties": {
+          "videoId": { "type": "string" },
+          "title": { "type": "string" },
+          "status": { "type": "string", "enum": ["ready", "partial", "pending"] },
+          "captureMode": { "type": "string", "enum": ["maestro", "playwright"] },
+          "notes": { "type": "string" },
+          "rawClips": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["clipId", "sceneId", "source", "app", "captionIds"],
+              "properties": {
+                "clipId": { "type": "string" },
+                "sceneId": { "type": "string" },
+                "path": { "type": ["string", "null"], "description": "raw video for this video/scene, repo-relative; null until captured" },
+                "screenshotPath": { "type": ["string", "null"], "description": "per-scene still, repo-relative; null until captured" },
+                "source": { "type": "string", "enum": ["maestro", "playwright"] },
+                "app": { "type": "string" },
+                "routeOrScreen": { "type": ["string", "null"] },
+                "userKey": { "type": ["string", "null"] },
+                "viewport": {
+                  "type": "object",
+                  "properties": {
+                    "width": { "type": "integer" },
+                    "height": { "type": "integer" },
+                    "deviceScaleFactor": { "type": "number" }
+                  }
+                },
+                "durationSec": { "type": ["number", "null"] },
+                "durationTargetSec": { "type": ["number", "null"] },
+                "captionIds": { "type": "array", "items": { "type": "string" } },
+                "captured": { "type": "boolean" },
+                "optional": { "type": "boolean" },
+                "notes": { "type": ["string", "null"] }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
