@@ -33,7 +33,7 @@ insert into drop_drop (
 ) values (
   '70000000-0000-0000-0000-0000000000c1', '20000000-0000-0000-0000-300000000001',
   '70000000-0000-0000-0000-0000000000b1', 'Smoke Evening Thali Drop',
-  '07e20e11-8e83-41fc-9393-16f192313bf0', 100, 0, 100, 0, 14900,
+  (select geo_city_pk from geo_city where city_code = 'HYD'), 100, 0, 100, 0, 14900,
   now() - interval '10 minutes', now() + interval '2 hours'
 ) on conflict (drop_drop_pk) do update set
   quantity_total = 100, quantity_reserved = 0, quantity_sold = 100, quantity_collected = 0,
