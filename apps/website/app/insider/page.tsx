@@ -61,7 +61,7 @@ export default function InsiderPage(): React.ReactElement {
       <section className="bg-forest text-white">
         <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:grid lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-28 lg:px-8">
           <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-saffron">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-saffron-light">
               GOZAIKA INSIDER
             </p>
             <h1 className="font-playfair text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-[3.5rem]">
@@ -75,19 +75,19 @@ export default function InsiderPage(): React.ReactElement {
             </p>
             <div className="mt-8 flex flex-wrap gap-3 text-sm text-forest-light/75">
               <span className="flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#25D366]" aria-hidden="true" />
+                <span className="h-1.5 w-1.5 rounded-full bg-whatsapp-brand" aria-hidden="true" />
                 Banjara Hills
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#25D366]" aria-hidden="true" />
+                <span className="h-1.5 w-1.5 rounded-full bg-whatsapp-brand" aria-hidden="true" />
                 Jubilee Hills
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#25D366]" aria-hidden="true" />
+                <span className="h-1.5 w-1.5 rounded-full bg-whatsapp-brand" aria-hidden="true" />
                 HITEC City
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#25D366]" aria-hidden="true" />
+                <span className="h-1.5 w-1.5 rounded-full bg-whatsapp-brand" aria-hidden="true" />
                 Kondapur
               </span>
             </div>

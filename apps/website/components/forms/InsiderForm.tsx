@@ -86,8 +86,8 @@ export function InsiderForm(): React.ReactElement {
 
   if (status === 'success') {
     return (
-      <div className="rounded-2xl bg-[#25D366]/10 p-8 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white">
+      <div className="rounded-2xl bg-whatsapp-brand/10 p-8 text-center">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-whatsapp text-white">
           <MessageCircle className="h-7 w-7" />
         </div>
         <h3 className="text-xl font-bold text-gray900">You&apos;re on the Insider list.</h3>
@@ -179,7 +179,7 @@ export function InsiderForm(): React.ReactElement {
       <Button
         type="submit"
         disabled={status === 'loading'}
-        className="w-full bg-[#25D366] text-white hover:bg-[#1ebe59]"
+        className="w-full bg-whatsapp text-white hover:bg-whatsapp-hover"
       >
         {status === 'loading' ? (
           'Joining…'

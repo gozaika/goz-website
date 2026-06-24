@@ -11,6 +11,12 @@
   --color-forestLight: #EAF3DE;
   --color-gold: #D4A017;
   --color-cream: #FFF8F0;
+  /* WhatsApp greens. -brand is the literal brand green (#25D366) — decorative
+     use only (icon accents, dots, light tints); it fails WCAG AA against white
+     text. Use -whatsapp / -whatsapp-hover for any surface carrying white text. */
+  --color-whatsapp: #0B8043;
+  --color-whatsapp-hover: #0A6E39;
+  --color-whatsapp-brand: #25D366;
   --color-gray900: #111827;
   --color-gray700: #374151;
   --color-gray600: #4B5563;

@@ -32,7 +32,7 @@ export function InsiderCTASection(): React.ReactElement {
       <div className="relative mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center gap-8 text-center lg:flex-row lg:justify-between lg:text-left">
           <div className="max-w-2xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-saffron">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-saffron-light">
               {insiderBand.eyebrow}
             </p>
             <h2
@@ -49,7 +49,7 @@ export function InsiderCTASection(): React.ReactElement {
           <div className="flex flex-col items-center gap-3 lg:items-end lg:shrink-0">
             <Link
               href={insiderBand.href}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-8 py-4 text-base font-semibold text-white shadow-lg transition-all hover:bg-[#1ebe59] hover:shadow-xl active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-xl bg-whatsapp px-8 py-4 text-base font-semibold text-white shadow-lg transition-all hover:bg-whatsapp-hover hover:shadow-xl active:scale-[0.98]"
             >
               <MessageCircle className="h-5 w-5" aria-hidden="true" />
               {insiderBand.cta}

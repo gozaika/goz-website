@@ -170,7 +170,7 @@ export default function ForRestaurantsPage(): React.ReactElement {
             {forRestaurantsContent.cannibalizationAssurance.points.map((point) => (
               <li key={point} className="flex items-start gap-3">
                 <CheckCircle
-                  className="mt-0.5 h-5 w-5 shrink-0 text-[#25D366]"
+                  className="mt-0.5 h-5 w-5 shrink-0 text-whatsapp-brand"
                   aria-hidden="true"
                 />
                 <span className="text-base text-forest-light/90">{point}</span>
@@ -240,7 +240,7 @@ export default function ForRestaurantsPage(): React.ReactElement {
           </div>
           <Link
             href="/insider"
-            className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#0B8043] px-7 py-3.5 text-sm font-semibold text-white shadow transition-all hover:bg-[#0A6E39] hover:shadow-md"
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-whatsapp px-7 py-3.5 text-sm font-semibold text-white shadow transition-all hover:bg-whatsapp-hover hover:shadow-md"
           >
             <MessageCircle className="h-4 w-4" aria-hidden="true" />
             Message us on WhatsApp
