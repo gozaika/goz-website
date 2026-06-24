@@ -65,7 +65,7 @@ update order_order set
   pickup_window_start_at = now() - interval '10 minutes',
   pickup_window_end_at   = now() + interval '3 hours',
   pickup_otp_hash        = encode(
-    digest('local-smoke-pickup-secret-0123456789-abcdef' || ':' || '246810', 'sha256'), 'hex')
+    extensions.digest('local-smoke-pickup-secret-0123456789-abcdef' || ':' || '246810', 'sha256'), 'hex')
 where order_number = 'GZ-SMOKE-0001';
 
 -- -----------------------------------------------------------------------------

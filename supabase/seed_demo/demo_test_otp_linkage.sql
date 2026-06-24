@@ -20,6 +20,28 @@
 begin;
 
 -- -----------------------------------------------------------------------------
+-- 0. Free demo phone numbers held by NON-demo rows.
+-- The backfills below cannot assign a phone that another auth.users row already
+-- owns (unique constraint users_phone_key). On a shared/hosted DB a stray
+-- phone-OTP test signup can grab one of these synthetic demo numbers; clear it
+-- from any row OUTSIDE the demo UUID space (20000000-…-1*/-2*) so the backfill
+-- proceeds. Scoped to the EXACT demo number set — never a real, unrelated phone.
+-- -----------------------------------------------------------------------------
+update auth.users
+set phone = null, phone_confirmed_at = null
+where phone in (
+  -- consumers (919876510001–08)
+  '919876510001','919876510002','919876510003','919876510004',
+  '919876510005','919876510006','919876510007','919876510008',
+  -- restaurant owners (919876520001–05)
+  '919876520001','919876520002','919876520003','919876520004','919876520005',
+  -- role-matrix staff (919876530001–04)
+  '919876530001','919876530002','919876530003','919876530004'
+)
+and id::text not like '20000000-0000-0000-0000-1%'
+and id::text not like '20000000-0000-0000-0000-2%';
+
+-- -----------------------------------------------------------------------------
 -- 1. Backfill phones on rich CONSUMER auth.users (8) + iam_profile
 -- -----------------------------------------------------------------------------
 update auth.users u

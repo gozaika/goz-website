@@ -55,7 +55,7 @@ insert into order_order (
   14900, 14900, 'INR',
   'Bawarchi Biryani Palace', 'bawarchi-biryani-palace', 'Smoke Evening Thali Drop',
   'BAM Bag · Veg Thali', 'VEG',
-  encode(digest('local-smoke-pickup-secret-0123456789-abcdef' || ':' || '246810', 'sha256'), 'hex')
+  encode(extensions.digest('local-smoke-pickup-secret-0123456789-abcdef' || ':' || '246810', 'sha256'), 'hex')
 ) on conflict (order_order_pk) do update set
   order_status_code = 'READY_FOR_PICKUP',
   pickup_window_end_at = now() + interval '2 hours',

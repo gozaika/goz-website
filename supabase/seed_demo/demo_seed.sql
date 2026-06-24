@@ -81,7 +81,7 @@ insert into auth.users
 values
   ('20000000-0000-0000-0000-100000000001', 'authenticated', 'authenticated',
    'priya.demo@gozaika.dev',
-   crypt('DemoPass@2026', gen_salt('bf', 8)),
+   extensions.crypt('DemoPass@2026', extensions.gen_salt('bf', 8)),
    now() - interval '25 days',
    '{"provider":"email","providers":["email"]}',
    '{"full_name":"Priya Sharma"}',
@@ -89,7 +89,7 @@ values
 
   ('20000000-0000-0000-0000-100000000002', 'authenticated', 'authenticated',
    'rahul.demo@gozaika.dev',
-   crypt('DemoPass@2026', gen_salt('bf', 8)),
+   extensions.crypt('DemoPass@2026', extensions.gen_salt('bf', 8)),
    now() - interval '60 days',
    '{"provider":"email","providers":["email"]}',
    '{"full_name":"Rahul Mehta"}',
@@ -97,7 +97,7 @@ values
 
   ('20000000-0000-0000-0000-100000000003', 'authenticated', 'authenticated',
    'anjali.demo@gozaika.dev',
-   crypt('DemoPass@2026', gen_salt('bf', 8)),
+   extensions.crypt('DemoPass@2026', extensions.gen_salt('bf', 8)),
    now() - interval '15 days',
    '{"provider":"email","providers":["email"]}',
    '{"full_name":"Anjali Kumar"}',
@@ -105,7 +105,7 @@ values
 
   ('20000000-0000-0000-0000-100000000004', 'authenticated', 'authenticated',
    'vikram.demo@gozaika.dev',
-   crypt('DemoPass@2026', gen_salt('bf', 8)),
+   extensions.crypt('DemoPass@2026', extensions.gen_salt('bf', 8)),
    now() - interval '10 days',
    '{"provider":"email","providers":["email"]}',
    '{"full_name":"Vikram Rao"}',
@@ -113,7 +113,7 @@ values
 
   ('20000000-0000-0000-0000-100000000005', 'authenticated', 'authenticated',
    'deepa.demo@gozaika.dev',
-   crypt('DemoPass@2026', gen_salt('bf', 8)),
+   extensions.crypt('DemoPass@2026', extensions.gen_salt('bf', 8)),
    now() - interval '90 days',
    '{"provider":"email","providers":["email"]}',
    '{"full_name":"Deepa Nair"}',
@@ -121,7 +121,7 @@ values
 
   ('20000000-0000-0000-0000-100000000006', 'authenticated', 'authenticated',
    'arjun.demo@gozaika.dev',
-   crypt('DemoPass@2026', gen_salt('bf', 8)),
+   extensions.crypt('DemoPass@2026', extensions.gen_salt('bf', 8)),
    now() - interval '120 days',
    '{"provider":"email","providers":["email"]}',
    '{"full_name":"Arjun Singh"}',
@@ -129,7 +129,7 @@ values
 
   ('20000000-0000-0000-0000-100000000007', 'authenticated', 'authenticated',
    'meera.demo@gozaika.dev',
-   crypt('DemoPass@2026', gen_salt('bf', 8)),
+   extensions.crypt('DemoPass@2026', extensions.gen_salt('bf', 8)),
    now() - interval '7 days',
    '{"provider":"email","providers":["email"]}',
    '{"full_name":"Meera Patel"}',
@@ -137,7 +137,7 @@ values
 
   ('20000000-0000-0000-0000-100000000008', 'authenticated', 'authenticated',
    'karthik.demo@gozaika.dev',
-   crypt('DemoPass@2026', gen_salt('bf', 8)),
+   extensions.crypt('DemoPass@2026', extensions.gen_salt('bf', 8)),
    now() - interval '180 days',
    '{"provider":"email","providers":["email"]}',
    '{"full_name":"Karthik Reddy"}',
@@ -154,7 +154,7 @@ insert into auth.users
 values
   ('20000000-0000-0000-0000-200000000001', 'authenticated', 'authenticated',
    'bawarchi.owner@gozaika.dev',
-   crypt('DemoPass@2026', gen_salt('bf', 8)),
+   extensions.crypt('DemoPass@2026', extensions.gen_salt('bf', 8)),
    now() - interval '90 days',
    '{"provider":"email","providers":["email"],"role":"restaurant"}',
    '{"full_name":"Mohammed Bawarchi"}',
@@ -162,7 +162,7 @@ values
 
   ('20000000-0000-0000-0000-200000000002', 'authenticated', 'authenticated',
    'sattvik.owner@gozaika.dev',
-   crypt('DemoPass@2026', gen_salt('bf', 8)),
+   extensions.crypt('DemoPass@2026', extensions.gen_salt('bf', 8)),
    now() - interval '75 days',
    '{"provider":"email","providers":["email"],"role":"restaurant"}',
    '{"full_name":"Lakshmi Sattvik"}',
@@ -170,7 +170,7 @@ values
 
   ('20000000-0000-0000-0000-200000000003', 'authenticated', 'authenticated',
    'smoky.owner@gozaika.dev',
-   crypt('DemoPass@2026', gen_salt('bf', 8)),
+   extensions.crypt('DemoPass@2026', extensions.gen_salt('bf', 8)),
    now() - interval '60 days',
    '{"provider":"email","providers":["email"],"role":"restaurant"}',
    '{"full_name":"Rajesh Smoky"}',
@@ -178,7 +178,7 @@ values
 
   ('20000000-0000-0000-0000-200000000004', 'authenticated', 'authenticated',
    'andhra.owner@gozaika.dev',
-   crypt('DemoPass@2026', gen_salt('bf', 8)),
+   extensions.crypt('DemoPass@2026', extensions.gen_salt('bf', 8)),
    now() - interval '80 days',
    '{"provider":"email","providers":["email"],"role":"restaurant"}',
    '{"full_name":"Venkat Andhra"}',
@@ -186,7 +186,7 @@ values
 
   ('20000000-0000-0000-0000-200000000005', 'authenticated', 'authenticated',
    'sweet.owner@gozaika.dev',
-   crypt('DemoPass@2026', gen_salt('bf', 8)),
+   extensions.crypt('DemoPass@2026', extensions.gen_salt('bf', 8)),
    now() - interval '45 days',
    '{"provider":"email","providers":["email"],"role":"restaurant"}',
    '{"full_name":"Preethi Sweet"}',

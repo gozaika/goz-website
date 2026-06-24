@@ -45,6 +45,13 @@
 --   Computed     : COMPUTED_ prefix on maintained denormalised columns
 --   Append-only  : immutability triggers guard event/audit/ledger tables
 --   Comments     : COMMENT ON TABLE and COMMENT ON COLUMN on every object
+--   Extensions   : pgcrypto lives in the `extensions` schema. ALWAYS schema-
+--                  qualify its functions — extensions.crypt(...),
+--                  extensions.gen_salt(...), extensions.digest(...). The pooled
+--                  connection used by `supabase db push`/seeding does NOT carry
+--                  `extensions` on search_path, so unqualified calls fail on the
+--                  hosted DB while silently working locally. (gen_random_uuid()
+--                  and the citext type sit in public — resolvable unqualified.)
 --
 -- AI CODE-GENERATION CONTRACT
 -- ----------------------------
@@ -65,8 +72,13 @@ begin;
 -- ---------------------------------------------------------------------------
 -- Extensions
 -- ---------------------------------------------------------------------------
-create extension if not exists pgcrypto;
-comment on extension pgcrypto is 'Provides gen_random_uuid() for UUID PKs and digest() for hash operations (OTP, QR nonce hashing).';
+-- Installed into the `extensions` schema (Supabase default, both local and
+-- hosted). IMPORTANT: callers must schema-qualify — extensions.crypt(...),
+-- extensions.gen_salt(...), extensions.digest(...) — because the pooled
+-- connection used by `supabase db push`/seeding has no `extensions` on its
+-- search_path. Unqualified calls work locally but fail on the hosted DB.
+create extension if not exists pgcrypto with schema extensions;
+comment on extension pgcrypto is 'Provides gen_random_uuid() for UUID PKs and digest() for hash operations (OTP, QR nonce hashing). Schema-qualify calls as extensions.<fn>(...).';
 
 create extension if not exists citext;
 comment on extension citext is 'Case-insensitive text type used for email_address columns across all tables to prevent duplicate accounts due to case variation.';
