@@ -1,0 +1,92 @@
+# Store-readiness capture — goZaika Partner OWNER management screens (restaurant-mobile).
+# Fills the partner native gaps in screenshots/raw/INDEX.md (dashboard/drops/profile/
+# compliance/ROI/finance) that the counter flow does not cover.
+#
+# Persona: marketing.restaurant.meera  (Bawarchi OWNER)
+#   phone 9876520001 / OTP 200001  (LOCAL test_otp; never a real credential)
+#
+# Preconditions:
+#   1. restaurant-mobile dev client loaded on an emulator (Metro :8081).
+#   2. Restaurant BFF up on :3001, local Supabase :54321, `npm run db:seed:marketing-videos` applied.
+# Output: PNGs straight into the store raw tree.
+#
+#   maestro test apps/restaurant-mobile/.maestro/store-partner-owner.yaml
+appId: in.gozaika.restaurant
+---
+- tapOn:
+    text: "Continue"
+    optional: true
+
+# Ensure we are the OWNER: sign out any existing (e.g. PICKUP_STAFF) session first.
+- tapOn: "More"
+- runFlow:
+    when:
+      visible: "Sign out"
+    commands:
+      - tapOn: "Sign out"
+
+# Sign in as OWNER (Meera) if signed out.
+- tapOn: "More"
+- runFlow:
+    when:
+      visible: "Sign in"
+    commands:
+      - tapOn: "Sign in"
+      - assertVisible: "Partner sign in"
+      - tapOn: "Mobile number"
+      - inputText: "9876520001"
+      - hideKeyboard
+      - tapOn: "Send code"
+      - assertVisible: "Enter code"
+      - tapOn: "6-digit code"
+      - inputText: "200001"
+      - hideKeyboard
+      - tapOn: "Verify"
+
+# Scene 5 — Dashboard (Home)
+- tapOn: "Home"
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: ".codex-artifacts/gozaika-store-launch/screenshots/raw/gozaika-partner/05-dashboard"
+
+# Scene 6 — Drops management
+- tapOn: "Drops"
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: ".codex-artifacts/gozaika-store-launch/screenshots/raw/gozaika-partner/06-drops-manage"
+
+# Scene 7 — Profile
+- tapOn: "More"
+- tapOn:
+    text: "Profile →"
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: ".codex-artifacts/gozaika-store-launch/screenshots/raw/gozaika-partner/07-profile"
+- back
+
+# Scene 8 — Compliance
+- tapOn: "More"
+- tapOn:
+    text: "Compliance →"
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: ".codex-artifacts/gozaika-store-launch/screenshots/raw/gozaika-partner/07-profile-compliance"
+- back
+
+# Scene 9 — ROI reports
+- tapOn: "More"
+- tapOn:
+    text: "ROI reports →"
+- waitForAnimationToEnd:
+    timeout: 6000
+- takeScreenshot: ".codex-artifacts/gozaika-store-launch/screenshots/raw/gozaika-partner/08-reports-roi"
+- back
+
+# Scene 10 — Finance
+- tapOn: "More"
+- tapOn:
+    text: "Finance →"
+- waitForAnimationToEnd:
+    timeout: 6000
+- takeScreenshot: ".codex-artifacts/gozaika-store-launch/screenshots/raw/gozaika-partner/09-finance"
+- back

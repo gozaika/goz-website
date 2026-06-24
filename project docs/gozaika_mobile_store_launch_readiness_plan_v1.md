@@ -584,3 +584,40 @@ The third slice should produce:
 - QA evidence checklist.
 - Reviewer accounts and seed-data validation.
 - Closed-beta submission dry-run notes.
+
+## 16. Polish Pass v1 Status
+
+Created 2026-06-23 under:
+
+```text
+.codex-artifacts/gozaika-polish-v1/
+```
+
+Outputs:
+
+- Google Play 9:16 screenshot masters for `goZaika`.
+- Google Play 9:16 screenshot masters for `goZaika Partner`.
+- Google Play 1024 x 500 feature graphic drafts for both apps.
+- Four vertical social preview videos as WebM masters:
+  - `customer-day-in-life-social.webm`
+  - `restaurant-counter-social.webm`
+  - `restaurant-management-social.webm`
+  - `restaurant-onboarding-social.webm`
+- Generator script:
+  - `scripts/marketing-polish/polish-assets.mjs`
+
+Current limitations:
+
+- Customer screenshots were captured from an Expo dev-client build and still show part of the floating dev-client gear button near the top-right. The v1 composition reduces its prominence but does not fully remove it.
+- `ffmpeg` was not visible to the Codex PowerShell process during the v1 pass, so the videos are WebM masters recorded through Chromium/Playwright. Once `ffmpeg` is available in the active shell, transcode WebM to MP4 with H.264/AAC for Instagram, WhatsApp and Play preview use.
+- Partner OWNER native dashboard/drops/reports captures are still pending because the installed partner dev client predates Slice 12 and lacks `ExpoDocumentPicker`.
+
+How to remove the floating gear overlay in future versions:
+
+1. Build a preview or production Android client, not an Expo dev-client capture build.
+2. Install that build for `in.gozaika.customer` on the Pixel 7 emulator or a physical Android device.
+3. Point the build at the same seeded beta/staging backend used for reviewer accounts.
+4. Re-run the store screenshot capture command for `goZaika`.
+5. Re-run `node scripts/marketing-polish/polish-assets.mjs`.
+
+If a dev-client capture must be used temporarily, keep it labeled as internal-beta draft material and replace before public store submission.
