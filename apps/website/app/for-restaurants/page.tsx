@@ -153,7 +153,7 @@ export default function ForRestaurantsPage(): React.ReactElement {
       <section className="bg-forest text-white" aria-labelledby="cannibalization-heading">
         <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:grid lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-8">
           <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-saffron">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-saffron-light">
               A COMMON QUESTION
             </p>
             <h2
@@ -240,7 +240,7 @@ export default function ForRestaurantsPage(): React.ReactElement {
           </div>
           <Link
             href="/insider"
-            className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#25D366] px-7 py-3.5 text-sm font-semibold text-white shadow transition-all hover:bg-[#1ebe59] hover:shadow-md"
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#0B8043] px-7 py-3.5 text-sm font-semibold text-white shadow transition-all hover:bg-[#0A6E39] hover:shadow-md"
           >
             <MessageCircle className="h-4 w-4" aria-hidden="true" />
             Message us on WhatsApp
