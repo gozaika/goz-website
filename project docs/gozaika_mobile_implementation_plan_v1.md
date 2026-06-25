@@ -76,6 +76,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | U2R | Partner primitives | U1 | Complete (2026-06-25) |
 | C1 | Customer Home/Discover composition | U1, U2C | Complete (2026-06-25) |
 | C2 | Drops list + map toggle | C1 | Complete (2026-06-25) |
+| R1 | Partner role-shaped Today dashboard | U1, U2R | Complete (2026-06-25) |
 
 **Completion and redevelopment record (U1 - 2026-06-25)**
 
@@ -134,6 +135,17 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Commands: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: install/capture from this branch on the connected Android device when practical; raw screenshot evidence is QA only, not store-ready creative.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/consumer-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (R1 - 2026-06-25)**
+
+- Branch: `codex/mobile-ux-uplift/r1-partner-dashboard`.
+- Changed `apps/restaurant-mobile/app/(tabs)/index.tsx` to compose the partner Today dashboard with U2R primitives over the existing `useDashboard()` role-shaped contract.
+- Role/data truth: `FULL` can show both finance and operations when both sections are sent; `QUEUE_ONLY` leads with pickup queue and does not receive/display financial values; `SUMMARY` leads with financials and does not receive/display operational queue actions. No previous-period trend, restaurant claim, fabricated metric, QR/OTP, order state, rating, or user-count claim was introduced.
+- UI states: restaurant selection empty state, loading skeletons, API error retry, status/publishing notices, role/status badges, finance sell-through table, queue action cards, next-drop card, and gated new-drop action.
+- Compatibility: no API/schema/auth/payment/pickup/notification/finance calculation behavior changed.
+- Commands: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: Android preview-device install remains a tooling task; raw dashboard screenshots should be captured after the preview-build path issue is resolved.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
 
 ## 4. Agent prompts
 

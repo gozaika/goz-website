@@ -477,3 +477,13 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 - Verification: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7 before commit.
 - Visual QA: ADB install/load was attempted. Debug install opened the Expo development launcher, release install was blocked by a native CMake path issue in generated Android build output, and dev-client loading was blocked by Metro/external-access errors; failure screenshots are in `.codex-artifacts/mobile-ux-uplift/c2/`.
 - Rollback: revert `apps/consumer-mobile/app/(tabs)/drops/index.tsx` and C2 doc records; no database, server, native config, or API rollback required.
+
+### R1 - Partner role-shaped Today dashboard (Complete, 2026-06-25)
+
+- Branch: `codex/mobile-ux-uplift/r1-partner-dashboard`.
+- Files changed: `apps/restaurant-mobile/app/(tabs)/index.tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Screen surface: Partner Home/Today now composes `MetricHero`, role/status badges, status and publishing notices, finance sell-through summary, operations action cards, next-drop context, and the gated new-drop action from the existing dashboard payload.
+- Role/data truth: `QUEUE_ONLY` leads with pickup queue and never shows financials; `SUMMARY` leads with finance and never shows operational queue actions; `FULL` can show both only when both sections are present. No previous-period trend delta, fabricated metric, restaurant claim, QR/OTP, order state, rating, or user-count claim was introduced.
+- Verification: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: Android preview-device screenshot capture is deferred to the separate preview-build path/tooling fix; this slice has no native/config dependency.
+- Rollback: revert `apps/restaurant-mobile/app/(tabs)/index.tsx` and R1 doc records; no database, server, native config, or API rollback required.

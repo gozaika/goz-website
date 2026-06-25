@@ -39,7 +39,8 @@ caveats; **Codex** owns store copy, privacy drafts, polished creatives, final Pl
 - **U2R partner primitives** is complete on branch `codex/mobile-ux-uplift/u2r-partner-primitives`: `MetricHero`, `ActionCard`, `QueueCard`, `SellThroughBar`, `Sparkline`, `DataTable`, `RoleAwareSection`, and `RestaurantSwitcher`. No app behavior or data changes.
 - **C1 Home/Discover composition** is complete on branch `codex/mobile-ux-uplift/c1-home-discover`: hero, real active-drop stat, closing-soon rail, live tags, loading/error/empty states, and account/passport/consent links composed from real `useDrops()` data. Favorite/follow rail remains omitted until F1 exists.
 - **C2 Drops list + map toggle** is complete on branch `codex/mobile-ux-uplift/c2-drops-map`: List/Map segmented toggle, dietary filters, closing-soon/availability sorting, and a native coordinate-pin map view using only public drop coordinates. No map SDK dependency yet.
-- Next uplift slice: **R1 partner dashboard** or **C3 drop detail + checkout polish**.
+- **R1 Partner role-shaped Today dashboard** is complete on branch `codex/mobile-ux-uplift/r1-partner-dashboard`: MetricHero, role badges, status/publishing notices, finance sell-through summary, and operations action cards composed from real `useDashboard()` sections. No trend delta or unsent role data is displayed.
+- Next uplift slice: **C3 drop detail + checkout polish** or **R2 pickup counter polish**.
 - U1 verification: mobile-ui typecheck + tests passed; full `node scripts/mobile-ci.mjs` is green 7/7 after clearing active Orbitwell owner drift from app configs and removing a server-secret identifier from a Maestro comment.
 
 ## Current state (2026-06-22)
