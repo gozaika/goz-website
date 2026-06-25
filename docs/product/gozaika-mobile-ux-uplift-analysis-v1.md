@@ -455,3 +455,14 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 - Verification: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: deferred to R1/R2 because U2R adds reusable primitives but does not compose a partner screen.
 - Rollback: revert the U2R files listed above; no database, server, native config, or app behavior rollback required.
+
+### C1 - Customer Home/Discover composition (Complete, 2026-06-25)
+
+- Branch: `codex/mobile-ux-uplift/c1-home-discover`.
+- Files changed: `apps/consumer-mobile/app/(tabs)/index.tsx`; plan docs updated in this file and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Screen surface: Home now renders a U2C hero, real active-drop stat, closing-soon horizontal rail, live dietary/neighborhood chips, loading skeletons, error retry, no-live-drop empty state, and account/passport/consent link card.
+- Data truth: every visible restaurant/drop/price/window/quantity/tag comes from `useDrops()` and `MobilePublicDropCard`; favorite/follow rail is omitted until F1 creates real follow data.
+- Compatibility: no API/schema/auth/payment/pickup/notification behavior changed; no fake restaurants, prices, metrics, ratings, QR/OTP, order states, or claims introduced.
+- Verification: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: raw device screenshot should be captured when the connected Android device is unlocked and available; not store-ready creative.
+- Rollback: revert `apps/consumer-mobile/app/(tabs)/index.tsx` and the C1 doc records; no database, server, native config, or API rollback required.

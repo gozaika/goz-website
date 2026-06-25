@@ -74,6 +74,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | U1 | Design-system depth | Mobile Slice 2 | Complete (2026-06-25) |
 | U2C | Customer primitives | U1 | Complete (2026-06-25) |
 | U2R | Partner primitives | U1 | Complete (2026-06-25) |
+| C1 | Customer Home/Discover composition | U1, U2C | Complete (2026-06-25) |
 
 **Completion and redevelopment record (U1 - 2026-06-25)**
 
@@ -110,6 +111,17 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Commands: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: no consuming partner screen changed in U2R, so device screenshots are deferred to R1/R2 where primitives are composed against real dashboard/counter data.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/mobile-ui run typecheck`, `npm.cmd --workspace @gozaika/mobile-ui test`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (C1 - 2026-06-25)**
+
+- Branch: `codex/mobile-ux-uplift/c1-home-discover`.
+- Changed `apps/consumer-mobile/app/(tabs)/index.tsx` to compose the Home/Discover screen with U2C primitives over real `useDrops()` data.
+- Behavior/data truth: active count, closing-soon rail, quantity badges, pickup labels, prices, dietary tags, and neighborhoods are derived only from loaded `MobilePublicDropCard` values. Favorite/follow rail is intentionally omitted until F1 exists; no fabricated restaurants, prices, metrics, ratings, order states, QR/OTP, or follow data.
+- UI states: loading skeletons, API error retry, no-live-drop empty state, closing-soon horizontal rail, live tag chips, and account/passport/consent link card.
+- Compatibility: no API/schema/auth/payment/pickup/notification behavior changed.
+- Commands: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: device screenshot capture should be performed after the full gate using the connected Android device if time/device state allows; any screenshot is raw QA evidence only, not store-ready creative.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/consumer-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
 
 ## 4. Agent prompts
 
