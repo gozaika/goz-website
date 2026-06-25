@@ -76,6 +76,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | U2R | Partner primitives | U1 | Complete (2026-06-25) |
 | C1 | Customer Home/Discover composition | U1, U2C | Complete (2026-06-25) |
 | C2 | Drops list + map toggle | C1 | Complete (2026-06-25) |
+| C3 | Drop detail + checkout polish | C2 | Complete (2026-06-25) |
 | R1 | Partner role-shaped Today dashboard | U1, U2R | Complete (2026-06-25) |
 
 **Completion and redevelopment record (U1 - 2026-06-25)**
@@ -134,6 +135,17 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Compatibility: no API/schema/auth/payment/pickup/notification behavior changed.
 - Commands: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: install/capture from this branch on the connected Android device when practical; raw screenshot evidence is QA only, not store-ready creative.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/consumer-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (C3 - 2026-06-25)**
+
+- Branch: `codex/mobile-ux-uplift/c3-detail-checkout`.
+- Changed `apps/consumer-mobile/app/(tabs)/drops/[dropPk].tsx` to add countdown, richer availability/low-stock presentation, price/allergen/pickup cards, and a sticky claim bar over real `MobilePublicDropCard` data.
+- Changed `apps/consumer-mobile/app/checkout/[holdPk].tsx` to polish checkout states, demo simulator controls, server-confirmation wait state, and confirmed-order success presentation.
+- Data truth: countdown derives from `pickupEndAt`; stock status derives from `quantityAvailable`/`quantityTotal`; success renders only after `/checkout/status` returns an `orderPk` and `orderStatusCode`. No fake pickup code, QR/OTP, order state, restaurant claim, price, metric, rating, or user-count claim was introduced.
+- Compatibility: no API/schema/auth/payment/pickup/notification behavior changed; claim still creates a server hold and checkout still relies on server-authoritative payment/order status.
+- Commands: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: Android preview-device screenshot capture remains deferred to the separate preview-build path/tooling fix.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/consumer-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
 
 **Completion and redevelopment record (R1 - 2026-06-25)**

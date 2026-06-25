@@ -487,3 +487,13 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 - Verification: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: Android preview-device screenshot capture is deferred to the separate preview-build path/tooling fix; this slice has no native/config dependency.
 - Rollback: revert `apps/restaurant-mobile/app/(tabs)/index.tsx` and R1 doc records; no database, server, native config, or API rollback required.
+
+### C3 - Drop detail + checkout polish (Complete, 2026-06-25)
+
+- Branch: `codex/mobile-ux-uplift/c3-detail-checkout`.
+- Files changed: `apps/consumer-mobile/app/(tabs)/drops/[dropPk].tsx`, `apps/consumer-mobile/app/checkout/[holdPk].tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Screen surface: Drop detail now has a pickup-end countdown, availability/low-stock card, price/allergen/pickup guidance cards, and sticky claim bar; checkout now has clearer simulator/demo copy, failure/retry controls, server-confirmation wait state, and confirmed-order success presentation.
+- Data truth: countdown derives from `pickupEndAt`; stock copy derives from `quantityAvailable`/`quantityTotal`; success renders only after `/checkout/status` returns `orderPk` and `orderStatusCode`. No fake pickup code, QR/OTP, order state, price, metric, rating, user-count, or unsupported payment claim was introduced.
+- Verification: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: Android preview-device screenshot capture is deferred to the separate preview-build path/tooling fix; this slice has no native/config dependency.
+- Rollback: revert `apps/consumer-mobile/app/(tabs)/drops/[dropPk].tsx`, `apps/consumer-mobile/app/checkout/[holdPk].tsx`, and C3 doc records; no database, server, native config, or API rollback required.

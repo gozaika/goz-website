@@ -1,9 +1,23 @@
 import { ApiError } from "@gozaika/mobile-core";
-import { Badge, Button, Card, EmptyState, ErrorState, palette, Screen, Skeleton, spacing, Text, toneColors } from "@gozaika/mobile-ui";
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  ErrorState,
+  palette,
+  ProgressRing,
+  Screen,
+  Skeleton,
+  spacing,
+  StickyActionBar,
+  Text,
+  toneColors,
+} from "@gozaika/mobile-ui";
 import { formatPaise } from "@gozaika/utils";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { useCheckoutOrder, useCheckoutStatus, useSimulatePayment } from "@/api/checkout";
 
 /**
@@ -12,7 +26,7 @@ import { useCheckoutOrder, useCheckoutStatus, useSimulatePayment } from "@/api/c
  *   keys are configured the order call returns a clear "not configured" message.
  * - "simulated": this discreet demo/test screen, shown only when the server has the
  *   payment simulator enabled. "Confirm payment" runs the gated server simulator,
- *   which goes through the canonical capture RPC → a real, server-authoritative order.
+ *   which goes through the canonical capture RPC -> a real, server-authoritative order.
  * The client never marks itself paid; it polls `/checkout/status`.
  */
 export default function CheckoutScreen() {
@@ -31,9 +45,9 @@ export default function CheckoutScreen() {
   if (order.isLoading) {
     return (
       <Screen contentStyle={{ gap: spacing.md }}>
-        <Skeleton height={28} width="60%" />
-        <Skeleton height={120} />
-        <Skeleton height={48} />
+        <Skeleton height={32} width="60%" />
+        <Skeleton height={148} />
+        <Skeleton height={96} />
       </Screen>
     );
   }
@@ -63,21 +77,27 @@ export default function CheckoutScreen() {
   if (confirmed) {
     return (
       <Screen contentStyle={{ gap: spacing.md }}>
-        <View style={{ backgroundColor: toneColors("success").bg, borderRadius: 12, padding: spacing.lg, gap: 4 }}>
-          <Text variant="title" color={toneColors("success").fg}>
-            Order confirmed
-          </Text>
-          <Text variant="body" color={toneColors("success").fg}>
-            {data.bagDisplayName} from {data.restaurantName} · {formatPaise(data.amountPaise)} paid.
-          </Text>
-        </View>
-        <Card>
-          <Text variant="label">Pickup</Text>
-          <Text variant="body" color={palette.muted}>
-            Your pickup code is on its way to you — show it at the counter to collect your bag.
-          </Text>
+        <Card elevated="md" style={{ borderColor: toneColors("success").fg, backgroundColor: toneColors("success").bg }}>
+          <View style={{ alignItems: "center", gap: spacing.md }}>
+            <ProgressRing value={100} label="Server confirmed" size={112} accent={toneColors("success").fg} />
+            <View style={{ alignItems: "center", gap: spacing.xs }}>
+              <Text variant="title" color={toneColors("success").fg}>
+                Order confirmed
+              </Text>
+              <Text color={toneColors("success").fg} style={{ textAlign: "center" }}>
+                {data.bagDisplayName} from {data.restaurantName}
+              </Text>
+            </View>
+          </View>
         </Card>
-        <Button label="Done" accent={palette.forest} onPress={() => router.replace("/(tabs)/orders")} />
+        <Card elevated="sm">
+          <Text variant="label">Paid</Text>
+          <Text variant="title" color={palette.forest}>
+            {formatPaise(data.amountPaise)}
+          </Text>
+          <Text color={palette.muted}>Open Orders for pickup details and counter verification.</Text>
+        </Card>
+        <Button label="View order" accent={palette.forest} onPress={() => router.replace("/(tabs)/orders")} />
       </Screen>
     );
   }
@@ -86,13 +106,20 @@ export default function CheckoutScreen() {
   if (data.mode === "razorpay") {
     return (
       <Screen contentStyle={{ gap: spacing.md }}>
-        <Text variant="title">{formatPaise(data.amountPaise)}</Text>
-        <Text variant="body" color={palette.muted}>
-          {data.bagDisplayName} from {data.restaurantName}
+        <Text variant="caption" color={palette.forest}>
+          Secure checkout
         </Text>
+        <Text variant="title">{formatPaise(data.amountPaise)}</Text>
+        <Card elevated="sm">
+          <Text variant="heading">{data.bagDisplayName}</Text>
+          <Text color={palette.muted}>{data.restaurantName}</Text>
+          <Text variant="caption" color={palette.muted}>
+            {data.description}
+          </Text>
+        </Card>
         <EmptyState
           title="Razorpay checkout"
-          message="Secure card / UPI payment opens here. (Native Razorpay checkout is wired once payment credentials are configured.)"
+          message="Secure card / UPI payment opens here. Native Razorpay checkout is wired once payment credentials are configured."
         />
       </Screen>
     );
@@ -100,55 +127,71 @@ export default function CheckoutScreen() {
 
   // Simulated checkout (demo/test only).
   return (
-    <Screen contentStyle={{ gap: spacing.md }}>
-      <Badge label="Demo · simulated payment" tone="warning" />
-      <Text variant="title">{formatPaise(data.amountPaise)}</Text>
-      <Card>
-        <Text variant="heading">{data.bagDisplayName}</Text>
-        <Text variant="body" color={palette.muted}>
-          {data.restaurantName}
-        </Text>
-        <Text variant="caption" color={palette.muted}>
-          This is a simulated Razorpay checkout for demos and testing. The server creates a real, payment-confirmed order
-          — no money moves.
-        </Text>
-      </Card>
-
-      <Button
-        label="Confirm payment"
-        accent={palette.forest}
-        loading={simulate.isPending && simulate.variables === "SUCCESS"}
-        disabled={simulate.isPending}
-        onPress={() => simulate.mutate("SUCCESS", { onSuccess: () => setPaid(true) })}
-      />
-      <Button
-        label="Simulate failure"
-        variant="secondary"
-        accent={palette.forest}
-        loading={simulate.isPending && simulate.variables === "FAILURE"}
-        disabled={simulate.isPending}
-        onPress={() => simulate.mutate("FAILURE")}
-      />
-
-      {paid && !confirmed ? (
-        <Text variant="caption" color={palette.muted}>
-          Confirming your order…
-        </Text>
-      ) : null}
-      {failed ? (
-        <View style={{ backgroundColor: toneColors("danger").bg, borderRadius: 10, padding: 12 }}>
-          <Text variant="caption" color={toneColors("danger").fg}>
-            Simulated payment failed. Your hold is still active — try again.
+    <Screen scroll={false} contentStyle={{ padding: 0, gap: 0 }}>
+      <ScrollView contentContainerStyle={{ padding: spacing.xl, gap: spacing.md }}>
+        <Badge label="Demo · simulated payment" tone="warning" />
+        <View>
+          <Text variant="caption" color={palette.forest}>
+            Checkout
           </Text>
+          <Text variant="title">{formatPaise(data.amountPaise)}</Text>
         </View>
-      ) : null}
-      {simulate.isError ? (
-        <View style={{ backgroundColor: toneColors("danger").bg, borderRadius: 10, padding: 12 }}>
-          <Text variant="caption" color={toneColors("danger").fg}>
-            {simulate.error instanceof ApiError ? simulate.error.message : "Could not process the simulated payment."}
+
+        <Card elevated="sm">
+          <Text variant="heading">{data.bagDisplayName}</Text>
+          <Text color={palette.muted}>{data.restaurantName}</Text>
+          <Text variant="caption" color={palette.muted}>
+            {data.description}
           </Text>
-        </View>
-      ) : null}
+        </Card>
+
+        <Card elevated="sm" style={{ backgroundColor: palette.cream }}>
+          <Text variant="label">Demo mode</Text>
+          <Text color={palette.muted}>
+            This environment uses a gated payment simulator. The server creates the order only after the simulated
+            payment is confirmed.
+          </Text>
+        </Card>
+
+        {paid && !confirmed ? (
+          <Card elevated="sm">
+            <Text variant="heading">Confirming your order</Text>
+            <Text color={palette.muted}>Waiting for the server-authoritative order status.</Text>
+          </Card>
+        ) : null}
+
+        {failed ? (
+          <View style={{ backgroundColor: toneColors("danger").bg, borderRadius: 10, padding: spacing.md }}>
+            <Text variant="caption" color={toneColors("danger").fg}>
+              Simulated payment failed. Your hold is still active - try again.
+            </Text>
+          </View>
+        ) : null}
+        {simulate.isError ? (
+          <View style={{ backgroundColor: toneColors("danger").bg, borderRadius: 10, padding: spacing.md }}>
+            <Text variant="caption" color={toneColors("danger").fg}>
+              {simulate.error instanceof ApiError ? simulate.error.message : "Could not process the simulated payment."}
+            </Text>
+          </View>
+        ) : null}
+      </ScrollView>
+
+      <StickyActionBar
+        primaryLabel="Confirm payment"
+        accent={palette.forest}
+        disabled={simulate.isPending}
+        helperText="Confirmation appears only after the server returns an order."
+        onPrimaryPress={() => simulate.mutate("SUCCESS", { onSuccess: () => setPaid(true) })}
+      >
+        <Button
+          label="Simulate failure"
+          variant="secondary"
+          accent={palette.forest}
+          loading={simulate.isPending && simulate.variables === "FAILURE"}
+          disabled={simulate.isPending}
+          onPress={() => simulate.mutate("FAILURE")}
+        />
+      </StickyActionBar>
     </Screen>
   );
 }
