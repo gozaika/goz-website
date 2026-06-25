@@ -78,6 +78,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | C2 | Drops list + map toggle | C1 | Complete (2026-06-25) |
 | C3 | Drop detail + checkout polish | C2 | Complete (2026-06-25) |
 | R1 | Partner role-shaped Today dashboard | U1, U2R | Complete (2026-06-25) |
+| R2 | Counter focus-mode | R1, U2R | Complete (2026-06-25) |
 
 **Completion and redevelopment record (U1 - 2026-06-25)**
 
@@ -157,6 +158,17 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Compatibility: no API/schema/auth/payment/pickup/notification/finance calculation behavior changed.
 - Commands: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: Android preview-device install remains a tooling task; raw dashboard screenshots should be captured after the preview-build path issue is resolved.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (R2 - 2026-06-25)**
+
+- Branch: `codex/mobile-ux-uplift/r2-counter-focus`.
+- Changed `apps/restaurant-mobile/app/(tabs)/orders/index.tsx` to add focus-mode queue counts, Active/All/Collected/Issues filters, U2R `QueueCard` rows, retained offline banner, retained phone navigation, and retained tablet master-detail split.
+- Changed `apps/restaurant-mobile/src/counter/OrderActionsPanel.tsx` to add a focused order hero and elevated verify/no-show/incident cards without changing verification/no-show/incident mutations.
+- Security/behavior truth: pickup verification still uses the existing server-authoritative hooks, stable idempotency keys, QR/OTP inputs, offline not-confirmed warning, no-show server rejection, and incident creation path. No fake order state, QR/OTP, pickup result, haptic/sound claim, metric, rating, or user-count claim was introduced.
+- Dependency decision: no haptic/sound dependency was added in R2; sound/haptics can be introduced later with explicit counter-only native verification.
+- Commands: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: Android preview-device screenshot capture remains deferred to the separate preview-build path/tooling fix.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
 
 ## 4. Agent prompts

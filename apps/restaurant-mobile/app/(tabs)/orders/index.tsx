@@ -1,9 +1,22 @@
 import { ApiError } from "@gozaika/mobile-core";
-import { Badge, Card, EmptyState, ErrorState, OfflineBanner, Screen, Text, palette } from "@gozaika/mobile-ui";
+import {
+  Badge,
+  EmptyState,
+  ErrorState,
+  FilterChipRow,
+  MetricHero,
+  OfflineBanner,
+  QueueCard,
+  Screen,
+  Skeleton,
+  Text,
+  palette,
+  spacing,
+} from "@gozaika/mobile-ui";
 import type { CounterOrder } from "@gozaika/types";
 import { formatPaise } from "@gozaika/utils";
 import { Link } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
 import { useCounterOrders } from "@/api/counter";
 import { useAuth } from "@/auth/useAuth";
@@ -13,34 +26,70 @@ import { orderStatusLabel, orderStatusTone } from "@/counter/status";
 /** Tablet landscape threshold for the master-detail split. */
 const MASTER_DETAIL_MIN_WIDTH = 900;
 
+type QueueFilter = "all" | "active" | "collected" | "issues";
+
 function pickupWindowLabel(startIso: string, endIso: string): string {
   const fmt = (iso: string) =>
     new Date(iso).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
-  return `${fmt(startIso)} – ${fmt(endIso)}`;
+  return `${fmt(startIso)} - ${fmt(endIso)}`;
 }
 
-function OrderCardBody({ order }: { readonly order: CounterOrder }) {
+function isActiveOrder(order: CounterOrder): boolean {
+  return ["PAID", "CONFIRMED", "READY_FOR_PICKUP"].includes(order.orderStatusCode);
+}
+
+function isIssueOrder(order: CounterOrder): boolean {
+  return order.incidentCount > 0 || ["NO_SHOW", "PICKUP_EXPIRED", "CANCELLED"].includes(order.orderStatusCode);
+}
+
+function filteredOrders(orders: readonly CounterOrder[], filter: QueueFilter): readonly CounterOrder[] {
+  if (filter === "active") return orders.filter(isActiveOrder);
+  if (filter === "collected") return orders.filter((order) => order.orderStatusCode === "COLLECTED");
+  if (filter === "issues") return orders.filter(isIssueOrder);
+  return orders;
+}
+
+function queueCounts(orders: readonly CounterOrder[]) {
+  return {
+    active: orders.filter(isActiveOrder).length,
+    collected: orders.filter((order) => order.orderStatusCode === "COLLECTED").length,
+    issues: orders.filter(isIssueOrder).length,
+  };
+}
+
+function detailLines(order: CounterOrder): readonly string[] {
+  const lines = [
+    `${order.dietaryCategoryCode}${order.spiceLevelCode ? ` · ${order.spiceLevelCode}` : ""} · Qty ${order.quantity}`,
+    `Pickup ${pickupWindowLabel(order.pickupWindowStartAt, order.pickupWindowEndAt)}`,
+  ];
+  if (order.pickupVerificationAttemptCount > 0) {
+    lines.push(`${order.pickupVerificationAttemptCount} verification attempt${order.pickupVerificationAttemptCount > 1 ? "s" : ""}`);
+  }
+  return lines;
+}
+
+function OrderQueueCard({
+  order,
+  selected = false,
+  onPress,
+}: {
+  readonly order: CounterOrder;
+  readonly selected?: boolean;
+  readonly onPress?: () => void;
+}) {
   return (
-    <Card>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <Text variant="heading">{order.orderNumber}</Text>
-        <Badge label={orderStatusLabel(order.orderStatusCode)} tone={orderStatusTone(order.orderStatusCode)} />
-      </View>
-      <Text variant="body">{order.bagDisplayName}</Text>
-      <Text variant="caption" color={palette.muted}>
-        {order.dietaryCategoryCode}
-        {order.spiceLevelCode ? ` · ${order.spiceLevelCode}` : ""} · Qty {order.quantity}
-      </Text>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Text variant="caption" color={palette.muted}>
-          Pickup {pickupWindowLabel(order.pickupWindowStartAt, order.pickupWindowEndAt)}
-        </Text>
-        <Text variant="label">{formatPaise(order.paidAmountPaise)}</Text>
-      </View>
-      {order.incidentCount > 0 ? (
-        <Badge label={`${order.incidentCount} incident${order.incidentCount > 1 ? "s" : ""}`} tone="warning" />
-      ) : null}
-    </Card>
+    <QueueCard
+      orderNumber={order.orderNumber}
+      title={order.bagDisplayName}
+      statusLabel={orderStatusLabel(order.orderStatusCode)}
+      statusTone={orderStatusTone(order.orderStatusCode)}
+      detailLines={detailLines(order)}
+      amountLabel={formatPaise(order.paidAmountPaise)}
+      incidentLabel={order.incidentCount > 0 ? `${order.incidentCount} incident${order.incidentCount > 1 ? "s" : ""}` : undefined}
+      selected={selected}
+      onPress={onPress}
+      accent={palette.forest}
+    />
   );
 }
 
@@ -49,9 +98,12 @@ export default function CounterScreen() {
   const { width } = useWindowDimensions();
   const { data, isLoading, isError, error, refetch, isRefetching } = useCounterOrders(selectedRestaurantPk);
   const [selectedOrderPk, setSelectedOrderPk] = useState<string | null>(null);
+  const [filter, setFilter] = useState<QueueFilter>("active");
 
   const offline = isError && error instanceof ApiError && error.code === "NETWORK";
   const orders = data?.orders ?? [];
+  const counts = useMemo(() => queueCounts(orders), [orders]);
+  const visibleOrders = useMemo(() => filteredOrders(orders, filter), [filter, orders]);
   const masterDetail = width >= MASTER_DETAIL_MIN_WIDTH;
 
   if (!selectedRestaurantPk) {
@@ -64,11 +116,10 @@ export default function CounterScreen() {
 
   if (isLoading) {
     return (
-      <Screen contentStyle={{ justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator color={palette.forest} />
-        <Text variant="body" color={palette.muted}>
-          Loading the pickup queue…
-        </Text>
+      <Screen contentStyle={{ gap: spacing.md }}>
+        <Skeleton height={148} />
+        <Skeleton height={96} />
+        <Skeleton height={96} />
       </Screen>
     );
   }
@@ -84,42 +135,66 @@ export default function CounterScreen() {
     );
   }
 
+  const activePk = selectedOrderPk ?? visibleOrders[0]?.orderPk ?? orders[0]?.orderPk ?? null;
+  const emptyState = (
+    <EmptyState
+      title={orders.length === 0 ? "No orders yet" : "No matching orders"}
+      message={orders.length === 0 ? "Paid pickup-ready orders for this restaurant appear here." : "Try a different queue filter."}
+    />
+  );
+
   const header = (
     <>
       <OfflineBanner offline={offline} />
-      <Text variant="title">Pickup counter</Text>
-      <Text variant="body" color={palette.muted}>
-        Verify paid, pickup-ready BAM Bag orders with the QR or OTP. Mark true no-shows after the window and log
-        incidents.
-      </Text>
+      <MetricHero
+        eyebrow="Pickup counter"
+        title="Ready now"
+        value={String(counts.active)}
+        helper={`${counts.collected} collected · ${counts.issues} issue${counts.issues === 1 ? "" : "s"}`}
+        badgeLabel={isRefetching ? "Refreshing" : `${orders.length} total`}
+        badgeTone={isRefetching ? "info" : "neutral"}
+        accent={palette.forest}
+      >
+        <Text color={palette.muted}>
+          Verify paid BAM Bag pickups with QR or OTP. Server verification remains the source of truth.
+        </Text>
+      </MetricHero>
+      <FilterChipRow
+        accessibilityLabel="Counter queue filters"
+        accent={palette.forest}
+        chips={[
+          { id: "active", label: `Ready ${counts.active}`, selected: filter === "active" },
+          { id: "all", label: `All ${orders.length}`, selected: filter === "all" },
+          { id: "collected", label: `Collected ${counts.collected}`, selected: filter === "collected" },
+          { id: "issues", label: `Issues ${counts.issues}`, selected: filter === "issues" },
+        ]}
+        onSelect={(id) => setFilter(id as QueueFilter)}
+      />
     </>
   );
 
-  const emptyState = <EmptyState title="No orders yet" message="Paid pickup-ready orders for this restaurant appear here." />;
-
   // Tablet: list on the left, live order detail on the right.
   if (masterDetail) {
-    const activePk = selectedOrderPk ?? orders[0]?.orderPk ?? null;
     return (
       <Screen scroll={false} contentStyle={{ padding: 0 }}>
         <View style={{ flex: 1, flexDirection: "row" }}>
-          <ScrollView style={{ flex: 1, borderRightWidth: 1, borderRightColor: palette.border }} contentContainerStyle={{ padding: 16, gap: 12 }}>
+          <ScrollView
+            style={{ flex: 1, borderRightWidth: 1, borderRightColor: palette.border }}
+            contentContainerStyle={{ padding: spacing.lg, gap: spacing.md }}
+          >
             {header}
-            {orders.length === 0
+            {visibleOrders.length === 0
               ? emptyState
-              : orders.map((order) => (
-                  <Pressable
+              : visibleOrders.map((order) => (
+                  <OrderQueueCard
                     key={order.orderPk}
-                    accessibilityRole="button"
-                    accessibilityState={{ selected: order.orderPk === activePk }}
+                    order={order}
+                    selected={order.orderPk === activePk}
                     onPress={() => setSelectedOrderPk(order.orderPk)}
-                    style={{ opacity: order.orderPk === activePk ? 1 : 0.7 }}
-                  >
-                    <OrderCardBody order={order} />
-                  </Pressable>
+                  />
                 ))}
           </ScrollView>
-          <ScrollView style={{ flex: 1.3 }} contentContainerStyle={{ padding: 16 }}>
+          <ScrollView style={{ flex: 1.3 }} contentContainerStyle={{ padding: spacing.lg }}>
             {activePk ? (
               <OrderActionsPanel orderId={activePk} />
             ) : (
@@ -135,16 +210,21 @@ export default function CounterScreen() {
   return (
     <Screen>
       {header}
-      {orders.length === 0
+      {visibleOrders.length === 0
         ? emptyState
-        : orders.map((order) => (
+        : visibleOrders.map((order) => (
             <Link key={order.orderPk} href={`/orders/${order.orderPk}`} asChild>
               <Pressable accessibilityRole="button" accessibilityLabel={`Open order ${order.orderNumber}`}>
-                <OrderCardBody order={order} />
+                <OrderQueueCard order={order} />
               </Pressable>
             </Link>
           ))}
-      {isRefetching ? <ActivityIndicator color={palette.forest} /> : null}
+      {isRefetching ? (
+        <View style={{ alignItems: "center" }}>
+          <ActivityIndicator color={palette.forest} />
+          <Badge label="Refreshing queue" tone="info" />
+        </View>
+      ) : null}
     </Screen>
   );
 }

@@ -41,7 +41,8 @@ caveats; **Codex** owns store copy, privacy drafts, polished creatives, final Pl
 - **C2 Drops list + map toggle** is complete on branch `codex/mobile-ux-uplift/c2-drops-map`: List/Map segmented toggle, dietary filters, closing-soon/availability sorting, and a native coordinate-pin map view using only public drop coordinates. No map SDK dependency yet.
 - **C3 Drop detail + checkout polish** is complete on branch `codex/mobile-ux-uplift/c3-detail-checkout`: countdown from `pickupEndAt`, stock/price/allergen/pickup cards, sticky claim bar, simulator checkout polish, and server-confirmed success state. No fake pickup code, QR/OTP, order state, or payment status is displayed.
 - **R1 Partner role-shaped Today dashboard** is complete on branch `codex/mobile-ux-uplift/r1-partner-dashboard`: MetricHero, role badges, status/publishing notices, finance sell-through summary, and operations action cards composed from real `useDashboard()` sections. No trend delta or unsent role data is displayed.
-- Next uplift slice: **R2 pickup counter polish** or **C4 account/passport/consent polish**.
+- **R2 Counter focus-mode** is complete on branch `codex/mobile-ux-uplift/r2-counter-focus`: counter queue counts, Active/All/Collected/Issues filters, QueueCard rows, focused verification hero, elevated verify/no-show/incident panels, retained offline banner, and retained tablet split. No haptic/sound dependency yet.
+- Next uplift slice: **C4 account/passport/consent polish** or **R3 drop management polish**.
 - U1 verification: mobile-ui typecheck + tests passed; full `node scripts/mobile-ci.mjs` is green 7/7 after clearing active Orbitwell owner drift from app configs and removing a server-secret identifier from a Maestro comment.
 
 ## Current state (2026-06-22)

@@ -1,5 +1,5 @@
 import { ApiError, newIdempotencyKey } from "@gozaika/mobile-core";
-import { accents, Badge, Button, Card, EmptyState, Text, palette, toneColors } from "@gozaika/mobile-ui";
+import { accents, Badge, Button, Card, EmptyState, MetricHero, Text, palette, spacing, toneColors } from "@gozaika/mobile-ui";
 import { incidentTypeCodes, type IncidentTypeCode, type PickupVerifyResultDto } from "@gozaika/types";
 import { formatPaise } from "@gozaika/utils";
 import { useEffect, useRef, useState } from "react";
@@ -92,13 +92,18 @@ export function OrderActionsPanel({ orderId }: { readonly orderId: string }) {
   const verifyError = verify.isError && !verifyOffline ? (verify.error as ApiError).message : null;
 
   return (
-    <View style={{ gap: 16 }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <Text variant="title">{order.orderNumber}</Text>
-        <Badge label={orderStatusLabel(order.orderStatusCode)} tone={orderStatusTone(order.orderStatusCode)} />
-      </View>
+    <View style={{ gap: spacing.md }}>
+      <MetricHero
+        eyebrow="Focused order"
+        title="Verify pickup"
+        value={order.orderNumber}
+        helper={`${order.quantity} bag${order.quantity === 1 ? "" : "s"} · ${formatPaise(order.paidAmountPaise)}`}
+        badgeLabel={orderStatusLabel(order.orderStatusCode)}
+        badgeTone={orderStatusTone(order.orderStatusCode)}
+        accent={accents.restaurant}
+      />
 
-      <Card>
+      <Card elevated="sm">
         <Text variant="heading">{order.bagDisplayName}</Text>
         <Text variant="caption" color={palette.muted}>
           {order.dietaryCategoryCode}
@@ -113,7 +118,7 @@ export function OrderActionsPanel({ orderId }: { readonly orderId: string }) {
       </Card>
 
       {/* Verify pickup */}
-      <Card>
+      <Card elevated="md" style={{ borderColor: accents.restaurant, backgroundColor: palette.cream }}>
         <Text variant="heading">Verify pickup</Text>
         <Text variant="caption" color={palette.muted}>
           Scan the customer's pickup QR, or enter their 6-digit OTP. The server verifies and marks collected.
@@ -166,7 +171,7 @@ export function OrderActionsPanel({ orderId }: { readonly orderId: string }) {
       </Card>
 
       {/* No-show */}
-      <Card>
+      <Card elevated="sm">
         <Text variant="heading">Mark no-show</Text>
         <Text variant="caption" color={palette.muted}>
           Only after the pickup window closes. The server rejects early no-shows.
@@ -200,7 +205,7 @@ export function OrderActionsPanel({ orderId }: { readonly orderId: string }) {
       </Card>
 
       {/* Incident */}
-      <Card>
+      <Card elevated="sm">
         <Text variant="heading">Log incident</Text>
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
           {incidentTypeCodes.map((code) => {

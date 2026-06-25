@@ -497,3 +497,14 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 - Verification: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: Android preview-device screenshot capture is deferred to the separate preview-build path/tooling fix; this slice has no native/config dependency.
 - Rollback: revert `apps/consumer-mobile/app/(tabs)/drops/[dropPk].tsx`, `apps/consumer-mobile/app/checkout/[holdPk].tsx`, and C3 doc records; no database, server, native config, or API rollback required.
+
+### R2 - Counter focus-mode (Complete, 2026-06-25)
+
+- Branch: `codex/mobile-ux-uplift/r2-counter-focus`.
+- Files changed: `apps/restaurant-mobile/app/(tabs)/orders/index.tsx`, `apps/restaurant-mobile/src/counter/OrderActionsPanel.tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Screen surface: Counter now has focus-mode queue counts, Active/All/Collected/Issues filters, U2R `QueueCard` rows, retained offline banner, retained tablet master-detail split, and a focused verification panel with elevated verify/no-show/incident cards.
+- Security/behavior truth: pickup verification still uses the existing server-authoritative hooks, stable idempotency keys, QR/OTP inputs, offline not-confirmed warning, no-show server rejection, and incident creation path. No fake order state, QR/OTP, pickup result, haptic/sound claim, metric, rating, or user-count claim was introduced.
+- Dependency decision: no haptic/sound dependency in this slice; counter-only haptic/sound can be introduced later with explicit native/device verification.
+- Verification: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: Android preview-device screenshot capture is deferred to the separate preview-build path/tooling fix; this slice has no native/config dependency.
+- Rollback: revert `apps/restaurant-mobile/app/(tabs)/orders/index.tsx`, `apps/restaurant-mobile/src/counter/OrderActionsPanel.tsx`, and R2 doc records; no database, server, native config, or API rollback required.
