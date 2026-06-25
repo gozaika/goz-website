@@ -445,3 +445,13 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 - Verification: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: deferred to C1 Home/Discover because U2C adds reusable primitives but does not compose a customer screen.
 - Rollback: revert the U2C files listed above; no database, server, native config, or app behavior rollback required.
+
+### U2R - Partner primitives (Complete, 2026-06-25)
+
+- Branch: `codex/mobile-ux-uplift/u2r-partner-primitives`.
+- Files changed: `packages/mobile-ui/src/components/PartnerPrimitives.tsx`, `packages/mobile-ui/src/components/partnerPrimitivesModel.ts`, `packages/mobile-ui/src/components/partnerPrimitivesModel.test.ts`, `packages/mobile-ui/src/index.ts`; plan docs updated in this file and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Public surface: exported `MetricHero`, `ActionCard`, `QueueCard`, `SellThroughBar`, `Sparkline`, `DataTable`, `RoleAwareSection`, `RestaurantSwitcher`, and pure helper functions for sell-through/progress/trend normalization.
+- Compatibility: no restaurant routes, data fetching, role matrix, pickup verification, finance/ROI formulas, order states, metrics, payouts, QR/OTP, or claims were fabricated or changed. Primitives render only caller-provided server values.
+- Verification: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: deferred to R1/R2 because U2R adds reusable primitives but does not compose a partner screen.
+- Rollback: revert the U2R files listed above; no database, server, native config, or app behavior rollback required.

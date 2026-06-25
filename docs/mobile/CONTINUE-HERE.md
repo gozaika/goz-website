@@ -36,7 +36,8 @@ caveats; **Codex** owns store copy, privacy drafts, polished creatives, final Pl
 
 - **U1 design-system depth** is complete on branch `codex/mobile-ux-uplift/u1-depth`: typed elevation tokens, reduced-motion utility, Button press feedback, and opt-in elevated Card. No haptics, native dependencies, API changes, or behavior changes.
 - **U2C customer primitives** is complete on branch `codex/mobile-ux-uplift/u2c-customer-primitives`: `HeroBanner`, `CountdownChip`, `FilterChipRow`, `SegmentedToggle`, `StickyActionBar`, `PeekBar`, `ProgressRing`, and `LoyaltyCard`. No app behavior or data changes.
-- Next uplift slice: **U2R partner primitives**, then C1 Home/Discover composition; keep customer and partner components sibling-like but not identical.
+- **U2R partner primitives** is complete on branch `codex/mobile-ux-uplift/u2r-partner-primitives`: `MetricHero`, `ActionCard`, `QueueCard`, `SellThroughBar`, `Sparkline`, `DataTable`, `RoleAwareSection`, and `RestaurantSwitcher`. No app behavior or data changes.
+- Next uplift slice: **C1 Home/Discover composition** using real customer discovery data; keep customer and partner components sibling-like but not identical.
 - U1 verification: mobile-ui typecheck + tests passed; full `node scripts/mobile-ci.mjs` is green 7/7 after clearing active Orbitwell owner drift from app configs and removing a server-secret identifier from a Maestro comment.
 
 ## Current state (2026-06-22)

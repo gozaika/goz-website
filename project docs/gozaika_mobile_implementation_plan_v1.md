@@ -73,7 +73,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | --- | --- | --- | --- |
 | U1 | Design-system depth | Mobile Slice 2 | Complete (2026-06-25) |
 | U2C | Customer primitives | U1 | Complete (2026-06-25) |
-| U2R | Partner primitives | U1 | Not started |
+| U2R | Partner primitives | U1 | Complete (2026-06-25) |
 
 **Completion and redevelopment record (U1 - 2026-06-25)**
 
@@ -97,6 +97,18 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Accessibility: pressable primitives use roles/states/labels, maintain 48dp minimum targets, and use text companions instead of color-only status. Press feedback respects the U1 reduced-motion helper.
 - Commands: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: no consuming customer screen changed in U2C, so device screenshots are deferred to C1 Home/Discover where the primitives are composed against real `useDrops()` data.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/mobile-ui run typecheck`, `npm.cmd --workspace @gozaika/mobile-ui test`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (U2R - 2026-06-25)**
+
+- Branch: `codex/mobile-ux-uplift/u2r-partner-primitives`.
+- Added partner/operator primitives in `packages/mobile-ui/src/components/PartnerPrimitives.tsx`: `MetricHero`, `ActionCard`, `QueueCard`, `SellThroughBar`, `Sparkline`, `DataTable`, `RoleAwareSection`, and `RestaurantSwitcher`.
+- Added pure helper/model tests in `partnerPrimitivesModel.ts` and `partnerPrimitivesModel.test.ts` for sell-through ratios, basis points, percent labels, and sparkline normalization without importing React Native into Vitest.
+- Public exports added through `packages/mobile-ui/src/index.ts`.
+- Compatibility: no restaurant app routes, API contracts, role matrix enforcement, pickup verification logic, finance/ROI calculations, notification behavior, or data-fetching behavior changed. Every primitive is prop-driven and requires server-provided real values.
+- Accessibility: operator primitives use roles/states/labels, keep 48dp minimum targets, and include text labels for status/progress. Press feedback respects the U1 reduced-motion helper.
+- Commands: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: no consuming partner screen changed in U2R, so device screenshots are deferred to R1/R2 where primitives are composed against real dashboard/counter data.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/mobile-ui run typecheck`, `npm.cmd --workspace @gozaika/mobile-ui test`, then `node scripts/mobile-ci.mjs`.
 
 ## 4. Agent prompts

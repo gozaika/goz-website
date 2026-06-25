@@ -20,4 +20,6 @@ export * from "./components/ProductMedia";
 export * from "./components/RestaurantAvatar";
 export * from "./components/CustomerPrimitives";
 export * from "./components/customerPrimitivesModel";
+export * from "./components/PartnerPrimitives";
+export * from "./components/partnerPrimitivesModel";
 export * from "./fallback";
