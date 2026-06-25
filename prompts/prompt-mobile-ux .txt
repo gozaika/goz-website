@@ -1,0 +1,177 @@
+1) Lets split U2 into customer primitives and partner primitives 2) agreed 3) Maps is already implemented in web module. key is present. I think, maps will be an important way customers will interface with app, expecially in India. reconsider adding it in c2. let me know if your objection is strong (4) This is a must have feature. I think it is prudent to implement schema changes, api end points. This feature must eb implemneted in web module along with mobile. Restaurants web module should create visibility into favourite activity, perhaps 'count', 'new favorites in last 1 week/month/year' etc.  (5)agreed (6) agreed (7) agreed (8) you are right. lets flesh this out to specifics to minimize drift.  (9) agreed (10) agreed. however, we must maintain the highest aesthetic quality even with native components/icons/assets. [Important Objective]: At the end of this exercerse, i want the demo scenarios modelled in Maestro to be visually very attractive and complete. I would like to populate all necessary store graphics with aethetically appealing stock/edit/created images. I need demo scenarious completely populated so they are ready for sales/pre-sales and investor facing teams to use to showcase the platform.  We will get back to video creation loop after this project.  [What To Enable] abd,physical Android phone connected, JAVA_HOME,Maestro, pwsh all installed and EAS CLI auth/project setup is complete. for both mobile apps. see proof below.   PS C:\venkat\limca\gozaika\sourcecode> adb devices
+List of devices attached
+3A021JEHN02437  device
+
+PS C:\venkat\limca\gozaika\sourcecode> echo $env:JAVA_HOME
+C:\Program Files\Android\Android Studio\jbr
+PS C:\venkat\limca\gozaika\sourcecode> maestro --help
+Usage: maestro [-hv] [--[no-]ansi] [--verbose] [-p=<platform>] [--udid=<deviceId>] [COMMAND]
+  -h, --help      Display help message
+      --[no-]ansi, --[no-]color
+                  Enable / disable colors and ansi output
+  -p, --platform=<platform>
+                  (Optional) Select a platform to run on
+      --udid, --device=<deviceId>
+                  (Optional) Device ID to run on explicitly, can be a comma separated list of IDs: --device "Emulator_1,Emulator_2"
+  -v, --version   Display CLI version
+      --verbose   Enable verbose logging
+Commands:
+  test                Test a Flow or set of Flows on a local iOS Simulator or Android Emulator
+  cloud               Upload your flows on Cloud by using `maestro cloud sample/app.apk flows_folder/` (https://app.maestro.dev)
+  record              Render a beautiful video of your Flow - Great for demos and bug reports
+  hierarchy           Print out the view hierarchy of the connected device
+  download-samples    Download sample apps and flows for trying out maestro without setting up your own app
+  login               Log into Maestro Cloud
+  logout              Log out of Maestro Cloud
+  bugreport           Report a bug - Help us improve your experience!
+  start-device        Starts or creates an iOS Simulator or Android Emulator similar to the ones in Maestro Cloud
+  list-devices        List local devices available, grouped by platform
+  list-cloud-devices  List devices available on Maestro Cloud, grouped by platform
+  chat                Use Maestro GPT to help you with Maestro documentation and code questions
+  check-syntax        Check syntax of Maestro code
+  mcp                 Starts the Maestro MCP server, exposing Maestro device and automation commands as Model Context Protocol (MCP) tools over STDIO for LLM
+                        agents and automation clients.
+PS C:\venkat\limca\gozaika\sourcecode> $PSVersionTable.PSVersion
+
+Major  Minor  Build  Revision
+-----  -----  -----  --------
+5      1      26100  8655
+
+
+PS C:\venkat\limca\gozaika\sourcecode> pwsh --version
+PowerShell 7.6.3
+PS C:\venkat\limca\gozaika\sourcecode>  PS C:\venkat\limca\gozaika\sourcecode\apps\consumer-mobile> eas project:info
+★ eas-cli@20.3.0 is now available.
+To upgrade, run:
+npm install -g eas-cli
+Proceeding with outdated version.
+
+(node:35932) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+fullName  @orbitwell/gozaika-customer
+ID        4e7b2380-8520-420d-ba3e-f0c66dfa6835   PS C:\venkat\limca\gozaika\sourcecode\apps\restaurant-mobile> eas init
+★ eas-cli@20.3.0 is now available.
+To upgrade, run:
+npm install -g eas-cli
+Proceeding with outdated version.
+
+(node:9388) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+√ Would you like to create a project for @orbitwell/gozaika-restaurant? ... yes
+✔ Created @orbitwell/gozaika-restaurant: https://expo.dev/accounts/orbitwell/projects/gozaika-restaurant
+√ Project successfully linked (ID: 05e9378e-32f6-4fd2-a0a9-7dd79f578682) (modified app.json)
+PS C:\venkat\limca\gozaika\sourcecode\apps\restaurant-mobile>
+
+
+====
+
+
+You are an expert mobile product/design analyst and implementation-planning agent working in:
+C:\venkat\limca\gozaika\sourcecode
+
+This is an ANALYSIS + DESIGN SPEC exercise only. Do not implement code. Do not edit files unless explicitly asked later.
+
+Goal:
+Evaluate and level-up the goZaika customer mobile app and restaurant mobile app. Compare them against excellent, notable, award-winning, and highly successful mobile apps for UI/UX inspiration, visual polish, interaction quality, and feature gaps.
+
+Important product direction:
+- Customer app: contemporary, energetic, reputed-brand feel, slightly playful/fun where appropriate, engaging, catchy, efficient, and highly polished.
+- Restaurant app: efficient, formal, operationally clear, fast, trustworthy, and highly polished.
+- Both apps should feel like siblings, not clones.
+- goZaika is not “cheap leftovers.” It is brand-safe value discovery for pickup-only food.
+- If possible Do not fabricate product truth: no fake restaurants, prices, QR codes, OTPs, order states, metrics, ratings, user counts, or unsupported claims. Document where you must violate this.
+
+Required repo context to read first:
+1. Mobile implementation / architecture
+   - C:\venkat\limca\gozaika\sourcecode\docs\mobile\CONTINUE-HERE.md
+   - C:\venkat\limca\gozaika\sourcecode\project docs\gozaika_mobile_implementation_plan_v1.md
+   - C:\venkat\limca\gozaika\sourcecode\project docs\gozaika_mobile_shared_architecture_and_release_spec_v1.md
+   - C:\venkat\limca\gozaika\sourcecode\project docs\gozaika_customer_mobile_technical_spec_v1.md
+   - C:\venkat\limca\gozaika\sourcecode\project docs\gozaika_restaurant_mobile_technical_spec_v1.md
+
+2. Current app code surfaces
+   - C:\venkat\limca\gozaika\sourcecode\apps\consumer-mobile
+   - C:\venkat\limca\gozaika\sourcecode\apps\restaurant-mobile
+   - C:\venkat\limca\gozaika\sourcecode\apps\consumer-mobile\src\theme\brand.ts
+   - C:\venkat\limca\gozaika\sourcecode\apps\restaurant-mobile\src\theme\brand.ts
+   - C:\venkat\limca\gozaika\sourcecode\apps\consumer-mobile\app.json
+   - C:\venkat\limca\gozaika\sourcecode\apps\restaurant-mobile\app.json
+   - C:\venkat\limca\gozaika\sourcecode\apps\consumer-mobile\eas.json
+   - C:\venkat\limca\gozaika\sourcecode\apps\restaurant-mobile\eas.json
+
+3. Brand, style, polish, and asset references
+   - C:\venkat\limca\gozaika\sourcecode\docs\product\brand-assets.md
+   - C:\venkat\limca\gozaika\sourcecode\docs\product\premium-ux-transformation.md
+   - C:\venkat\limca\gozaika\sourcecode\docs\product\ux-audit-production-polish.md
+   - C:\venkat\limca\gozaika\sourcecode\docs\product\gozaika-marketing-asset-library-readme-v1.md
+   - C:\venkat\limca\gozaika\sourcecode\docs\product\gozaika-marketing-asset-library-manifest-v1.json
+   - C:\venkat\limca\gozaika\sourcecode\project docs\gozaika_asset_replacement_spec_v1.md
+   - C:\venkat\limca\gozaika\sourcecode\project docs\gozaika_image_generation_manifest_v1.md
+   - C:\venkat\limca\gozaika\sourcecode\project docs\gozaika_image_generation_prompt_pack_v1.md
+   - C:\venkat\limca\gozaika\sourcecode\icons
+   - C:\venkat\limca\gozaika\sourcecode\apps\consumer-mobile\assets
+   - C:\venkat\limca\gozaika\sourcecode\apps\restaurant-mobile\assets
+
+4. Store/video/current screenshot truth
+   - C:\venkat\limca\gozaika\sourcecode\.codex-artifacts\gozaika-polish-v2\CURRENT_STATE.md
+   - C:\venkat\limca\gozaika\sourcecode\.codex-artifacts\gozaika-polish-v2\02-design-system\store_video_design_system_lock_v1.md
+   - C:\venkat\limca\gozaika\sourcecode\.codex-artifacts\gozaika-polish-v2\01-inventory\asset_inventory.md
+   - C:\venkat\limca\gozaika\sourcecode\.codex-artifacts\gozaika-polish-v2\01-inventory\source_to_card_map.md
+   - C:\venkat\limca\gozaika\sourcecode\.codex-artifacts\gozaika-store-launch\screenshots\raw\INDEX.md
+   - C:\venkat\limca\gozaika\sourcecode\.codex-artifacts\gozaika-store-launch\screenshots\raw\gozaika
+   - C:\venkat\limca\gozaika\sourcecode\.codex-artifacts\gozaika-store-launch\screenshots\raw\gozaika-partner
+   - C:\venkat\limca\gozaika\sourcecode\.codex-artifacts\gozaika-polish-v2\01-inventory\release-device-captures
+   - C:\venkat\limca\gozaika\sourcecode\.codex-artifacts\gozaika-marketing-videos\screenshots
+
+5. Demo/test account context
+   - C:\venkat\limca\gozaika\sourcecode\.codex-artifacts\gozaika-store-launch\reviewer\test-accounts.json
+   - C:\venkat\limca\gozaika\sourcecode\docs\mobile\demo-identity-reconciliation.md
+   
+
+Optional live-device inspection: If an Android phone/emulator is connected via ADB, use it.
+
+Part A: UI/UX inspiration and spec
+1. Identify notable, award-winning, or exceptionally polished apps for UI/UX inspiration. Include food, commerce, marketplace, loyalty, and operational B2B apps where relevant.
+2. For each inspiration app, list reusable UI/UX motifs, metaphors, interaction patterns, information architecture choices, motion ideas, reward/loyalty patterns, checkout/claim patterns, and operational dashboard patterns that could fit goZaika.
+3. Compare goZaika’s current customer and restaurant mobile apps against those patterns.
+4. Produce a comprehensive UI/UX specification for:
+   - Customer mobile app
+   - Restaurant mobile app
+5. The spec must include:
+   - Design principles
+   - Navigation model
+   - Screen-by-screen UX direction
+   - Component system
+   - Typography/color/motion/image guidance
+   - Empty/loading/error/offline states
+   - Accessibility requirements
+   - Data truth requirements
+   - Screenshots/assets needed
+   - Implementation-ready acceptance criteria
+6. Include an implementation plan divided into safe, agent-executable slices. Each slice must include scope, files likely touched, acceptance criteria, smoke tests, and visual QA requirements.
+7. Make the spec resilient across future agent sessions: name source docs, avoid unresolved assumptions, and call out blocked states explicitly.
+
+Part B: Feature gap analysis
+1. Identify successful apps in India and internationally in this or adjacent spaces, including but not limited to Zomato, Swiggy, Too Good To Go, Uber Eats, DoorDash, Deliveroo, Zepto/Blinkit-style discovery, Shopify/merchant tools, Square/Toast-style restaurant tools, and strong loyalty apps.
+2. For each app, list feature gaps relative to goZaika.
+3. Produce a ranked goZaika feature-gap list.
+4. For each feature, include:
+   - Description
+   - User value
+   - Which app it belongs in: customer, restaurant, admin, web, or shared
+   - Priority
+   - Level of effort
+   - Architecture deviation
+   - Risk level
+   - Dependencies
+   - Whether it affects payments, privacy, security, store policy, notifications, or restaurant operations
+5. Do not write implementation specs for feature gaps yet. The owner will review and choose direction.
+
+Output format:
+- Start with a short executive summary.
+- Then Part A: inspiration apps and UI/UX spec.
+- Then Part B: feature gap analysis.
+- Then “Recommended Next Decisions” for the owner.
+- Include citations/links for external benchmark claims where possible.
+- Clearly separate facts observed in repo/screenshots from design recommendations.

@@ -83,9 +83,9 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Updated `Button` to apply visual pressed feedback (`scale` + opacity, opacity-only with reduced motion). No haptics or behavior changes.
 - Updated `Card` with optional `elevated?: boolean | ElevationLevel`; default remains flat for compatibility. Later U2/C/R slices can opt into `sm`/`md`/`lg` per screen.
 - Public exports added through `packages/mobile-ui/src/index.ts`: `elevation`, `ElevationLevel`, `motion`, `getPressFeedbackStyle`, and `useReducedMotion`.
-- Commands: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` initially failed because a top-level React Native import made Vitest parse RN Flow syntax, then passed after hook-time native import. `node scripts/mobile-ci.mjs` passed typecheck, unit/contract tests, and both Expo exports, then failed on preexisting drift-scan hits outside U1: `owner: "orbitwell"` in dirty app configs and a tracked Maestro comment containing `PICKUP_CREDENTIAL_SECRET`.
+- Commands: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` initially failed because a top-level React Native import made Vitest parse RN Flow syntax, then passed after hook-time native import; full `node scripts/mobile-ci.mjs` is green 7/7 after clearing active Orbitwell owner drift from app configs and removing a server-secret identifier from a Maestro comment.
 - No API/schema/config/data changes; no customer/partner screen behavior changes; no fake restaurants, prices, metrics, QR/OTP, order states, or claims introduced.
-- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/mobile-ui run typecheck`, `npm.cmd --workspace @gozaika/mobile-ui test`, then clear the app-owner/secret-scan drift before rerunning `node scripts/mobile-ci.mjs`.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/mobile-ui run typecheck`, `npm.cmd --workspace @gozaika/mobile-ui test`, then `node scripts/mobile-ci.mjs`.
 
 ## 4. Agent prompts
 

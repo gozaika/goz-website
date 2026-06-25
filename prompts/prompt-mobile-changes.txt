@@ -1,0 +1,38 @@
+My notes:
+# Rich demo consumers (priya.demo@gozaika.dev ...)
+"+919876510001" = "100001"  # Priya Sharma   (SILVER, order O26 today)
+"+919876510002" = "100002"  # Rahul Mehta    (GOLD, VEG, O27 today)
+"+919876510003" = "100003"  # Anjali Kumar   (BRONZE)
+"+919876510004" = "100004"  # Vikram Rao     (BRONZE, NON_VEG/DAIRY, holding D14)
+"+919876510005" = "100005"  # Deepa Nair     (SILVER, holding D13)
+"+919876510006" = "100006"  # Arjun Singh    (GOLD, VEG, holding D12)
+"+919876510007" = "100007"  # Meera Patel    (BRONZE)
+"+919876510008" = "100008"  # Karthik Reddy  (PLATINUM, O28 today)
+# Rich demo restaurant owners
+"+919876520001" = "200001"  # Mohammed Bawarchi — Bawarchi Biryani Palace (OWNER)
+"+919876520002" = "200002"  # Lakshmi Sattvik   — Sattvik Kitchen (OWNER)
+"+919876520003" = "200003"  # Rajesh Smoky      — The Smoky Grill (OWNER)
+"+919876520004" = "200004"  # Venkat Andhra     — Andhra Spice Trail (OWNER)
+"+919876520005" = "200005"  # Preethi Sweet     — Sweet Bytes Bakery (OWNER)
+# Role-matrix staff on Bawarchi (added by demo_test_otp_linkage.sql)
+"+919876530001" = "300001"  # Bawarchi ADMIN
+"+919876530002" = "300002"  # Bawarchi OPERATIONS
+"+919876530003" = "300003"  # Bawarchi PICKUP_STAFF
+"+919876530004" = "300004"  # Bawarchi FINANCE
+
+
+Issues:
+
+A)Common
+1) the app icon for both apps get cut off at the bottom and top
+2) Same icon is used for both apps. inver greena amd saffron in  restaurant icon
+B) Customer mobile app:
+a)Sign in screen: if you make a mistake in entering a phone number, you are stuck. No way to provide "another phone number".
+
+
+
+FEATURES:
+1) On customer mobile, User cannot see current location and/or set location and radius for searching for restaurants.
+2) User should be able to set certain restaurants as favoirite so it is easy to manage.
+3) Users should be able to share bag drops easily. 
+

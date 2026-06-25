@@ -9,10 +9,22 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://nxvthewcwimrpjbzbcvx.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_UdIo3YZt5UG7dlrLAcfwsQ_DPQuyWuc",
+        "EXPO_PUBLIC_CUSTOMER_API_ORIGIN": "https://customer.gozaika.in",
+        "EXPO_PUBLIC_RESTAURANT_API_ORIGIN": "https://restaurant.gozaika.in"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://nxvthewcwimrpjbzbcvx.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_UdIo3YZt5UG7dlrLAcfwsQ_DPQuyWuc",
+        "EXPO_PUBLIC_CUSTOMER_API_ORIGIN": "https://customer.gozaika.in",
+        "EXPO_PUBLIC_RESTAURANT_API_ORIGIN": "https://restaurant.gozaika.in"
+      }
     }
   },
   "submit": {

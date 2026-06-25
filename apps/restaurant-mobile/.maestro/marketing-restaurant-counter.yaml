@@ -10,8 +10,8 @@
 # Preconditions (see capture README):
 #   1. restaurant-mobile loaded (dev-client: Metro + EXPO_PUBLIC_RESTAURANT_API_ORIGIN reachable;
 #      preview/standalone: prepend `launchApp: { clearState: true }`).
-#   2. Restaurant BFF up with PICKUP_CREDENTIAL_SECRET=local-smoke-pickup-secret-0123456789-abcdef
-#      against the LOCAL Supabase.
+#   2. Restaurant BFF up against the LOCAL Supabase with the local pickup credential
+#      secret configured outside mobile/Maestro files.
 #   3. `npm run db:seed:marketing-videos` applied.
 # Devclient-safe: no launchApp/clearState.
 #

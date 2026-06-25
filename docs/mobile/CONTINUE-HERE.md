@@ -36,7 +36,7 @@ caveats; **Codex** owns store copy, privacy drafts, polished creatives, final Pl
 
 - **U1 design-system depth** is complete on branch `codex/mobile-ux-uplift/u1-depth`: typed elevation tokens, reduced-motion utility, Button press feedback, and opt-in elevated Card. No haptics, native dependencies, API changes, or behavior changes.
 - Next uplift slice: **U2C/U2R primitives** only after U1 lands; keep customer and partner components sibling-like but not identical.
-- U1 verification: mobile-ui typecheck + tests passed; full mobile CI passed typecheck, unit/contract tests, and both Expo exports, then failed on preexisting drift-scan hits outside U1 (`owner: "orbitwell"` in dirty app configs and a tracked Maestro comment containing `PICKUP_CREDENTIAL_SECRET`).
+- U1 verification: mobile-ui typecheck + tests passed; full `node scripts/mobile-ci.mjs` is green 7/7 after clearing active Orbitwell owner drift from app configs and removing a server-secret identifier from a Maestro comment.
 
 ## Current state (2026-06-22)
 Everything below is on `main`, gate-green, live-proven. Confirm with
