@@ -1,0 +1,121 @@
+<svg viewBox="0 0 390 844" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, Segoe UI, Roboto, sans-serif">
+  <!-- goZaika Customer Home — proposed UX mockup. Illustrative placeholders only; no real product data. -->
+  <defs>
+    <linearGradient id="hero" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFF1E6"/>
+      <stop offset="1" stop-color="#FFF8F0"/>
+    </linearGradient>
+    <linearGradient id="cta" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FF6B35"/>
+      <stop offset="1" stop-color="#FF8454"/>
+    </linearGradient>
+    <filter id="card" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#2D2D2D" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+
+  <!-- canvas -->
+  <rect width="390" height="844" fill="#FFF8F0"/>
+
+  <!-- status bar -->
+  <text x="20" y="28" font-size="12" font-weight="700" fill="#2D2D2D">9:41</text>
+  <text x="345" y="28" font-size="12" fill="#6B7280">▢ ▦ ▰</text>
+
+  <!-- header -->
+  <rect x="0" y="40" width="390" height="56" fill="#FFF8F0"/>
+  <rect x="20" y="58" width="6" height="22" rx="3" fill="#FF6B35"/>
+  <text x="34" y="76" font-size="20" font-weight="800" fill="#2D2D2D">goZaika</text>
+  <rect x="244" y="56" width="92" height="26" rx="13" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="256" y="73" font-size="11" font-weight="600" fill="#1A5C38">◍ Hyderabad ▾</text>
+  <circle cx="358" cy="69" r="15" fill="#1A5C38"/>
+  <text x="353" y="74" font-size="13" font-weight="700" fill="#FFFFFF">P</text>
+
+  <!-- hero -->
+  <rect x="16" y="104" width="358" height="132" rx="18" fill="url(#hero)" stroke="#FFE3CF"/>
+  <!-- BAM flame motif -->
+  <path d="M330 130 q14 18 0 38 q-16 -8 -10 -24 q-2 14 -8 10 q-2 -16 18 -24 z" fill="#FF6B35" opacity="0.18"/>
+  <text x="32" y="138" font-size="12" font-weight="700" fill="#D4A017">TONIGHT'S CHEF'S SELECTION</text>
+  <text x="32" y="168" font-size="23" font-weight="800" fill="#2D2D2D">Off-menu drops,</text>
+  <text x="32" y="194" font-size="23" font-weight="800" fill="#2D2D2D">premium pickup.</text>
+  <rect x="32" y="206" width="150" height="24" rx="12" fill="#1A5C38"/>
+  <text x="44" y="222" font-size="12" font-weight="700" fill="#FFFFFF">● N active drops now</text>
+
+  <!-- closing soon header -->
+  <text x="20" y="266" font-size="16" font-weight="800" fill="#2D2D2D">Closing soon</text>
+  <text x="354" y="266" font-size="12" font-weight="700" fill="#FF6B35" text-anchor="end">See all</text>
+
+  <!-- closing soon rail: card 1 -->
+  <g filter="url(#card)">
+    <rect x="20" y="278" width="186" height="196" rx="16" fill="#FFFFFF"/>
+  </g>
+  <rect x="20" y="278" width="186" height="104" rx="16" fill="#EFE2D4"/>
+  <text x="113" y="334" font-size="11" fill="#9C8E7C" text-anchor="middle">[ drop photo ]</text>
+  <rect x="30" y="290" width="92" height="22" rx="11" fill="#2D2D2D" opacity="0.85"/>
+  <text x="40" y="305" font-size="11" font-weight="700" fill="#FFFFFF">⏱ Closes 00:42</text>
+  <text x="32" y="404" font-size="11" fill="#6B7280">Restaurant · Neighbourhood</text>
+  <text x="32" y="424" font-size="14" font-weight="800" fill="#2D2D2D">BAM Bag — Selection</text>
+  <rect x="32" y="434" width="40" height="20" rx="10" fill="#E7F4EC"/>
+  <text x="40" y="448" font-size="10" font-weight="700" fill="#1A5C38">VEG</text>
+  <rect x="78" y="434" width="58" height="20" rx="10" fill="#EAF1FB"/>
+  <text x="86" y="448" font-size="10" font-weight="700" fill="#1C4E8A">3 left</text>
+  <text x="32" y="468" font-size="14" font-weight="800" fill="#2D2D2D">₹XXX</text>
+
+  <!-- closing soon rail: card 2 (peek) -->
+  <g filter="url(#card)">
+    <rect x="218" y="278" width="186" height="196" rx="16" fill="#FFFFFF"/>
+  </g>
+  <rect x="218" y="278" width="186" height="104" rx="16" fill="#EFE2D4"/>
+  <text x="311" y="334" font-size="11" fill="#9C8E7C" text-anchor="middle">[ drop photo ]</text>
+  <rect x="228" y="290" width="92" height="22" rx="11" fill="#FDF3E2"/>
+  <text x="238" y="305" font-size="11" font-weight="700" fill="#8A5A00">⏱ Closes 01:15</text>
+
+  <!-- cuisine chips -->
+  <text x="20" y="506" font-size="16" font-weight="800" fill="#2D2D2D">Explore by cuisine</text>
+  <rect x="20" y="518" width="74" height="34" rx="17" fill="#1A5C38"/>
+  <text x="57" y="540" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">All</text>
+  <rect x="102" y="518" width="86" height="34" rx="17" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="145" y="540" font-size="12" font-weight="600" fill="#2D2D2D" text-anchor="middle">Cuisine</text>
+  <rect x="196" y="518" width="86" height="34" rx="17" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="239" y="540" font-size="12" font-weight="600" fill="#2D2D2D" text-anchor="middle">Cuisine</text>
+  <rect x="290" y="518" width="86" height="34" rx="17" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="333" y="540" font-size="12" font-weight="600" fill="#2D2D2D" text-anchor="middle">Veg only</text>
+
+  <!-- follow rail -->
+  <text x="20" y="586" font-size="16" font-weight="800" fill="#2D2D2D">New from places you follow</text>
+  <g filter="url(#card)">
+    <rect x="20" y="598" width="354" height="92" rx="16" fill="#FFFFFF"/>
+  </g>
+  <rect x="32" y="610" width="68" height="68" rx="12" fill="#EFE2D4"/>
+  <text x="66" y="648" font-size="10" fill="#9C8E7C" text-anchor="middle">[ photo ]</text>
+  <text x="112" y="626" font-size="11" fill="#6B7280">Restaurant · Neighbourhood</text>
+  <text x="112" y="646" font-size="14" font-weight="800" fill="#2D2D2D">BAM Bag — Chef's Selection</text>
+  <rect x="112" y="656" width="92" height="22" rx="11" fill="#FDECE6"/>
+  <text x="122" y="671" font-size="10" font-weight="700" fill="#FF6B35">◆ You follow this place</text>
+
+  <!-- illustrative caption -->
+  <text x="195" y="712" font-size="10" fill="#9CA3AF" text-anchor="middle" font-style="italic">Illustrative placeholder content — not real product data</text>
+
+  <!-- active order peek bar -->
+  <g filter="url(#card)">
+    <rect x="12" y="726" width="366" height="46" rx="14" fill="#1A5C38"/>
+  </g>
+  <circle cx="36" cy="749" r="11" fill="#FFFFFF" opacity="0.18"/>
+  <text x="31" y="753" font-size="13" fill="#FFFFFF">▦</text>
+  <text x="56" y="745" font-size="11" font-weight="700" fill="#FFFFFF">Order ready for pickup</text>
+  <text x="56" y="761" font-size="10" fill="#D9E8DF">Tap to view code &amp; window</text>
+  <text x="360" y="753" font-size="14" font-weight="800" fill="#FFFFFF" text-anchor="end">›</text>
+
+  <!-- tab bar -->
+  <rect x="0" y="784" width="390" height="60" fill="#FFFFFF"/>
+  <rect x="0" y="784" width="390" height="1" fill="#E5E7EB"/>
+  <text x="42" y="812" font-size="16" fill="#1A5C38" text-anchor="middle">⌂</text>
+  <text x="42" y="828" font-size="10" font-weight="700" fill="#1A5C38" text-anchor="middle">Home</text>
+  <text x="120" y="812" font-size="16" fill="#6B7280" text-anchor="middle">▢</text>
+  <text x="120" y="828" font-size="10" fill="#6B7280" text-anchor="middle">Drops</text>
+  <text x="198" y="812" font-size="16" fill="#6B7280" text-anchor="middle">⌑</text>
+  <text x="198" y="828" font-size="10" fill="#6B7280" text-anchor="middle">Places</text>
+  <text x="276" y="812" font-size="16" fill="#6B7280" text-anchor="middle">▤</text>
+  <text x="276" y="828" font-size="10" fill="#6B7280" text-anchor="middle">Orders</text>
+  <text x="350" y="812" font-size="16" fill="#6B7280" text-anchor="middle">◔</text>
+  <text x="350" y="828" font-size="10" fill="#6B7280" text-anchor="middle">Account</text>
+</svg>
