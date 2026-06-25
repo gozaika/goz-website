@@ -75,6 +75,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | U2C | Customer primitives | U1 | Complete (2026-06-25) |
 | U2R | Partner primitives | U1 | Complete (2026-06-25) |
 | C1 | Customer Home/Discover composition | U1, U2C | Complete (2026-06-25) |
+| C2 | Drops list + map toggle | C1 | Complete (2026-06-25) |
 
 **Completion and redevelopment record (U1 - 2026-06-25)**
 
@@ -121,6 +122,17 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Compatibility: no API/schema/auth/payment/pickup/notification behavior changed.
 - Commands: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: device screenshot capture should be performed after the full gate using the connected Android device if time/device state allows; any screenshot is raw QA evidence only, not store-ready creative.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/consumer-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (C2 - 2026-06-25)**
+
+- Branch: `codex/mobile-ux-uplift/c2-drops-map`.
+- Changed `apps/consumer-mobile/app/(tabs)/drops/index.tsx` to add a sticky discovery header, List/Map segmented toggle, dietary filters, closing-soon/availability sorting, and a native coordinate-pin map view.
+- Data truth: list and map use only `MobilePublicDropCard` values from `useDrops()`. Map pins render only drops with public `latitude`/`longitude`; when none are available, the screen tells the user the list remains the source of truth. No private addresses, fake coordinates, restaurant names, prices, ratings, QR/OTP, order states, or unsupported claims were introduced.
+- Dependency decision: no new map SDK dependency in this slice. The map view is a native coordinate layout so CI and Android export remain stable; full map tiles/provider integration can be a later dependency/config hardening step.
+- Compatibility: no API/schema/auth/payment/pickup/notification behavior changed.
+- Commands: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: install/capture from this branch on the connected Android device when practical; raw screenshot evidence is QA only, not store-ready creative.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/consumer-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
 
 ## 4. Agent prompts

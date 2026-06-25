@@ -466,3 +466,14 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 - Verification: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: raw device screenshot should be captured when the connected Android device is unlocked and available; not store-ready creative.
 - Rollback: revert `apps/consumer-mobile/app/(tabs)/index.tsx` and the C1 doc records; no database, server, native config, or API rollback required.
+
+### C2 - Drops list + map toggle (Complete, 2026-06-25)
+
+- Branch: `codex/mobile-ux-uplift/c2-drops-map`.
+- Files changed: `apps/consumer-mobile/app/(tabs)/drops/index.tsx`; plan docs updated in this file and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Screen surface: Drops now has a discovery header, List/Map segmented toggle, dietary filters, closing-soon/availability sorting, refreshed list view, and a native coordinate-pin map view.
+- Data truth: map pins render only drops with public `latitude`/`longitude`; no private address, fake coordinate, restaurant, price, rating, QR/OTP, order state, or unsupported claim was introduced. List view remains the fallback/source of truth.
+- Dependency decision: no new map SDK dependency in this slice; full provider tiles can be introduced later with explicit Expo/Android build proof.
+- Verification: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7 before commit.
+- Visual QA: ADB install/load was attempted. Debug install opened the Expo development launcher, release install was blocked by a native CMake path issue in generated Android build output, and dev-client loading was blocked by Metro/external-access errors; failure screenshots are in `.codex-artifacts/mobile-ux-uplift/c2/`.
+- Rollback: revert `apps/consumer-mobile/app/(tabs)/drops/index.tsx` and C2 doc records; no database, server, native config, or API rollback required.
