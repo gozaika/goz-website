@@ -1,4 +1,5 @@
 import { ActivityIndicator, Pressable, type StyleProp, type ViewStyle } from "react-native";
+import { getPressFeedbackStyle, useReducedMotion } from "../motion";
 import { accents, palette } from "../tokens/colors";
 import { MIN_TOUCH_TARGET, radii, spacing } from "../tokens/layout";
 import { Text } from "./Text";
@@ -28,6 +29,7 @@ export function Button({
 }: ButtonProps) {
   const isDisabled = disabled || loading;
   const isPrimary = variant === "primary";
+  const reduceMotion = useReducedMotion();
 
   const base: ViewStyle = {
     minHeight: MIN_TOUCH_TARGET,
@@ -52,7 +54,7 @@ export function Button({
       accessibilityLabel={label}
       disabled={isDisabled}
       onPress={onPress}
-      style={[base, style]}
+      style={({ pressed }) => [base, pressed ? getPressFeedbackStyle(reduceMotion) : null, style]}
     >
       {loading ? <ActivityIndicator color={textColor} /> : null}
       <Text variant="heading" color={textColor}>

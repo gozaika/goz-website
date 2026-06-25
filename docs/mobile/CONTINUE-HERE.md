@@ -32,6 +32,12 @@ caveats; **Codex** owns store copy, privacy drafts, polished creatives, final Pl
   reviewer creds validated against local seed only; P4 account-deletion public URL missing.
 - **Next:** close G1/G3/G7 → production build → recapture (C1/C3/C4) → hand raw+caveats to Codex.
 
+## Mobile UX uplift overlay (2026-06-25)
+
+- **U1 design-system depth** is complete on branch `codex/mobile-ux-uplift/u1-depth`: typed elevation tokens, reduced-motion utility, Button press feedback, and opt-in elevated Card. No haptics, native dependencies, API changes, or behavior changes.
+- Next uplift slice: **U2C/U2R primitives** only after U1 lands; keep customer and partner components sibling-like but not identical.
+- U1 verification: mobile-ui typecheck + tests passed; full mobile CI passed typecheck, unit/contract tests, and both Expo exports, then failed on preexisting drift-scan hits outside U1 (`owner: "orbitwell"` in dirty app configs and a tracked Maestro comment containing `PICKUP_CREDENTIAL_SECRET`).
+
 ## Current state (2026-06-22)
 Everything below is on `main`, gate-green, live-proven. Confirm with
 `git log --oneline -20` and `node scripts/mobile-ci.mjs` (expect 7/7).

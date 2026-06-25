@@ -65,6 +65,28 @@ Use `npm.cmd`/`npx.cmd` in this Windows PowerShell environment when script execu
 | Mobile Slice 17 | Accessibility, security, observability and performance gate | 8–16 | Not started |
 | Mobile Slice 18 | Store packages, beta and staged production release | 17 | Not started |
 
+## 3.1 Mobile UX uplift overlay tracker
+
+These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-ux-uplift-analysis-v1.md`. They must preserve the Mobile Slice security/payment/pickup/release boundaries above and keep `node scripts/mobile-ci.mjs` green.
+
+| Uplift slice | Title | Depends on | Status |
+| --- | --- | --- | --- |
+| U1 | Design-system depth | Mobile Slice 2 | Complete (2026-06-25) |
+| U2C | Customer primitives | U1 | Not started |
+| U2R | Partner primitives | U1 | Not started |
+
+**Completion and redevelopment record (U1 - 2026-06-25)**
+
+- Branch: `codex/mobile-ux-uplift/u1-depth`.
+- Changed `packages/mobile-ui/src/tokens/layout.ts` to add typed elevation tokens (`none`, `sm`, `md`, `lg`) while preserving existing spacing/radius/type exports.
+- Added `packages/mobile-ui/src/motion.ts` and `motion.test.ts` with reduced-motion-aware press feedback utilities; native `AccessibilityInfo` is loaded inside `useReducedMotion()` so pure token tests do not parse React Native internals in Vitest.
+- Updated `Button` to apply visual pressed feedback (`scale` + opacity, opacity-only with reduced motion). No haptics or behavior changes.
+- Updated `Card` with optional `elevated?: boolean | ElevationLevel`; default remains flat for compatibility. Later U2/C/R slices can opt into `sm`/`md`/`lg` per screen.
+- Public exports added through `packages/mobile-ui/src/index.ts`: `elevation`, `ElevationLevel`, `motion`, `getPressFeedbackStyle`, and `useReducedMotion`.
+- Commands: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` initially failed because a top-level React Native import made Vitest parse RN Flow syntax, then passed after hook-time native import. `node scripts/mobile-ci.mjs` passed typecheck, unit/contract tests, and both Expo exports, then failed on preexisting drift-scan hits outside U1: `owner: "orbitwell"` in dirty app configs and a tracked Maestro comment containing `PICKUP_CREDENTIAL_SECRET`.
+- No API/schema/config/data changes; no customer/partner screen behavior changes; no fake restaurants, prices, metrics, QR/OTP, order states, or claims introduced.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/mobile-ui run typecheck`, `npm.cmd --workspace @gozaika/mobile-ui test`, then clear the app-owner/secret-scan drift before rerunning `node scripts/mobile-ci.mjs`.
+
 ## 4. Agent prompts
 
 ### Mobile Slice 0 — Baseline, parity ledger and decision freeze

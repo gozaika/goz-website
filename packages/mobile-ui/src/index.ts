@@ -4,6 +4,7 @@
 export * from "./tokens/colors";
 export * from "./tokens/contrast";
 export * from "./tokens/layout";
+export * from "./motion";
 
 export * from "./components/Screen";
 export * from "./components/Text";

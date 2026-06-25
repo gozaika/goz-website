@@ -1,14 +1,29 @@
 import type { ReactNode } from "react";
 import { View, type StyleProp, type ViewStyle } from "react-native";
 import { palette } from "../tokens/colors";
-import { radii, spacing } from "../tokens/layout";
+import { elevation, type ElevationLevel, radii, spacing } from "../tokens/layout";
 
 export interface CardProps {
   readonly children: ReactNode;
+  readonly elevated?: boolean | ElevationLevel;
   readonly style?: StyleProp<ViewStyle>;
 }
 
-export function Card({ children, style }: CardProps) {
+function resolveElevation(elevated: CardProps["elevated"]): ElevationLevel {
+  if (elevated === true) {
+    return "md";
+  }
+
+  if (elevated) {
+    return elevated;
+  }
+
+  return "none";
+}
+
+export function Card({ children, elevated = false, style }: CardProps) {
+  const elevationLevel = resolveElevation(elevated);
+
   return (
     <View
       style={[
@@ -20,6 +35,7 @@ export function Card({ children, style }: CardProps) {
           padding: spacing.lg,
           gap: spacing.sm,
         },
+        elevation[elevationLevel],
         style,
       ]}
     >

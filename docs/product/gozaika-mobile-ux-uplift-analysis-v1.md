@@ -423,3 +423,15 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 - Starbucks — loyalty visualization patterns (public app)
 
 **Repo sources cited inline above:** `docs/mobile/CONTINUE-HERE.md`; `packages/mobile-ui/src/{tokens,components}/*`; `apps/{consumer,restaurant}-mobile/app/**`; `docs/product/{brand-assets,premium-ux-transformation,ux-audit-production-polish}.md`; `.codex-artifacts/gozaika-polish-v2/CURRENT_STATE.md`; `.codex-artifacts/gozaika-store-launch/screenshots/raw/INDEX.md`.
+
+## Uplift Implementation Record
+
+### U1 - Design-system depth (Complete, 2026-06-25)
+
+- Branch: `codex/mobile-ux-uplift/u1-depth`.
+- Files changed: `packages/mobile-ui/src/tokens/layout.ts`, `packages/mobile-ui/src/motion.ts`, `packages/mobile-ui/src/motion.test.ts`, `packages/mobile-ui/src/components/Button.tsx`, `packages/mobile-ui/src/components/Card.tsx`, `packages/mobile-ui/src/index.ts`; plan docs updated in this file and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Public surface: exported `elevation`/`ElevationLevel`, `motion`, `getPressFeedbackStyle`, and `useReducedMotion`; `Card` now accepts optional `elevated?: boolean | ElevationLevel`; `Button` now has visual press feedback only.
+- Compatibility: existing Card default remains flat (`elevated=false`); existing Button props/routes/data behavior unchanged; no haptics, native dependencies, product data, API contracts, or app behavior changes.
+- Verification: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` passed after moving the native reduced-motion API behind a hook-time dynamic import so pure motion token tests do not load React Native into Vitest. `node scripts/mobile-ci.mjs` passed typecheck, unit/contract tests, and both Expo exports, then failed on preexisting drift-scan hits outside U1: `owner: "orbitwell"` in dirty app configs and a tracked Maestro comment containing `PICKUP_CREDENTIAL_SECRET`.
+- Visual QA: before/after screenshots were not captured in this slice because no consuming screens were changed and Card elevation is opt-in for later slices; Button press feedback should be verified on-device during the first consuming-screen polish slice.
+- Rollback: revert the files listed above; no database, server, or native config rollback required.
