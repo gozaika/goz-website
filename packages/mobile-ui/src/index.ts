@@ -18,4 +18,6 @@ export * from "./components/Skeleton";
 export * from "./components/StatusAnnounce";
 export * from "./components/ProductMedia";
 export * from "./components/RestaurantAvatar";
+export * from "./components/CustomerPrimitives";
+export * from "./components/customerPrimitivesModel";
 export * from "./fallback";

@@ -435,3 +435,13 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 - Verification: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` passed after moving the native reduced-motion API behind a hook-time dynamic import so pure motion token tests do not load React Native into Vitest; full `node scripts/mobile-ci.mjs` is green 7/7 after clearing active Orbitwell owner drift from app configs and removing a server-secret identifier from a Maestro comment.
 - Visual QA: before/after screenshots were not captured in this slice because no consuming screens were changed and Card elevation is opt-in for later slices; Button press feedback should be verified on-device during the first consuming-screen polish slice.
 - Rollback: revert the files listed above; no database, server, or native config rollback required.
+
+### U2C - Customer primitives (Complete, 2026-06-25)
+
+- Branch: `codex/mobile-ux-uplift/u2c-customer-primitives`.
+- Files changed: `packages/mobile-ui/src/components/CustomerPrimitives.tsx`, `packages/mobile-ui/src/components/customerPrimitivesModel.ts`, `packages/mobile-ui/src/components/customerPrimitivesModel.test.ts`, `packages/mobile-ui/src/index.ts`; plan docs updated in this file and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Public surface: exported `HeroBanner`, `CountdownChip`, `FilterChipRow`, `SegmentedToggle`, `StickyActionBar`, `PeekBar`, `ProgressRing`, `LoyaltyCard`, and pure helper functions for countdown/progress formatting.
+- Compatibility: no consumer app routes, data fetching, claims, checkout, pickup proof, order states, restaurants, prices, metrics, ratings, or loyalty counts were fabricated or changed. Primitives render only caller-provided real values.
+- Verification: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: deferred to C1 Home/Discover because U2C adds reusable primitives but does not compose a customer screen.
+- Rollback: revert the U2C files listed above; no database, server, native config, or app behavior rollback required.

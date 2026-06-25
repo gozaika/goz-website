@@ -72,7 +72,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | Uplift slice | Title | Depends on | Status |
 | --- | --- | --- | --- |
 | U1 | Design-system depth | Mobile Slice 2 | Complete (2026-06-25) |
-| U2C | Customer primitives | U1 | Not started |
+| U2C | Customer primitives | U1 | Complete (2026-06-25) |
 | U2R | Partner primitives | U1 | Not started |
 
 **Completion and redevelopment record (U1 - 2026-06-25)**
@@ -85,6 +85,18 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Public exports added through `packages/mobile-ui/src/index.ts`: `elevation`, `ElevationLevel`, `motion`, `getPressFeedbackStyle`, and `useReducedMotion`.
 - Commands: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` initially failed because a top-level React Native import made Vitest parse RN Flow syntax, then passed after hook-time native import; full `node scripts/mobile-ci.mjs` is green 7/7 after clearing active Orbitwell owner drift from app configs and removing a server-secret identifier from a Maestro comment.
 - No API/schema/config/data changes; no customer/partner screen behavior changes; no fake restaurants, prices, metrics, QR/OTP, order states, or claims introduced.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/mobile-ui run typecheck`, `npm.cmd --workspace @gozaika/mobile-ui test`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (U2C - 2026-06-25)**
+
+- Branch: `codex/mobile-ux-uplift/u2c-customer-primitives`.
+- Added customer-facing primitives in `packages/mobile-ui/src/components/CustomerPrimitives.tsx`: `HeroBanner`, `CountdownChip`, `FilterChipRow`, `SegmentedToggle`, `StickyActionBar`, `PeekBar`, `ProgressRing`, and `LoyaltyCard`.
+- Added pure helper/model tests in `customerPrimitivesModel.ts` and `customerPrimitivesModel.test.ts` for countdown labels and progress clamping without importing React Native into Vitest.
+- Public exports added through `packages/mobile-ui/src/index.ts`.
+- Compatibility: no app routes, API contracts, navigation, auth, payment, pickup, notification, finance, or data-fetching behavior changed. Every primitive is prop-driven and requires real caller-provided values.
+- Accessibility: pressable primitives use roles/states/labels, maintain 48dp minimum targets, and use text companions instead of color-only status. Press feedback respects the U1 reduced-motion helper.
+- Commands: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: no consuming customer screen changed in U2C, so device screenshots are deferred to C1 Home/Discover where the primitives are composed against real `useDrops()` data.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/mobile-ui run typecheck`, `npm.cmd --workspace @gozaika/mobile-ui test`, then `node scripts/mobile-ci.mjs`.
 
 ## 4. Agent prompts
