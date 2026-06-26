@@ -78,6 +78,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | C2 | Drops list + map toggle | C1 | Complete (2026-06-25) |
 | C3 | Drop detail + checkout polish | C2 | Complete (2026-06-25) |
 | C4 | Orders timeline + peek bar | C3 | Complete (2026-06-25) |
+| C5 | Passport/loyalty viz | C4, U2C | Complete (2026-06-25) |
 | R1 | Partner role-shaped Today dashboard | U1, U2R | Complete (2026-06-25) |
 | R2 | Counter focus-mode | R1, U2R | Complete (2026-06-25) |
 
@@ -160,6 +161,19 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Compatibility: no API/schema/auth/payment/pickup/notification behavior changed; resend pickup still calls the existing endpoint and does not reveal OTP in-app.
 - Commands: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: Android release install works through `scripts/android-preview-install.ps1` and the short physical copy at `C:\tmp\gozaika-build`; C4 release evidence captured at `.codex-artifacts/mobile-ux-uplift/android-preview-build/c4-orders-release.png`.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/consumer-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (C5 - 2026-06-25)**
+
+- Branch: `codex/mobile-ux-uplift/c5-passport-loyalty`.
+- Changed `apps/consumer-mobile/app/(tabs)/account/index.tsx` to replace flat account links with an elevated account status card, a real Passport preview from `usePassport()`, and role-free account action cards.
+- Changed `apps/consumer-mobile/app/(tabs)/account/passport.tsx` to compose `LoyaltyCard`, progress visualization, stat tiles, and elevated earned-badge cards over the existing Slice 11 passport payload.
+- Changed `apps/consumer-mobile/app/(tabs)/account/discovery.tsx` to compose `ProgressRing`, profile stat tiles, and elevated discovery nudges over the existing Slice 11 discovery-profile payload.
+- Updated `scripts/android-preview-install.ps1` so Windows PowerShell 5.1 can parse the script's status strings and so Gradle/Expo release bundling runs with `NODE_ENV=production`.
+- Data truth: tier, progress, bags, kitchens/restaurants, reviews, badges, cuisine counts, neighbourhood counts, personality label, and active-drop cuisine nudges all come from `usePassport()` / `useDiscoveryProfile()`. No fabricated loyalty counts, rewards, referrals, subscription state, impact metric, restaurant, price, order state, QR/OTP, or pickup-proof claim was introduced.
+- Compatibility: no API/schema/auth/payment/pickup/notification/billing behavior changed; Swaad Club remains informational and native billing remains out of scope.
+- Commands: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: Android release build/install/screenshot passed via `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/android-preview-install.ps1 -App consumer-mobile -SkipSync -CaptureScreenshot` after copying the three changed C5 files into the existing short build tree. Launch screenshot: `.codex-artifacts/mobile-ux-uplift/android-preview-build/consumer-mobile-release-launch.png`; account-tab signed-out screenshot: `.codex-artifacts/mobile-ux-uplift/android-preview-build/consumer-mobile-c5-account-signed-out.png`. Signed-in Passport visual capture remains pending a live authenticated demo session.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/consumer-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
 
 **Completion and redevelopment record (R1 - 2026-06-25)**

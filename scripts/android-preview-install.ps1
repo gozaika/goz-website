@@ -14,7 +14,7 @@
 
 .PARAMETER BuildRoot
   Short physical path for the build tree. Default: C:\tmp\gozaika-build
-  Junctions to the long repo path do NOT work — Gradle/CMake resolve canonical paths.
+  Junctions to the long repo path do NOT work - Gradle/CMake resolve canonical paths.
 
 .PARAMETER SkipSync
   Skip robocopy sync from the real repo (reuse an existing build tree).
@@ -53,6 +53,7 @@ $PackageIds = @{
 }
 
 $PreviewEnv = @{
+  NODE_ENV                          = "production"
   EXPO_PUBLIC_SUPABASE_URL          = "https://nxvthewcwimrpjbzbcvx.supabase.co"
   EXPO_PUBLIC_SUPABASE_ANON_KEY     = "sb_publishable_UdIo3YZt5UG7dlrLAcfwsQ_DPQuyWuc"
   EXPO_PUBLIC_CUSTOMER_API_ORIGIN   = "https://customer.gozaika.in"
@@ -64,7 +65,7 @@ function Sync-BuildTree {
 
   New-Item -ItemType Directory -Force -Path $Root | Out-Null
   Write-Host "Syncing monorepo to short build path: $Root"
-  Write-Host "(Windows CMake codegen needs a physical copy — junctions resolve to the long path.)"
+  Write-Host "(Windows CMake codegen needs a physical copy - junctions resolve to the long path.)"
 
   $excludeDirs = @(
     ".git",
@@ -88,13 +89,13 @@ function Sync-BuildTree {
   ) + $excludeDirs
 
   & robocopy @robocopyArgs | Out-Null
-  # robocopy: 0-7 = success; 8+ = some failures (often long-path edge files — verify tree)
+  # robocopy: 0-7 = success; 8+ = some failures (often long-path edge files - verify tree)
   if ($LASTEXITCODE -ge 8) {
     Write-Warning "robocopy reported exit $LASTEXITCODE (some paths may have been skipped)."
   }
 
   if (-not (Test-Path -LiteralPath "$Root\node_modules\expo\package.json")) {
-    Write-Host "node_modules incomplete — running npm ci..."
+    Write-Host "node_modules incomplete - running npm ci..."
     Push-Location $Root
     try {
       & npm ci --no-audit --no-fund
@@ -206,7 +207,7 @@ if (-not $SkipInstall) {
     $shotPath = Join-Path $ArtifactDir "$App-release-launch.png"
     cmd /c "adb exec-out screencap -p > `"$shotPath`""
     if ((Get-Item -LiteralPath $shotPath).Length -lt 1000) {
-      Write-Warning "Screenshot may be empty — unlock the device and retry capture."
+      Write-Warning "Screenshot may be empty - unlock the device and retry capture."
     }
     Write-Host "Screenshot: $shotPath"
   }

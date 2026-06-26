@@ -5,6 +5,7 @@ import {
   EmptyState,
   ErrorState,
   palette,
+  ProgressRing,
   Screen,
   Skeleton,
   spacing,
@@ -17,6 +18,28 @@ import { useAuth } from "@/auth/useAuth";
 
 function Pill({ label, tone }: { readonly label: string; readonly tone: "success" | "neutral" | "info" }) {
   return <Badge label={label} tone={tone} />;
+}
+
+function StatTile({ label, value }: { readonly label: string; readonly value: string }) {
+  return (
+    <View
+      style={{
+        minWidth: 120,
+        flex: 1,
+        borderRadius: 10,
+        backgroundColor: palette.white,
+        padding: spacing.md,
+        gap: spacing.xs,
+      }}
+    >
+      <Text variant="heading" color={palette.charcoal}>
+        {value}
+      </Text>
+      <Text variant="caption" color={palette.muted}>
+        {label}
+      </Text>
+    </View>
+  );
 }
 
 export default function DiscoveryProfileScreen() {
@@ -72,27 +95,38 @@ export default function DiscoveryProfileScreen() {
     <Screen contentStyle={{ gap: spacing.md }}>
       <Text variant="title">Flavour Diversity</Text>
 
-      {/* Score card */}
-      <Card style={{ backgroundColor: palette.cream, borderColor: palette.saffron }}>
-        <Text variant="caption" color={palette.muted}>
-          Your flavour diversity score
-        </Text>
-        <View style={{ flexDirection: "row", alignItems: "baseline", gap: spacing.xs }}>
-          <Text variant="display" color={palette.saffron}>
-            {flavourDiversityScore}
-          </Text>
-          <Text variant="heading" color={palette.muted}>
-            /100
-          </Text>
+      <Card elevated="md" style={{ backgroundColor: palette.cream, borderColor: palette.saffron }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.lg }}>
+          <ProgressRing
+            value={flavourDiversityScore}
+            label="Flavour diversity"
+            size={112}
+            accent={palette.saffron}
+          />
+          <View style={{ flex: 1, gap: spacing.sm }}>
+            <Text variant="caption" color={palette.saffron}>
+              Discovery profile
+            </Text>
+            <Text variant="title">{flavourPersonalityLabel}</Text>
+            <Text variant="body" color={palette.muted}>
+              You've tried {triedCuisines.length} of {totalAvailableCuisines} cuisines across{" "}
+              {triedNeighbourhoods.length} of {totalActiveNeighbourhoods} neighbourhoods.
+            </Text>
+          </View>
         </View>
-        <Badge label={flavourPersonalityLabel} tone="warning" />
-        <Text variant="body" color={palette.muted}>
-          You've tried {triedCuisines.length} of {totalAvailableCuisines} cuisines across{" "}
-          {triedNeighbourhoods.length} of {totalActiveNeighbourhoods} neighbourhoods.
-        </Text>
       </Card>
 
-      {/* Tried cuisines */}
+      <Card elevated="sm">
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.sm }}>
+          <StatTile label="Cuisines tried" value={`${triedCuisines.length}/${totalAvailableCuisines}`} />
+          <StatTile
+            label="Neighbourhoods"
+            value={`${triedNeighbourhoods.length}/${totalActiveNeighbourhoods}`}
+          />
+          <StatTile label="Live new tastes" value={String(untriedWithDrops.length)} />
+        </View>
+      </Card>
+
       <Text variant="heading">Cuisines tried</Text>
       {triedCuisines.length === 0 ? (
         <Card>
@@ -110,11 +144,10 @@ export default function DiscoveryProfileScreen() {
         </Card>
       )}
 
-      {/* Untried with active drops — discovery nudge */}
       {untriedWithDrops.length > 0 ? (
         <>
           <Text variant="heading">Try something new</Text>
-          <Card>
+          <Card elevated="sm" style={{ borderColor: palette.saffron }}>
             <Text variant="body" color={palette.muted}>
               These cuisines have live drops right now:
             </Text>
@@ -133,7 +166,6 @@ export default function DiscoveryProfileScreen() {
         </>
       ) : null}
 
-      {/* Neighbourhoods explored */}
       <Text variant="heading">Neighbourhoods explored</Text>
       {triedNeighbourhoods.length === 0 ? (
         <Card>

@@ -518,3 +518,13 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 - Verification: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: Android release install is now unblocked via short physical copy (`C:\tmp\gozaika-build`) and `scripts/android-preview-install.ps1`; signed-out Orders release screenshot captured at `.codex-artifacts/mobile-ux-uplift/android-preview-build/c4-orders-release.png`.
 - Rollback: revert `apps/consumer-mobile/app/(tabs)/_layout.tsx`, `apps/consumer-mobile/app/(tabs)/orders/index.tsx`, `apps/consumer-mobile/app/(tabs)/orders/[orderPk].tsx`, and C4 doc records; no database, server, native config, or API rollback required.
+
+### C5 - Passport/loyalty viz (Complete, 2026-06-25)
+
+- Branch: `codex/mobile-ux-uplift/c5-passport-loyalty`.
+- Files changed: `apps/consumer-mobile/app/(tabs)/account/index.tsx`, `apps/consumer-mobile/app/(tabs)/account/passport.tsx`, `apps/consumer-mobile/app/(tabs)/account/discovery.tsx`, `scripts/android-preview-install.ps1`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Screen surface: Account now includes an elevated signed-in card, real Passport preview, and explicit action cards; Passport uses `LoyaltyCard` tier/progress visualization with real stats and badge states; Flavour Diversity uses `ProgressRing`, stat tiles, and real live-new-cuisine nudges.
+- Data truth: all visible tier/progress/stat/badge/cuisine/neighbourhood/personality values derive from Slice 11 `usePassport()` and `useDiscoveryProfile()` payloads. No fake rewards, referral mechanics, subscription entitlement, impact counter, restaurant, price, order state, pickup proof, QR, or OTP was introduced.
+- Verification: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: Android release build/install/screenshot passed through `scripts/android-preview-install.ps1` using the short build tree. Raw evidence: `.codex-artifacts/mobile-ux-uplift/android-preview-build/consumer-mobile-release-launch.png` and `.codex-artifacts/mobile-ux-uplift/android-preview-build/consumer-mobile-c5-account-signed-out.png`. Signed-in Passport visual capture remains pending a live authenticated demo session.
+- Rollback: revert the three account screen files and C5 doc records; no database, server, native config, API, or billing rollback required.
