@@ -83,6 +83,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | R2 | Counter focus-mode | R1, U2R | Complete (2026-06-25) |
 | R3a | Drops visual polish | R2, U2R | Complete (2026-06-26) |
 | R3b | Drop lifecycle actions | R3a | Complete (2026-06-26) |
+| R3c | Reports/finance polish | R3b, U2R | Complete (2026-06-26) |
 
 **Completion and redevelopment record (U1 - 2026-06-25)**
 
@@ -223,6 +224,17 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Commands: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; `npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7. Android release Gradle build passed from `C:\tmp\gozaika-build\apps\restaurant-mobile\android` via `cmd.exe` after PowerShell treated Gradle warning stderr as a native command error.
 - Visual QA: release APK installed and launched on device; raw unsigned launch evidence at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3b-release-launch.png`. Authenticated partner QA passed with seeded OWNER `+919876520001` / OTP `200001` on Bawarchi Biryani Palace; lifecycle detail and confirmation evidence captured at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3b-lifecycle-detail.png` and `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3b-lifecycle-confirmation.png` without confirming a mutating action.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck`, `npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (R3c - 2026-06-26)**
+
+- Branch: `codex/mobile-ux-uplift/r3c-reports-finance-polish`.
+- Changed `apps/restaurant-mobile/app/reports.tsx` to compose the existing ROI payload into a net-recovery hero, sell-through bar, metric cards, report-basis table, drop-mix sparkline, assumptions, next actions, and exception cards.
+- Changed `apps/restaurant-mobile/app/finance.tsx` to compose the existing finance payload into a latest-settlement hero, payout trend sparkline, settlement totals table, per-settlement breakdown tables, and a polished zero-settlement state when the seeded payload has no settlement runs.
+- Data truth: all report and finance values come from `useRoiReport()` and `useFinance()`. Share wording remains partner-safe and counts-only; no export mutation, fake payout, rating, user count, QR/OTP, order state, or external claim was introduced.
+- Compatibility: read-only polish only; no API/schema/auth/role/drop lifecycle/publish/payment/pickup behavior changed. Finance/ROI wording remains app-internal pending any external/share/export approval.
+- Commands: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7.
+- Visual QA: restaurant release APK installed and launched on the connected Android device; authenticated OWNER reports/finance evidence captured at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3c-reports-owner.png` and `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3c-finance-owner.png`. Local visual QA used `adb reverse` for local Supabase and the restaurant BFF after the cloud OTP request failed in the release APK.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
 
 ## 4. Agent prompts
 
