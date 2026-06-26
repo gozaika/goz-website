@@ -528,3 +528,13 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 - Verification: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: Android release build/install/screenshot passed through `scripts/android-preview-install.ps1` using the short build tree. Raw evidence: `.codex-artifacts/mobile-ux-uplift/android-preview-build/consumer-mobile-release-launch.png` and `.codex-artifacts/mobile-ux-uplift/android-preview-build/consumer-mobile-c5-account-signed-out.png`. Signed-in Passport visual capture remains pending a live authenticated demo session.
 - Rollback: revert the three account screen files and C5 doc records; no database, server, native config, API, or billing rollback required.
+
+### R3a - Drops visual polish (Complete, 2026-06-26)
+
+- Branch: `codex/mobile-ux-uplift/r3a-drops-visual-polish`.
+- Files changed: `apps/restaurant-mobile/app/(tabs)/drops/index.tsx`, `apps/restaurant-mobile/app/(tabs)/drops/[dropPk].tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Screen surface: Drops now has a command-center summary, status filters, next-action card, elevated rows with reserved bars, and a richer detail view with inventory table and read-only next-action guidance.
+- Data truth: bars are labeled "Reserved" because the current mobile drops DTO exposes total, available, and held quantities but not a separate finalized-sold count. No lifecycle mutation, fake sell-through/revenue claim, order state, QR/OTP, rating, or customer data was added.
+- Verification: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7; Android release Gradle build passed from the short build tree via `cmd.exe`.
+- Visual QA: release APK installed and launched on device; raw evidence at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3a-release-launch.png`. Authenticated partner Drops screenshot remains pending because the device reached the unselected restaurant Home state.
+- Rollback: revert the two partner drops screen files and R3a doc records; no database, server, native config, API, or drop lifecycle rollback required.

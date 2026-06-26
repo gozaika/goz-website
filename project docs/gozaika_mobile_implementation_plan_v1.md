@@ -81,6 +81,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | C5 | Passport/loyalty viz | C4, U2C | Complete (2026-06-25) |
 | R1 | Partner role-shaped Today dashboard | U1, U2R | Complete (2026-06-25) |
 | R2 | Counter focus-mode | R1, U2R | Complete (2026-06-25) |
+| R3a | Drops visual polish | R2, U2R | Complete (2026-06-26) |
 
 **Completion and redevelopment record (U1 - 2026-06-25)**
 
@@ -196,6 +197,17 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Dependency decision: no haptic/sound dependency was added in R2; sound/haptics can be introduced later with explicit counter-only native verification.
 - Commands: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: Android preview-device screenshot capture remains deferred to the separate preview-build path/tooling fix.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (R3a - 2026-06-26)**
+
+- Branch: `codex/mobile-ux-uplift/r3a-drops-visual-polish`.
+- Changed `apps/restaurant-mobile/app/(tabs)/drops/index.tsx` to add a partner drop command-center summary, status filters, next-action card, elevated drop rows, and per-drop reserved bars over the existing `useDrops()` payload.
+- Changed `apps/restaurant-mobile/app/(tabs)/drops/[dropPk].tsx` to add a status hero, reserved bar, inventory data table, and explicit read-only next-action guidance.
+- Data truth: status, pickup windows, price, available quantity, held quantity, total quantity, and reserved values all come from `DropSummary`. Because the DTO does not expose a separate finalized-sold count, bars are labeled "Reserved" and use `quantityTotal - quantityAvailable`; no fake sell-through, revenue, rating, order state, QR/OTP, or customer data was introduced.
+- Compatibility: read-only polish only; no API/schema/auth/role/drop lifecycle/publish/payment/pickup behavior changed. Pause, cancel, activate and edit actions remain in later Slice 13/R3b work.
+- Commands: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7. Android release Gradle build passed from `C:\tmp\gozaika-build\apps\restaurant-mobile\android` via `cmd.exe` after PowerShell treated Gradle warning stderr as a native command error.
+- Visual QA: restaurant release APK installed and launched on the connected Android device; raw evidence at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3a-release-launch.png`. The device reached the unselected restaurant Home state, so authenticated Drops visual proof remains pending a signed-in partner session/restaurant selection.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
 
 ## 4. Agent prompts
