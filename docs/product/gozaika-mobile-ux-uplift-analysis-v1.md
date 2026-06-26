@@ -508,3 +508,13 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 - Verification: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: Android preview-device screenshot capture is deferred to the separate preview-build path/tooling fix; this slice has no native/config dependency.
 - Rollback: revert `apps/restaurant-mobile/app/(tabs)/orders/index.tsx`, `apps/restaurant-mobile/src/counter/OrderActionsPanel.tsx`, and R2 doc records; no database, server, native config, or API rollback required.
+
+### C4 - Orders timeline + peek bar (Complete, 2026-06-25)
+
+- Branch: `codex/mobile-ux-uplift/c4-orders-timeline`.
+- Files changed: `apps/consumer-mobile/app/(tabs)/_layout.tsx`, `apps/consumer-mobile/app/(tabs)/orders/index.tsx`, `apps/consumer-mobile/app/(tabs)/orders/[orderPk].tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Screen surface: Orders now has active pickup counts, elevated active-order cards, explicit native press targets, an active-order peek bar above tabs, and a detail timeline.
+- Data truth: peek and timeline derive only from real `ConsumerOrderDto` fields (`orderStatusCode`, `paymentStatusCode`, `createdAt`, pickup window, `collectedAt`, restaurant/order labels). No pickup code, QR/OTP, fake payment claim, fabricated order state, metric, rating, or user-count claim was introduced.
+- Verification: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: Android release install is now unblocked via short physical copy (`C:\tmp\gozaika-build`) and `scripts/android-preview-install.ps1`; signed-out Orders release screenshot captured at `.codex-artifacts/mobile-ux-uplift/android-preview-build/c4-orders-release.png`.
+- Rollback: revert `apps/consumer-mobile/app/(tabs)/_layout.tsx`, `apps/consumer-mobile/app/(tabs)/orders/index.tsx`, `apps/consumer-mobile/app/(tabs)/orders/[orderPk].tsx`, and C4 doc records; no database, server, native config, or API rollback required.

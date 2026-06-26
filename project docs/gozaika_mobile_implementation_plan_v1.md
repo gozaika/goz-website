@@ -77,6 +77,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | C1 | Customer Home/Discover composition | U1, U2C | Complete (2026-06-25) |
 | C2 | Drops list + map toggle | C1 | Complete (2026-06-25) |
 | C3 | Drop detail + checkout polish | C2 | Complete (2026-06-25) |
+| C4 | Orders timeline + peek bar | C3 | Complete (2026-06-25) |
 | R1 | Partner role-shaped Today dashboard | U1, U2R | Complete (2026-06-25) |
 | R2 | Counter focus-mode | R1, U2R | Complete (2026-06-25) |
 
@@ -147,6 +148,18 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Compatibility: no API/schema/auth/payment/pickup/notification behavior changed; claim still creates a server hold and checkout still relies on server-authoritative payment/order status.
 - Commands: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
 - Visual QA: Android preview-device screenshot capture remains deferred to the separate preview-build path/tooling fix.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/consumer-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (C4 - 2026-06-25)**
+
+- Branch: `codex/mobile-ux-uplift/c4-orders-timeline`.
+- Changed `apps/consumer-mobile/app/(tabs)/_layout.tsx` to show an active-order peek bar above tabs from real `useOrders()` data when a signed-in customer has an active pickup.
+- Changed `apps/consumer-mobile/app/(tabs)/orders/index.tsx` to add active pickup counts, elevated active-order cards, explicit press targets, and clearer pickup/status copy.
+- Changed `apps/consumer-mobile/app/(tabs)/orders/[orderPk].tsx` to add a status timeline using only `createdAt`, `paymentStatusCode`, pickup window, `orderStatusCode`, and `collectedAt`.
+- Data truth: peek/timeline reflect real order states and timestamps only. No pickup code, QR/OTP, payment claim, fabricated order state, metric, rating, or user-count claim was introduced.
+- Compatibility: no API/schema/auth/payment/pickup/notification behavior changed; resend pickup still calls the existing endpoint and does not reveal OTP in-app.
+- Commands: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
+- Visual QA: Android release install works through `scripts/android-preview-install.ps1` and the short physical copy at `C:\tmp\gozaika-build`; C4 release evidence captured at `.codex-artifacts/mobile-ux-uplift/android-preview-build/c4-orders-release.png`.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/consumer-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
 
 **Completion and redevelopment record (R1 - 2026-06-25)**

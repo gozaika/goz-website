@@ -11,9 +11,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "./client";
 
 /** The customer's paid orders. */
-export function useOrders() {
+export function useOrders(options: { readonly enabled?: boolean } = {}) {
   return useQuery({
     queryKey: queryKeys.orders.list(),
+    enabled: options.enabled ?? true,
     staleTime: STALE_TIMES.active,
     queryFn: async (): Promise<ConsumerOrdersData> => {
       const res = await apiClient.request("/orders", { dataSchema: consumerOrdersDataSchema });

@@ -1,11 +1,19 @@
 import { ApiError } from "@gozaika/mobile-core";
 import { Badge, Button, Card, EmptyState, ErrorState, palette, Screen, Skeleton, spacing, Text, toneColors } from "@gozaika/mobile-ui";
+import type { ConsumerOrderDto } from "@gozaika/types";
 import { formatPaise } from "@gozaika/utils";
 import { useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
 import { useOrder, useResendPickup } from "@/api/orders";
 
 const PRE_PICKUP = ["PAID", "CONFIRMED", "READY_FOR_PICKUP"];
+
+function statusTone(code: string) {
+  if (code === "COLLECTED") return "success";
+  if (["NO_SHOW", "CANCELLED", "PICKUP_EXPIRED"].includes(code)) return "danger";
+  if (PRE_PICKUP.includes(code)) return "info";
+  return "neutral";
+}
 
 function Row({ label, value }: { readonly label: string; readonly value: string | null }) {
   return value ? (
@@ -16,6 +24,70 @@ function Row({ label, value }: { readonly label: string; readonly value: string 
       <Text variant="body">{value}</Text>
     </View>
   ) : null;
+}
+
+function TimelineStep({
+  title,
+  detail,
+  active,
+  complete,
+}: {
+  readonly title: string;
+  readonly detail: string;
+  readonly active?: boolean;
+  readonly complete?: boolean;
+}) {
+  const tone = complete ? "success" : active ? "info" : "neutral";
+  const colors = toneColors(tone);
+
+  return (
+    <View style={{ flexDirection: "row", gap: spacing.md }}>
+      <View style={{ alignItems: "center" }}>
+        <View
+          style={{
+            width: 18,
+            height: 18,
+            borderRadius: 9,
+            borderWidth: 3,
+            borderColor: colors.fg,
+            backgroundColor: complete ? colors.fg : palette.white,
+          }}
+        />
+        <View style={{ flex: 1, width: 2, minHeight: 32, backgroundColor: palette.border }} />
+      </View>
+      <View style={{ flex: 1, paddingBottom: spacing.md }}>
+        <Text variant="label" color={active || complete ? colors.fg : palette.charcoal}>
+          {title}
+        </Text>
+        <Text variant="caption" color={palette.muted}>
+          {detail}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+function OrderTimeline({ order }: { readonly order: ConsumerOrderDto }) {
+  const created = new Date(order.createdAt).toLocaleString("en-IN");
+  const pickupWindow = `${new Date(order.pickupWindowStartAt).toLocaleString("en-IN")} - ${new Date(order.pickupWindowEndAt).toLocaleTimeString("en-IN")}`;
+  const collected = order.orderStatusCode === "COLLECTED";
+  const terminal = ["NO_SHOW", "CANCELLED", "PICKUP_EXPIRED"].includes(order.orderStatusCode);
+
+  return (
+    <Card elevated="sm">
+      <Text variant="heading">Order timeline</Text>
+      <TimelineStep title="Order placed" detail={created} complete />
+      <TimelineStep title={`Payment ${order.paymentStatusCode.replaceAll("_", " ")}`} detail={formatPaise(order.paidAmountPaise)} complete />
+      <TimelineStep title="Pickup window" detail={pickupWindow} active={!collected && !terminal} complete={collected || terminal} />
+      {collected ? (
+        <TimelineStep title="Collected" detail={order.collectedAt ? new Date(order.collectedAt).toLocaleString("en-IN") : "Marked collected"} complete />
+      ) : terminal ? (
+        <TimelineStep title={order.orderStatusCode.replaceAll("_", " ")} detail="This order is no longer available for pickup." complete />
+      ) : (
+        <TimelineStep title="Awaiting pickup" detail="Show the SMS pickup code at the counter." active />
+      )}
+    </Card>
+  );
 }
 
 export default function OrderDetailScreen() {
@@ -46,7 +118,7 @@ export default function OrderDetailScreen() {
     <Screen contentStyle={{ gap: spacing.md }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
         <Text variant="title">{order.bagDisplayName}</Text>
-        <Badge label={order.orderStatusCode.replaceAll("_", " ")} tone={collected ? "success" : "info"} />
+        <Badge label={order.orderStatusCode.replaceAll("_", " ")} tone={statusTone(order.orderStatusCode)} />
       </View>
       <Text variant="caption" color={palette.muted}>
         {order.restaurantName} · {order.orderNumber}
@@ -92,6 +164,8 @@ export default function OrderDetailScreen() {
       ) : (
         <EmptyState title="Pickup unavailable" message="This order's pickup window is closed." />
       )}
+
+      <OrderTimeline order={order} />
 
       <Card>
         <Row label="Pickup window" value={`${new Date(order.pickupWindowStartAt).toLocaleString("en-IN")} → ${new Date(order.pickupWindowEndAt).toLocaleTimeString("en-IN")}`} />
