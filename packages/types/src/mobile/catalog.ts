@@ -101,3 +101,27 @@ export interface PublishDropRequest {
   readonly dropTypeCode?: "STANDARD" | "SPOTLIGHT" | "CHEF_SPECIAL" | "BLIND_ADVENTURE";
   readonly statusCode?: "DRAFT" | "SCHEDULED" | "ACTIVE";
 }
+
+// ---- Drop lifecycle actions ----
+
+export const dropStatusActionRequestSchema = z.object({
+  nextStatusCode: z.enum(["ACTIVE", "SCHEDULED", "PAUSED", "CANCELLED"]),
+  reasonText: z.string().trim().min(8).max(600),
+});
+
+export const dropStatusActionResultSchema = z.object({
+  dropPk: z.string(),
+  statusCode: z.string(),
+  message: z.string(),
+});
+
+export interface DropStatusActionRequest {
+  readonly nextStatusCode: "ACTIVE" | "SCHEDULED" | "PAUSED" | "CANCELLED";
+  readonly reasonText: string;
+}
+
+export interface DropStatusActionResult {
+  readonly dropPk: string;
+  readonly statusCode: DropStatusCode;
+  readonly message: string;
+}

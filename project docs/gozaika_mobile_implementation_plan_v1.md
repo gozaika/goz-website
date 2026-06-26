@@ -82,6 +82,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | R1 | Partner role-shaped Today dashboard | U1, U2R | Complete (2026-06-25) |
 | R2 | Counter focus-mode | R1, U2R | Complete (2026-06-25) |
 | R3a | Drops visual polish | R2, U2R | Complete (2026-06-26) |
+| R3b | Drop lifecycle actions | R3a | Complete (2026-06-26) |
 
 **Completion and redevelopment record (U1 - 2026-06-25)**
 
@@ -209,6 +210,19 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Commands: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7. Android release Gradle build passed from `C:\tmp\gozaika-build\apps\restaurant-mobile\android` via `cmd.exe` after PowerShell treated Gradle warning stderr as a native command error.
 - Visual QA: restaurant release APK installed and launched on the connected Android device; raw unsigned launch evidence at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3a-release-launch.png`. Authenticated partner QA then passed with seeded OWNER `+919876520001` / OTP `200001` on Bawarchi Biryani Palace; signed-in evidence captured at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3a-drops-owner-list.png` and `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3a-drops-owner-detail.png`.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (R3b - 2026-06-26)**
+
+- Branch: `codex/mobile-ux-uplift/r3b-drop-lifecycle-actions`.
+- Changed `packages/types/src/mobile/catalog.ts` and `catalog.test.ts` to add the mobile drop status action request/result contract for `ACTIVE`, `SCHEDULED`, `PAUSED`, and `CANCELLED`.
+- Added `apps/restaurant-mgmt-web/app/api/mobile/v1/drops/[dropId]/status/route.ts` as the role-gated, tenant-checked mobile BFF endpoint for partner lifecycle actions. Activation/scheduling reuses restaurant status and ops publishing guardrails; terminal drops are rejected; cancellation stamps existing cancellation fields and leaves paid orders untouched.
+- Changed `apps/restaurant-mobile/src/api/catalog.ts` to add `useSetDropStatus()` with Drops cache invalidation.
+- Changed `apps/restaurant-mobile/app/(tabs)/drops/[dropPk].tsx` to replace read-only lifecycle copy with confirmed pause, activate/reactivate, schedule, and cancel controls based on the real `DropSummary.statusCode`.
+- Data truth: all lifecycle options derive from the current server status; no fabricated drop, order, QR/OTP, customer, revenue, rating, or sell-through data was introduced. Mutations require confirmation and call the BFF before the UI reports success.
+- Compatibility: no publish flow, payment, pickup verification, order state, role policy, or customer app behavior changed. Quantity, price, and pickup-window edits remain outside this mobile slice.
+- Commands: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; `npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7. Android release Gradle build passed from `C:\tmp\gozaika-build\apps\restaurant-mobile\android` via `cmd.exe` after PowerShell treated Gradle warning stderr as a native command error.
+- Visual QA: release APK installed and launched on device; raw unsigned launch evidence at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3b-release-launch.png`. Authenticated partner QA passed with seeded OWNER `+919876520001` / OTP `200001` on Bawarchi Biryani Palace; lifecycle detail and confirmation evidence captured at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3b-lifecycle-detail.png` and `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3b-lifecycle-confirmation.png` without confirming a mutating action.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck`, `npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck`, then `node scripts/mobile-ci.mjs`.
 
 ## 4. Agent prompts
 

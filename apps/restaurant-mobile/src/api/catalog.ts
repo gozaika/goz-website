@@ -1,8 +1,11 @@
 import { STALE_TIMES } from "@gozaika/mobile-core";
 import {
   dropsDataSchema,
+  dropStatusActionResultSchema,
   publishDropResultSchema,
   templatesDataSchema,
+  type DropStatusActionRequest,
+  type DropStatusActionResult,
   type DropsData,
   type PublishDropRequest,
   type PublishDropResult,
@@ -50,6 +53,22 @@ export function usePublishDrop(restaurantPk: string | null) {
         dataSchema: publishDropResultSchema,
       });
       return res.data as unknown as PublishDropResult;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: dropsKey(restaurantPk) }),
+  });
+}
+
+export function useSetDropStatus(restaurantPk: string | null, dropPk: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: DropStatusActionRequest): Promise<DropStatusActionResult> => {
+      const res = await apiClient.request(`/drops/${dropPk}/status`, {
+        method: "POST",
+        body,
+        restaurantPk: restaurantPk ?? undefined,
+        dataSchema: dropStatusActionResultSchema,
+      });
+      return res.data as unknown as DropStatusActionResult;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: dropsKey(restaurantPk) }),
   });
