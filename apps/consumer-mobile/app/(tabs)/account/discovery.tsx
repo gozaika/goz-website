@@ -104,7 +104,7 @@ export default function DiscoveryProfileScreen() {
             accent={palette.saffron}
           />
           <View style={{ flex: 1, gap: spacing.sm }}>
-            <Text variant="caption" color={palette.saffron}>
+            <Text variant="caption" color={palette.saffronText}>
               Discovery profile
             </Text>
             <Text variant="title">{flavourPersonalityLabel}</Text>

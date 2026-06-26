@@ -28,7 +28,7 @@ export default function SwaadClubScreen() {
 
   return (
     <Screen contentStyle={{ gap: spacing.md }}>
-      <Text variant="caption" color={palette.gold}>
+      <Text variant="caption" color={palette.goldText}>
         SWAAD CLUB
       </Text>
       <Text variant="title">Priority access for Hyderabad's first BAM Bag explorers.</Text>

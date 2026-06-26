@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Animated, type DimensionValue } from "react-native";
+import { useReducedMotion } from "../motion";
 import { palette } from "../tokens/colors";
 import { radii } from "../tokens/layout";
 
@@ -9,11 +10,20 @@ export interface SkeletonProps {
   readonly radius?: number;
 }
 
-/** Pulsing placeholder for loading states. Honors reduced-motion via low contrast. */
+/**
+ * Pulsing placeholder for loading states. Honors the OS reduced-motion setting:
+ * when reduced motion is on, it holds a static mid opacity instead of looping.
+ */
 export function Skeleton({ width = "100%", height = 16, radius = radii.sm }: SkeletonProps) {
-  const opacity = useRef(new Animated.Value(0.4)).current;
+  const reduceMotion = useReducedMotion();
+  const opacity = useRef(new Animated.Value(0.6)).current;
 
   useEffect(() => {
+    if (reduceMotion) {
+      // Settle on a steady, readable opacity and run no animation.
+      opacity.setValue(0.6);
+      return;
+    }
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(opacity, { toValue: 0.8, duration: 700, useNativeDriver: true }),
@@ -22,7 +32,7 @@ export function Skeleton({ width = "100%", height = 16, radius = radii.sm }: Ske
     );
     loop.start();
     return () => loop.stop();
-  }, [opacity]);
+  }, [opacity, reduceMotion]);
 
   return (
     <Animated.View

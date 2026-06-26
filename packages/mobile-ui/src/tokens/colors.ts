@@ -7,6 +7,12 @@ export const palette = {
   saffron: "#FF6B35",
   forest: "#1A5C38",
   gold: "#D4A017",
+  // Brand saffron/gold are vivid enough for fills and graphics but fail WCAG AA
+  // as text on light surfaces (saffron 2.84:1, gold 2.38:1 on white). These
+  // darker companions are AA-readable as text on white/cream and keep the same
+  // hue family; use `accentTextColor()` to pick them automatically.
+  saffronText: "#B23C0E",
+  goldText: "#7A5C00",
   cream: "#FFF8F0",
   charcoal: "#2D2D2D",
   white: "#FFFFFF",

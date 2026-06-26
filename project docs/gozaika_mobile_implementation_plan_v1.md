@@ -85,6 +85,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | R3b | Drop lifecycle actions | R3a | Complete (2026-06-26) |
 | R3c | Reports/finance polish | R3b, U2R | Complete (2026-06-26) |
 | R4 | More role-aware + switcher | R3c, U2R | Complete (2026-06-26) |
+| X1 | A11y/motion/perf pass | U1-R4 | Complete (2026-06-26) |
 
 **Completion and redevelopment record (U1 - 2026-06-25)**
 
@@ -247,6 +248,19 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Commands: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7.
 - Visual QA: restaurant release APK rebuilt from `C:\tmp\gozaika-build` (the `android-preview-install.ps1` cloud-env build) and installed on the connected Android device; launch evidence at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-release-launch.png`. Authenticated OWNER capture at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r4-more-owner.png` shows the new switcher card (Bawarchi Biryani Palace, Owner/Active badges, selected) and the Manage card with the OWNER role badge and all 7 destinations resolved from real `useAuth()` cloud-bootstrap membership data. The restricted-role variant (FINANCE → ROI reports + Finance only; PICKUP_STAFF → none) is a confirmatory follow-up; it requires signing in as seeded role staff (`+9198765300xx` on Bawarchi) and the hiding it demonstrates is already deterministically backed by the shared `ROLE_SCOPE_SEED` and its `packages/types` capability tests.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (X1 - 2026-06-26)**
+
+- Branch: `codex/mobile-ux-uplift/x1-a11y-motion-perf`, cut from `main` after the U1->R4 uplift chain was consolidated onto `main` (FF to `5b274e6`). First uplift slice to branch from `main` rather than the previous slice's tip.
+- Contrast re-audit of the new overlay surfaces found two real WCAG-AA text failures introduced across U1-R4: brand **saffron** (2.84:1) and **gold** (2.38:1) were used as text on white/cream (fail even large-text AA), and customer primary buttons rendered white text on the saffron fill (2.84:1). `forest`, `muted` (4.59-4.83), `charcoal`, and all status foregrounds already pass.
+- Fix (brand-preserving): keep vivid `saffron`/`gold` for fills/graphics; add AA-readable text companions `palette.saffronText` (#B23C0E) and `palette.goldText` (#7A5C00); add `accentTextColor()` (accent rendered as text on a light surface -> readable companion) and `onAccentTextColor()` (text placed on an accent fill -> white or charcoal by measured contrast) in `tokens/contrast.ts`.
+- Wiring: `Button` now derives text color via `onAccentTextColor`/`accentTextColor` (forest buttons keep white text; saffron buttons get charcoal text; secondary/ghost accent text uses the companion). `CustomerPrimitives` and `PartnerPrimitives` route every accent-as-text through `accentTextColor` (a no-op for forest, AA-safe for any accent). `account/discovery.tsx` and `swaad-club.tsx` captions use the `*Text` companions.
+- Reduced motion: `Skeleton` ran a continuous opacity loop regardless of the OS setting (its "honors reduced motion" comment was false). It now reads `useReducedMotion()` and holds a static 0.6 opacity with no animation when reduced motion is on. All other animated/press feedback already routed through the U1 `getPressFeedbackStyle`/`useReducedMotion` helpers.
+- Dynamic Type: `Text` does not set `allowFontScaling={false}` anywhere (verified by grep across packages + apps), so system font scaling is honored; primitives use `minHeight`/`MIN_TOUCH_TARGET` rather than fixed text heights, so scaled type does not clip. No change required.
+- Data/behavior truth: presentation-only; no API/schema/auth/role/payment/pickup/finance behavior changed; no fabricated content. Brand fills remain the vivid saffron/gold (the 3:1 graphics threshold is an accepted brand residual; only **text** contrast was changed).
+- Commands: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npx vitest run packages/mobile-ui/src/tokens/contrast.test.ts` -> 12 passed; full `node scripts/mobile-ci.mjs` passed 7/7 (the `expo export (consumer-mobile)` step is the customer-app build proof for these changes).
+- Visual QA: the new contrast tests are the deterministic acceptance evidence ("Contrast tests; a11y sweep"). The visible customer-side effects (charcoal-on-saffron primary buttons, deeper saffron/gold accent text) are exactly what the tests assert; an authenticated customer-screen capture is an optional confirmatory follow-up, consistent with the C3 device-capture deferral. Partner app is visually unchanged (forest accent -> helpers are no-ops).
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/mobile-ui run typecheck`, `npx vitest run packages/mobile-ui`, then `node scripts/mobile-ci.mjs`.
 
 ## 4. Agent prompts
 

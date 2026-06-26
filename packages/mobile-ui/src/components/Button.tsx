@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, type StyleProp, type ViewStyle } from "react-native";
 import { getPressFeedbackStyle, useReducedMotion } from "../motion";
-import { accents, palette } from "../tokens/colors";
+import { accents } from "../tokens/colors";
+import { accentTextColor, onAccentTextColor } from "../tokens/contrast";
 import { MIN_TOUCH_TARGET, radii, spacing } from "../tokens/layout";
 import { Text } from "./Text";
 
@@ -45,7 +46,9 @@ export function Button({
     borderColor: accent,
   };
 
-  const textColor = isPrimary ? palette.white : accent;
+  // Primary buttons place text on the accent fill (white or charcoal, per AA);
+  // secondary/ghost render the accent itself as text on a light surface.
+  const textColor = isPrimary ? onAccentTextColor(accent) : accentTextColor(accent);
 
   return (
     <Pressable

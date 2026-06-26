@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
 import { getPressFeedbackStyle, useReducedMotion } from "../motion";
 import { accents, palette, toneColors, type StatusTone } from "../tokens/colors";
+import { accentTextColor } from "../tokens/contrast";
 import { elevation, MIN_TOUCH_TARGET, radii, spacing } from "../tokens/layout";
 import { Badge } from "./Badge";
 import { Button } from "./Button";
@@ -50,7 +51,7 @@ export function HeroBanner({
       ]}
     >
       {eyebrow ? (
-        <Text variant="caption" color={accent} style={{ textTransform: "uppercase" }}>
+        <Text variant="caption" color={accentTextColor(accent)} style={{ textTransform: "uppercase" }}>
           {eyebrow}
         </Text>
       ) : null}
@@ -72,7 +73,7 @@ export function HeroBanner({
                 paddingVertical: spacing.sm,
               }}
             >
-              <Text variant="heading" color={accent}>
+              <Text variant="heading" color={accentTextColor(accent)}>
                 {stat.value}
               </Text>
               <Text variant="caption" color={palette.muted}>
@@ -377,7 +378,7 @@ export function ProgressRing({ value, label, size = 96, accent = palette.gold }:
             backgroundColor: palette.white,
           }}
         >
-          <Text variant="title" color={accent}>
+          <Text variant="title" color={accentTextColor(accent)}>
             {percent}%
           </Text>
           <View
@@ -440,7 +441,7 @@ export function LoyaltyCard({
       <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.lg }}>
         <ProgressRing value={progress} label={progressLabel} accent={accent} />
         <View style={{ flex: 1, gap: spacing.sm }}>
-          <Text variant="caption" color={accent}>
+          <Text variant="caption" color={accentTextColor(accent)}>
             {title}
           </Text>
           <Text variant="title">{tier}</Text>

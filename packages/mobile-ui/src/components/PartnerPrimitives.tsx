@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
 import { getPressFeedbackStyle, useReducedMotion } from "../motion";
 import { accents, palette, type StatusTone } from "../tokens/colors";
+import { accentTextColor } from "../tokens/contrast";
 import { elevation, MIN_TOUCH_TARGET, radii, spacing } from "../tokens/layout";
 import { Badge } from "./Badge";
 import { Button } from "./Button";
@@ -37,14 +38,14 @@ export function MetricHero({
       <View style={{ flexDirection: "row", justifyContent: "space-between", gap: spacing.md }}>
         <View style={{ flex: 1, gap: spacing.xs }}>
           {eyebrow ? (
-            <Text variant="caption" color={accent} style={{ textTransform: "uppercase" }}>
+            <Text variant="caption" color={accentTextColor(accent)} style={{ textTransform: "uppercase" }}>
               {eyebrow}
             </Text>
           ) : null}
           <Text variant="label" color={palette.muted}>
             {title}
           </Text>
-          <Text variant="display" color={accent} accessibilityRole="header">
+          <Text variant="display" color={accentTextColor(accent)} accessibilityRole="header">
             {value}
           </Text>
           {helper ? <Text color={palette.muted}>{helper}</Text> : null}
@@ -103,7 +104,7 @@ export function ActionCard({
       <Text variant="heading">{title}</Text>
       {detail ? <Text color={palette.muted}>{detail}</Text> : null}
       {actionLabel ? (
-        <Text variant="label" color={accent}>
+        <Text variant="label" color={accentTextColor(accent)}>
           {actionLabel}
         </Text>
       ) : null}
