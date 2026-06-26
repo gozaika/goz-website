@@ -84,6 +84,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | R3a | Drops visual polish | R2, U2R | Complete (2026-06-26) |
 | R3b | Drop lifecycle actions | R3a | Complete (2026-06-26) |
 | R3c | Reports/finance polish | R3b, U2R | Complete (2026-06-26) |
+| R4 | More role-aware + switcher | R3c, U2R | Complete (2026-06-26) |
 
 **Completion and redevelopment record (U1 - 2026-06-25)**
 
@@ -234,6 +235,17 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Compatibility: read-only polish only; no API/schema/auth/role/drop lifecycle/publish/payment/pickup behavior changed. Finance/ROI wording remains app-internal pending any external/share/export approval.
 - Commands: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7.
 - Visual QA: restaurant release APK installed and launched on the connected Android device; authenticated OWNER reports/finance evidence captured at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3c-reports-owner.png` and `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r3c-finance-owner.png`. Local visual QA used `adb reverse` for local Supabase and the restaurant BFF after the cloud OTP request failed in the release APK.
+- Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (R4 - 2026-06-26)**
+
+- Branch: `codex/mobile-ux-uplift/r4-more-role-aware` (cut from the R3c tip `548acae`, because the uplift slices are chained branch-on-branch and are NOT yet merged to `main`; cutting from `main` would drop the U2R primitives and all prior uplift screens and fail the gate).
+- Changed `apps/restaurant-mobile/app/(tabs)/more.tsx` to replace the static link list + role text disclaimer with a role-aware management hub: a `RestaurantSwitcher` over real `useAuth()` memberships, an active-role badge, and a destination list filtered by the same data-driven capability matrix the server enforces.
+- Role gating: each management destination declares its `RestaurantCapability` (`Templates→manageTemplates`, `ROI reports→viewReports`, `Finance→viewFinance`, `Onboarding→manageProfile`, `Compliance→manageCompliance`, `Profile→manageProfile`, `Reviews→viewReviews`) and is shown only when `roleHasCapability(role, capability)` from `@gozaika/types` (the shared `ROLE_SCOPE_SEED`). Forbidden destinations are hidden and a count of hidden destinations is shown. Derived visibility per seeded role: OWNER/ADMIN → all 7; OPERATIONS → Templates, ROI reports, Reviews; FINANCE → ROI reports, Finance; PICKUP_STAFF → none (counter-focused message).
+- Selection truth mirrors the server fallback: an explicit `selectedRestaurantPk`, else the sole membership; switching calls `selectRestaurant`. Signed-out shows a sign-in card and no role-gated destinations; signed-in with memberships unresolved shows a neutral loading card instead of fabricating access.
+- Compatibility: presentation-only. No API/schema/auth/role-matrix/drop/payment/pickup/notification behavior changed; the server `withMobileRestaurantRole` gate remains the enforcement boundary. No fabricated restaurants, roles, metrics, QR/OTP, order states, or claims introduced.
+- Commands: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7.
+- Visual QA: restaurant release APK rebuilt from `C:\tmp\gozaika-build` (the `android-preview-install.ps1` cloud-env build) and installed on the connected Android device; launch evidence at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-release-launch.png`. Authenticated OWNER capture at `.codex-artifacts/mobile-ux-uplift/android-preview-build/restaurant-mobile-r4-more-owner.png` shows the new switcher card (Bawarchi Biryani Palace, Owner/Active badges, selected) and the Manage card with the OWNER role badge and all 7 destinations resolved from real `useAuth()` cloud-bootstrap membership data. The restricted-role variant (FINANCE → ROI reports + Finance only; PICKUP_STAFF → none) is a confirmatory follow-up; it requires signing in as seeded role staff (`+9198765300xx` on Bawarchi) and the hiding it demonstrates is already deterministically backed by the shared `ROLE_SCOPE_SEED` and its `packages/types` capability tests.
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck`, then `node scripts/mobile-ci.mjs`.
 
 ## 4. Agent prompts
