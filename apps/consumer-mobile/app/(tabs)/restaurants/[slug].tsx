@@ -30,7 +30,7 @@ export default function RestaurantProfileScreen() {
     <Screen contentStyle={{ gap: spacing.md }}>
       <ProductMedia
         media={restaurant.coverImage}
-        fallbackSource={mediaFallbacks.restaurantCover}
+        fallbackSource={mediaFallbacks.coverFor(restaurant.restaurantName)}
         aspectRatio={16 / 9}
         accessibilityLabel={restaurant.coverImage?.alt ?? `${restaurant.restaurantName} restaurant`}
         testID={`restaurant-profile-media-${restaurant.restaurantPk}`}

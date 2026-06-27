@@ -44,7 +44,7 @@ export default function RestaurantsScreen() {
             <Card>
               <ProductMedia
                 media={item.coverImage}
-                fallbackSource={mediaFallbacks.restaurantCover}
+                fallbackSource={mediaFallbacks.coverFor(item.restaurantName)}
                 aspectRatio={16 / 9}
                 accessibilityLabel={item.coverImage?.alt ?? `${item.restaurantName} restaurant`}
                 testID={`restaurant-media-${item.restaurantPk}`}

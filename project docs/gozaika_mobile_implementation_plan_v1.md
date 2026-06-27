@@ -86,6 +86,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 | R3c | Reports/finance polish | R3b, U2R | Complete (2026-06-26) |
 | R4 | More role-aware + switcher | R3c, U2R | Complete (2026-06-26) |
 | X1 | A11y/motion/perf pass | U1-R4 | Complete (2026-06-26) |
+| D1 | Demo/presales readiness | U1-R4, X1 | In progress (D1a complete 2026-06-27) |
 
 **Completion and redevelopment record (U1 - 2026-06-25)**
 
@@ -262,6 +263,18 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 - Commands: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npx vitest run packages/mobile-ui/src/tokens/contrast.test.ts` -> 12 passed; full `node scripts/mobile-ci.mjs` passed 7/7 (the `expo export (consumer-mobile)` step is the customer-app build proof for these changes).
 - Visual QA: the new contrast tests are the deterministic acceptance evidence ("Contrast tests; a11y sweep"). The visible customer-side effects (charcoal-on-saffron primary buttons, deeper saffron/gold accent text) are exactly what the tests assert; an authenticated customer-screen capture is an optional confirmatory follow-up, consistent with the C3 device-capture deferral. Partner app is visually unchanged (forest accent -> helpers are no-ops).
 - Reproduce from clean checkout: switch to this branch, run `npm.cmd --workspace @gozaika/mobile-ui run typecheck`, `npx vitest run packages/mobile-ui`, then `node scripts/mobile-ci.mjs`.
+
+**Completion and redevelopment record (D1 - in progress, 2026-06-27)**
+
+- Branch: `codex/mobile-ux-uplift/d1-demo-presales`. Investor/partner/employee-facing slice: make web + mobile look alive and vibrant for demos.
+- **Finding that reframes D1:** the demo seed (`supabase/seed_demo/`) is already rich — 8 consumers, 5 restaurants with vivid `restaurant_public_profile` headlines + story_markdown, 17 drops, 28 orders, 12 reviews, payments, finance, passport tiers, subscriptions, emergency-closure. Profile *copy/data* is strong; the real gap is **imagery** (apps render placeholder fallbacks). So D1 is primarily an imagery + store-asset slice, not a data-enrichment one.
+- **Imagery approach (owner-approved 2026-06-27):** original SVG/vector art by the agent (license-safe, on-brand), since binary stock photos can't be pulled into the repo here and reusing real restaurants' photos for fictional seed restaurants is a licensing/authenticity problem. If the owner later supplies licensed photos, swap them in via the product-media pipeline.
+- **Sub-slices:** **D1a** mobile cuisine cover art (done); **D1b** web (consumer-web + restaurant-web) cuisine art wiring (SVG native); **D1c** drop-type/blind-bag art variants + cuisine-accurate mapping if the DTO exposes a cuisine code; **D1d** store-asset cards composed from the now-vibrant states (reconcile with the `.codex-artifacts/gozaika-polish-v2` track — single-agent ownership); **D1e** Maestro demo-flow polish + capture manifest.
+- **D1a done — mobile cuisine cover art:** `scripts/demo-art/build-art.mjs` generates 5 original flat-illustration cuisine covers (biryani/thali/grill/coastal/bakery) as SVG sources (`scripts/demo-art/svg/`) + rasterized PNGs (`apps/consumer-mobile/assets/art/`) via `sharp`. `apps/consumer-mobile/src/ui/mediaFallbacks.ts` adds `coverFor(name)` — a deterministic stable-name-hash picker (production-safe, not demo-hardcoded; real uploaded `media` still wins). Wired into all 5 consumer-mobile `ProductMedia` fallbacks (DropCard, Home rail, drop detail, restaurants list, restaurant profile). Replaces the single grey `drop-default`/`restaurant-cover-default` placeholder.
+- Data/behavior truth: presentation-only; no API/schema/auth/role/payment/pickup/finance change; no fabricated metrics/claims. Art is abstract illustration, not a real photo of any restaurant's food.
+- Commands: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7 (the `expo export (consumer-mobile)` step confirms the new PNG assets bundle). Regenerate art with `node scripts/demo-art/build-art.mjs`.
+- Visual QA: covers reviewed as rendered PNGs (biryani + grill confirmed appetizing/on-brand). On-device capture of the vibrant Home/Drops/Restaurants against live cloud-seeded drops is the next QA step.
+- Next: D1b web wiring, then D1c-D1e per the sub-slice list above.
 
 ## 4. Agent prompts
 
