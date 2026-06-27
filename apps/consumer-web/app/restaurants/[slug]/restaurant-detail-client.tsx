@@ -2,7 +2,7 @@
 
 import { DietaryBadge, DropCard } from "@gozaika/ui";
 import type { PublicRestaurantProfile, PublicReview, ReviewsPayload } from "@gozaika/types";
-import { formatCountdown, formatPaise, ratingLabel } from "@gozaika/utils";
+import { cuisineCoverKey, formatCountdown, formatPaise, ratingLabel } from "@gozaika/utils";
 import { useEffect, useRef, useState } from "react";
 import { Flag, MapPin, Star } from "lucide-react";
 
@@ -205,9 +205,16 @@ export function RestaurantDetailClient({
 
   return (
     <>
-      {/* Photo strip / hero */}
-      <section className="bg-gradient-to-br from-[#1A5C38] to-[#0F3D25] px-4 py-12">
-        <div className="mx-auto max-w-7xl">
+      {/* Photo strip / hero — cuisine art behind a forest overlay (keeps white text AA-readable) */}
+      <section className="relative overflow-hidden px-4 py-12">
+        <img
+          src={`/art/cover-${cuisineCoverKey(restaurant.restaurantName, restaurant.cuisineTags) ?? "biryani"}.svg`}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1A5C38]/92 to-[#0F3D25]/96" />
+        <div className="relative mx-auto max-w-7xl">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-[#D4A017]">

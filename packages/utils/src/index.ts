@@ -137,6 +137,34 @@ export function slugifyRestaurantName(input: string): string {
   return slug || "gozaika-restaurant";
 }
 
+/**
+ * Cuisine cover-art keys shared by mobile and web. Each maps to an original
+ * flat-illustration cover (see `scripts/demo-art/build-art.mjs`). `cuisineCoverKey`
+ * picks one from generic cuisine keywords in a restaurant name (and optional
+ * cuisine tags), so the same restaurant shows the same appetizing cover on every
+ * surface. Returns `null` when nothing matches, so callers can fall back (e.g. to
+ * a stable hash) instead of guessing. The vocabulary is generic, not demo-specific.
+ */
+export const COVER_KEYS = ["biryani", "thali", "grill", "coastal", "bakery"] as const;
+export type CoverKey = (typeof COVER_KEYS)[number];
+
+const COVER_KEYWORDS: readonly (readonly [RegExp, CoverKey])[] = [
+  [/biryani|hyderabad|dum\b|pulao|mughlai|nawab|handi/i, "biryani"],
+  [/grill|smoky|tandoor|kebab|bbq|barbe|charcoal|north.?indian|continental/i, "grill"],
+  [/andhra|coastal|seafood|\bfish\b|chettinad|malabar|spice trail/i, "coastal"],
+  [/bakery|baker|sweet|cake|dessert|patisser|choco|bread|bake\b/i, "bakery"],
+  [/sattvi|thali|south.?indian|\bveg\b|jain|pure.?veg|multi.?cuisine|tiffin/i, "thali"],
+];
+
+export function cuisineCoverKey(name: string | null | undefined, cuisineTags: readonly string[] = []): CoverKey | null {
+  const haystack = [name ?? "", ...cuisineTags].join(" ").trim();
+  if (!haystack) return null;
+  for (const [pattern, key] of COVER_KEYWORDS) {
+    if (pattern.test(haystack)) return key;
+  }
+  return null;
+}
+
 export function createIdempotencyKey(prefix: string, actorPk: string, entropy: string): string {
   const safePrefix = prefix.toLowerCase().replace(/[^a-z0-9_-]/g, "-");
   return `${safePrefix}:${actorPk}:${entropy}`.slice(0, 128);

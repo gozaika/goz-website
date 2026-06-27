@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
 import { Clock, MapPin, ShieldCheck, Store } from "lucide-react";
 import type { PublicDropCard, PublicRestaurantProfile } from "@gozaika/types";
-import { cn, dietaryBadgeLabel, formatCountdown, formatPaise, formatPickupWindow, getDropClaimAvailability } from "@gozaika/utils";
+import { cn, cuisineCoverKey, dietaryBadgeLabel, formatCountdown, formatPaise, formatPickupWindow, getDropClaimAvailability } from "@gozaika/utils";
 
 export { DropShareActions, LaunchCommsPanel } from "./launch-comms-actions";
 export { CuisinePassport } from "./CuisinePassport";
@@ -207,6 +207,14 @@ export function DropCard({
           </span>
         </div>
       ) : null}
+
+      {/* Cuisine cover art — appetizing banner; real uploaded media can replace this later */}
+      <img
+        src={`/art/cover-${cuisineCoverKey(drop.restaurantName) ?? "biryani"}.svg`}
+        alt=""
+        aria-hidden
+        className="-mx-4 -mt-4 mb-3 h-28 w-[calc(100%+2rem)] max-w-none object-cover"
+      />
 
       {/* Badges row */}
       <div className="mb-2 flex flex-wrap gap-1.5">
