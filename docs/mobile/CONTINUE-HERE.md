@@ -76,6 +76,12 @@ Everything below is on `main`, gate-green, live-proven. Confirm with
 - **Customer app** (consumer-mobile): discovery → claim → simulated pay → order → orders list/detail all work on-device.
 - **Restaurant app** (restaurant-mobile): dashboard, counter, drops, profile, finance all work on-device (full OWNER E2E passed).
 
+## ▶ RESUME HERE (2026-06-28 handoff — finishing the uplift project)
+Owner directive: **finish all outstanding uplift work** except real Razorpay (deferred ~months). **DPDP erasure is UNBLOCKED** (liberal posture, test data). Build mode is **Plan B**: code-correct + typecheck + types tests + `node scripts/mobile-ci.mjs` 7/7 + smoke per vertical; **on-device verification is batched after a BFF deploy** — running list in `docs/mobile/deploy-verification-checklist.md`.
+- ✅ **Done this push:** Slice 10 (reviews + erasure + profile-edit + referral), Slice 13 (lifecycle, via R3b) + Slice 15 (invoice download), Slice 14 (partner reviews).
+- ⏭ **Remaining, in order:** **F1 favorites/follows** (large: web + mobile + restaurant aggregate counts; reuse `consumer_saved_restaurant`) → **Slice 12** resumable onboarding wizard + location pin → **Slice 16** push/deep-links/offline (native deps + a device build to prove) → **Slice 17** a11y/security/perf gate → **Slice 18** release prep → **product-media gate #5**.
+- **Pattern per vertical:** shared lib (web+mobile parity) → BFF route under `apps/*/app/api/mobile/v1/` (`withMobileAuth` / `withMobileRestaurantRole`) → mobile `src/api/*` hook + screen → smoke in `scripts/smoke/` → gate → commit+push (branch `codex/mobile-ux-uplift/d1-demo-presales`, fast-forwarded to `main`). Append a row to the verification checklist.
+
 ## Next-up order (build one vertical at a time, commit+push each)
 1. ~~**Slice 11** — Passport / discovery profile / Swaad Club.~~ ✅ Done 2026-06-22 (shared `buildPassportPayload`/`buildDiscoveryProfile` lib; live-proven).
 2. ~~**Slice 15 ROI report**~~ ✅ Done 2026-06-22. ~~invoice download remainder~~ ✅ **Done 2026-06-28:** BFF `GET /api/mobile/v1/finance/invoice/[id]/signed-url` (mirrors the compliance signed-url pattern; `viewFinance`, tenant-scoped, 5-min expiry); `invoicePk` added to the mobile finance wire/DTO; mobile `useInvoiceDownload` + a per-settlement "Download invoice" button on `finance.tsx` (opens the signed URL).
