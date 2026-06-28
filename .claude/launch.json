@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "consumer-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--workspace", "@gozaika/consumer-web", "run", "dev"],
+      "port": 3000
+    }
+  ]
+}
