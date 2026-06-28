@@ -168,6 +168,30 @@ const covers = {
     return scene(C.teal, C.teal, motif, C.chili);
   },
 
+  // Blind Adventure / blind bag — a covered cloche hiding the dish, gold "?".
+  // Deliberately cuisine-agnostic: blind-bag drops must NOT reveal their cuisine.
+  mystery: () => {
+    const cx = W / 2;
+    const cy = 470;
+    const qHook = `M${cx - 86},${cy - 78} C${cx - 86},${cy - 172} ${cx + 96},${cy - 172} ${cx + 84},${cy - 64} C${cx + 76},${cy - 14} ${cx},${cy - 16} ${cx},${cy + 48}`;
+    const motif = `
+      ${steam(cx, cy - 190, C.gold, 0.4)}
+      <ellipse cx="${cx}" cy="${cy + 168}" rx="320" ry="64" fill="${C.charcoal}" opacity="0.12"/>
+      <ellipse cx="${cx}" cy="${cy + 150}" rx="300" ry="58" fill="#E7E9EC"/>
+      <ellipse cx="${cx}" cy="${cy + 146}" rx="300" ry="58" fill="none" stroke="#CED3D9" stroke-width="8"/>
+      <path d="M${cx - 250},${cy + 150} a250,250 0 0 1 500,0 Z" fill="${C.forest}"/>
+      <path d="M${cx - 250},${cy + 150} a250,250 0 0 1 500,0 Z" fill="none" stroke="${C.gold}" stroke-width="12"/>
+      <ellipse cx="${cx - 96}" cy="${cy - 6}" rx="70" ry="118" fill="${C.white}" opacity="0.10"/>
+      <rect x="${cx - 9}" y="${cy - 196}" width="18" height="40" rx="9" fill="${C.gold}"/>
+      <circle cx="${cx}" cy="${cy - 196}" r="28" fill="${C.gold}"/>
+      <g fill="none" stroke="${C.gold}" stroke-width="42" stroke-linecap="round">
+        <path d="${qHook}"/>
+      </g>
+      <circle cx="${cx}" cy="${cy + 120}" r="25" fill="${C.gold}"/>
+      ${dots(cx - 30, cy - 150, 6, 9, 200, C.gold, 0.5)}`;
+    return scene(C.forest, C.gold, motif, C.gold);
+  },
+
   // Artisan bakery — croissant, cupcake, sprinkles.
   bakery: () => {
     const cx = W / 2;

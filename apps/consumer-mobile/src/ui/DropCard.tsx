@@ -11,7 +11,7 @@ export function DropCard({ drop, onPress }: { readonly drop: MobilePublicDropCar
       <Card>
         <ProductMedia
           media={drop.image}
-          fallbackSource={mediaFallbacks.coverFor(drop.restaurantName)}
+          fallbackSource={mediaFallbacks.coverForDrop(drop)}
           accessibilityLabel={drop.image?.alt ?? `${drop.bagDisplayName} from ${drop.restaurantName}`}
           testID={`drop-media-${drop.dropPk}`}
         />

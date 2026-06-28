@@ -54,7 +54,7 @@ function DropRailCard({ drop, onPress }: { readonly drop: MobilePublicDropCard; 
       <Card elevated="sm" style={{ width: 248, padding: spacing.md }}>
         <ProductMedia
           media={drop.image}
-          fallbackSource={mediaFallbacks.coverFor(drop.restaurantName)}
+          fallbackSource={mediaFallbacks.coverForDrop(drop)}
           aspectRatio={16 / 10}
           accessibilityLabel={drop.image?.alt ?? `${drop.bagDisplayName} from ${drop.restaurantName}`}
         />

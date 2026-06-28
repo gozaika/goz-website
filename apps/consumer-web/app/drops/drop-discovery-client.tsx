@@ -2,7 +2,7 @@
 
 import { DropCard, DropShareActions, EmptyState } from "@gozaika/ui";
 import type { PublicDropCard } from "@gozaika/types";
-import { createPublicDropUrl, cuisineCoverKey, dietaryBadgeLabel, formatPickupWindow, generateManualDropAlertText } from "@gozaika/utils";
+import { createPublicDropUrl, dietaryBadgeLabel, dropCoverKey, dropTypeRibbon, formatPickupWindow, generateManualDropAlertText } from "@gozaika/utils";
 import { List, Map, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/browser";
@@ -209,12 +209,19 @@ export function DropDiscoveryClient({
           <div className="flex gap-4 overflow-x-auto pb-2">
             {closing.map((drop) => (
               <article key={drop.dropPk} className="min-w-[280px] overflow-hidden rounded-lg border border-[#D4A017]/40 bg-[#FFF8F0] p-4">
-                <img
-                  src={`/art/cover-${cuisineCoverKey(drop.restaurantName) ?? "biryani"}.svg`}
-                  alt=""
-                  aria-hidden
-                  className="-mx-4 -mt-4 mb-3 h-24 w-[calc(100%+2rem)] max-w-none object-cover"
-                />
+                <div className="relative -mx-4 -mt-4 mb-3">
+                  <img
+                    src={`/art/cover-${dropCoverKey(drop) ?? "biryani"}.svg`}
+                    alt=""
+                    aria-hidden
+                    className="h-24 w-full object-cover"
+                  />
+                  {dropTypeRibbon(drop.dropTypeCode) ? (
+                    <span className="absolute left-3 top-3 rounded-full bg-[#D4A017] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#2D2D2D] shadow-sm">
+                      ★ {dropTypeRibbon(drop.dropTypeCode)}
+                    </span>
+                  ) : null}
+                </div>
                 <p className="text-sm font-semibold text-[#1A5C38]">{drop.restaurantName}</p>
                 <h3 className="mt-1 text-lg font-bold text-[#2D2D2D]">{drop.bagDisplayName}</h3>
                 <p className="mt-2 text-sm text-[#2D2D2D]/65">{formatPickupWindow(drop.pickupStartAt, drop.pickupEndAt)}</p>

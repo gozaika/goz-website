@@ -165,6 +165,37 @@ export function cuisineCoverKey(name: string | null | undefined, cuisineTags: re
   return null;
 }
 
+/** The four drop presentation types the catalog DTO exposes. */
+export type DropTypeCode = "STANDARD" | "SPOTLIGHT" | "CHEF_SPECIAL" | "BLIND_ADVENTURE";
+
+/**
+ * Cover-art key for a *drop* (vs. a restaurant). Blind-bag drops must not reveal
+ * their cuisine, so `BLIND_ADVENTURE` returns the cuisine-agnostic `"mystery"`
+ * cover; every other drop type uses the cuisine cover. Returns `null` when the
+ * cuisine can't be inferred, so callers fall back the same way as `cuisineCoverKey`.
+ */
+export function dropCoverKey(
+  drop: {
+    readonly restaurantName?: string | null;
+    readonly dropTypeCode?: string | null;
+    readonly cuisineTags?: readonly string[];
+  },
+): CoverKey | "mystery" | null {
+  if (drop.dropTypeCode === "BLIND_ADVENTURE") return "mystery";
+  return cuisineCoverKey(drop.restaurantName, drop.cuisineTags ?? []);
+}
+
+/**
+ * Short premium-ribbon label layered on a drop's cover banner, or `null` for
+ * drop types that get no ribbon. `BLIND_ADVENTURE` is intentionally excluded —
+ * it has its own mystery cover + "Mystery Cuisine" treatment instead of a ribbon.
+ */
+export function dropTypeRibbon(dropTypeCode?: string | null): string | null {
+  if (dropTypeCode === "CHEF_SPECIAL") return "Chef's Special";
+  if (dropTypeCode === "SPOTLIGHT") return "Spotlight";
+  return null;
+}
+
 export function createIdempotencyKey(prefix: string, actorPk: string, entropy: string): string {
   const safePrefix = prefix.toLowerCase().replace(/[^a-z0-9_-]/g, "-");
   return `${safePrefix}:${actorPk}:${entropy}`.slice(0, 128);

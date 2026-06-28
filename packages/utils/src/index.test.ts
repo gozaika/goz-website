@@ -3,6 +3,9 @@ import {
   createPublicDropUrl,
   createIdempotencyKey,
   createPickupQrPayload,
+  cuisineCoverKey,
+  dropCoverKey,
+  dropTypeRibbon,
   financeSettlementStatusLabel,
   financeSettlementStatusTone,
   formatPaise,
@@ -165,6 +168,33 @@ describe("claim availability", () => {
     expect(
       getDropClaimAvailability({ statusCode: "ACTIVE", quantityAvailable: 3, pickupEndAt: "2026-05-18T16:00:00.000Z" }, now).reason,
     ).toBe("Pickup window closed");
+  });
+});
+
+describe("cover art resolution", () => {
+  it("maps cuisine keywords (name + tags) to cover keys", () => {
+    expect(cuisineCoverKey("Bawarchi Biryani Palace")).toBe("biryani");
+    expect(cuisineCoverKey("The Smoky Grill")).toBe("grill");
+    expect(cuisineCoverKey("Andhra Spice Trail")).toBe("coastal");
+    expect(cuisineCoverKey("Sweet Bytes Bakery")).toBe("bakery");
+    expect(cuisineCoverKey("Sattvik Kitchen")).toBe("thali");
+    expect(cuisineCoverKey("Generic Place", ["seafood"])).toBe("coastal");
+    expect(cuisineCoverKey("No Match Here")).toBeNull();
+  });
+
+  it("hides cuisine for blind-bag drops via the mystery cover", () => {
+    expect(dropCoverKey({ restaurantName: "Sweet Bytes Bakery", dropTypeCode: "BLIND_ADVENTURE" })).toBe("mystery");
+    expect(dropCoverKey({ restaurantName: "Bawarchi Biryani Palace", dropTypeCode: "CHEF_SPECIAL" })).toBe("biryani");
+    expect(dropCoverKey({ restaurantName: "The Smoky Grill", dropTypeCode: "STANDARD" })).toBe("grill");
+    expect(dropCoverKey({ restaurantName: "No Match Here", dropTypeCode: "STANDARD" })).toBeNull();
+  });
+
+  it("labels only premium drop types with a ribbon", () => {
+    expect(dropTypeRibbon("CHEF_SPECIAL")).toBe("Chef's Special");
+    expect(dropTypeRibbon("SPOTLIGHT")).toBe("Spotlight");
+    expect(dropTypeRibbon("BLIND_ADVENTURE")).toBeNull();
+    expect(dropTypeRibbon("STANDARD")).toBeNull();
+    expect(dropTypeRibbon(undefined)).toBeNull();
   });
 });
 

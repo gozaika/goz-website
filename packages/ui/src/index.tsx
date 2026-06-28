@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
 import { Clock, MapPin, ShieldCheck, Store } from "lucide-react";
 import type { PublicDropCard, PublicRestaurantProfile } from "@gozaika/types";
-import { cn, cuisineCoverKey, dietaryBadgeLabel, formatCountdown, formatPaise, formatPickupWindow, getDropClaimAvailability } from "@gozaika/utils";
+import { cn, dietaryBadgeLabel, dropCoverKey, dropTypeRibbon, formatCountdown, formatPaise, formatPickupWindow, getDropClaimAvailability } from "@gozaika/utils";
 
 export { DropShareActions, LaunchCommsPanel } from "./launch-comms-actions";
 export { CuisinePassport } from "./CuisinePassport";
@@ -208,13 +208,21 @@ export function DropCard({
         </div>
       ) : null}
 
-      {/* Cuisine cover art — appetizing banner; real uploaded media can replace this later */}
-      <img
-        src={`/art/cover-${cuisineCoverKey(drop.restaurantName) ?? "biryani"}.svg`}
-        alt=""
-        aria-hidden
-        className="-mx-4 -mt-4 mb-3 h-28 w-[calc(100%+2rem)] max-w-none object-cover"
-      />
+      {/* Cuisine cover art — appetizing banner; real uploaded media can replace this later.
+          Blind-bag drops use the cuisine-agnostic "mystery" cover; premium types get a ribbon. */}
+      <div className="relative -mx-4 -mt-4 mb-3">
+        <img
+          src={`/art/cover-${dropCoverKey(drop) ?? "biryani"}.svg`}
+          alt=""
+          aria-hidden
+          className="h-28 w-full object-cover"
+        />
+        {dropTypeRibbon(drop.dropTypeCode) ? (
+          <span className="absolute left-3 top-3 rounded-full bg-[#D4A017] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#2D2D2D] shadow-sm">
+            ★ {dropTypeRibbon(drop.dropTypeCode)}
+          </span>
+        ) : null}
+      </div>
 
       {/* Badges row */}
       <div className="mb-2 flex flex-wrap gap-1.5">

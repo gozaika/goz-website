@@ -104,7 +104,7 @@ export default function DropDetailScreen() {
       <ScrollView contentContainerStyle={{ padding: spacing.xl, paddingBottom: spacing.xl, gap: spacing.md }}>
         <ProductMedia
           media={drop.image}
-          fallbackSource={mediaFallbacks.coverFor(drop.restaurantName)}
+          fallbackSource={mediaFallbacks.coverForDrop(drop)}
           accessibilityLabel={drop.image?.alt ?? `${drop.bagDisplayName} from ${drop.restaurantName}`}
           testID={`drop-detail-media-${drop.dropPk}`}
         />

@@ -6,7 +6,7 @@
 // on the restaurant name, which both the drop and restaurant DTOs carry, so the
 // same restaurant shows the same cover everywhere. Real uploaded media still takes
 // priority via ProductMedia's `media` prop.
-import { COVER_KEYS, cuisineCoverKey, type CoverKey } from "@gozaika/utils";
+import { COVER_KEYS, cuisineCoverKey, dropCoverKey, type CoverKey } from "@gozaika/utils";
 
 const covers: Record<CoverKey, number> = {
   biryani: require("../../assets/art/cover-biryani.png"),
@@ -15,6 +15,9 @@ const covers: Record<CoverKey, number> = {
   coastal: require("../../assets/art/cover-coastal.png"),
   bakery: require("../../assets/art/cover-bakery.png"),
 };
+
+// Cuisine-agnostic cover for blind-bag drops (must not reveal the cuisine).
+const mysteryCover: number = require("../../assets/art/cover-mystery.png");
 
 function hashIndex(key: string, modulo: number): number {
   let hash = 0;
@@ -31,9 +34,20 @@ export function coverFor(key: string | null | undefined) {
   return covers[COVER_KEYS[hashIndex(safe, COVER_KEYS.length)] ?? "biryani"];
 }
 
+/**
+ * Cover for a drop. Blind-bag drops show the cuisine-agnostic mystery cover (so
+ * the cuisine stays hidden until pickup); everything else uses `coverFor`. Keyed
+ * on the restaurant name so a restaurant's non-blind drops match its profile cover.
+ */
+export function coverForDrop(drop: { restaurantName?: string | null; dropTypeCode?: string | null }) {
+  if (dropCoverKey(drop) === "mystery") return mysteryCover;
+  return coverFor(drop.restaurantName);
+}
+
 export const mediaFallbacks = {
   // Back-compat defaults for any call site without a key.
   drop: covers.biryani,
   restaurantCover: covers.thali,
   coverFor,
+  coverForDrop,
 } as const;
