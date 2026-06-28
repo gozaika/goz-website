@@ -75,10 +75,15 @@ blocked on missing native captures.
 | `video/customer/gozaika-customer-preview.mp4` | ~24s | discover → drops → trust → order → pickup → passport → payoff |
 | `video/partner/gozaika-partner-preview.mp4` | ~24s | operations → counter → verify → publish → demand → control → payoff |
 
-9:16 1080×1920, real native screenshots only, brand captions, Ken Burns motion +
-cross-dissolves. **Tunable** (`scenes.config.mjs`): bump scene `dur` to hit the spec's
-exact 24–28s (customer) / 26–30s (partner) windows; durations are currently ~24s. 1:1
-and 16:9 derivatives + optional voice/music are later passes. No audio track yet.
+9:16 1080×1920, real native screenshots only, brand captions. Now includes:
+**procedurally-generated atmospheric backgrounds** (warm saffron bokeh + light sweep
+for customer; forest/teal glow + faint grid for partner — code-generated, no external
+image model), **motion variety** (per-scene Ken Burns: zoom-in/out + L/R/up pans),
+cross-dissolves, and a soft **synthesized ambient audio bed** (warm D-major pad for
+customer, calmer C-major for partner — a placeholder; swap for a licensed track).
+**Tunable** (`scenes.config.mjs`): bump scene `dur` to hit the spec's exact 24–28s
+(customer) / 26–30s (partner) windows (currently ~24s); `--no-audio` skips the bed; 1:1
+and 16:9 derivatives are a later pass.
 
 ## Design-system compliance
 

@@ -45,6 +45,23 @@ function background(tone) {
   return `radial-gradient(125% 95% at 16% 6%, ${C.saffronLight} 0%, ${C.cream} 52%, #FCEFE0 100%)`;
 }
 
+// Procedurally-generated atmospheric background (no external image model): a base
+// brand gradient + soft blurred bokeh blobs + a warm light sweep + subtle grain
+// (+ a faint structural grid for partner) + a bottom vignette. Mood only, no UI/text.
+function atmosphere(tone) {
+  const warm = tone !== "partner" && tone !== "trust";
+  const blobs = (tone === "partner")
+    ? [{ c: C.forest, o: 0.11, x: "12%", y: "16%", r: 600 }, { c: "#2C6E6B", o: 0.10, x: "88%", y: "74%", r: 660 }, { c: C.gold, o: 0.07, x: "74%", y: "12%", r: 380 }]
+    : [{ c: C.saffron, o: 0.13, x: "14%", y: "12%", r: 600 }, { c: C.gold, o: 0.11, x: "86%", y: "80%", r: 640 }, { c: C.saffron, o: 0.07, x: "80%", y: "30%", r: 360 }];
+  const sweep = warm ? "rgba(255,240,225,0.75)" : "rgba(255,255,255,0.55)";
+  let l = `<div style="position:absolute;inset:0;background:radial-gradient(58% 42% at 16% 6%, ${sweep} 0%, transparent 62%);"></div>`;
+  for (const b of blobs) l += `<div style="position:absolute;left:${b.x};top:${b.y};width:${b.r}px;height:${b.r}px;transform:translate(-50%,-50%);border-radius:50%;background:${b.c};opacity:${b.o};filter:blur(95px);"></div>`;
+  l += `<div style="position:absolute;inset:0;opacity:0.05;background-image:radial-gradient(rgba(45,45,45,0.55) 1px,transparent 1px);background-size:26px 26px;"></div>`;
+  if (tone === "partner") l += `<div style="position:absolute;inset:0;opacity:0.05;background-image:linear-gradient(rgba(26,92,56,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(26,92,56,.6) 1px,transparent 1px);background-size:128px 128px;"></div>`;
+  l += `<div style="position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 122%, rgba(45,45,45,0.12) 0%, transparent 55%);"></div>`;
+  return l;
+}
+
 function flameSvg(fill, size) {
   return `<svg width="${size}" height="${size}" viewBox="-60 -60 120 130" xmlns="http://www.w3.org/2000/svg"><path d="M0,-46 C26,-20 30,8 12,30 C30,18 32,-6 18,-30 C40,-2 36,40 0,52 C-36,40 -40,-2 -18,-30 C-32,-6 -30,18 -12,30 C-30,8 -26,-20 0,-46 Z" fill="${fill}"/></svg>`;
 }
@@ -59,23 +76,27 @@ function deviceFrame(src, crop, maxH) {
 
 async function sceneHtml(scene, videoTone) {
   const tone = scene.tone || videoTone;
+  const base = `width:${W}px;height:${H}px;overflow:hidden;position:relative;background:${background(tone)};`;
   if (scene.type === "brand") {
-    return `<div id="f" style="width:${W}px;height:${H}px;overflow:hidden;background:${background(tone)};
-        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;text-align:center;">
-      ${flameSvg(C.saffron, 120)}
-      <div style="font:800 78px/1 ${FONT};color:${C.charcoal};letter-spacing:1px;">go<span style="color:${C.saffron}">Z</span>aika${scene.brandSuffix ? `<span style="color:${C.forest};font-weight:700;"> ${scene.brandSuffix}</span>` : ""}</div>
-      <h1 style="margin:10px 80px 0;font:800 72px/1.1 ${FONT};color:${C.charcoal};">${scene.headline}</h1>
-      <div style="margin-top:18px;font:800 42px/1 ${FONT};color:${C.forest};">${scene.cta || "Download goZaika"}</div>
+    return `<div id="f" style="${base}">
+      ${atmosphere(tone)}
+      <div style="position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;text-align:center;">
+        ${flameSvg(C.saffron, 120)}
+        <div style="font:800 78px/1 ${FONT};color:${C.charcoal};letter-spacing:1px;">go<span style="color:${C.saffron}">Z</span>aika${scene.brandSuffix ? `<span style="color:${C.forest};font-weight:700;"> ${scene.brandSuffix}</span>` : ""}</div>
+        <h1 style="margin:10px 80px 0;font:800 72px/1.1 ${FONT};color:${C.charcoal};">${scene.headline}</h1>
+        <div style="margin-top:18px;font:800 42px/1 ${FONT};color:${C.forest};">${scene.cta || "Download goZaika"}</div>
+      </div>
     </div>`;
   }
   const src = await dataUri(join(shotsRoot, scene.app, scene.shot));
-  return `<div id="f" style="width:${W}px;height:${H}px;overflow:hidden;position:relative;background:${background(tone)};">
-    <div style="position:absolute;left:96px;right:96px;top:140px;text-align:center;">
+  return `<div id="f" style="${base}">
+    ${atmosphere(tone)}
+    <div style="position:absolute;left:96px;right:96px;top:140px;text-align:center;z-index:1;">
       ${scene.kicker ? `<div style="display:inline-flex;align-items:center;gap:16px;margin-bottom:20px;">${flameSvg(scene.kickerColor || C.saffron, 44)}<span style="font:800 28px/1 ${FONT};letter-spacing:3px;text-transform:uppercase;color:${scene.kickerColor || C.saffron};">${scene.kicker}</span></div>` : ""}
       <h1 style="margin:0;font:800 72px/1.08 ${FONT};color:${C.charcoal};letter-spacing:-.5px;">${scene.headline}</h1>
       ${scene.sub ? `<p style="margin:20px 0 0;font:560 34px/1.3 ${FONT};color:rgba(45,45,45,.74);">${scene.sub}</p>` : ""}
     </div>
-    <div style="position:absolute;left:0;right:0;top:560px;display:flex;justify-content:center;">
+    <div style="position:absolute;left:0;right:0;top:560px;display:flex;justify-content:center;z-index:1;">
       ${deviceFrame(src, scene.crop, 1240)}
     </div>
   </div>`;
@@ -92,19 +113,44 @@ async function renderScenes(app, video, workDir) {
     await page.waitForTimeout(100);
     const p = join(workDir, `scene-${String(i).padStart(2, "0")}.png`);
     await (await page.$("#f")).screenshot({ path: p });
-    frames.push({ path: p, dur: scene.dur, zoom: scene.zoom || "in" });
-    console.log(`  rendered scene ${i + 1}/${video.scenes.length}`);
+    // Motion variety: cycle presets for rhythm; brand scene gets a calm zoom-in.
+    const cycle = ["zoomin", "panright", "zoomout", "panleft", "zoomin", "panup"];
+    const motion = scene.motion || (scene.type === "brand" ? "zoomin" : cycle[i % cycle.length]);
+    frames.push({ path: p, dur: scene.dur, motion });
+    console.log(`  rendered scene ${i + 1}/${video.scenes.length} (${motion})`);
   }
   await browser.close();
   return frames;
 }
 
-function zoomExpr(dir) {
-  // d=1 → one output frame per input frame; zoom accumulates smoothly.
-  const z = dir === "out"
-    ? `if(eq(on,0),1.09,max(zoom-0.00075,1.0))`   // start zoomed, ease out
-    : `min(zoom+0.00075,1.09)`;                     // ease in
-  return `zoompan=z='${z}':d=1:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=${W}x${H}:fps=${FPS}`;
+// Ken Burns motion presets. d=1 → one output frame per (looped) input frame, so
+// `zoom` accumulates smoothly and `on` (output frame index) drives pans.
+function motionFilter(preset, dur) {
+  const N = Math.max(1, Math.round(dur * FPS));
+  const center = `x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'`;
+  const Z = 1.09; // fixed zoom that leaves room to pan
+  const tail = `:s=${W}x${H}:fps=${FPS}`;
+  switch (preset) {
+    case "zoomout":  return `zoompan=z='if(eq(on,0),1.10,max(zoom-0.00085,1.0))':d=1:${center}${tail}`;
+    case "panright": return `zoompan=z='${Z}':d=1:x='(iw-iw/zoom)*on/${N}':y='ih/2-(ih/zoom/2)'${tail}`;
+    case "panleft":  return `zoompan=z='${Z}':d=1:x='(iw-iw/zoom)*(1-on/${N})':y='ih/2-(ih/zoom/2)'${tail}`;
+    case "panup":    return `zoompan=z='${Z}':d=1:x='iw/2-(iw/zoom/2)':y='(ih-ih/zoom)*(1-on/${N})'${tail}`;
+    case "pandown":  return `zoompan=z='${Z}':d=1:x='iw/2-(iw/zoom/2)':y='(ih-ih/zoom)*on/${N}'${tail}`;
+    default:         return `zoompan=z='min(zoom+0.00085,1.10)':d=1:${center}${tail}`; // zoomin
+  }
+}
+
+// A soft synthesized ambient pad (placeholder bed — swap for a licensed track later).
+// Warm chord for customer, calmer/lower for partner; low volume, lowpass, gentle echo.
+function audioPass(videoPath, outPath, total, app) {
+  const chord = app === "partner"
+    ? [130.81, 196.0, 261.63, 329.63]   // C major (calm, operational)
+    : [146.83, 220.0, 293.66, 369.99];  // D major (warm, appetite)
+  const srcs = chord.map((f, i) => `sine=frequency=${f}:duration=${total.toFixed(2)}[s${i}]`).join(";");
+  const mix = chord.map((_, i) => `[s${i}]`).join("");
+  const af = `${srcs};${mix}amix=inputs=${chord.length}:normalize=0,volume=0.05,tremolo=f=0.12:d=0.5,lowpass=f=1000,aecho=0.8:0.6:90:0.3,afade=t=in:st=0:d=2,afade=t=out:st=${(total - 2.5).toFixed(2)}:d=2.5,alimiter=limit=0.9[a]`;
+  return ["-i", videoPath, "-filter_complex", af, "-map", "0:v", "-map", "[a]",
+    "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-shortest", "-y", outPath];
 }
 
 function buildFfmpegArgs(frames, outPath) {
@@ -113,7 +159,7 @@ function buildFfmpegArgs(frames, outPath) {
 
   const parts = [];
   frames.forEach((f, i) => {
-    parts.push(`[${i}:v]${zoomExpr(f.zoom)},format=yuv420p,setsar=1[v${i}]`);
+    parts.push(`[${i}:v]${motionFilter(f.motion, f.dur)},format=yuv420p,setsar=1[v${i}]`);
   });
 
   // xfade chain with accumulating offsets.
@@ -154,11 +200,22 @@ async function main() {
   const frames = await renderScenes(app, video, workDir);
 
   const outPath = join(outDir, `${video.out}.mp4`);
-  const { args, total } = buildFfmpegArgs(frames, outPath);
-  console.log(`Encoding ${total.toFixed(1)}s video → ${outPath}`);
-  const r = spawnSync("ffmpeg", args, { stdio: ["ignore", "ignore", "inherit"] });
-  if (r.status !== 0) { console.error("ffmpeg failed"); process.exit(1); }
-  console.log(`✓ ${outPath} (${total.toFixed(1)}s)`);
+  const silentPath = join(workDir, `${video.out}.silent.mp4`);
+  const { args, total } = buildFfmpegArgs(frames, silentPath);
+  console.log(`Encoding ${total.toFixed(1)}s video (motion + dissolves)…`);
+  let r = spawnSync("ffmpeg", args, { stdio: ["ignore", "ignore", "inherit"] });
+  if (r.status !== 0) { console.error("ffmpeg (video) failed"); process.exit(1); }
+
+  const noAudio = process.argv.includes("--no-audio");
+  if (noAudio) {
+    spawnSync("ffmpeg", ["-i", silentPath, "-c", "copy", "-y", outPath], { stdio: ["ignore", "ignore", "inherit"] });
+  } else {
+    console.log("Adding ambient audio bed…");
+    r = spawnSync("ffmpeg", audioPass(silentPath, outPath, total, app), { stdio: ["ignore", "ignore", "inherit"] });
+    if (r.status !== 0) { console.error("ffmpeg (audio) failed"); process.exit(1); }
+  }
+  await rm(silentPath, { force: true });
+  console.log(`✓ ${outPath} (${total.toFixed(1)}s${noAudio ? "" : " + audio"})`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
