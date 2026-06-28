@@ -87,7 +87,7 @@ Everything below is on `main`, gate-green, live-proven. Confirm with
 
 ## ⏸ Review-gated — do NOT build without the owner
 - ~~**Slice 12 document upload**~~ ✅ Done 2026-06-23 (owner approved the security posture; restaurant-facing upload + status shipped). In-app **admin moderation** of documents is still web-only by design.
-- **In-app data erasure automation** — DPDP legal HUMAN_REVIEW (retention/exemptions) required before any automated erasure. Decided-deferred; the shipped consent screen uses a link-out instead.
+- ~~**In-app data erasure automation** — DPDP legal HUMAN_REVIEW required.~~ **UNBLOCKED 2026-06-28 (owner):** early-stage startup, **all DB data is test data**, adopt the **most liberal DPDP interpretation** and tighten later — removing friction in software + feature release takes priority. Build the in-app erasure flow now (replace the consent-screen link-out). Owner accepts the relaxed posture; revisit retention/exemptions before real PII exists.
 - **Real Razorpay RN checkout** — needs the owner's India keys (~1 month). Decided-deferred; stubbed behind the simulator — dropping in keys + flipping `PAYMENTS_SIMULATOR_ENABLED=false` activates it.
 
 ## Conventions (follow exactly — this is how we avoid drift)

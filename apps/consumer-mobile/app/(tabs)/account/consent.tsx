@@ -3,13 +3,11 @@ import { Badge, Card, EmptyState, ErrorState, palette, Screen, Skeleton, spacing
 import type { ConsentPurposeCode } from "@gozaika/types";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Linking, Pressable, Switch, View } from "react-native";
-import { useConsentSettings, useUpdateConsent } from "@/api/account";
+import { Alert, Linking, Pressable, Switch, View } from "react-native";
+import { useConsentSettings, useRequestErasure, useUpdateConsent } from "@/api/account";
 import { useAuth } from "@/auth/useAuth";
 
 const PRIVACY_POLICY_URL = "https://gozaika.in/privacy-policy";
-const DATA_RIGHTS_MAILTO =
-  "mailto:contact@gozaika.in?subject=Data%20deletion%20%2F%20erasure%20request&body=I%20would%20like%20to%20request%20deletion%20of%20my%20goZaika%20account%20and%20personal%20data.";
 
 function lastEventLabel(stateCode: string | null, recordedAt: string | null): string {
   if (!stateCode || !recordedAt) return "No choice recorded yet";
@@ -21,6 +19,18 @@ export default function ConsentSettingsScreen() {
   const router = useRouter();
   const { data, isLoading, isError, error, refetch } = useConsentSettings();
   const update = useUpdateConsent();
+  const erasure = useRequestErasure();
+
+  function confirmErasure() {
+    Alert.alert(
+      "Delete account & data?",
+      "This requests erasure of your goZaika account and personal data. We'll process it and confirm by SMS/email. This can't be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Request erasure", style: "destructive", onPress: () => erasure.mutate() },
+      ],
+    );
+  }
   const [pendingCode, setPendingCode] = useState<string | null>(null);
 
   if (!session) {
@@ -114,12 +124,12 @@ export default function ConsentSettingsScreen() {
         Consent policy version {data.currentPolicyVersion}. Each change is recorded with a timestamp.
       </Text>
 
-      {/* Privacy rights / erasure — link-out (no in-app deletion automation). */}
+      {/* Privacy rights / erasure — in-app request (no email round-trip). */}
       <Card style={{ backgroundColor: palette.cream, borderColor: palette.border }}>
         <Text variant="heading">Your data rights</Text>
         <Text variant="body" color={palette.muted}>
-          Read how we handle your data, or request account deletion / data erasure. Erasure is handled by our team in
-          line with DPDP retention rules.
+          Read how we handle your data, or request erasure of your account and personal data — right here, no email
+          needed.
         </Text>
         <Pressable
           accessibilityRole="link"
@@ -130,15 +140,30 @@ export default function ConsentSettingsScreen() {
             Read privacy policy →
           </Text>
         </Pressable>
-        <Pressable
-          accessibilityRole="link"
-          style={{ minHeight: 44, justifyContent: "center" }}
-          onPress={() => Linking.openURL(DATA_RIGHTS_MAILTO)}
-        >
-          <Text variant="label" color={palette.forest}>
-            Request account deletion →
+        {erasure.isSuccess ? (
+          <Text variant="body" color={palette.forest}>
+            {erasure.data.alreadyRequested
+              ? "Your erasure request is already on file — we're on it."
+              : "Erasure requested. We'll process it and confirm. Thank you."}
           </Text>
-        </Pressable>
+        ) : (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Request account and data erasure"
+            disabled={erasure.isPending}
+            style={{ minHeight: 44, justifyContent: "center" }}
+            onPress={confirmErasure}
+          >
+            <Text variant="label" color={palette.dangerFg}>
+              {erasure.isPending ? "Submitting…" : "Request account & data erasure →"}
+            </Text>
+          </Pressable>
+        )}
+        {erasure.isError ? (
+          <Text variant="caption" color={palette.dangerFg}>
+            {erasure.error instanceof ApiError ? erasure.error.message : "Could not submit. Please try again."}
+          </Text>
+        ) : null}
       </Card>
     </Screen>
   );

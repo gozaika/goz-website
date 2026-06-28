@@ -10,7 +10,15 @@ import {
   type ZaykaPassportPayload,
 } from "@gozaika/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
 import { apiClient } from "./client";
+
+const erasureResultSchema = z.object({
+  status: z.string(),
+  requestPk: z.string(),
+  alreadyRequested: z.boolean(),
+});
+export type ErasureResult = z.infer<typeof erasureResultSchema>;
 
 /** The signed-in consumer's Zayka Passport (tier card, bags, badges). */
 export function usePassport() {
@@ -58,5 +66,15 @@ export function useUpdateConsent() {
       return res.data as unknown as ConsentSettingsData;
     },
     onSuccess: (data) => queryClient.setQueryData(queryKeys.account.consent(), data),
+  });
+}
+
+/** Submit an in-app account/data erasure request (DPDP). Idempotent server-side. */
+export function useRequestErasure() {
+  return useMutation({
+    mutationFn: async (): Promise<ErasureResult> => {
+      const res = await apiClient.request("/account/erasure", { method: "POST", body: {}, dataSchema: erasureResultSchema });
+      return res.data as unknown as ErasureResult;
+    },
   });
 }
