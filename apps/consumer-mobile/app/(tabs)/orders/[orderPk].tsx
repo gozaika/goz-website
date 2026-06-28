@@ -3,8 +3,10 @@ import { Badge, Button, Card, EmptyState, ErrorState, palette, Screen, Skeleton,
 import type { ConsumerOrderDto } from "@gozaika/types";
 import { formatPaise } from "@gozaika/utils";
 import { useLocalSearchParams } from "expo-router";
-import { View } from "react-native";
+import { useState } from "react";
+import { Pressable, TextInput, View } from "react-native";
 import { useOrder, useResendPickup } from "@/api/orders";
+import { useOrderReview, useSubmitReview } from "@/api/reviews";
 
 const PRE_PICKUP = ["PAID", "CONFIRMED", "READY_FOR_PICKUP"];
 
@@ -90,6 +92,81 @@ function OrderTimeline({ order }: { readonly order: ConsumerOrderDto }) {
   );
 }
 
+function StarRating({ value, onChange }: { readonly value: number; readonly onChange: (n: number) => void }) {
+  return (
+    <View style={{ flexDirection: "row", gap: spacing.xs }} accessibilityRole="adjustable" accessibilityLabel={`Rating: ${value} of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Pressable key={n} onPress={() => onChange(n)} accessibilityRole="button" accessibilityLabel={`${n} star${n > 1 ? "s" : ""}`} hitSlop={6}>
+          <Text variant="title" color={n <= value ? palette.gold : palette.border}>
+            ★
+          </Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
+function ReviewCard({ orderPk }: { readonly orderPk: string }) {
+  const { data: review, isLoading } = useOrderReview(orderPk);
+  const submit = useSubmitReview(orderPk);
+  const [rating, setRating] = useState(0);
+  const [text, setText] = useState("");
+
+  if (isLoading || !review) return null;
+
+  if (review.status !== "NONE") {
+    const label =
+      review.status === "APPROVED" ? "Your review is published. Thank you!" : review.status === "REJECTED" ? "This review wasn't approved." : "Review submitted — pending moderation.";
+    return (
+      <Card>
+        <Text variant="heading">Your review</Text>
+        <Text variant="body" color={palette.muted}>
+          {label}
+        </Text>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <Text variant="heading">Rate your pickup</Text>
+      <Text variant="caption" color={palette.muted}>
+        Verified review from a collected order. Goes live after a quick moderation check.
+      </Text>
+      <StarRating value={rating} onChange={setRating} />
+      <TextInput
+        value={text}
+        onChangeText={setText}
+        placeholder="What stood out? (optional)"
+        placeholderTextColor={palette.muted}
+        multiline
+        maxLength={500}
+        style={{
+          minHeight: 80,
+          borderWidth: 1,
+          borderColor: palette.border,
+          borderRadius: 10,
+          padding: spacing.sm,
+          color: palette.charcoal,
+          textAlignVertical: "top",
+        }}
+      />
+      <Button
+        label="Submit review"
+        accent={palette.saffron}
+        disabled={rating < 1}
+        loading={submit.isPending}
+        onPress={() => submit.mutate({ ratingValue: rating, reviewText: text.trim() || undefined })}
+      />
+      {submit.isError ? (
+        <Text variant="caption" color={palette.dangerFg}>
+          {submit.error instanceof ApiError ? submit.error.message : "Could not submit. Please try again."}
+        </Text>
+      ) : null}
+    </Card>
+  );
+}
+
 export default function OrderDetailScreen() {
   const { orderPk } = useLocalSearchParams<{ orderPk: string }>();
   const { data: order, isLoading, isError, error, refetch } = useOrder(orderPk ?? null);
@@ -166,6 +243,8 @@ export default function OrderDetailScreen() {
       )}
 
       <OrderTimeline order={order} />
+
+      {collected && orderPk ? <ReviewCard orderPk={orderPk} /> : null}
 
       <Card>
         <Row label="Pickup window" value={`${new Date(order.pickupWindowStartAt).toLocaleString("en-IN")} → ${new Date(order.pickupWindowEndAt).toLocaleTimeString("en-IN")}`} />
