@@ -38,6 +38,22 @@ re-running regenerates the card.
 | c6-passport | Build your food passport | Account / Zayka Passport (Culinary Ambassador) | habit/loyalty proof |
 | c7-payoff | Your next favorite dish is close | Discover + Trust + Passport tiles | brand payoff |
 
+## Partner cards (`goZaika Partner`) — complete
+
+Captured signed-in as OWNER (Bawarchi) on the connected device; forest/gold, straight
+operational alignment. This unblocks the partner cards that polish-v2 had marked
+blocked on missing native captures.
+
+| Card | Headline | Proof screen | Notes |
+| --- | --- | --- | --- |
+| p1-hook | Run pickup with confidence | Owner dashboard (Today) | reads as operations, Owner badge |
+| p2-counter | Today's orders, organized | Pickup counter queue | Ready/Collected/Issues + order |
+| p3-verify | Verify every pickup | Verify pickup screen | Scan QR / OTP, no raw OTP or QR payload shown |
+| p4-drops | Publish your drops | Drop command center | active/scheduled, live inventory, New drop |
+| p5-performance | See demand clearly | Owner dashboard (sell-through) | **finance caveat below** |
+| p6-control | Your brand stays in control | More (role-aware IA) | "Owner" role badge, role-gated destinations |
+| p7-payoff | Get goZaika Partner | Counter + Verify + Drops tiles | partner brand payoff |
+
 ## Design-system compliance
 
 - 1080×1920 Android master; text inside safe zones (96 L/R, 120 top, 180 bottom).
@@ -57,3 +73,12 @@ re-running regenerates the card.
 - iOS 1290×2796 masters are a scale-up derivative of these 1080×1920 cards (produce
   before iOS upload).
 - Final marketing typography (Inter vs. brand face) unconfirmed.
+- **Partner finance caveat:** p1/p5 show the real owner dashboard, which includes
+  Today revenue (₹447) and average order value (₹23.53). Per the design-system lock,
+  revenue/ROI/GMV/settlement figures need **product/compliance approval** before final
+  store use. The card overlays make no financial claim ("Owner view", "See demand
+  clearly"); mask/crop or get approval for the revenue figures before upload.
+- Partner order IDs (`GZ-SEED-…`) carry the demo `SEED` marker — same masking decision
+  as the customer order ID.
+- `Chef's Selections` term avoided in overlays (copy approval pending) — p4 uses "your
+  drops".

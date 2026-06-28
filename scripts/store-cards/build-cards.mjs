@@ -52,13 +52,17 @@ async function dataUri(absPath) {
   return `data:image/${mime};base64,${buf.toString("base64")}`;
 }
 
-// A soft brand background. `tone` = "warm" (customer) | "trust" (forest) | "habit" (gold).
+// A soft brand background. `tone` = "warm" (customer) | "trust" (forest) |
+// "habit" (gold) | "partner" (forest/teal operational).
 function background(tone) {
   if (tone === "trust") {
     return `radial-gradient(120% 90% at 18% 8%, ${C.forestLight} 0%, ${C.cream} 46%, #FBEFDD 100%)`;
   }
   if (tone === "habit") {
     return `radial-gradient(120% 90% at 82% 10%, #FBEDC9 0%, ${C.cream} 50%, ${C.saffronLight} 100%)`;
+  }
+  if (tone === "partner") {
+    return `radial-gradient(125% 95% at 16% 6%, ${C.forestLight} 0%, ${C.cream} 50%, #E7EEDF 100%)`;
   }
   // warm (default customer)
   return `radial-gradient(125% 95% at 16% 6%, ${C.saffronLight} 0%, ${C.cream} 52%, #FCEFE0 100%)`;
@@ -168,7 +172,7 @@ async function layoutFinalTrio(card) {
   return `
   <div style="position:absolute;left:96px;right:96px;top:150px;text-align:center;display:flex;flex-direction:column;align-items:center;">
     ${flameSvg(C.saffron, 92)}
-    <div style="font:800 60px/1 ${FONT};color:${C.charcoal};letter-spacing:1px;margin-top:10px;">go<span style="color:${C.saffron}">Z</span>aika</div>
+    <div style="font:800 60px/1 ${FONT};color:${C.charcoal};letter-spacing:1px;margin-top:10px;">go<span style="color:${C.saffron}">Z</span>aika${card.brandSuffix ? `<span style="color:${C.forest};font-weight:700;"> ${card.brandSuffix}</span>` : ""}</div>
     <h1 style="margin:34px 0 0;font:800 64px/1.1 ${FONT};color:${C.charcoal};max-width:900px;">${card.headline}</h1>
     ${card.sub ? `<p style="margin:20px 0 0;font:560 32px/1.3 ${FONT};color:rgba(45,45,45,.72);max-width:820px;">${card.sub}</p>` : ""}
   </div>
