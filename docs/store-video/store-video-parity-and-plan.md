@@ -46,10 +46,25 @@ plan to finish the store-card and cinematic-video project.
 4. QA each card at 100/50/25%/360px (spec §4 method); confirm one proof point, correct app, no chrome, no overclaim.
 
 **Phase 2 — Cinematic videos (the larger remaining effort).**
-1. Reuse `…/gozaika-marketing-videos/` storyboards + captions + the Maestro capture flows; they already encode the customer day-in-life + partner counter journeys that match spec §10–§11.
-2. Capture clean native recordings on device (consumer rebuilt with D1 art; roll cloud windows forward first via `demo_prepare`). Customer 24–28s, partner 26–30s; 9:16 master + 1:1/16:9 derivatives.
-3. ffmpeg polish pass (motion/transitions/captions) per spec §12; keep transitions causal (discovery→detail→claim→pickup), no slide-counters, no fake UI.
-4. C5/pickup video beat uses the real SMS-pickup-code UI (no fabricated QR/OTP).
+
+> **DECIDED DIRECTION (2026-06-28, owner):** the polished videos will be built as
+> **real screen recordings + Remotion (scripted) + a licensed music track** — the
+> trade-show-quality, fully-repeatable path. Rationale: the current `scripts/store-video/`
+> ffmpeg cut animates *static screenshots* (Ken Burns), which still reads as a slideshow
+> with dead space; **real UI motion** (actual scrolling/tapping/route transitions) is what
+> removes the "deadness." A generative text-to-video AI is **rejected for the UI** (it
+> hallucinates fake app UI, violating the product-truth rule) — usable only for abstract
+> background b-roll, if at all. Remotion keeps it 100% script-driven/deterministic while
+> giving real animation/easing/kinetic captions. **This is deferred — we finish the
+> Mobile UX uplift project first.** The existing ffmpeg pipeline stays as the quick
+> stopgap/preview.
+
+Plan when we pick this up:
+1. **Capture real screen recordings** on device (`maestro record` / `adb screenrecord`) of the customer + partner journeys — consumer already rebuilt with D1 art; roll cloud windows forward first via `demo_prepare`. Full-bleed UI motion, minimal background.
+2. **Assemble in Remotion** (React/TSX, in e.g. `scripts/store-video-remotion/`): kinetic captions synced to motion beats, motivated transitions (discovery→detail→claim→pickup), brand frames, large/full-bleed device framing (kill the white space). Customer 24–28s, partner 26–30s; 9:16 master + 1:1/16:9 derivatives.
+3. **Licensed music** bed + light sound design (replace the synthesized placeholder pad).
+4. Reuse `…/gozaika-marketing-videos/` storyboards + captions (they encode the §10–§11 journeys). C5/pickup beat uses the real SMS-pickup-code UI (no fabricated QR/OTP).
+5. Keep the current `scripts/store-video/` ffmpeg pipeline as a deterministic fallback/preview generator.
 
 **Phase 3 — Store submission.**
 1. Fold finals into `…/gozaika-store-launch/` (crop 1080×2400→1080×1920 per Play 2:1; reviewer notes; test accounts).
