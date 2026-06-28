@@ -20,6 +20,21 @@ const erasureResultSchema = z.object({
 });
 export type ErasureResult = z.infer<typeof erasureResultSchema>;
 
+const accountProfileSchema = z.object({
+  firstName: z.string().nullable(),
+  lastName: z.string().nullable(),
+  preferredLanguageCode: z.string(),
+  referralCode: z.string().nullable(),
+  referralCounts: z.object({ total: z.number(), qualified: z.number(), rewarded: z.number() }),
+});
+export type AccountProfile = z.infer<typeof accountProfileSchema>;
+
+export interface ProfileUpdateInput {
+  readonly firstName?: string | null;
+  readonly lastName?: string | null;
+  readonly preferredLanguageCode?: "en" | "hi";
+}
+
 /** The signed-in consumer's Zayka Passport (tier card, bags, badges). */
 export function usePassport() {
   return useQuery({
@@ -66,6 +81,30 @@ export function useUpdateConsent() {
       return res.data as unknown as ConsentSettingsData;
     },
     onSuccess: (data) => queryClient.setQueryData(queryKeys.account.consent(), data),
+  });
+}
+
+/** The signed-in consumer's editable profile + referral summary. */
+export function useAccountProfile() {
+  return useQuery({
+    queryKey: ["account-profile"],
+    staleTime: STALE_TIMES.active,
+    queryFn: async (): Promise<AccountProfile> => {
+      const res = await apiClient.request("/account/profile", { dataSchema: accountProfileSchema });
+      return res.data as unknown as AccountProfile;
+    },
+  });
+}
+
+/** Update first/last name and preferred language. Returns the refreshed profile. */
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: ProfileUpdateInput): Promise<AccountProfile> => {
+      const res = await apiClient.request("/account/profile", { method: "POST", body: input, dataSchema: accountProfileSchema });
+      return res.data as unknown as AccountProfile;
+    },
+    onSuccess: (data) => queryClient.setQueryData(["account-profile"], data),
   });
 }
 

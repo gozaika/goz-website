@@ -71,6 +71,11 @@ export default function AccountScreen() {
 
           <View style={{ gap: spacing.md }}>
             <AccountAction
+              title="Profile & referrals"
+              detail="Edit your name and language, and share your referral code."
+              onPress={() => router.push("/account/profile")}
+            />
+            <AccountAction
               title="Zayka Passport"
               detail="Tier progress, collected bags and earned badges."
               onPress={() => router.push("/account/passport")}
