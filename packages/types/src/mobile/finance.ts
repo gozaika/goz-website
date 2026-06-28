@@ -22,6 +22,7 @@ export const financeSettlementWireSchema = z.object({
   netPayoutPaise: z.number(),
   paidAt: z.string().nullable(),
   maskedPayoutAccount: z.string().nullable(),
+  invoicePk: z.string().nullable().optional(),
   invoiceNumber: z.string().nullable(),
   invoiceStatusCode: z.string().nullable(),
   invoiceAmountPaise: z.number().nullable(),
@@ -43,6 +44,7 @@ export interface FinanceSettlement {
   readonly netPayoutPaise: number;
   readonly paidAt: string | null;
   readonly maskedPayoutAccount: string | null;
+  readonly invoicePk?: string | null;
   readonly invoiceNumber: string | null;
   readonly invoiceStatusCode: string | null;
   readonly invoiceAmountPaise: number | null;

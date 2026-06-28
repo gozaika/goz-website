@@ -37,6 +37,7 @@ export const GET = withMobileRestaurantRole("viewFinance", async ({ restaurantPk
         netPayoutPaise: s.netPayoutPaise,
         paidAt: s.paidAt,
         maskedPayoutAccount: s.maskedPayoutAccount,
+        invoicePk: s.invoice.invoicePk,
         invoiceNumber: s.invoice.invoiceNumber,
         invoiceStatusCode: s.invoice.invoiceStatusCode,
         invoiceAmountPaise: s.invoice.invoiceAmountPaise,

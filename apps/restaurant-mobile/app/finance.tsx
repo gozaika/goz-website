@@ -6,6 +6,7 @@ import {
   EmptyState,
   ErrorState,
   MetricHero,
+  Button,
   Screen,
   Skeleton,
   Sparkline,
@@ -16,9 +17,35 @@ import {
 } from "@gozaika/mobile-ui";
 import type { FinanceSettlement } from "@gozaika/types";
 import { formatBasisPoints, formatPaise } from "@gozaika/utils";
-import { View } from "react-native";
-import { useFinance } from "@/api/finance";
+import { Linking, View } from "react-native";
+import { useFinance, useInvoiceDownload } from "@/api/finance";
 import { useAuth } from "@/auth/useAuth";
+
+function InvoiceDownloadButton({ restaurantPk, invoicePk }: { readonly restaurantPk: string; readonly invoicePk: string }) {
+  const download = useInvoiceDownload(restaurantPk);
+  return (
+    <View style={{ gap: spacing.xs }}>
+      <Button
+        label="Download invoice"
+        variant="secondary"
+        accent={palette.forest}
+        loading={download.isPending}
+        onPress={() =>
+          download.mutate(invoicePk, {
+            onSuccess: (res) => {
+              void Linking.openURL(res.signedUrl);
+            },
+          })
+        }
+      />
+      {download.isError ? (
+        <Text variant="caption" color={palette.dangerFg}>
+          {download.error instanceof ApiError ? download.error.message : "Could not get the invoice link."}
+        </Text>
+      ) : null}
+    </View>
+  );
+}
 
 function settlementTone(code: string): StatusTone {
   switch (code) {
@@ -181,6 +208,9 @@ export default function FinanceScreen() {
                     : []),
                 ]}
               />
+              {settlement.invoicePk && settlement.invoiceNumber ? (
+                <InvoiceDownloadButton restaurantPk={selectedRestaurantPk} invoicePk={settlement.invoicePk} />
+              ) : null}
             </View>
           ))}
         </>

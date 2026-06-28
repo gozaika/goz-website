@@ -78,8 +78,8 @@ Everything below is on `main`, gate-green, live-proven. Confirm with
 
 ## Next-up order (build one vertical at a time, commit+push each)
 1. ~~**Slice 11** — Passport / discovery profile / Swaad Club.~~ ✅ Done 2026-06-22 (shared `buildPassportPayload`/`buildDiscoveryProfile` lib; live-proven).
-2. ~~**Slice 15 ROI report** — reuse `lib/roi-report.ts`.~~ ✅ Done 2026-06-22 (shared `loadRoiReport`; live-proven; invoice download still remainder).
-3. **Slice 13 drop edit** (pause/cancel/activate) + **Slice 14 reviews/ops-history**.
+2. ~~**Slice 15 ROI report**~~ ✅ Done 2026-06-22. ~~invoice download remainder~~ ✅ **Done 2026-06-28:** BFF `GET /api/mobile/v1/finance/invoice/[id]/signed-url` (mirrors the compliance signed-url pattern; `viewFinance`, tenant-scoped, 5-min expiry); `invoicePk` added to the mobile finance wire/DTO; mobile `useInvoiceDownload` + a per-settlement "Download invoice" button on `finance.tsx` (opens the signed URL).
+3. ~~**Slice 13 drop edit** (pause/cancel/activate)~~ ✅ **Already done via R3b** — the mobile drop-detail screen (`drops/[dropPk].tsx`) has full lifecycle (pause/cancel/activate/reactivate via `useSetDropStatus`) + create (`usePublishDrop`); editing a live drop's price/qty mid-flight is intentionally unsupported (inventory/order coupling). + **Slice 14 reviews/ops-history** (next).
 4. **Slice 10** — ~~consent-settings~~ ✅ Done 2026-06-23. Remainder: reviews submission/status + profile-edit/referral display.
 5. **Slice 12 onboarding wizard** (the new-restaurant flow) — document upload ✅ done 2026-06-23; resumable wizard + location pin remain.
 6. **Slice 16** push/deep-links/offline → **17** a11y/security/perf gate → **18** release prep.
