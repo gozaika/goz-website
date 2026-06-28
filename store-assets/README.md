@@ -22,9 +22,19 @@ working tree is gitignored) so the produced deliverables are versioned and pushe
 ## Regenerate
 
 ```bash
+# Cards
 node scripts/store-cards/build-cards.mjs                 # both masters → cards/ + cards/ios/
 node scripts/store-cards/build-cards.mjs --format=ios    # iOS master only
+
+# Preview videos (Playwright scene frames + ffmpeg motion/transitions)
+node scripts/store-video/build-video.mjs --app=customer  # → video/customer/*.mp4
+node scripts/store-video/build-video.mjs --app=partner   # → video/partner/*.mp4
 ```
+
+Video scenes/copy/durations live in `scripts/store-video/scenes.config.mjs`; the
+builder renders one device-framed frame per scene (real screenshot + baked caption),
+then ffmpeg adds Ken Burns zoom + cross-dissolves → 1080×1920 9:16 H.264. Intermediate
+`frames/` are gitignored; only the `.mp4` is committed.
 
 Card copy/layout/badges live in `scripts/store-cards/cards.config.mjs`; the renderer
 (Playwright → PNG) is `scripts/store-cards/build-cards.mjs`. Swapping a screenshot and
@@ -57,6 +67,18 @@ blocked on missing native captures.
 | p5-performance | See demand clearly | Owner dashboard (sell-through) | **finance caveat below** |
 | p6-control | Your brand stays in control | More (role-aware IA) | "Owner" role badge, role-gated destinations |
 | p7-payoff | Get goZaika Partner | Counter + Verify + Drops tiles | partner brand payoff |
+
+## Preview videos — first cut
+
+| Video | Length | Story (spec §10) |
+| --- | --- | --- |
+| `video/customer/gozaika-customer-preview.mp4` | ~24s | discover → drops → trust → order → pickup → passport → payoff |
+| `video/partner/gozaika-partner-preview.mp4` | ~24s | operations → counter → verify → publish → demand → control → payoff |
+
+9:16 1080×1920, real native screenshots only, brand captions, Ken Burns motion +
+cross-dissolves. **Tunable** (`scenes.config.mjs`): bump scene `dur` to hit the spec's
+exact 24–28s (customer) / 26–30s (partner) windows; durations are currently ~24s. 1:1
+and 16:9 derivatives + optional voice/music are later passes. No audio track yet.
 
 ## Design-system compliance
 
