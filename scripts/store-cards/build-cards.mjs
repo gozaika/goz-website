@@ -186,17 +186,30 @@ async function layoutFinalTrio(card) {
 
 const LAYOUTS = { heroTop: layoutHeroTop, proofRight: layoutProofRight, finalTrio: layoutFinalTrio };
 
-async function renderCard(page, card) {
+// Output formats. The composition is authored in the 1080x1920 logical space; for
+// other masters we keep a full-canvas brand gradient and scale the content layer to
+// fit the width, centering it vertically (extra height becomes brand breathing room).
+const FORMATS = [
+  { name: "android", W: 1080, H: 1920, dir: "" },          // Play phone master
+  { name: "ios", W: 1290, H: 2796, dir: "ios" },           // App Store 6.7" master
+];
+
+async function renderCard(page, card, fmt) {
   const inner = await LAYOUTS[card.layout](card);
+  const sx = fmt.W / W;
+  const topOffset = Math.max(0, Math.round((fmt.H - H * sx) / 2));
   const html = `<!doctype html><html><head><meta charset="utf-8"><style>
     *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
-    html,body{width:${W}px;height:${H}px;}
-    #card{position:relative;width:${W}px;height:${H}px;overflow:hidden;background:${background(card.tone)};}
-  </style></head><body><div id="card">${inner}</div></body></html>`;
+    html,body{width:${fmt.W}px;height:${fmt.H}px;}
+    #canvas{position:relative;width:${fmt.W}px;height:${fmt.H}px;overflow:hidden;background:${background(card.tone)};}
+    #content{position:absolute;left:0;top:${topOffset}px;width:${W}px;height:${H}px;
+      transform-origin:top left;transform:scale(${sx});}
+  </style></head><body><div id="canvas"><div id="content">${inner}</div></div></body></html>`;
+  await page.setViewportSize({ width: fmt.W, height: fmt.H });
   await page.setContent(html, { waitUntil: "networkidle" });
   await page.waitForTimeout(120);
-  const el = await page.$("#card");
-  const outDir = join(cardsRoot, card.app);
+  const el = await page.$("#canvas");
+  const outDir = join(cardsRoot, fmt.dir, card.app);
   await mkdir(outDir, { recursive: true });
   const outPath = join(outDir, `${card.id}.png`);
   await el.screenshot({ path: outPath });
@@ -205,6 +218,8 @@ async function renderCard(page, card) {
 
 async function main() {
   const { CARDS } = await import("./cards.config.mjs");
+  const onlyFmt = process.argv.find((a) => a.startsWith("--format="))?.split("=")[1];
+  const formats = onlyFmt ? FORMATS.filter((f) => f.name === onlyFmt) : FORMATS;
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
   let made = 0;
@@ -215,12 +230,14 @@ async function main() {
       console.log(`- skip ${card.id}: missing screenshot(s) ${missing.join(", ")}`);
       continue;
     }
-    const out = await renderCard(page, card);
-    made++;
-    console.log(`✓ ${card.app}/${card.id} → ${out}`);
+    for (const fmt of formats) {
+      const out = await renderCard(page, card, fmt);
+      made++;
+      console.log(`✓ [${fmt.name}] ${card.app}/${card.id} → ${out}`);
+    }
   }
   await browser.close();
-  console.log(`\nBuilt ${made} card(s) → ${cardsRoot}`);
+  console.log(`\nBuilt ${made} card render(s) → ${cardsRoot}`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

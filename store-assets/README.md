@@ -15,11 +15,15 @@ working tree is gitignored) so the produced deliverables are versioned and pushe
   mojibake-fixed copy are all present. Device chrome (status bar, gesture nav) is
   cropped at compose time, never edited.
 - `cards/<app>/` — composed 1080×1920 cards (Android phone portrait master).
+- `cards/ios/<app>/` — composed 1290×2796 cards (App Store 6.7" master; same
+  composition scaled to width with brand breathing room top/bottom).
+- `video/<app>/` — preview videos (1080×1920 9:16) + their per-scene frames.
 
 ## Regenerate
 
 ```bash
-node scripts/store-cards/build-cards.mjs    # reads screenshots/, writes cards/
+node scripts/store-cards/build-cards.mjs                 # both masters → cards/ + cards/ios/
+node scripts/store-cards/build-cards.mjs --format=ios    # iOS master only
 ```
 
 Card copy/layout/badges live in `scripts/store-cards/cards.config.mjs`; the renderer
