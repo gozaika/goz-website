@@ -1,0 +1,42 @@
+# Demo capture — vibrant discovery surfaces (consumer-mobile).
+# Showcases the slice-D art work for presales/investor walkthroughs:
+#   - D1a cuisine cover fallbacks on the Home rail + Drops list,
+#   - D1c drop-type variants (the BLIND_ADVENTURE "mystery" cover + the
+#     CHEF_SPECIAL / SPOTLIGHT gold ribbon) wherever those drops are active.
+#
+# Deliberately robust + additive: it does NOT touch the marketing-video flows,
+# requires no sign-in (discovery is public), and anchors only on stable UI
+# ("Browse drops") + scroll — no fragile per-drop titles — so it stays green as
+# the seed changes. Real uploaded media still wins via ProductMedia.
+#
+# Preconditions:
+#   1. consumer-mobile loaded (dev client: Metro serving + EXPO_PUBLIC_CUSTOMER_API_ORIGIN
+#      reachable; preview/standalone: prepend `launchApp: { clearState: true }`).
+#   2. Customer BFF reachable with active drops seeded:
+#        - cloud demo:  apply `supabase/seed_demo/demo_prepare.sql` (roll windows forward),
+#        - local:       `npm run db:seed:marketing-videos`.
+# Devclient-safe: no launchApp/clearState (that would wipe the dev launcher's Metro URL).
+#
+# Run / verify + stills:
+#   maestro test apps/consumer-mobile/.maestro/demo-discovery-vibrant.yaml
+appId: in.gozaika.customer
+---
+- tapOn:
+    text: "Continue"
+    optional: true
+
+# Home — cuisine-art drop rail + live active-drop count
+- extendedWaitUntil:
+    visible: "Browse drops"
+    timeout: 15000
+- takeScreenshot: ".codex-artifacts/mobile-ux-uplift/demo-captures/discovery-01-home-rail"
+
+# Drops list — cuisine covers + drop-type variants across the grid
+- tapOn: "Browse drops"
+- waitForAnimationToEnd
+- takeScreenshot: ".codex-artifacts/mobile-ux-uplift/demo-captures/discovery-02-drops-top"
+
+# Scroll to reveal more of the vibrant grid (mystery/ribbon variants where active)
+- scroll
+- waitForAnimationToEnd
+- takeScreenshot: ".codex-artifacts/mobile-ux-uplift/demo-captures/discovery-03-drops-scrolled"
