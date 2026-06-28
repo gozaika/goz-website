@@ -1,0 +1,120 @@
+// Card definitions for scripts/store-cards/build-cards.mjs.
+//
+// Copy + layout + badges follow the polish-v2 customer wireframes + the
+// design-system lock (allowed customer badges only: "Fresh today",
+// "Allergens shown", "Pickup ready", "Food passport"; no payment/paid wording
+// in overlays; no card counters; no discount/surplus/rescue language).
+//
+// Screenshots are REAL native Pixel 7a captures (1080x2400) of the live cloud
+// demo, with cuisine cover art (D1a), the blind-bag mystery cover (D1c), and the
+// mojibake-fixed copy. `crop` trims device chrome (status bar top, gesture nav).
+
+const STATUS = 96; // Pixel 7a status-bar px
+const NAV = 52;    // Pixel 7a gesture-nav px
+
+export const CARDS = [
+  {
+    app: "customer",
+    id: "c1-hook",
+    layout: "heroTop",
+    tone: "warm",
+    kicker: "Fresh today",
+    kickerColor: "#FF6B35",
+    headline: "Find today&rsquo;s BAM&nbsp;Bags",
+    sub: "Chef-curated pickups near you, across Hyderabad.",
+    shot: "home.png",
+    crop: { top: STATUS, bottom: NAV },
+    rotate: -2.2,
+    scale: 0.82,
+    badges: [{ label: "Fresh today", kind: "saffron" }],
+  },
+  {
+    app: "customer",
+    id: "c2-discovery",
+    layout: "heroTop",
+    tone: "warm",
+    headline: "Fresh drops nearby",
+    sub: "Browse real local BAM Bags by cuisine, diet, and pickup window.",
+    shot: "drops.png",
+    crop: { top: STATUS, bottom: NAV },
+    rotate: -2.6,
+    scale: 0.82,
+    badges: [{ label: "Allergens shown", kind: "forest" }],
+  },
+  {
+    app: "customer",
+    id: "c3-trust",
+    layout: "heroTop",
+    tone: "trust",
+    kicker: "Know what's inside",
+    kickerColor: "#1A5C38",
+    headline: "Know before you claim",
+    sub: "Allergens, spice, price, and pickup window &mdash; all upfront.",
+    shot: "drop-detail.png",
+    crop: { top: 300, bottom: NAV },
+    rotate: -2.2,
+    scale: 0.74,
+    maxH: 1640,
+    deviceTop: 540,
+    badges: [{ label: "Allergens shown", kind: "forest" }],
+  },
+  {
+    app: "customer",
+    id: "c4-confidence",
+    layout: "heroTop",
+    tone: "trust",
+    kicker: "Confirmed",
+    kickerColor: "#1A5C38",
+    headline: "Order with confidence",
+    sub: "A clear, confirmed status from claim to counter.",
+    shot: "order.png",
+    crop: { top: STATUS, bottom: NAV },
+    rotate: 1.8,
+    scale: 0.82,
+    badges: [{ label: "Pickup ready", kind: "forest" }],
+  },
+  {
+    app: "customer",
+    id: "c5-pickup",
+    layout: "heroTop",
+    tone: "warm",
+    kicker: "Pickup ready",
+    kickerColor: "#FF6B35",
+    headline: "Pickup made simple",
+    sub: "Show your SMS pickup code at the counter &mdash; no app scan needed.",
+    shot: "order.png",
+    crop: { top: 430, bottom: NAV },
+    rotate: -2,
+    scale: 0.82,
+    badges: [{ label: "Pickup ready", kind: "saffron" }],
+  },
+  {
+    app: "customer",
+    id: "c6-passport",
+    layout: "heroTop",
+    tone: "habit",
+    kicker: "Food passport",
+    kickerColor: "#D4A017",
+    headline: "Build your food passport",
+    sub: "Track every local discovery and tier up as you go.",
+    shot: "account.png",
+    crop: { top: STATUS, bottom: NAV },
+    rotate: -1.8,
+    scale: 0.82,
+    badges: [{ label: "Food passport", kind: "gold" }],
+  },
+  {
+    app: "customer",
+    id: "c7-payoff",
+    layout: "finalTrio",
+    tone: "warm",
+    headline: "Your next favorite dish is close",
+    sub: "Discover, claim, and pick up &mdash; all in goZaika.",
+    cta: "Download goZaika",
+    tiles: [
+      { shot: "drops.png", crop: { top: STATUS, bottom: 1380, srcW: 1080 }, label: "Discover", labelKind: "saffron" },
+      { shot: "drop-detail-top.png", crop: { top: STATUS, bottom: 1380, srcW: 1080 }, label: "Trust", labelKind: "forest" },
+      { shot: "account.png", crop: { top: STATUS, bottom: 1380, srcW: 1080 }, label: "Passport", labelKind: "gold" },
+    ],
+  },
+];
