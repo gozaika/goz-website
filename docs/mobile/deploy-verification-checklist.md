@@ -48,6 +48,9 @@ BFF deploy** (the apps on-device talk to the deployed cloud BFFs `customer.gozai
 
 > **Slice 17 product-media gate #5 status (2026-06-29):** both code halves are locked by unit tests — `resolveProductMedia` (mobile render: null/failed → fallback; real URL → renders) and `resolveDropImage` (discovery resolution: only `public-media` resolves, `media-ingest`/null → null). Live smoke against `customer.gozaika.in` passed 5/5 (30 cards, **0 media-ingest leaks**, all 30 currently use fallback art because the demo carries no uploaded images yet). The **render-real** on-device walk (upload an image, see the real photo in discovery) is the one remaining manual step — it needs an actual uploaded `public-media` object, which the demo seed does not yet have.
 
+| 18 | Permission minimization (partner) | After `expo prebuild` + release build, the partner app's merged `AndroidManifest.xml` has **no** `RECORD_AUDIO`; camera QR scan + location pin still work; the OS permission prompts show the rationale copy | app config | `node scripts/store-launch/permissions-manifest.mjs` (static, exits non-zero on any high-scrutiny permission) |
+| 18 | Production-build cleanliness | A production-profile build shows **no** Expo dev menu / gear overlay; production env (`customer/restaurant.gozaika.in`) is live; clean install + update-over-prior both launch | `eas.json` production profile | — (owner-authorized `eas build`) |
+
 Notes:
 - The invoice download yields a 404 if the seeded invoice has no stored PDF
   (`storage_object_fk` null) — that's data, not a code defect; the endpoint + UI are correct.

@@ -4,6 +4,9 @@
     "slug": "gozaika-customer",
     "scheme": "gozaika",
     "version": "0.1.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "orientation": "portrait",
     "platforms": [
       "ios",

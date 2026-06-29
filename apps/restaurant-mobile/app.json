@@ -4,6 +4,9 @@
     "slug": "gozaika-restaurant",
     "scheme": "gozaika-restaurant",
     "version": "0.1.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "orientation": "default",
     "platforms": [
       "ios",
@@ -33,9 +36,11 @@
       },
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "plugins": [
@@ -44,7 +49,8 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "goZaika Partner uses the camera to scan a customer's pickup QR code at the counter."
+          "cameraPermission": "goZaika Partner uses the camera to scan a customer's pickup QR code at the counter.",
+          "recordAudioAndroidPermission": false
         }
       ],
       [
