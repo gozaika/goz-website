@@ -57,15 +57,15 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
       <section className="mx-auto grid max-w-5xl gap-6 px-4 py-8 lg:grid-cols-[1fr_0.75fr]">
         <div className="grid gap-5">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-forest">
               {order.orderStatusCode === "COLLECTED"
                 ? "Order collected"
                 : order.orderStatusCode === "NO_SHOW"
                   ? "Pickup missed"
                   : "Order confirmed"}
             </p>
-            <h1 className="mt-2 text-3xl font-bold text-[#2D2D2D]">{order.orderNumber}</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-[#2D2D2D]/70">
+            <h1 className="mt-2 text-3xl font-bold text-charcoal">{order.orderNumber}</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-charcoal/70">
               {order.orderStatusCode === "COLLECTED"
                 ? "This BAM Bag was collected at the restaurant. Pickup proof is now closed."
                 : order.orderStatusCode === "NO_SHOW"
@@ -77,57 +77,57 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
           <section className="rounded-lg border border-black/10 bg-white p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold text-[#1A5C38]">{order.restaurantName}</p>
-                <h2 className="mt-1 text-2xl font-bold text-[#2D2D2D]">{order.bagDisplayName}</h2>
-                <p className="mt-1 text-sm text-[#2D2D2D]/65">{order.dropTitle}</p>
+                <p className="text-sm font-semibold text-forest">{order.restaurantName}</p>
+                <h2 className="mt-1 text-2xl font-bold text-charcoal">{order.bagDisplayName}</h2>
+                <p className="mt-1 text-sm text-charcoal/65">{order.dropTitle}</p>
               </div>
               <DietaryBadge code={order.dietaryCategoryCode} />
             </div>
 
-            <dl className="mt-5 grid gap-4 text-sm text-[#2D2D2D]/75 sm:grid-cols-2">
+            <dl className="mt-5 grid gap-4 text-sm text-charcoal/75 sm:grid-cols-2">
               <div>
-                <dt className="font-semibold text-[#2D2D2D]">Pickup window</dt>
+                <dt className="font-semibold text-charcoal">Pickup window</dt>
                 <dd>{formatPickupWindow(order.pickupWindowStartAt, order.pickupWindowEndAt)}</dd>
               </div>
               <div>
-                <dt className="font-semibold text-[#2D2D2D]">Paid amount</dt>
+                <dt className="font-semibold text-charcoal">Paid amount</dt>
                 <dd>{formatPaise(order.paidAmountPaise)}</dd>
               </div>
               <div>
-                <dt className="font-semibold text-[#2D2D2D]">Quantity</dt>
+                <dt className="font-semibold text-charcoal">Quantity</dt>
                 <dd>{order.quantity}</dd>
               </div>
               <div>
-                <dt className="font-semibold text-[#2D2D2D]">Payment</dt>
+                <dt className="font-semibold text-charcoal">Payment</dt>
                 <dd>
                   {order.paymentStatusCode} - {capturedAtText}
                 </dd>
               </div>
               {order.servesText ? (
                 <div>
-                  <dt className="font-semibold text-[#2D2D2D]">Serves</dt>
+                  <dt className="font-semibold text-charcoal">Serves</dt>
                   <dd>{order.servesText}</dd>
                 </div>
               ) : null}
               <div>
-                <dt className="font-semibold text-[#2D2D2D]">Status</dt>
+                <dt className="font-semibold text-charcoal">Status</dt>
                 <dd>{order.orderStatusCode.replaceAll("_", " ")}</dd>
               </div>
               {order.collectedAt ? (
                 <div>
-                  <dt className="font-semibold text-[#2D2D2D]">Collected</dt>
+                  <dt className="font-semibold text-charcoal">Collected</dt>
                   <dd>{new Date(order.collectedAt).toLocaleString("en-IN")}</dd>
                 </div>
               ) : null}
             </dl>
 
             <div className="mt-5">
-              <p className="text-sm font-semibold text-[#2D2D2D]">Allergens</p>
+              <p className="text-sm font-semibold text-charcoal">Allergens</p>
               <div className="mt-2">
                 <AllergenChips codes={order.allergenCodes} />
               </div>
               {order.allergenSummaryText ? (
-                <p className="mt-2 text-sm font-medium text-[#B42318]">{order.allergenSummaryText}</p>
+                <p className="mt-2 text-sm font-medium text-danger">{order.allergenSummaryText}</p>
               ) : null}
             </div>
           </section>
@@ -139,11 +139,11 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
           {proof ? (
             <PickupProofCard proof={proof} />
           ) : (
-            <section className="rounded-lg border border-[#1A5C38]/20 bg-white p-5 shadow-sm">
-              <p className="text-sm font-semibold text-[#1A5C38]">
+            <section className="rounded-lg border border-forest/20 bg-white p-5 shadow-sm">
+              <p className="text-sm font-semibold text-forest">
                 {pickupTerminal ? "Pickup proof closed" : "Pickup proof unavailable"}
               </p>
-              <p className="mt-2 text-sm leading-6 text-[#2D2D2D]/70">
+              <p className="mt-2 text-sm leading-6 text-charcoal/70">
                 {pickupTerminal
                   ? "QR and OTP pickup proof are no longer usable after an order is collected or marked no-show."
                   : proofUnavailableMessage}
@@ -152,19 +152,19 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
           )}
 
           <section className="rounded-lg border border-black/10 bg-white p-5">
-            <p className="text-sm font-semibold text-[#1A5C38]">Order messages</p>
+            <p className="text-sm font-semibold text-forest">Order messages</p>
             <div className="mt-3 grid gap-2">
               {notifications.length === 0 ? (
-                <p className="text-sm text-[#2D2D2D]/65">
+                <p className="text-sm text-charcoal/65">
                   Message status is not available yet. Your payment and pickup proof still work normally.
                 </p>
               ) : (
                 notifications.map((notification) => (
                   <div key={notification.notificationOutboxPk} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-black/10 px-3 py-2 text-sm">
-                    <span className="font-medium text-[#2D2D2D]">
+                    <span className="font-medium text-charcoal">
                       {notification.templateCode.replaceAll("_", " ").toLowerCase()} via {notification.channelCode.toLowerCase()}
                     </span>
-                    <span className="rounded-full border border-[#1A5C38]/20 px-2.5 py-1 text-xs font-semibold text-[#1A5C38]">
+                    <span className="rounded-full border border-forest/20 px-2.5 py-1 text-xs font-semibold text-forest">
                       {notificationStatusLabel(notification.sendStatusCode, notification.deliveryReasonCode)}
                     </span>
                   </div>
@@ -175,22 +175,22 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
         </div>
 
         <aside className="h-fit rounded-lg border border-black/10 bg-white p-5">
-          <p className="text-sm font-semibold text-[#2D2D2D]/60">Pickup instructions</p>
-          <p className="mt-2 text-sm leading-6 text-[#2D2D2D]/75">
+          <p className="text-sm font-semibold text-charcoal/60">Pickup instructions</p>
+          <p className="mt-2 text-sm leading-6 text-charcoal/75">
             {order.pickupInstructions ?? "Show your pickup proof at the restaurant counter during the pickup window."}
           </p>
-          <div className="mt-5 rounded-lg border border-[#1A5C38]/20 bg-[#F2F8EF] p-4 text-sm text-[#2D2D2D]/75">
-            <p className="font-semibold text-[#1A5C38]">Food safety check</p>
+          <div className="mt-5 rounded-lg border border-forest/20 bg-success-soft p-4 text-sm text-charcoal/75">
+            <p className="font-semibold text-forest">Food safety check</p>
             <p className="mt-2">
               Confirm the restaurant name, dietary badge, and allergen disclosure before pickup. Ask staff before collecting if
               anything looks different.
             </p>
           </div>
           <div className="mt-5 grid gap-2">
-            <Link className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#1A5C38] px-4 text-sm font-semibold text-white" href="/account">
+            <Link className="inline-flex min-h-11 items-center justify-center rounded-lg bg-forest px-4 text-sm font-semibold text-white" href="/account">
               View account
             </Link>
-            <Link className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[#1A5C38]/25 px-4 text-sm font-semibold text-[#1A5C38]" href="/drops">
+            <Link className="inline-flex min-h-11 items-center justify-center rounded-lg border border-forest/25 px-4 text-sm font-semibold text-forest" href="/drops">
               Browse more drops
             </Link>
           </div>

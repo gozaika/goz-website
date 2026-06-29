@@ -64,9 +64,9 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
       </ShellHeader>
       <section className="mx-auto grid max-w-5xl gap-6 px-4 py-8 lg:grid-cols-[1fr_0.75fr]">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Checkout</p>
-          <h1 className="mt-2 text-3xl font-bold text-[#2D2D2D]">Pay for your held BAM Bag</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-[#2D2D2D]/70">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-forest">Checkout</p>
+          <h1 className="mt-2 text-3xl font-bold text-charcoal">Pay for your held BAM Bag</h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-charcoal/70">
             Your hold reserves availability until the timer expires. The order becomes confirmed only after Razorpay sends a
             verified payment webhook to goZaika.
           </p>
@@ -74,56 +74,56 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
           <section className="mt-6 rounded-lg border border-black/10 bg-white p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold text-[#1A5C38]">{claim.restaurantName}</p>
-                <h2 className="mt-1 text-2xl font-bold text-[#2D2D2D]">{claim.bagDisplayName}</h2>
+                <p className="text-sm font-semibold text-forest">{claim.restaurantName}</p>
+                <h2 className="mt-1 text-2xl font-bold text-charcoal">{claim.bagDisplayName}</h2>
                 {claim.bagShortDescription ? (
-                  <p className="mt-2 text-sm text-[#2D2D2D]/70">{claim.bagShortDescription}</p>
+                  <p className="mt-2 text-sm text-charcoal/70">{claim.bagShortDescription}</p>
                 ) : null}
               </div>
               <DietaryBadge code={claim.dietaryCategoryCode} />
             </div>
 
-            <div className="mt-5 grid gap-4 text-sm text-[#2D2D2D]/75 sm:grid-cols-2">
+            <div className="mt-5 grid gap-4 text-sm text-charcoal/75 sm:grid-cols-2">
               <p>
-                <span className="font-semibold text-[#2D2D2D]">Pickup:</span>{" "}
+                <span className="font-semibold text-charcoal">Pickup:</span>{" "}
                 {formatPickupWindow(claim.pickupStartAt, claim.pickupEndAt)}
               </p>
               <p>
-                <span className="font-semibold text-[#2D2D2D]">Quantity held:</span> {claim.quantityHeld}
+                <span className="font-semibold text-charcoal">Quantity held:</span> {claim.quantityHeld}
               </p>
               <p>
-                <span className="font-semibold text-[#2D2D2D]">Listed price:</span>{" "}
+                <span className="font-semibold text-charcoal">Listed price:</span>{" "}
                 {formatPaise(claim.pricePaise)}
               </p>
               <p>
-                <span className="font-semibold text-[#2D2D2D]">Serves:</span> {serves}
+                <span className="font-semibold text-charcoal">Serves:</span> {serves}
               </p>
             </div>
 
             <div className="mt-5">
-              <p className="text-sm font-semibold text-[#2D2D2D]">Allergens</p>
+              <p className="text-sm font-semibold text-charcoal">Allergens</p>
               <div className="mt-2">
                 <AllergenChips codes={claim.allergenCodes} />
               </div>
               {claim.allergenSummaryText ? (
-                <p className="mt-2 text-sm font-medium text-[#B42318]">{claim.allergenSummaryText}</p>
+                <p className="mt-2 text-sm font-medium text-danger">{claim.allergenSummaryText}</p>
               ) : null}
             </div>
 
-            {claim.holdingGuidanceText ? <p className="mt-5 text-sm text-[#2D2D2D]/70">{claim.holdingGuidanceText}</p> : null}
+            {claim.holdingGuidanceText ? <p className="mt-5 text-sm text-charcoal/70">{claim.holdingGuidanceText}</p> : null}
           </section>
         </div>
 
         <aside className="h-fit rounded-lg border border-black/10 bg-white p-5">
-          <p className="text-sm font-semibold text-[#2D2D2D]/60">Hold status</p>
-          <p className="mt-1 text-2xl font-bold text-[#2D2D2D]">{claim.statusCode === "ACTIVE" ? "Hold active" : claim.statusCode}</p>
-          <div className="mt-5 rounded-lg border border-[#1A5C38]/20 bg-[#F2F8EF] p-4 text-sm">
+          <p className="text-sm font-semibold text-charcoal/60">Hold status</p>
+          <p className="mt-1 text-2xl font-bold text-charcoal">{claim.statusCode === "ACTIVE" ? "Hold active" : claim.statusCode}</p>
+          <div className="mt-5 rounded-lg border border-forest/20 bg-success-soft p-4 text-sm">
             <p>
               <HoldCountdown expiresAt={claim.expiresAt} />
             </p>
-            <p className="mt-2 text-[#2D2D2D]/70">Expires at {expiresAtText} IST.</p>
+            <p className="mt-2 text-charcoal/70">Expires at {expiresAtText} IST.</p>
           </div>
-          <p className="mt-4 text-sm text-[#2D2D2D]/70">
+          <p className="mt-4 text-sm text-charcoal/70">
             If this hold expires before payment is confirmed, the release job returns the bag to the drop.
           </p>
           <RazorpayCheckoutPanel
@@ -133,10 +133,10 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
             disabledReason={paymentDisabledReason}
           />
           <div className="mt-5 grid gap-2">
-            <Link className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#1A5C38] px-4 text-sm font-semibold text-white" href={`/drops/${claim.dropPk}`}>
+            <Link className="inline-flex min-h-11 items-center justify-center rounded-lg bg-forest px-4 text-sm font-semibold text-white" href={`/drops/${claim.dropPk}`}>
               Back to drop
             </Link>
-            <Link className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[#1A5C38]/25 px-4 text-sm font-semibold text-[#1A5C38]" href="/account">
+            <Link className="inline-flex min-h-11 items-center justify-center rounded-lg border border-forest/25 px-4 text-sm font-semibold text-forest" href="/account">
               View account holds
             </Link>
           </div>

@@ -145,6 +145,8 @@ const MIGRATED_FILES = [
   "apps/consumer-web/app/restaurants/page.tsx",
   "apps/consumer-web/app/restaurants/[slug]/page.tsx",
   "apps/consumer-web/app/swaad-club/page.tsx",
+  "apps/consumer-web/app/checkout/[orderId]/page.tsx",
+  "apps/consumer-web/app/orders/[orderId]/page.tsx",
 ];
 const BRAND_HEX = /#(?:FF6B35|1A5C38|D4A017|FFF8F0|2D2D2D)\b/i;
 
