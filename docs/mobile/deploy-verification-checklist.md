@@ -30,6 +30,13 @@ BFF deploy** (the apps on-device talk to the deployed cloud BFFs `customer.gozai
 | 12 | Location pin (GPS) | Partner → Profile → "Pickup location pin" → **Use my current location** (grant permission) → coords fill → Save → "Pinned"; deny permission → manual entry still works; Clear pin | `PATCH /restaurant/location` | `scripts/smoke/slice12-onboarding-smoke.mjs` |
 | 12 | Resumable onboarding wizard | Partner → Onboarding → progress bar + 6 steps with done badges; tap **Open** on a to-do step → lands on the right screen; OWNER can Start/Mark-done/Reopen operational tasks; close + reopen app → progress persists | `GET`/`PATCH /restaurant/onboarding` | (same smoke) |
 
+| 16 | Push token registration | After sign-in (real device build with `google-services.json`), the app registers a token → a `notification_device` row appears for the profile; sign-out deactivates it | `POST`/`DELETE /notifications/device` | (server) `scripts/smoke/slice16-push-smoke.mjs` proves FCM auth |
+| 16 | Push delivery (FCM v1) | Customer → trigger `POST /notifications/test` → a notification arrives on the phone | `POST /notifications/test` | `slice16-push-smoke.mjs` (auth path 4/4) |
+| 16 | Deep-link from notification | Tap the test notification → app opens to `data.link` (running + cold-start) | client `useNotificationDeepLinks` | — |
+| 16 | Offline honesty | Customer Home/Drops with no network but cached data → shows an "offline, saved content" banner over cached drops (not a hard error) | client | — |
+
+> **Slice 16 push delivery is gated on `google-services.json`** (per Android app, from the Firebase `gozaika` console) + the `FCM_SERVICE_ACCOUNT_JSON`/`_PATH` env on the deployed BFF. The **server send path is already proven** (`slice16-push-smoke.mjs` 4/4: OAuth mint + FCM v1 authorized project `gozaika`). Drop `google-services.json` into each app, `expo prebuild`, rebuild, then a real device token + delivery work.
+
 > **Slice 12 needs a fresh `expo-location` Android build** (native dep added). Because
 > the `android/` project is gitignored/managed, first regenerate it so the
 > `expo-location` plugin applies the `ACCESS_FINE/COARSE_LOCATION` manifest
