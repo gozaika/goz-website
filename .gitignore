@@ -40,3 +40,5 @@ Google firebase FCM private key.json
 google-services.json
 GoogleService-Info.plist
 fcm-service-account*.json
+google-services-*.json
+google-services*.json

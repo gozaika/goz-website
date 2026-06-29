@@ -35,7 +35,7 @@ BFF deploy** (the apps on-device talk to the deployed cloud BFFs `customer.gozai
 | 16 | Deep-link from notification | Tap the test notification → app opens to `data.link` (running + cold-start) | client `useNotificationDeepLinks` | — |
 | 16 | Offline honesty | Customer Home/Drops with no network but cached data → shows an "offline, saved content" banner over cached drops (not a hard error) | client | — |
 
-> **Slice 16 push delivery is gated on `google-services.json`** (per Android app, from the Firebase `gozaika` console) + the `FCM_SERVICE_ACCOUNT_JSON`/`_PATH` env on the deployed BFF. The **server send path is already proven** (`slice16-push-smoke.mjs` 4/4: OAuth mint + FCM v1 authorized project `gozaika`). Drop `google-services.json` into each app, `expo prebuild`, rebuild, then a real device token + delivery work.
+> **Slice 16 push delivery is PROVEN end-to-end (2026-06-29).** `google-services.json` is wired per app (`android.googleServicesFile`; files gitignored). A live FCM v1 push (sent via the service-account with `scripts/smoke/slice16-send-to-token.mjs`) rendered on the Pixel 7a — evidence `.codex-artifacts/mobile-ux-uplift/android-preview-build/consumer-push-delivered.png`. Server auth path also proven by `slice16-push-smoke.mjs` 4/4. **For in-app `/notifications/test` + event sends:** set `FCM_SERVICE_ACCOUNT_JSON`/`_PATH` on the deployed customer + partner BFFs. Token-registration on-device (the `notification_device` row) needs the deployed BFF carrying the new `/notifications/device` route.
 
 > **Slice 12 needs a fresh `expo-location` Android build** (native dep added). Because
 > the `android/` project is gitignored/managed, first regenerate it so the
