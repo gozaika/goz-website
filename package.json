@@ -34,6 +34,7 @@
     "demo:reset": "npm run demo:auth:delete && npm run demo:auth:create && npm run demo:admin:create && npm run db:seed:demo:slice2",
     "ci": "dotenv -e .env.local -- npm run lint --workspaces --if-present && dotenv -e .env.local -- npm run typecheck --workspaces --if-present && dotenv -e .env.local -- npm run test --workspaces --if-present && dotenv -e .env.local -- npm run build --workspaces --if-present",
     "test:mobile-gate": "node scripts/mobile-ci.mjs",
+    "test:web-gate": "node scripts/web-ci.mjs",
     "test:functional": "node scripts/functional/run.mjs",
     "db:seed:functional": "node scripts/functional/seed.mjs",
     "image:assets:list": "node scripts/gozaika-images/generate-asset-set.mjs --list",
