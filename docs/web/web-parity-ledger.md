@@ -20,18 +20,18 @@ Plan: [`../../project docs/gozaika_web_parity_implementation_plan_v1.md`](../../
 | Web route | Backing lib | Mobile twin | UX gap to close | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
 | `/` Home | `lib/drops`, `lib/restaurants`, `/api/discovery/cuisine-stats` | `(tabs)/index` (C1) | Tokenize; HeroBanner; CountdownChip rails; **add F1 "Restaurants you follow" rail**; passport preview | W4 | **Done** — HeroBanner + CountdownChip + F1 rail (server-side follows); zero hex; AA buttons (charcoal-on-saffron); browser-verified |
-| `/drops` | `lib/drops` | `(tabs)/drops` (C2) | FilterChipRow + SegmentedToggle (list/map); tokenized DropCard | W4 | Not started |
-| `/drops/[id]` | `lib/drops#loadPublicDrop` | `drops/[dropPk]` (C3) | Countdown; sticky claim CTA; stock/allergen/pickup cards on tokens | W4 | Not started |
-| `/restaurants` | `lib/restaurants` | `(tabs)/restaurants` | Tokenized directory; consistent cards/filters | W4 | Not started |
-| `/restaurants/[slug]` | `lib/restaurants`, reviews | `restaurants/[slug]` | Keep D1 art hero; tokenize; Follow chip already present | W4 | Not started |
-| `/account` (+ list) | `/api/profile`, orders | `(tabs)/account` (C4) | Tokenize; profile/referral on primitives | W4 | Not started |
-| `/account/passport` | `lib/passport` | `account/passport` (C5) | LoyaltyCard + Flavour-Diversity ProgressRing | W4 | Not started |
-| `/account/discovery` | `lib/discovery-profile` | `account/discovery` (C5) | Discovery viz + share card on tokens | W4 | Not started |
-| `/orders/[orderId]` | `lib/orders` | `orders/[orderPk]` (C4) | Timeline from real timestamps on primitives | W4 | Not started |
-| `/checkout/[orderId]` | `lib/claims`, checkout | `checkout/[holdPk]` (C3) | Sticky CTA; simulator-honest polish | W4 | Not started |
-| `/onboarding/consent` | `/api/consent/*` | `onboarding/consent` | Tokenize form + a11y | W4 | Not started |
-| `/swaad-club` | informational | `swaad-club` | Tokenize (coming-soon, no billing) | W4 | Not started |
-| `/cities/[city]` | `lib/drops` (filter) | Home city filter | Tokenize (shares Home composition) | W4 | Not started |
+| `/drops` | `lib/drops` | `(tabs)/drops` (C2) | FilterChipRow + SegmentedToggle (list/map); tokenized DropCard | W4 | **Shell done**; `drop-discovery-client` interactive view pending |
+| `/drops/[id]` | `lib/drops#loadPublicDrop` | `drops/[dropPk]` (C3) | Countdown; sticky claim CTA; stock/allergen/pickup cards on tokens | W4 | **Done** — tokens + CountdownChip |
+| `/restaurants` | `lib/restaurants` | `(tabs)/restaurants` | Tokenized directory; consistent cards/filters | W4 | **Shell done**; `restaurant-directory-client` pending |
+| `/restaurants/[slug]` | `lib/restaurants`, reviews | `restaurants/[slug]` | Keep D1 art hero; tokenize; Follow chip already present | W4 | **Shell done** (breadcrumb); `restaurant-detail-client` pending |
+| `/account` (+ list) | `/api/profile`, orders | `(tabs)/account` (C4) | Tokenize; profile/referral on primitives | W4 | **Done** (brand-hex-clean, locked) |
+| `/account/passport` | `lib/passport` | `account/passport` (C5) | LoyaltyCard + Flavour-Diversity ProgressRing | W4 | **Done** — tokenized (ZaykaPassportCard) |
+| `/account/discovery` | `lib/discovery-profile` | `account/discovery` (C5) | Discovery viz + share card on tokens | W4 | **Done** — tokenized (CuisinePassport) |
+| `/orders/[orderId]` | `lib/orders` | `orders/[orderPk]` (C4) | Timeline from real timestamps on primitives | W4 | **Done** — tokenized |
+| `/checkout/[orderId]` | `lib/claims`, checkout | `checkout/[holdPk]` (C3) | Sticky CTA; simulator-honest polish | W4 | **Done** — tokenized |
+| `/onboarding/consent` | `/api/consent/*` | `onboarding/consent` | Tokenize form + a11y | W4 | **Done** (brand-hex-clean, locked) |
+| `/swaad-club` | informational | `swaad-club` | Tokenize (coming-soon, no billing) | W4 | **Done** — tokenized (AA fixes) |
+| `/cities/[city]` | `lib/drops` (filter) | Home city filter | Tokenize (shares Home composition) | W4 | **Done** — tokenized |
 
 ## B. Partner — `apps/restaurant-mgmt-web`
 
