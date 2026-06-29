@@ -57,14 +57,14 @@ export default function DiscoveryPage() {
       </ShellHeader>
 
       <div className="mx-auto max-w-2xl px-4 py-10">
-        <nav className="mb-6 flex items-center gap-2 text-sm text-[#2D2D2D]/60">
-          <Link href="/account" className="hover:text-[#1A5C38]">Account</Link>
+        <nav className="mb-6 flex items-center gap-2 text-sm text-charcoal/60">
+          <Link href="/account" className="hover:text-forest">Account</Link>
           <span>/</span>
-          <span className="font-semibold text-[#2D2D2D]">Flavour Passport</span>
+          <span className="font-semibold text-charcoal">Flavour Passport</span>
         </nav>
 
         {loading && (
-          <div className="rounded-xl border border-black/10 bg-white p-8 text-center text-sm text-[#2D2D2D]/60">
+          <div className="rounded-xl border border-black/10 bg-white p-8 text-center text-sm text-charcoal/60">
             Loading your Flavour Passport…
           </div>
         )}
@@ -78,11 +78,11 @@ export default function DiscoveryPage() {
         {profile && !loading && (
           <div className="grid gap-6">
             {/* Score hero */}
-            <div className="rounded-xl border border-[#1A5C38]/20 bg-[#F0F9F4] p-6 text-center">
-              <p className="text-xs font-bold uppercase tracking-widest text-[#1A5C38]">Flavour Diversity Score</p>
-              <p className="mt-2 text-6xl font-black text-[#1A5C38]">{profile.flavourDiversityScore}</p>
-              <p className="mt-1 text-sm font-semibold text-[#D4A017]">{profile.flavourPersonalityLabel}</p>
-              <p className="mt-1 text-xs text-[#2D2D2D]/60">
+            <div className="rounded-xl border border-forest/20 bg-success-soft p-6 text-center">
+              <p className="text-xs font-bold uppercase tracking-widest text-forest">Flavour Diversity Score</p>
+              <p className="mt-2 text-6xl font-black text-forest">{profile.flavourDiversityScore}</p>
+              <p className="mt-1 text-sm font-semibold text-gold-text">{profile.flavourPersonalityLabel}</p>
+              <p className="mt-1 text-xs text-charcoal/60">
                 {profile.triedCuisines.length} of {profile.totalAvailableCuisines} cuisines explored ·{" "}
                 {profile.triedNeighbourhoods.length} of {profile.totalActiveNeighbourhoods} neighbourhoods visited
               </p>
@@ -99,8 +99,8 @@ export default function DiscoveryPage() {
 
             {/* Untried CTAs */}
             {profile.untriedCuisines.filter((c) => c.activeDropCount > 0).length > 0 && (
-              <section className="rounded-xl border border-[#FF6B35]/20 bg-[#FFF8F0] p-5">
-                <h2 className="text-sm font-bold text-[#2D2D2D]">Untried cuisines with active drops today</h2>
+              <section className="rounded-xl border border-saffron/20 bg-cream p-5">
+                <h2 className="text-sm font-bold text-charcoal">Untried cuisines with active drops today</h2>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {profile.untriedCuisines
                     .filter((c) => c.activeDropCount > 0)
@@ -109,9 +109,9 @@ export default function DiscoveryPage() {
                       <Link
                         key={c.cuisineCode}
                         href={`/drops?cuisine=${c.cuisineCode}`}
-                        className="flex items-center gap-1.5 rounded-full border border-[#FF6B35]/40 bg-white px-3 py-1.5 text-xs font-semibold text-[#2D2D2D] transition hover:bg-[#FF6B35]/10"
+                        className="flex items-center gap-1.5 rounded-full border border-saffron/40 bg-white px-3 py-1.5 text-xs font-semibold text-charcoal transition hover:bg-saffron/10"
                       >
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#FF6B35]" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-saffron" />
                         {c.cuisineName.replace(/_/g, " ")} ({c.activeDropCount})
                       </Link>
                     ))}
@@ -122,12 +122,12 @@ export default function DiscoveryPage() {
             {/* Neighbourhood explorer */}
             {profile.triedNeighbourhoods.length > 0 && (
               <section className="rounded-xl border border-black/10 bg-white p-5">
-                <h2 className="text-sm font-bold text-[#2D2D2D]">Neighbourhoods explored</h2>
+                <h2 className="text-sm font-bold text-charcoal">Neighbourhoods explored</h2>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {profile.triedNeighbourhoods.map((n) => (
                     <span
                       key={n.neighbourhoodCode}
-                      className="rounded-full bg-[#1A5C38]/10 px-3 py-1 text-xs font-semibold text-[#1A5C38]"
+                      className="rounded-full bg-forest/10 px-3 py-1 text-xs font-semibold text-forest"
                     >
                       {n.neighbourhoodName} ({n.bagCount})
                     </span>
@@ -141,14 +141,14 @@ export default function DiscoveryPage() {
               type="button"
               onClick={handleShare}
               disabled={sharing}
-              className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-[#1A5C38] px-5 py-3 text-sm font-bold text-[#1A5C38] transition hover:bg-[#1A5C38]/10 disabled:opacity-60"
+              className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-forest px-5 py-3 text-sm font-bold text-forest transition hover:bg-forest/10 disabled:opacity-60"
             >
               {sharing ? "Generating…" : "Share your Flavour Passport"}
             </button>
 
             <Link
               href="/account/passport"
-              className="text-center text-sm font-semibold text-[#1A5C38] hover:underline"
+              className="text-center text-sm font-semibold text-forest hover:underline"
             >
               View Zayka Passport & tier progress →
             </Link>

@@ -30,14 +30,14 @@ export default function PassportPage() {
       </ShellHeader>
 
       <div className="mx-auto max-w-2xl px-4 py-10">
-        <nav className="mb-6 flex items-center gap-2 text-sm text-[#2D2D2D]/60">
-          <Link href="/account" className="hover:text-[#1A5C38]">Account</Link>
+        <nav className="mb-6 flex items-center gap-2 text-sm text-charcoal/60">
+          <Link href="/account" className="hover:text-forest">Account</Link>
           <span>/</span>
-          <span className="font-semibold text-[#2D2D2D]">Zayka Passport</span>
+          <span className="font-semibold text-charcoal">Zayka Passport</span>
         </nav>
 
         {loading && (
-          <div className="rounded-xl border border-black/10 bg-white p-8 text-center text-sm text-[#2D2D2D]/60">
+          <div className="rounded-xl border border-black/10 bg-white p-8 text-center text-sm text-charcoal/60">
             Loading your passport…
           </div>
         )}
@@ -54,7 +54,7 @@ export default function PassportPage() {
 
             {/* Tier benefits */}
             <section className="rounded-xl border border-black/10 bg-white p-5">
-              <h2 className="text-base font-bold text-[#2D2D2D]">Tier benefits</h2>
+              <h2 className="text-base font-bold text-charcoal">Tier benefits</h2>
               <div className="mt-4 grid gap-3">
                 {[
                   { tier: "BRONZE",   label: "Foodie Explorer",      perks: ["Standard access", "Standard pickup window"] },
@@ -66,17 +66,17 @@ export default function PassportPage() {
                   return (
                     <div
                       key={t.tier}
-                      className={`rounded-lg border p-3 ${isCurrent ? "border-[#1A5C38] bg-[#F0F9F4]" : "border-black/10 bg-[#FAFAFA]"}`}
+                      className={`rounded-lg border p-3 ${isCurrent ? "border-forest bg-success-soft" : "border-black/10 bg-[#FAFAFA]"}`}
                     >
                       <div className="flex items-center justify-between">
-                        <p className={`text-sm font-bold ${isCurrent ? "text-[#1A5C38]" : "text-[#2D2D2D]"}`}>
+                        <p className={`text-sm font-bold ${isCurrent ? "text-forest" : "text-charcoal"}`}>
                           {t.tier} — {t.label}
                         </p>
-                        {isCurrent && <span className="text-xs font-semibold text-[#1A5C38]">Your tier</span>}
+                        {isCurrent && <span className="text-xs font-semibold text-forest">Your tier</span>}
                       </div>
                       <ul className="mt-1 space-y-0.5">
                         {t.perks.map((perk) => (
-                          <li key={perk} className="text-xs text-[#2D2D2D]/65">· {perk}</li>
+                          <li key={perk} className="text-xs text-charcoal/65">· {perk}</li>
                         ))}
                       </ul>
                     </div>
@@ -87,10 +87,10 @@ export default function PassportPage() {
 
             <Link
               href="/account/discovery"
-              className="flex items-center justify-between rounded-xl border border-[#D4A017]/40 bg-[#FFFBEB] p-4 text-sm font-semibold text-[#7C5C00] transition hover:bg-[#FFF7D6]"
+              className="flex items-center justify-between rounded-xl border border-gold/40 bg-gold/10 p-4 text-sm font-semibold text-gold-text transition hover:bg-gold/15"
             >
               <span>View your Flavour Passport →</span>
-              <span className="text-xs text-[#D4A017]">Boost your Discovery Score</span>
+              <span className="text-xs text-gold-text">Boost your Discovery Score</span>
             </Link>
           </div>
         )}
