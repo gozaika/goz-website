@@ -1,3 +1,4 @@
+import { ApiError } from "@gozaika/mobile-core";
 import type { MobilePublicDropCard } from "@gozaika/types";
 import {
   Badge,
@@ -5,6 +6,7 @@ import {
   EmptyState,
   ErrorState,
   FilterChipRow,
+  OfflineBanner,
   palette,
   Screen,
   SegmentedToggle,
@@ -174,7 +176,8 @@ function DropMapView({
 
 export default function DropsScreen() {
   const router = useRouter();
-  const { data, isLoading, isError, refetch, isRefetching } = useDrops();
+  const { data, isLoading, isError, error, refetch, isRefetching } = useDrops();
+  const offline = isError && error instanceof ApiError && error.code === "NETWORK";
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [dietaryFilter, setDietaryFilter] = useState("All");
   const [sortMode, setSortMode] = useState<SortMode>("closing");
@@ -187,7 +190,7 @@ export default function DropsScreen() {
   );
   const visibleDrops = useMemo(() => sortDrops(filteredDrops, sortMode), [filteredDrops, sortMode]);
 
-  if (isError) {
+  if (isError && !data) {
     return (
       <Screen scroll={false}>
         <ErrorState message="We couldn't load today's drops." onRetry={() => refetch()} />
@@ -214,6 +217,7 @@ export default function DropsScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: palette.cream }}>
+      {offline ? <OfflineBanner offline /> : null}
       <View style={{ gap: spacing.md, padding: spacing.lg, paddingBottom: spacing.md }}>
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: spacing.md }}>
           <View style={{ flex: 1 }}>

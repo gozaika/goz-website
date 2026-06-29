@@ -1,8 +1,34 @@
 import { deviceRegisterResultSchema } from "@gozaika/types";
 import * as Notifications from "expo-notifications";
+import { router } from "expo-router";
 import { useEffect } from "react";
 import { Platform } from "react-native";
 import { apiClient } from "@/api/client";
+
+function linkFromResponse(response: Notifications.NotificationResponse | null): string | null {
+  const link = response?.notification.request.content.data?.link;
+  return typeof link === "string" && link.length > 0 ? link : null;
+}
+
+/**
+ * Route a notification tap to its deep link (the `data.link` path), both while the
+ * app is running and on cold start. No-op when a notification carries no link.
+ */
+export function useNotificationDeepLinks(): void {
+  useEffect(() => {
+    const sub = Notifications.addNotificationResponseReceivedListener((response) => {
+      const link = linkFromResponse(response);
+      if (link) router.push(link as never);
+    });
+    Notifications.getLastNotificationResponseAsync()
+      .then((response) => {
+        const link = linkFromResponse(response);
+        if (link) router.push(link as never);
+      })
+      .catch(() => {});
+    return () => sub.remove();
+  }, []);
+}
 
 // Foreground presentation: show the banner + list entry even while the app is open.
 Notifications.setNotificationHandler({

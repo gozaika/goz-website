@@ -1,3 +1,4 @@
+import { ApiError } from "@gozaika/mobile-core";
 import type { MobileFollowedRestaurant, MobilePublicDropCard } from "@gozaika/types";
 import {
   Badge,
@@ -8,6 +9,7 @@ import {
   ErrorState,
   FilterChipRow,
   HeroBanner,
+  OfflineBanner,
   palette,
   ProductMedia,
   Screen,
@@ -124,7 +126,9 @@ export default function HomeScreen() {
   const { session } = useAuth();
   const follows = useFollows({ enabled: Boolean(session) });
   const followedRestaurants = follows.data?.restaurants ?? [];
-  const { data, isLoading, isError, refetch } = useDrops();
+  const { data, isLoading, isError, error, refetch } = useDrops();
+  const offline = isError && error instanceof ApiError && error.code === "NETWORK";
+  const hasCached = Boolean(data && data.length);
   const activeCount = data?.filter((drop) => drop.statusCode === "ACTIVE").length ?? 0;
   const liveDrops = (data ?? []).filter(isActiveDrop);
   const closingSoon = [...liveDrops]
@@ -150,6 +154,8 @@ export default function HomeScreen() {
         <Button label="Browse drops" accent={palette.saffron} onPress={() => router.push("/drops")} />
       </HeroBanner>
 
+      {offline && hasCached ? <OfflineBanner offline /> : null}
+
       {isLoading ? (
         <View style={{ gap: spacing.md }}>
           <Skeleton height={24} width="48%" />
@@ -158,7 +164,7 @@ export default function HomeScreen() {
         </View>
       ) : null}
 
-      {isError ? <ErrorState message="We couldn't load today's drops." onRetry={() => refetch()} /> : null}
+      {isError && !hasCached ? <ErrorState message="We couldn't load today's drops." onRetry={() => refetch()} /> : null}
 
       {!isLoading && !isError && data && liveDrops.length === 0 ? (
         <EmptyState
