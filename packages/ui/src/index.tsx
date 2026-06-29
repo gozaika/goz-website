@@ -15,6 +15,9 @@ export { ZaykaPassportCard } from "./ZaykaPassportCard";
 export * from "@gozaika/design-tokens";
 // Web base primitives (Card / Text / Badge / Skeleton / ErrorState).
 export * from "./primitives";
+// Customer primitives (W2): static + interactive ports of mobile CustomerPrimitives.
+export * from "./CustomerPrimitives";
+export * from "./CustomerControls";
 
 export const tokens = {
   colors: {

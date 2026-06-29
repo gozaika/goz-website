@@ -43,7 +43,7 @@ step("typecheck (@gozaika/design-tokens + @gozaika/ui + web apps)", () => {
 
 // 2. Unit + contract tests for the shared tokens + web design system + web app libs.
 step("unit/contract tests", () => {
-  sh("npx vitest run --passWithNoTests packages/design-tokens packages/ui apps/consumer-web apps/restaurant-mgmt-web");
+  sh("npx vitest run --passWithNoTests packages/design-tokens packages/utils packages/ui apps/consumer-web apps/restaurant-mgmt-web");
 });
 
 // 3. Route tree + RSC build: each web app must build.

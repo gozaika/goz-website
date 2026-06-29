@@ -12,7 +12,8 @@
     "test": "vitest run --pool=threads"
   },
   "dependencies": {
-    "@gozaika/design-tokens": "*"
+    "@gozaika/design-tokens": "*",
+    "@gozaika/utils": "*"
   },
   "peerDependencies": {
     "react": ">=19",

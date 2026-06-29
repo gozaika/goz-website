@@ -1,6 +1,6 @@
 # goZaika Web Parity — Implementation Plan v1
 
-Status: **approved 2026-06-29 — full program (W0–W7), both web apps** · Next up: **W2**
+Status: **approved 2026-06-29 — full program (W0–W7), both web apps** · Next up: **W3**
 Spec: [`gozaika_web_parity_spec_v1.md`](gozaika_web_parity_spec_v1.md)
 
 Brings `apps/consumer-web` + `apps/restaurant-mgmt-web` up to the mobile UX
@@ -27,7 +27,7 @@ green, evidenced vertical at a time, committed + pushed per slice.
 | --- | --- | --- | --- |
 | Web W0 | Parity audit, ledger & web CI gate | — | **Done 2026-06-29** — `scripts/web-ci.mjs` (`npm run test:web-gate`) green 7/7; `docs/web/web-parity-ledger.md` rows every surface. |
 | Web W1 | Web design-system foundation (tokens + contrast + base primitives) | W0 | **Done 2026-06-29** — `@gozaika/design-tokens` shared by mobile+web (mobile gate still 7/7); `theme.css` drift-locked; `@gozaika/ui` base primitives + AA-safe Button; web gate 7/7. |
-| Web W2 | Customer primitives (web ports) | W1 | Not started |
+| Web W2 | Customer primitives (web ports) | W1 | **Done 2026-06-29** — `@gozaika/ui` CustomerPrimitives + CustomerControls; shared countdown/progress model promoted to `@gozaika/utils` (mobile gate still 7/7); web gate 7/7. |
 | Web W3 | Partner primitives (web ports) | W1 | Not started |
 | Web W4 | Customer surface recomposition + F1 home rail | W2 | Not started |
 | Web W5 | Partner surface recomposition + switcher | W3 | Not started |

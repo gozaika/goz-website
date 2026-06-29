@@ -1,6 +1,10 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+// Shared design-system primitive logic (countdown tone, progress) — used by both
+// @gozaika/mobile-ui and @gozaika/ui so the two surfaces never drift.
+export * from "./primitives-model";
+
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
