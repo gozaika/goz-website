@@ -19,7 +19,7 @@ Plan: [`../../project docs/gozaika_web_parity_implementation_plan_v1.md`](../../
 
 | Web route | Backing lib | Mobile twin | UX gap to close | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| `/` Home | `lib/drops`, `lib/restaurants`, `/api/discovery/cuisine-stats` | `(tabs)/index` (C1) | Tokenize; HeroBanner; CountdownChip rails; **add F1 "Restaurants you follow" rail**; passport preview | W4 | Not started |
+| `/` Home | `lib/drops`, `lib/restaurants`, `/api/discovery/cuisine-stats` | `(tabs)/index` (C1) | Tokenize; HeroBanner; CountdownChip rails; **add F1 "Restaurants you follow" rail**; passport preview | W4 | **Done** — HeroBanner + CountdownChip + F1 rail (server-side follows); zero hex; AA buttons (charcoal-on-saffron); browser-verified |
 | `/drops` | `lib/drops` | `(tabs)/drops` (C2) | FilterChipRow + SegmentedToggle (list/map); tokenized DropCard | W4 | Not started |
 | `/drops/[id]` | `lib/drops#loadPublicDrop` | `drops/[dropPk]` (C3) | Countdown; sticky claim CTA; stock/allergen/pickup cards on tokens | W4 | Not started |
 | `/restaurants` | `lib/restaurants` | `(tabs)/restaurants` | Tokenized directory; consistent cards/filters | W4 | Not started |

@@ -138,7 +138,8 @@ step("no server secrets referenced in client code", () => {
 //     This list grows per slice; an empty list means nothing is enforced yet.
 //     Once a file is here, it must contain ZERO raw brand-hex literals.
 const MIGRATED_FILES = [
-  // e.g. "apps/consumer-web/app/page.tsx" — added as each surface is migrated.
+  // W4 — customer surfaces migrated to tokens/primitives:
+  "apps/consumer-web/app/page.tsx",
 ];
 const BRAND_HEX = /#(?:FF6B35|1A5C38|D4A017|FFF8F0|2D2D2D)\b/i;
 
