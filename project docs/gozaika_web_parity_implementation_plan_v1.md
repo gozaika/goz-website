@@ -186,9 +186,14 @@ restricted-role capture for the role-aware nav).
 AA companions or charcoal-on-accent per X1). Add skip-link, visible AA focus
 rings, correct heading order + landmarks, form-label associations, icon-button
 `aria-label`s, `prefers-reduced-motion` for the live-pulse/animations, and 200%-
-zoom / 320px reflow fixes. Lock the mechanical parts with tests (a contrast unit
-test analogous to mobile's 12-test `contrast.test.ts`, plus a lightweight
-axe-core pass in vitest/jsdom on key page shells).
+zoom / 320px reflow fixes. Lock the mechanical parts with tests: the contrast lock
+already exists (`@gozaika/design-tokens` `contrast.test.ts`); **add `axe-playwright`
+a11y specs to consumer-web + restaurant-mgmt-web** for the key public +
+authenticated routes, mirroring the existing `apps/website/tests/a11y.spec.ts`
+pattern (the product web apps have **no** E2E/a11y coverage today — see
+`docs/testing/e2e-coverage-inventory.md`). Install `@playwright/test` +
+`axe-playwright` per app, add a `playwright.config.ts`, and wire `a11y` into
+`scripts/web-ci.mjs`.
 
 **Build instructions:** Turn on the brand-hex-literal scan **globally** in
 `web-ci` (allowlist removed) — by now all surfaces are migrated, so any new hex
@@ -211,7 +216,10 @@ shift from media via the fixed-aspect `ProductMedia`), SEO/meta/OpenGraph parity
 across routes, 404/error states on tokens, and final **web parity ledger closure**
 (every UX row → Done with evidence, or explicitly deferred with a reason). Add a
 bundle-secret scan of the built `.next` output to `web-ci` (analogous to the
-mobile bundle scan).
+mobile bundle scan). **Add a Playwright functional smoke** to each product web app
+(per `docs/testing/e2e-coverage-inventory.md` P0.2): consumer-web claim→simulated-pay
+happy path + route renders; restaurant-mgmt-web OWNER dashboard→drops — against
+seeded demo data.
 
 **Done when:** ledger has no open UX rows; `web-ci` green including the bundle
 scan; perf budgets met on the key routes; a short `docs/web/web-parity-audit.md`
