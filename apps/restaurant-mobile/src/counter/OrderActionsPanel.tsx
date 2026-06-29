@@ -131,6 +131,7 @@ export function OrderActionsPanel({ orderId }: { readonly orderId: string }) {
           onPress={() => setScanning(true)}
         />
         <TextInput
+          accessibilityLabel="Pickup OTP, 6 digits"
           style={inputStyle}
           value={otp}
           onChangeText={(text) => setOtp(text.replace(/\D/g, "").slice(0, 6))}
@@ -177,6 +178,7 @@ export function OrderActionsPanel({ orderId }: { readonly orderId: string }) {
           Only after the pickup window closes. The server rejects early no-shows.
         </Text>
         <TextInput
+          accessibilityLabel="No-show reason"
           style={[inputStyle, { minHeight: 64 }]}
           value={reason}
           onChangeText={setReason}
@@ -231,6 +233,7 @@ export function OrderActionsPanel({ orderId }: { readonly orderId: string }) {
           })}
         </View>
         <TextInput
+          accessibilityLabel="Incident description"
           style={[inputStyle, { minHeight: 64 }]}
           value={description}
           onChangeText={setDescription}

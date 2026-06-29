@@ -1,3 +1,4 @@
+import { safeInternalPath } from "@gozaika/mobile-core";
 import { deviceRegisterResultSchema } from "@gozaika/types";
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
@@ -5,9 +6,9 @@ import { useEffect } from "react";
 import { Platform } from "react-native";
 import { apiClient } from "@/api/client";
 
+// Only navigate to a validated in-app path: a push payload is attacker-influenceable.
 function linkFromResponse(response: Notifications.NotificationResponse | null): string | null {
-  const link = response?.notification.request.content.data?.link;
-  return typeof link === "string" && link.length > 0 ? link : null;
+  return safeInternalPath(response?.notification.request.content.data?.link);
 }
 
 /**

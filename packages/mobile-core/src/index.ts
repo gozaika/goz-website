@@ -20,6 +20,9 @@ export * from "./query/defaults";
 export * from "./telemetry/redact";
 export * from "./telemetry/logger";
 
+// Navigation guards (pure; RN-free)
+export * from "./navigation/deepLink";
+
 // Storage (DI adapters)
 export * from "./storage/session";
 export * from "./storage/persistence";

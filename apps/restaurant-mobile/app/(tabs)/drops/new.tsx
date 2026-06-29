@@ -120,6 +120,7 @@ export default function NewDropScreen() {
             Bags
           </Text>
           <TextInput
+            accessibilityLabel="Number of bags"
             style={inputStyle}
             value={quantity}
             onChangeText={(v) => setQuantity(v.replace(/\D/g, ""))}
@@ -131,6 +132,7 @@ export default function NewDropScreen() {
             Price per bag (₹)
           </Text>
           <TextInput
+            accessibilityLabel="Price per bag in rupees"
             style={inputStyle}
             value={rupees}
             onChangeText={(v) => setRupees(v.replace(/\D/g, ""))}

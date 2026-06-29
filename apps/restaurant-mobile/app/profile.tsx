@@ -122,11 +122,12 @@ function EditBasics({ profile, restaurantPk }: { readonly profile: RestaurantPro
       <Text variant="caption" color={palette.muted}>
         Name
       </Text>
-      <TextInput style={inputStyle} value={name} onChangeText={setName} placeholder="Restaurant name" placeholderTextColor={palette.muted} />
+      <TextInput accessibilityLabel="Restaurant name" style={inputStyle} value={name} onChangeText={setName} placeholder="Restaurant name" placeholderTextColor={palette.muted} />
       <Text variant="caption" color={palette.muted}>
         Primary contact email
       </Text>
       <TextInput
+        accessibilityLabel="Primary contact email"
         style={inputStyle}
         value={email}
         onChangeText={setEmail}
@@ -138,11 +139,12 @@ function EditBasics({ profile, restaurantPk }: { readonly profile: RestaurantPro
       <Text variant="caption" color={palette.muted}>
         Primary contact phone
       </Text>
-      <TextInput style={inputStyle} value={phone} onChangeText={setPhone} placeholder="+91…" placeholderTextColor={palette.muted} keyboardType="phone-pad" />
+      <TextInput accessibilityLabel="Primary contact phone" style={inputStyle} value={phone} onChangeText={setPhone} placeholder="+91…" placeholderTextColor={palette.muted} keyboardType="phone-pad" />
       <Text variant="caption" color={palette.muted}>
         Pickup instructions
       </Text>
       <TextInput
+        accessibilityLabel="Pickup instructions"
         style={[inputStyle, { minHeight: 72 }]}
         value={pickup}
         onChangeText={setPickup}
@@ -171,6 +173,7 @@ function EditBasics({ profile, restaurantPk }: { readonly profile: RestaurantPro
         Public headline
       </Text>
       <TextInput
+        accessibilityLabel="Public headline"
         style={inputStyle}
         value={headline}
         onChangeText={setHeadline}
@@ -181,6 +184,7 @@ function EditBasics({ profile, restaurantPk }: { readonly profile: RestaurantPro
         Public story
       </Text>
       <TextInput
+        accessibilityLabel="Public story"
         style={[inputStyle, { minHeight: 88 }]}
         value={story}
         onChangeText={setStory}
@@ -298,6 +302,7 @@ function LocationCard({
                 Latitude
               </Text>
               <TextInput
+                accessibilityLabel="Latitude"
                 style={inputStyle}
                 value={lat}
                 onChangeText={setLat}
@@ -311,6 +316,7 @@ function LocationCard({
                 Longitude
               </Text>
               <TextInput
+                accessibilityLabel="Longitude"
                 style={inputStyle}
                 value={lng}
                 onChangeText={setLng}

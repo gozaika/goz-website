@@ -135,6 +135,7 @@ function ReviewCard({ orderPk }: { readonly orderPk: string }) {
       </Text>
       <StarRating value={rating} onChange={setRating} />
       <TextInput
+        accessibilityLabel="Review comment (optional)"
         value={text}
         onChangeText={setText}
         placeholder="What stood out? (optional)"

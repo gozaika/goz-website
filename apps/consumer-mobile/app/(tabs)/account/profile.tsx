@@ -19,6 +19,7 @@ function Field({ label, value, onChangeText, placeholder }: {
     <View style={{ gap: spacing.xs }}>
       <Text variant="caption" color={palette.muted}>{label}</Text>
       <TextInput
+        accessibilityLabel={label}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}

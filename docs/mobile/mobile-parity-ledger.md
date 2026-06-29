@@ -1,8 +1,22 @@
 # goZaika Mobile Parity Ledger
 
-Status: **baseline established (Mobile Slice 0)**
-Audit date: 19 June 2026
-Baseline commit: `c28eece` (branch `main`)
+Status: **reconciled to shipped state (Mobile Slice 17, 2026-06-29)** — see the reconciliation note below.
+Baseline audit date: 19 June 2026 · Baseline commit: `c28eece` (branch `main`)
+
+## Reconciliation (Slice 17 — 2026-06-29)
+
+Every row below was generated `Not started` at the Slice 0 baseline. All mobile
+targets are now **built + gate-green (`node scripts/mobile-ci.mjs` 7/7)** and
+have been flipped to `Done`, owned by the slice named in each row's Owner column.
+Evidence lives in the owning slice's doc/commit and in `CONTINUE-HERE.md`'s
+per-slice ledger; smokes are under `scripts/smoke/`. The Slice 7 counter rows
+(previously `Built (review pending)`) are `Done` — signed off in
+`slice7-signoff.md`. The **only open items are the batched on-device walks** in
+`deploy-verification-checklist.md` (these are verification steps, not missing
+code). Out-of-scope rows (admin-web, review-media uploads, native billing,
+ZaikaIQ, dynamic pricing, POS, WhatsApp bot, real Razorpay) stay excluded per the
+shared-spec release boundary and the simulator decision. Full hardening evidence:
+`slice17-hardening-audit.md`.
 Source of truth rule: **checked-in code is authoritative; production (`customer.gozaika.in`, `restaurant.gozaika.in`) is corroborating evidence only.** Where they conflict, record the conflict in the row's Evidence column and escalate to a human; do not silently resolve.
 
 This ledger is the release-reconciliation source of truth required by the shared architecture spec §10.1. One row per production workflow. A Mobile Slice cannot be marked complete until its rows here are updated with evidence.
@@ -48,45 +62,45 @@ Route-count reconciliation as of the audit:
 
 | Web route | Native route | Backing web data | Target mobile API | Auth (today) | Auth (target) | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `/` | `(tabs)/index` Home | server components + `lib/drops`, discovery API | `GET /discovery/drops`, `/discovery/cuisine-stats`, `/drops/adventure-pick` | anon | anon | S8 | Not started |
-| `/cities/[city]` | Home city filter (query param) | server component | `GET /discovery/drops?city=` | anon | anon | S8 | Not started |
-| `/auth/login` | `/auth/login` (modal) | Supabase Auth (phone OTP / Google) | Supabase Auth direct | anon | anon | S6 | Not started |
-| `/onboarding/consent` | `/onboarding/consent` (guarded) | `/api/consent/*` | `GET /consent/purposes,/latest`, `POST /consent/capture` | consumer | consumer | S6/S10 | Not started |
-| `/drops` | `(tabs)/drops` | `/api/discovery/drops` | `GET /discovery/drops` | anon | anon | S8 | Not started |
-| `/drops/[id]` | `/drops/[dropPk]` | `lib/drops` `loadPublicDrop` | `GET /discovery/drops/:id` | anon | anon | S8 | Not started |
-| `/restaurants` | `(tabs)/restaurants` | `lib/restaurants` | `GET /restaurants` | anon | anon | S8 | Not started |
-| `/restaurants/[slug]` | `/restaurants/[slug]` | `lib/restaurants`, `/api/restaurants/[slug]/reviews` | `GET /restaurants/:slug`, `/restaurants/:slug/reviews` | anon | anon | S8 (E1/E2 ✅) | Not started |
-| `/swaad-club` | `(tabs)/account/swaad-club` | static/informational | informational (no billing) | anon | anon | S11 | Not started |
-| `/account` | `(tabs)/account` | `/api/profile`, server account | `GET/PATCH /profile`, `GET /orders` | consumer | consumer | S10 | Not started |
-| `/account/passport` | `/account/passport` | `/api/account/passport` | `GET /account/passport` | consumer | consumer | S11 | Not started |
-| `/account/discovery` | `/account/discovery` | `/api/account/discovery-profile`, `/api/discovery/share-card` | `GET /account/discovery-profile`, `/discovery/share-card` | consumer | consumer | S11 | Not started |
-| `/checkout/[orderId]` ⚠️ param is a **hold PK** | `/checkout/[holdPk]` | `lib/claims`, `/api/checkout/*` | `POST /checkout/razorpay-order`, `GET /checkout/status` | consumer | consumer (owns hold) | S9 | Not started |
-| `/orders/[orderId]` | `/orders/[orderPk]` + `(tabs)/orders` list | `lib/orders` (server, **no list API today**) | `GET /orders`, `/orders/:id`, `/orders/:id/pickup-proof` (new) | consumer | consumer (owns order) | S9/S10 | Not started |
+| `/` | `(tabs)/index` Home | server components + `lib/drops`, discovery API | `GET /discovery/drops`, `/discovery/cuisine-stats`, `/drops/adventure-pick` | anon | anon | S8 | Done |
+| `/cities/[city]` | Home city filter (query param) | server component | `GET /discovery/drops?city=` | anon | anon | S8 | Done |
+| `/auth/login` | `/auth/login` (modal) | Supabase Auth (phone OTP / Google) | Supabase Auth direct | anon | anon | S6 | Done |
+| `/onboarding/consent` | `/onboarding/consent` (guarded) | `/api/consent/*` | `GET /consent/purposes,/latest`, `POST /consent/capture` | consumer | consumer | S6/S10 | Done |
+| `/drops` | `(tabs)/drops` | `/api/discovery/drops` | `GET /discovery/drops` | anon | anon | S8 | Done |
+| `/drops/[id]` | `/drops/[dropPk]` | `lib/drops` `loadPublicDrop` | `GET /discovery/drops/:id` | anon | anon | S8 | Done |
+| `/restaurants` | `(tabs)/restaurants` | `lib/restaurants` | `GET /restaurants` | anon | anon | S8 | Done |
+| `/restaurants/[slug]` | `/restaurants/[slug]` | `lib/restaurants`, `/api/restaurants/[slug]/reviews` | `GET /restaurants/:slug`, `/restaurants/:slug/reviews` | anon | anon | S8 (E1/E2 ✅) | Done |
+| `/swaad-club` | `(tabs)/account/swaad-club` | static/informational | informational (no billing) | anon | anon | S11 | Done |
+| `/account` | `(tabs)/account` | `/api/profile`, server account | `GET/PATCH /profile`, `GET /orders` | consumer | consumer | S10 | Done |
+| `/account/passport` | `/account/passport` | `/api/account/passport` | `GET /account/passport` | consumer | consumer | S11 | Done |
+| `/account/discovery` | `/account/discovery` | `/api/account/discovery-profile`, `/api/discovery/share-card` | `GET /account/discovery-profile`, `/discovery/share-card` | consumer | consumer | S11 | Done |
+| `/checkout/[orderId]` ⚠️ param is a **hold PK** | `/checkout/[holdPk]` | `lib/claims`, `/api/checkout/*` | `POST /checkout/razorpay-order`, `GET /checkout/status` | consumer | consumer (owns hold) | S9 | Done |
+| `/orders/[orderId]` | `/orders/[orderPk]` + `(tabs)/orders` list | `lib/orders` (server, **no list API today**) | `GET /orders`, `/orders/:id`, `/orders/:id/pickup-proof` (new) | consumer | consumer (owns order) | S9/S10 | Done |
 
 ## B. Consumer — API handlers
 
 | Web API | Method | Target mobile endpoint | Auth (today) | Auth (target) | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| `/api/auth/bootstrap` | POST | `POST /auth/bootstrap` | consumer | consumer (creates consumer profile) | S3 | Not started |
-| `/api/auth/sign-out` | POST | client SecureStore clear + token revoke | consumer | consumer | S6 | Not started |
-| `/api/consent/purposes` | GET | `GET /consent/purposes` | consumer | consumer | S10 | Not started |
-| `/api/consent/latest` | GET | `GET /consent/latest` | consumer | consumer | S10 | Not started |
-| `/api/consent/capture` | POST | `POST /consent/capture` | consumer | consumer | S10 | Not started |
-| `/api/discovery/drops` | GET | `GET /discovery/drops` | anon | anon (bounded) | S8 | Not started |
-| `/api/discovery/cuisine-stats` | GET | `GET /discovery/cuisine-stats` | anon | anon | S8 | Not started |
-| `/api/discovery/share-card` | GET | `GET /discovery/share-card` | consumer | consumer | S11 | Not started |
-| `/api/drops/adventure-pick` | GET | `GET /discovery/drops/adventure-pick` | anon | anon (eligibility unchanged) | S8 | Not started |
-| `/api/restaurants/[slug]/reviews` | GET | `GET /restaurants/:slug/reviews` | anon | anon (public reviews only) | S8 (E2 ✅) | Not started |
-| `/api/profile` | GET/PATCH | `GET/PATCH /profile` | consumer | consumer | S10 | Not started |
-| `/api/claims` | POST | `POST /claims` + `GET /claims` (new recovery) | consumer | consumer | S9 | Not started |
-| `/api/checkout/razorpay-order` | POST | `POST /checkout/razorpay-order` | consumer | consumer (owns hold) | S9 | Not started |
-| `/api/checkout/status` | GET | `GET /checkout/status` | consumer | consumer (owns hold) | S9 | Not started |
-| `/api/account/passport` | GET | `GET /account/passport` | consumer | consumer | S11 | Not started |
-| `/api/account/discovery-profile` | GET | `GET /account/discovery-profile` | consumer | consumer | S11 | Not started |
-| `/api/reviews` | GET/POST | `POST /reviews`, `GET /reviews/mine` | consumer | consumer (collected orders) | S10 | Not started |
+| `/api/auth/bootstrap` | POST | `POST /auth/bootstrap` | consumer | consumer (creates consumer profile) | S3 | Done |
+| `/api/auth/sign-out` | POST | client SecureStore clear + token revoke | consumer | consumer | S6 | Done |
+| `/api/consent/purposes` | GET | `GET /consent/purposes` | consumer | consumer | S10 | Done |
+| `/api/consent/latest` | GET | `GET /consent/latest` | consumer | consumer | S10 | Done |
+| `/api/consent/capture` | POST | `POST /consent/capture` | consumer | consumer | S10 | Done |
+| `/api/discovery/drops` | GET | `GET /discovery/drops` | anon | anon (bounded) | S8 | Done |
+| `/api/discovery/cuisine-stats` | GET | `GET /discovery/cuisine-stats` | anon | anon | S8 | Done |
+| `/api/discovery/share-card` | GET | `GET /discovery/share-card` | consumer | consumer | S11 | Done |
+| `/api/drops/adventure-pick` | GET | `GET /discovery/drops/adventure-pick` | anon | anon (eligibility unchanged) | S8 | Done |
+| `/api/restaurants/[slug]/reviews` | GET | `GET /restaurants/:slug/reviews` | anon | anon (public reviews only) | S8 (E2 ✅) | Done |
+| `/api/profile` | GET/PATCH | `GET/PATCH /profile` | consumer | consumer | S10 | Done |
+| `/api/claims` | POST | `POST /claims` + `GET /claims` (new recovery) | consumer | consumer | S9 | Done |
+| `/api/checkout/razorpay-order` | POST | `POST /checkout/razorpay-order` | consumer | consumer (owns hold) | S9 | Done |
+| `/api/checkout/status` | GET | `GET /checkout/status` | consumer | consumer (owns hold) | S9 | Done |
+| `/api/account/passport` | GET | `GET /account/passport` | consumer | consumer | S11 | Done |
+| `/api/account/discovery-profile` | GET | `GET /account/discovery-profile` | consumer | consumer | S11 | Done |
+| `/api/reviews` | GET/POST | `POST /reviews`, `GET /reviews/mine` | consumer | consumer (collected orders) | S10 | Done |
 | `/api/reviews/[reviewPk]/media` | POST | ⚠️ **no production handler** — do NOT build media parity | consumer | — | excluded | N/A |
 | `/api/debug/razorpay-connectivity` | GET | **excluded** (debug-only, not parity) | — | — | excluded | N/A |
-| _new_ `GET /orders`, `/orders/:id`, `/orders/:id/pickup-proof` | GET | mobile-only list/detail/proof; web renders inline server-side | n/a | consumer (owns order) | S9/S10 | Not started |
+| _new_ `GET /orders`, `/orders/:id`, `/orders/:id/pickup-proof` | GET | mobile-only list/detail/proof; web renders inline server-side | n/a | consumer (owns order) | S9/S10 | Done |
 
 ---
 
@@ -94,44 +108,44 @@ Route-count reconciliation as of the audit:
 
 | Web route | Native route | Backing web data | Target mobile API | Auth (today) | Auth (target) | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `/` | redirect to `/dashboard` or login | — | — | n/a | n/a | S1 | Not started |
-| `/auth/login` | `/auth/login` | Supabase Auth | Supabase Auth | anon | anon | S6 | Not started |
-| `/portal/dashboard` | `/dashboard` | server + `lib/*` (**no API today**) | `GET /dashboard` (new) | member | role: all but unauth | S14 | Not started |
-| `/portal/orders` | `/orders` + `/orders?mode=counter` | `/api/portal/orders/*` actions; **no list API** | `GET /orders` (new) + actions | member | role: OWNER/ADMIN/OPS/PICKUP | S7 | Built (review pending) |
-| `/portal/drops` | `/drops` | `/api/portal/drops` | `GET /drops` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Not started |
-| `/portal/drops/new` | `/drops/new` + `/drops/[dropPk]` | `/api/portal/drops`, `/drops/[id]` | `POST /drops`, `GET/PATCH /drops/:id` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Not started |
-| `/portal/templates` | `/templates` | `/api/portal/templates*` | `GET/POST /templates`, `PATCH/DELETE /templates/:id` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Not started |
-| `/portal/finance` | `/finance` | `lib/finance` (**no API today**) | `GET /finance/settlements,/:id,/invoices/:id` (new) | member ⚠️ | role: OWNER/ADMIN/FINANCE | S15 | Not started |
-| `/portal/reports` | `/reports` | `lib/roi-report` (**no API today**) | `GET /reports/roi` (new) | member ⚠️ | role: OWNER/ADMIN/OPS/FINANCE | S15 | Not started |
-| `/portal/onboarding` | `/onboarding` | `/api/portal/onboarding` | `GET/PATCH /onboarding` | member ⚠️ | role: OWNER/ADMIN | S12 | Not started |
-| `/portal/compliance` | `/compliance` | `/api/portal/restaurant/compliance`, documents | `PATCH /restaurant/compliance`, documents | member ⚠️ | role: OWNER/ADMIN | S12 | Not started |
-| `/portal/profile` | `/profile` | `/api/portal/profile`, `/restaurant/basics`, `/location` | `GET/PATCH /profile`, `/restaurant/basics`, `/location` | member ⚠️ | role: OWNER/ADMIN (ops limited) | S12 | Not started |
-| `/portal/reviews` | `/reviews` | server + `lib/*` (**no API today**) | `GET /reviews` (new, read-only) | member ⚠️ | role: OWNER/ADMIN/OPS | S14 | Not started |
+| `/` | redirect to `/dashboard` or login | — | — | n/a | n/a | S1 | Done |
+| `/auth/login` | `/auth/login` | Supabase Auth | Supabase Auth | anon | anon | S6 | Done |
+| `/portal/dashboard` | `/dashboard` | server + `lib/*` (**no API today**) | `GET /dashboard` (new) | member | role: all but unauth | S14 | Done |
+| `/portal/orders` | `/orders` + `/orders?mode=counter` | `/api/portal/orders/*` actions; **no list API** | `GET /orders` (new) + actions | member | role: OWNER/ADMIN/OPS/PICKUP | S7 | Done (S7 signed off) |
+| `/portal/drops` | `/drops` | `/api/portal/drops` | `GET /drops` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Done |
+| `/portal/drops/new` | `/drops/new` + `/drops/[dropPk]` | `/api/portal/drops`, `/drops/[id]` | `POST /drops`, `GET/PATCH /drops/:id` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Done |
+| `/portal/templates` | `/templates` | `/api/portal/templates*` | `GET/POST /templates`, `PATCH/DELETE /templates/:id` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Done |
+| `/portal/finance` | `/finance` | `lib/finance` (**no API today**) | `GET /finance/settlements,/:id,/invoices/:id` (new) | member ⚠️ | role: OWNER/ADMIN/FINANCE | S15 | Done |
+| `/portal/reports` | `/reports` | `lib/roi-report` (**no API today**) | `GET /reports/roi` (new) | member ⚠️ | role: OWNER/ADMIN/OPS/FINANCE | S15 | Done |
+| `/portal/onboarding` | `/onboarding` | `/api/portal/onboarding` | `GET/PATCH /onboarding` | member ⚠️ | role: OWNER/ADMIN | S12 | Done |
+| `/portal/compliance` | `/compliance` | `/api/portal/restaurant/compliance`, documents | `PATCH /restaurant/compliance`, documents | member ⚠️ | role: OWNER/ADMIN | S12 | Done |
+| `/portal/profile` | `/profile` | `/api/portal/profile`, `/restaurant/basics`, `/location` | `GET/PATCH /profile`, `/restaurant/basics`, `/location` | member ⚠️ | role: OWNER/ADMIN (ops limited) | S12 | Done |
+| `/portal/reviews` | `/reviews` | server + `lib/*` (**no API today**) | `GET /reviews` (new, read-only) | member ⚠️ | role: OWNER/ADMIN/OPS | S14 | Done |
 
 ## D. Restaurant — API handlers
 
 | Web API | Method | Target mobile endpoint | Auth (today) | Auth (target) | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| `/api/portal/bootstrap` | POST | `POST /auth/bootstrap` | member ⚠️**D1** | restaurant actor, **must NOT create consumer profile** | S4 | Not started |
-| `/api/portal/onboarding` | GET/PATCH | `GET/PATCH /onboarding` | member | role: OWNER/ADMIN | S12 | Not started |
-| `/api/portal/restaurant/basics` | PATCH | `PATCH /restaurant/basics` | member | role: OWNER/ADMIN | S12 | Not started |
-| `/api/portal/restaurant/location` | PATCH | `PATCH /restaurant/location` | member | role: OWNER/ADMIN | S12 | Not started |
-| `/api/portal/restaurant/compliance` | PATCH | `PATCH /restaurant/compliance` | member | role: OWNER/ADMIN | S12 | Not started |
-| `/api/portal/documents/sign-upload` | POST | `POST /documents/sign-upload` | member | role: OWNER/ADMIN (ops if authorized) | S12 | Not started |
-| `/api/portal/documents/[documentId]/signed-url` | GET | `GET /documents/:id/signed-url` | member | role + restaurant ownership | S12 | Not started |
-| `/api/portal/templates` | GET/POST | `GET/POST /templates` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Not started |
-| `/api/portal/templates/[id]` | PATCH/DELETE | `PATCH/DELETE /templates/:id` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Not started |
-| `/api/portal/drops` | GET/POST | `GET/POST /drops` | member ⚠️ (active+publishing checked, role not) | role: OWNER/ADMIN/OPS | S13 | Not started |
-| `/api/portal/drops/[id]` | GET/PATCH | `GET/PATCH /drops/:id` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Not started |
-| `/api/portal/orders/[orderId]/pickup/verify` | POST | `POST /orders/:id/pickup/verify` | member (tenant-scoped via active restaurants) ⚠️ | role: OWNER/ADMIN/OPS/PICKUP | S7 | Built (review pending) |
-| `/api/portal/orders/[orderId]/no-show` | POST | `POST /orders/:id/no-show` | member ⚠️ | role: OWNER/ADMIN/OPS/PICKUP | S7 | Built (review pending) |
-| `/api/portal/orders/[orderId]/incidents` | POST | `POST /orders/:id/incidents` | member ⚠️ | role: OWNER/ADMIN/OPS/PICKUP | S7 | Built (review pending) |
-| `/api/portal/profile` | GET/PATCH | `GET/PATCH /profile` | member ⚠️ | role: OWNER/ADMIN | S12 | Not started |
-| _new_ `GET /orders` (queue list) | GET | mobile-only; web renders server-side | n/a | role: OWNER/ADMIN/OPS/PICKUP | S7 | Built (review pending) |
-| _new_ `GET /finance/settlements,/:id,/invoices/:id` | GET | mobile-only; web renders via `lib/finance` | n/a | role: OWNER/ADMIN/FINANCE | S15 | Not started |
-| _new_ `GET /reports/roi` | GET | mobile-only; web renders via `lib/roi-report` | n/a | role: OWNER/ADMIN/OPS/FINANCE | S15 | Not started |
-| _new_ `GET /dashboard`, `GET /reviews` | GET | mobile-only read APIs | n/a | role-scoped | S14 | Not started |
-| _new_ `POST/DELETE /devices/push-token` | POST/DELETE | mobile-only push registration | n/a | authenticated | S16 | Not started |
+| `/api/portal/bootstrap` | POST | `POST /auth/bootstrap` | member ⚠️**D1** | restaurant actor, **must NOT create consumer profile** | S4 | Done |
+| `/api/portal/onboarding` | GET/PATCH | `GET/PATCH /onboarding` | member | role: OWNER/ADMIN | S12 | Done |
+| `/api/portal/restaurant/basics` | PATCH | `PATCH /restaurant/basics` | member | role: OWNER/ADMIN | S12 | Done |
+| `/api/portal/restaurant/location` | PATCH | `PATCH /restaurant/location` | member | role: OWNER/ADMIN | S12 | Done |
+| `/api/portal/restaurant/compliance` | PATCH | `PATCH /restaurant/compliance` | member | role: OWNER/ADMIN | S12 | Done |
+| `/api/portal/documents/sign-upload` | POST | `POST /documents/sign-upload` | member | role: OWNER/ADMIN (ops if authorized) | S12 | Done |
+| `/api/portal/documents/[documentId]/signed-url` | GET | `GET /documents/:id/signed-url` | member | role + restaurant ownership | S12 | Done |
+| `/api/portal/templates` | GET/POST | `GET/POST /templates` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Done |
+| `/api/portal/templates/[id]` | PATCH/DELETE | `PATCH/DELETE /templates/:id` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Done |
+| `/api/portal/drops` | GET/POST | `GET/POST /drops` | member ⚠️ (active+publishing checked, role not) | role: OWNER/ADMIN/OPS | S13 | Done |
+| `/api/portal/drops/[id]` | GET/PATCH | `GET/PATCH /drops/:id` | member ⚠️ | role: OWNER/ADMIN/OPS | S13 | Done |
+| `/api/portal/orders/[orderId]/pickup/verify` | POST | `POST /orders/:id/pickup/verify` | member (tenant-scoped via active restaurants) ⚠️ | role: OWNER/ADMIN/OPS/PICKUP | S7 | Done (S7 signed off) |
+| `/api/portal/orders/[orderId]/no-show` | POST | `POST /orders/:id/no-show` | member ⚠️ | role: OWNER/ADMIN/OPS/PICKUP | S7 | Done (S7 signed off) |
+| `/api/portal/orders/[orderId]/incidents` | POST | `POST /orders/:id/incidents` | member ⚠️ | role: OWNER/ADMIN/OPS/PICKUP | S7 | Done (S7 signed off) |
+| `/api/portal/profile` | GET/PATCH | `GET/PATCH /profile` | member ⚠️ | role: OWNER/ADMIN | S12 | Done |
+| _new_ `GET /orders` (queue list) | GET | mobile-only; web renders server-side | n/a | role: OWNER/ADMIN/OPS/PICKUP | S7 | Done (S7 signed off) |
+| _new_ `GET /finance/settlements,/:id,/invoices/:id` | GET | mobile-only; web renders via `lib/finance` | n/a | role: OWNER/ADMIN/FINANCE | S15 | Done |
+| _new_ `GET /reports/roi` | GET | mobile-only; web renders via `lib/roi-report` | n/a | role: OWNER/ADMIN/OPS/FINANCE | S15 | Done |
+| _new_ `GET /dashboard`, `GET /reviews` | GET | mobile-only read APIs | n/a | role-scoped | S14 | Done |
+| _new_ `POST/DELETE /devices/push-token` | POST/DELETE | mobile-only push registration | n/a | authenticated | S16 | Done |
 
 ---
 
