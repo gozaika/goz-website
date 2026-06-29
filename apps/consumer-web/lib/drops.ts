@@ -1,6 +1,6 @@
 import type { PublicDropCard } from "@gozaika/types";
-import { publicStorageUrl, STORAGE_BUCKETS } from "@gozaika/supabase";
 import { createClient } from "@/lib/supabase/server";
+import { resolveDropImage } from "./drop-image";
 
 type PublicDropRow = {
   readonly drop_drop_pk: string;
@@ -37,15 +37,7 @@ type PublicDropRow = {
 };
 
 function mapImage(row: PublicDropRow): PublicDropCard["image"] {
-  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!baseUrl || row.image_bucket_name !== STORAGE_BUCKETS.publicMedia || !row.image_object_path) return null;
-  return {
-    url: publicStorageUrl(baseUrl, row.image_bucket_name, row.image_object_path),
-    width: row.image_width_px,
-    height: row.image_height_px,
-    alt: row.image_alt_text,
-    blurhash: null,
-  };
+  return resolveDropImage(row, process.env.NEXT_PUBLIC_SUPABASE_URL);
 }
 
 function mapDrop(row: PublicDropRow): PublicDropCard {

@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { palette } from "../tokens/colors";
 import { radii } from "../tokens/layout";
+import { resolveProductMedia } from "./productMediaModel";
 
 export interface ProductMediaAsset {
   readonly url: string;
@@ -42,12 +43,14 @@ export function ProductMedia({
   testID,
 }: ProductMediaProps) {
   const [failed, setFailed] = useState(false);
-  const uri = media?.url?.trim() || null;
+  const { uri, showRemote, label } = resolveProductMedia({
+    url: media?.url,
+    alt: media?.alt,
+    failed,
+    accessibilityLabel,
+  });
 
   useEffect(() => setFailed(false), [uri]);
-
-  const showRemote = Boolean(uri && !failed);
-  const label = accessibilityLabel ?? media?.alt ?? undefined;
 
   return (
     <View

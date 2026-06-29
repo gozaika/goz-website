@@ -44,6 +44,10 @@ BFF deploy** (the apps on-device talk to the deployed cloud BFFs `customer.gozai
 > Then build + install: `pwsh scripts/android-preview-install.ps1 -App restaurant-mobile -CaptureScreenshot`.
 > Manual coordinate entry works without GPS; only "Use my current location" needs the rebuild + permission grant.
 
+| 17 | Product-media gate #5 (uploaded drop image) | OWNER → Drops → upload a valid drop image → Customer → Discovery shows that drop with the real photo; detach it / use a drop with no image → the cuisine fallback art renders (no broken-image glyph, no height jump) | `GET /discovery/drops` (existing) | `scripts/smoke/slice17-media-gate-smoke.mjs` (trust-boundary + fallback proven live; render-real needs an uploaded image) |
+
+> **Slice 17 product-media gate #5 status (2026-06-29):** both code halves are locked by unit tests — `resolveProductMedia` (mobile render: null/failed → fallback; real URL → renders) and `resolveDropImage` (discovery resolution: only `public-media` resolves, `media-ingest`/null → null). Live smoke against `customer.gozaika.in` passed 5/5 (30 cards, **0 media-ingest leaks**, all 30 currently use fallback art because the demo carries no uploaded images yet). The **render-real** on-device walk (upload an image, see the real photo in discovery) is the one remaining manual step — it needs an actual uploaded `public-media` object, which the demo seed does not yet have.
+
 Notes:
 - The invoice download yields a 404 if the seeded invoice has no stored PDF
   (`storage_object_fk` null) — that's data, not a code defect; the endpoint + UI are correct.
