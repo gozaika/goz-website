@@ -1,9 +1,10 @@
 "use client";
 
-import { DropCard, DropShareActions, EmptyState } from "@gozaika/ui";
+import { DropCard, DropShareActions, EmptyState, FilterChipRow, SegmentedToggle } from "@gozaika/ui";
+import { palette } from "@gozaika/design-tokens";
 import type { PublicDropCard } from "@gozaika/types";
 import { createPublicDropUrl, dietaryBadgeLabel, dropCoverKey, dropTypeRibbon, formatPickupWindow, generateManualDropAlertText } from "@gozaika/utils";
-import { List, Map, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/browser";
 
@@ -121,12 +122,12 @@ export function DropDiscoveryClient({
 
   return (
     <div className="grid gap-7">
-      <section className="grid gap-3 rounded-lg border border-black/10 bg-white p-4 shadow-sm">
+      <section className="grid gap-3 rounded-lg border border-hairline bg-white p-4 shadow-sm">
         <label className="relative">
           <span className="sr-only">Search drops</span>
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#2D2D2D]/45" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-charcoal/45" />
           <input
-            className="min-h-12 w-full rounded-lg border border-black/10 pl-10 pr-10 text-base outline-none focus:border-[#1A5C38]"
+            className="min-h-12 w-full rounded-lg border border-hairline pl-10 pr-10 text-base outline-none focus:border-forest"
             placeholder="Search restaurant, BAM Bag, cuisine, dietary, allergen..."
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -135,7 +136,7 @@ export function DropDiscoveryClient({
             <button
               type="button"
               aria-label="Clear search"
-              className="absolute right-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-lg text-[#2D2D2D]/60 hover:bg-black/5"
+              className="absolute right-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-lg text-charcoal/60 hover:bg-black/5"
               onClick={() => setQuery("")}
             >
               <X size={18} aria-hidden="true" />
@@ -143,58 +144,33 @@ export function DropDiscoveryClient({
           ) : null}
         </label>
 
-        <div className="flex gap-2 overflow-x-auto pb-1" aria-label="Cuisine filters">
-          {cuisineFilters.map((nextCuisine) => (
-            <button
-              key={nextCuisine}
-              type="button"
-              className={`min-h-10 shrink-0 rounded-full border px-4 text-sm font-semibold ${
-                cuisine === nextCuisine
-                  ? "border-[#FF6B35] bg-[#FF6B35] text-white"
-                  : "border-[#1A5C38]/20 bg-white text-[#1A5C38]"
-              }`}
-              onClick={() => setCuisine(nextCuisine)}
-            >
-              {nextCuisine}
-            </button>
-          ))}
-        </div>
+        <FilterChipRow
+          ariaLabel="Cuisine filters"
+          chips={cuisineFilters.map((nextCuisine) => ({ id: nextCuisine, label: nextCuisine, selected: cuisine === nextCuisine }))}
+          onSelect={(id) => setCuisine(id as (typeof cuisineFilters)[number])}
+        />
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap gap-2" aria-label="Dietary filters">
-            {dietaryFilters.map((nextDietary) => (
-              <button
-                key={nextDietary}
-                type="button"
-                className={`min-h-10 rounded-lg border px-3 text-sm font-semibold ${
-                  dietary === nextDietary
-                    ? "border-[#1A5C38] bg-[#F2F8EF] text-[#1A5C38]"
-                    : "border-black/10 bg-white text-[#2D2D2D]/70"
-                }`}
-                onClick={() => setDietary(nextDietary)}
-              >
-                {nextDietary === "All" ? "All dietary" : dietaryBadgeLabel(nextDietary)}
-              </button>
-            ))}
-          </div>
-          <div className="grid grid-cols-2 rounded-lg border border-black/10 bg-white p-1 text-sm font-semibold">
-            <button
-              type="button"
-              className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-md px-3 ${viewMode === "list" ? "bg-[#1A5C38] text-white" : "text-[#1A5C38]"}`}
-              onClick={() => setViewMode("list")}
-            >
-              <List size={16} aria-hidden="true" />
-              List
-            </button>
-            <button
-              type="button"
-              className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-md px-3 ${viewMode === "map" ? "bg-[#1A5C38] text-white" : "text-[#1A5C38]"}`}
-              onClick={() => setViewMode("map")}
-            >
-              <Map size={16} aria-hidden="true" />
-              Map
-            </button>
-          </div>
+          <FilterChipRow
+            ariaLabel="Dietary filters"
+            accent={palette.forest}
+            chips={dietaryFilters.map((nextDietary) => ({
+              id: nextDietary,
+              label: nextDietary === "All" ? "All dietary" : dietaryBadgeLabel(nextDietary),
+              selected: dietary === nextDietary,
+            }))}
+            onSelect={(id) => setDietary(id)}
+          />
+          <SegmentedToggle
+            ariaLabel="Drop view mode"
+            accent={palette.forest}
+            options={[
+              { id: "list", label: "List" },
+              { id: "map", label: "Map" },
+            ]}
+            selectedId={viewMode}
+            onChange={(id) => setViewMode(id as ViewMode)}
+          />
         </div>
       </section>
 
@@ -202,13 +178,13 @@ export function DropDiscoveryClient({
         <section>
           <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 className="text-2xl font-bold text-[#2D2D2D]">Closing soon</h2>
-              <p className="mt-1 text-sm text-[#2D2D2D]/65">Limited Drops with pickup windows ending soon.</p>
+              <h2 className="text-2xl font-bold text-charcoal">Closing soon</h2>
+              <p className="mt-1 text-sm text-charcoal/65">Limited Drops with pickup windows ending soon.</p>
             </div>
           </div>
           <div className="flex gap-4 overflow-x-auto pb-2">
             {closing.map((drop) => (
-              <article key={drop.dropPk} className="min-w-[280px] overflow-hidden rounded-lg border border-[#D4A017]/40 bg-[#FFF8F0] p-4">
+              <article key={drop.dropPk} className="min-w-[280px] overflow-hidden rounded-lg border border-gold/40 bg-cream p-4">
                 <div className="relative -mx-4 -mt-4 mb-3">
                   <img
                     src={`/art/cover-${dropCoverKey(drop) ?? "biryani"}.svg`}
@@ -217,15 +193,15 @@ export function DropDiscoveryClient({
                     className="h-24 w-full object-cover"
                   />
                   {dropTypeRibbon(drop.dropTypeCode) ? (
-                    <span className="absolute left-3 top-3 rounded-full bg-[#D4A017] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#2D2D2D] shadow-sm">
+                    <span className="absolute left-3 top-3 rounded-full bg-gold px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-charcoal shadow-sm">
                       ★ {dropTypeRibbon(drop.dropTypeCode)}
                     </span>
                   ) : null}
                 </div>
-                <p className="text-sm font-semibold text-[#1A5C38]">{drop.restaurantName}</p>
-                <h3 className="mt-1 text-lg font-bold text-[#2D2D2D]">{drop.bagDisplayName}</h3>
-                <p className="mt-2 text-sm text-[#2D2D2D]/65">{formatPickupWindow(drop.pickupStartAt, drop.pickupEndAt)}</p>
-                <a className="mt-4 inline-flex min-h-10 items-center rounded-lg bg-[#FF6B35] px-4 text-sm font-semibold text-white" href={`/drops/${drop.dropPk}`}>
+                <p className="text-sm font-semibold text-forest">{drop.restaurantName}</p>
+                <h3 className="mt-1 text-lg font-bold text-charcoal">{drop.bagDisplayName}</h3>
+                <p className="mt-2 text-sm text-charcoal/65">{formatPickupWindow(drop.pickupStartAt, drop.pickupEndAt)}</p>
+                <a className="mt-4 inline-flex min-h-10 items-center rounded-lg bg-saffron px-4 text-sm font-semibold text-charcoal" href={`/drops/${drop.dropPk}`}>
                   View drop
                 </a>
               </article>
@@ -235,20 +211,20 @@ export function DropDiscoveryClient({
       ) : null}
 
       {viewMode === "map" ? (
-        <section className="rounded-lg border border-black/10 bg-white p-4">
-          <h2 className="text-xl font-bold text-[#2D2D2D]">Map view</h2>
+        <section className="rounded-lg border border-hairline bg-white p-4">
+          <h2 className="text-xl font-bold text-charcoal">Map view</h2>
           {coordinateDrops.length === 0 ? (
-            <div className="mt-4 rounded-lg border border-dashed border-[#D4A017]/45 bg-[#FFF8F0] p-6 text-sm leading-6 text-[#2D2D2D]/72">
+            <div className="mt-4 rounded-lg border border-dashed border-gold/45 bg-cream p-6 text-sm leading-6 text-charcoal/72">
               Map pins need public restaurant coordinates. This environment does not expose any safe public coordinates yet, so list view
               remains the source of truth for BAM Bag claims.
             </div>
           ) : (
-            <div className="relative mt-4 h-[520px] overflow-hidden rounded-lg border border-[#1A5C38]/15 bg-[#EAF3DE]">
+            <div className="relative mt-4 h-[520px] overflow-hidden rounded-lg border border-forest/15 bg-success-soft">
               {coordinateDrops.map((drop, index) => (
                 <a
                   key={drop.dropPk}
                   href={`/drops/${drop.dropPk}`}
-                  className="absolute rounded-full bg-[#FF6B35] px-3 py-2 text-xs font-bold text-white shadow-lg"
+                  className="absolute rounded-full bg-saffron px-3 py-2 text-xs font-bold text-charcoal shadow-lg"
                   style={{ left: `${18 + (index % 4) * 20}%`, top: `${18 + Math.floor(index / 4) * 18}%` }}
                 >
                   {drop.restaurantName} / {drop.quantityAvailable}
@@ -284,8 +260,8 @@ export function DropDiscoveryClient({
       {missed.length ? (
         <section>
           <div className="mb-3">
-            <h2 className="text-2xl font-bold text-[#2D2D2D]">Recently missed</h2>
-            <p className="mt-1 text-sm text-[#2D2D2D]/65">Closed pickup windows are read-only and separate from active holds.</p>
+            <h2 className="text-2xl font-bold text-charcoal">Recently missed</h2>
+            <p className="mt-1 text-sm text-charcoal/65">Closed pickup windows are read-only and separate from active holds.</p>
           </div>
           <div className="grid gap-4 opacity-80 md:grid-cols-2 xl:grid-cols-3">
             {missed.slice(0, 6).map((drop) => (

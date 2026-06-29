@@ -141,6 +141,7 @@ const MIGRATED_FILES = [
   // W4 — customer surfaces migrated to tokens/primitives:
   "apps/consumer-web/app/page.tsx",
   "apps/consumer-web/app/drops/page.tsx",
+  "apps/consumer-web/app/drops/drop-discovery-client.tsx",
   "apps/consumer-web/app/drops/[id]/page.tsx",
   "apps/consumer-web/app/restaurants/page.tsx",
   "apps/consumer-web/app/restaurants/[slug]/page.tsx",
