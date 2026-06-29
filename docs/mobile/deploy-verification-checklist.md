@@ -24,6 +24,9 @@ BFF deploy** (the apps on-device talk to the deployed cloud BFFs `customer.gozai
 | 10 | Profile-edit + referral | Customer → Account → "Profile & referrals" → edit name/language → Save; share referral code | `GET/POST /account/profile` | — |
 | 15 | Settlement invoice download | Partner → Finance → a settlement with an invoice → "Download invoice" opens the PDF | `GET /finance/invoice/[id]/signed-url` | — (needs an invoice with a stored PDF) |
 | 14 | Partner reviews | Partner → Reviews → rating summary + review list with moderation badges | `GET /reviews` (partner, `viewReviews`) | — |
+| F1 | Follow a restaurant | Customer → Restaurants → open one → tap **Follow** (signed in) → label flips to "Following", count +1; tap again → unfollows | `POST`/`DELETE /follows` | `scripts/smoke/f1-follows-smoke.mjs` |
+| F1 | Home followed-rail | Customer (signed in, ≥1 follow) → Home → "Restaurants you follow" rail shows followed kitchens with live-drop badge; signed out → rail hidden | `GET /follows` | (same smoke) |
+| F1 | Follower count (web + mobile) | Restaurant detail shows the aggregate follower count (web hero Follow chip + mobile "N followers"); count is aggregate-only, never a follower list | `GET /restaurants/[slug]` (followerCount) | (same smoke) |
 
 Notes:
 - The invoice download yields a 404 if the seeded invoice has no stored PDF

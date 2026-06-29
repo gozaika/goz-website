@@ -1,6 +1,7 @@
 import type { DietaryCategoryCode, PublicDropCard, PublicRestaurantProfile } from "@gozaika/types";
-import { publicStorageUrl, STORAGE_BUCKETS } from "@gozaika/supabase";
+import { createServiceRoleSupabaseClient, publicStorageUrl, STORAGE_BUCKETS } from "@gozaika/supabase";
 import { createClient } from "@/lib/supabase/server";
+import { getFollowerCounts } from "./follows";
 import { loadPublicDrops } from "./drops";
 
 type PublicRestaurantRow = {
@@ -64,7 +65,12 @@ function dietaryTagsFor(drops: readonly PublicDropCard[]): DietaryCategoryCode[]
   return [...new Set(drops.map((drop) => drop.dietaryCategoryCode))];
 }
 
-function mapRestaurant(row: PublicRestaurantRow, drops: readonly PublicDropCard[], generatedAtMs: number): PublicRestaurantProfile {
+function mapRestaurant(
+  row: PublicRestaurantRow,
+  drops: readonly PublicDropCard[],
+  generatedAtMs: number,
+  followerCounts: Map<string, number>,
+): PublicRestaurantProfile {
   const restaurantDrops = drops.filter((drop) => drop.restaurantSlug === row.restaurant_slug);
   const activeDrops = restaurantDrops.filter(
     (drop) => Date.parse(drop.pickupEndAt) > generatedAtMs && ["ACTIVE", "SCHEDULED"].includes(drop.statusCode),
@@ -82,6 +88,7 @@ function mapRestaurant(row: PublicRestaurantRow, drops: readonly PublicDropCard[
     storyMarkdown: row.story_markdown,
     averageRating: row.average_rating == null ? null : Number(row.average_rating),
     ratingCount: Number(row.rating_count ?? 0),
+    followerCount: followerCounts.get(row.restaurant_restaurant_pk) ?? 0,
     cuisineTags: cuisineTagsFor(restaurantDrops, row.headline),
     dietaryTags: dietaryTagsFor(restaurantDrops),
     activeDropCount: activeDrops.length,
@@ -99,12 +106,17 @@ function mapRestaurant(row: PublicRestaurantRow, drops: readonly PublicDropCard[
 
 export async function loadPublicRestaurants(): Promise<PublicRestaurantProfile[]> {
   const supabase = await createClient();
-  const [drops, profiles] = await Promise.all([
+  const service = createServiceRoleSupabaseClient();
+  const [drops, profiles, followerCounts] = await Promise.all([
     loadPublicDrops(),
     supabase
       .from("api_public_restaurant_profile")
       .select("*")
       .order("restaurant_name", { ascending: true }),
+    getFollowerCounts(service).catch((error) => {
+      console.warn("follower_counts_unavailable", { message: error instanceof Error ? error.message : "unknown" });
+      return new Map<string, number>();
+    }),
   ]);
 
   if (profiles.error) {
@@ -113,7 +125,7 @@ export async function loadPublicRestaurants(): Promise<PublicRestaurantProfile[]
 
   const generatedAtMs = new Date().getTime();
   const rows = (profiles.data ?? []) as PublicRestaurantRow[];
-  const mapped = rows.map((row) => mapRestaurant(row, drops, generatedAtMs));
+  const mapped = rows.map((row) => mapRestaurant(row, drops, generatedAtMs, followerCounts));
   const slugsWithProfiles = new Set(mapped.map((restaurant) => restaurant.restaurantSlug));
   const fromDrops = [...new Map(drops.map((drop) => [drop.restaurantSlug, drop])).values()]
     .filter((drop) => !slugsWithProfiles.has(drop.restaurantSlug))
@@ -145,6 +157,7 @@ export async function loadPublicRestaurants(): Promise<PublicRestaurantProfile[]
         },
         drops,
         generatedAtMs,
+        followerCounts,
       ),
     );
 

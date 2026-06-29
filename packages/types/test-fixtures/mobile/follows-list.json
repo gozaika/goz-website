@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "requestId": "55555555-5555-5555-5555-555555555555",
+  "serverTime": "2026-06-28T08:00:00.000Z",
+  "data": {
+    "restaurantPks": [
+      "20000000-0000-0000-0000-300000000001",
+      "20000000-0000-0000-0000-300000000002"
+    ],
+    "restaurants": [
+      {
+        "restaurantPk": "20000000-0000-0000-0000-300000000001",
+        "restaurantSlug": "bawarchi",
+        "restaurantName": "Bawarchi",
+        "cityName": "Hyderabad",
+        "neighborhoodName": "RTC X Roads",
+        "headline": "Legendary Hyderabadi biryani, packed fresh.",
+        "activeDropCount": 2,
+        "followerCount": 14,
+        "followedAt": "2026-06-20T10:00:00.000Z",
+        "coverImage": null
+      },
+      {
+        "restaurantPk": "20000000-0000-0000-0000-300000000002",
+        "restaurantSlug": "chutneys",
+        "restaurantName": "Chutneys",
+        "cityName": "Hyderabad",
+        "neighborhoodName": "Banjara Hills",
+        "headline": null,
+        "activeDropCount": 0,
+        "followerCount": 9,
+        "followedAt": "2026-06-21T11:30:00.000Z",
+        "coverImage": {
+          "url": "https://example.supabase.co/storage/v1/object/public/public-media/restaurants/chutneys/cover.jpg",
+          "width": 1280,
+          "height": 720,
+          "alt": "Chutneys storefront",
+          "blurhash": "LKO2:N%2Tw=w]~RBVZRi};RPxuwH"
+        }
+      }
+    ]
+  }
+}

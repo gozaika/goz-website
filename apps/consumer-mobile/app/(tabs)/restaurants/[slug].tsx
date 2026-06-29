@@ -1,9 +1,54 @@
-import { Badge, ErrorState, palette, ProductMedia, Screen, Skeleton, spacing, Text } from "@gozaika/mobile-ui";
+import { Badge, Button, ErrorState, palette, ProductMedia, Screen, Skeleton, spacing, Text } from "@gozaika/mobile-ui";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { View } from "react-native";
 import { useRestaurant } from "@/api/discovery";
+import { useFollows, useToggleFollow } from "@/api/follows";
+import { useAuth } from "@/auth/useAuth";
 import { DropCard } from "@/ui/DropCard";
 import { mediaFallbacks } from "@/ui/mediaFallbacks";
+
+function FollowControl({
+  restaurantPk,
+  followerCount,
+}: {
+  readonly restaurantPk: string;
+  readonly followerCount: number;
+}) {
+  const router = useRouter();
+  const { session } = useAuth();
+  const follows = useFollows({ enabled: Boolean(session) });
+  const toggleFollow = useToggleFollow();
+
+  const isFollowing = follows.data?.restaurantPks.includes(restaurantPk) ?? false;
+  const liveCount =
+    toggleFollow.data?.restaurantPk === restaurantPk ? toggleFollow.data.followerCount : followerCount;
+  const countLabel = `${liveCount} ${liveCount === 1 ? "follower" : "followers"}`;
+
+  return (
+    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.md }}>
+      <Text variant="caption" color={palette.muted}>
+        {countLabel}
+      </Text>
+      {session ? (
+        <Button
+          label={isFollowing ? "Following" : "Follow"}
+          variant={isFollowing ? "secondary" : "primary"}
+          accent={palette.forest}
+          loading={toggleFollow.isPending || follows.isLoading}
+          disabled={toggleFollow.isPending}
+          onPress={() => toggleFollow.mutate({ restaurantPk, follow: !isFollowing })}
+        />
+      ) : (
+        <Button
+          label="Follow"
+          variant="secondary"
+          accent={palette.forest}
+          onPress={() => router.push("/auth/login")}
+        />
+      )}
+    </View>
+  );
+}
 
 export default function RestaurantProfileScreen() {
   const router = useRouter();
@@ -40,6 +85,7 @@ export default function RestaurantProfileScreen() {
         {restaurant.neighborhoodName ?? restaurant.cityName ?? ""}
         {restaurant.ratingCount > 0 ? ` · ${restaurant.averageRating?.toFixed(1)}★ (${restaurant.ratingCount})` : ""}
       </Text>
+      <FollowControl restaurantPk={restaurant.restaurantPk} followerCount={restaurant.followerCount} />
       {restaurant.headline ? (
         <Text variant="body" color={palette.muted}>
           {restaurant.headline}

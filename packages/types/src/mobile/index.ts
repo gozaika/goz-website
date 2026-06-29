@@ -16,3 +16,4 @@ export * from "./passport";
 export * from "./reports";
 export * from "./consent";
 export * from "./documents";
+export * from "./follows";

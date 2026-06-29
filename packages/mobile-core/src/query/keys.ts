@@ -15,6 +15,9 @@ export const queryKeys = {
     detail: (slug: string) => ["restaurants", "detail", slug] as const,
     reviews: (slug: string) => ["restaurants", "reviews", slug] as const,
   },
+  follows: {
+    list: () => ["follows", "list"] as const,
+  },
   account: {
     profile: () => ["account", "profile"] as const,
     passport: () => ["account", "passport"] as const,

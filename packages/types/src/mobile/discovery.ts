@@ -59,6 +59,7 @@ export const publicRestaurantProfileSchema = z.object({
   storyMarkdown: z.string().nullable(),
   averageRating: z.number().nullable(),
   ratingCount: z.number(),
+  followerCount: z.number().default(0),
   cuisineTags: z.array(z.string()),
   dietaryTags: z.array(z.string()),
   activeDropCount: z.number(),

@@ -1171,6 +1171,8 @@ export interface PublicRestaurantProfile {
   readonly storyMarkdown: string | null;
   readonly averageRating: number | null;
   readonly ratingCount: number;
+  /** Aggregate number of consumers following this restaurant (no follower identity exposed). */
+  readonly followerCount: number;
   readonly cuisineTags: readonly string[];
   readonly dietaryTags: readonly DietaryCategoryCode[];
   readonly activeDropCount: number;

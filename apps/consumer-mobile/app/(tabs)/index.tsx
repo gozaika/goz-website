@@ -1,4 +1,4 @@
-import type { MobilePublicDropCard } from "@gozaika/types";
+import type { MobileFollowedRestaurant, MobilePublicDropCard } from "@gozaika/types";
 import {
   Badge,
   Button,
@@ -19,6 +19,8 @@ import { formatPaise } from "@gozaika/utils";
 import { Link, useRouter } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
 import { useDrops } from "@/api/discovery";
+import { useFollows } from "@/api/follows";
+import { useAuth } from "@/auth/useAuth";
 import { mediaFallbacks } from "@/ui/mediaFallbacks";
 
 function isActiveDrop(drop: MobilePublicDropCard): boolean {
@@ -82,8 +84,46 @@ function DropRailCard({ drop, onPress }: { readonly drop: MobilePublicDropCard; 
   );
 }
 
+function FollowedRailCard({
+  restaurant,
+  onPress,
+}: {
+  readonly restaurant: MobileFollowedRestaurant;
+  readonly onPress: () => void;
+}) {
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel={`Open ${restaurant.restaurantName}`} onPress={onPress}>
+      <Card elevated="sm" style={{ width: 220, padding: spacing.md }}>
+        <ProductMedia
+          media={restaurant.coverImage}
+          fallbackSource={mediaFallbacks.coverFor(restaurant.restaurantName)}
+          aspectRatio={16 / 10}
+          accessibilityLabel={restaurant.coverImage?.alt ?? `${restaurant.restaurantName} restaurant`}
+        />
+        <View style={{ gap: spacing.xs }}>
+          <Text variant="heading" numberOfLines={1}>
+            {restaurant.restaurantName}
+          </Text>
+          {restaurant.neighborhoodName ? (
+            <Text variant="caption" color={palette.muted} numberOfLines={1}>
+              {restaurant.neighborhoodName}
+            </Text>
+          ) : null}
+          <Badge
+            label={restaurant.activeDropCount > 0 ? `${restaurant.activeDropCount} live` : "No live drops"}
+            tone={restaurant.activeDropCount > 0 ? "success" : "neutral"}
+          />
+        </View>
+      </Card>
+    </Pressable>
+  );
+}
+
 export default function HomeScreen() {
   const router = useRouter();
+  const { session } = useAuth();
+  const follows = useFollows({ enabled: Boolean(session) });
+  const followedRestaurants = follows.data?.restaurants ?? [];
   const { data, isLoading, isError, refetch } = useDrops();
   const activeCount = data?.filter((drop) => drop.statusCode === "ACTIVE").length ?? 0;
   const liveDrops = (data ?? []).filter(isActiveDrop);
@@ -127,6 +167,31 @@ export default function HomeScreen() {
           actionLabel="Refresh"
           onAction={() => refetch()}
         />
+      ) : null}
+
+      {session && followedRestaurants.length ? (
+        <View style={{ gap: spacing.md }}>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: spacing.md }}>
+            <View style={{ flex: 1 }}>
+              <Text variant="heading">Restaurants you follow</Text>
+              <Text variant="caption" color={palette.muted}>
+                Quick access to the kitchens you saved.
+              </Text>
+            </View>
+            <Link href="/restaurants" style={{ color: palette.forest, fontWeight: "700", fontSize: 13 }}>
+              View all
+            </Link>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.md, paddingRight: spacing.lg }}>
+            {followedRestaurants.map((restaurant) => (
+              <FollowedRailCard
+                key={restaurant.restaurantPk}
+                restaurant={restaurant}
+                onPress={() => router.push(`/restaurants/${restaurant.restaurantSlug}`)}
+              />
+            ))}
+          </ScrollView>
+        </View>
       ) : null}
 
       {closingSoon.length ? (

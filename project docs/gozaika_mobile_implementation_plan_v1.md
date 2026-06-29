@@ -128,7 +128,7 @@ These U-slices are additive UI-quality slices from `docs/product/gozaika-mobile-
 
 - Branch: `codex/mobile-ux-uplift/c1-home-discover`.
 - Changed `apps/consumer-mobile/app/(tabs)/index.tsx` to compose the Home/Discover screen with U2C primitives over real `useDrops()` data.
-- Behavior/data truth: active count, closing-soon rail, quantity badges, pickup labels, prices, dietary tags, and neighborhoods are derived only from loaded `MobilePublicDropCard` values. Favorite/follow rail is intentionally omitted until F1 exists; no fabricated restaurants, prices, metrics, ratings, order states, QR/OTP, or follow data.
+- Behavior/data truth: active count, closing-soon rail, quantity badges, pickup labels, prices, dietary tags, and neighborhoods are derived only from loaded `MobilePublicDropCard` values. Favorite/follow rail was intentionally omitted until F1 existed (now shipped 2026-06-28 — the signed-in "Restaurants you follow" rail is composed from real `useFollows()` data; see `docs/mobile/CONTINUE-HERE.md` F1 entry + `docs/mobile/f1-follows-privacy-review.md`); no fabricated restaurants, prices, metrics, ratings, order states, QR/OTP, or follow data.
 - UI states: loading skeletons, API error retry, no-live-drop empty state, closing-soon horizontal rail, live tag chips, and account/passport/consent link card.
 - Compatibility: no API/schema/auth/payment/pickup/notification behavior changed.
 - Commands: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed. Full `node scripts/mobile-ci.mjs` result recorded with the slice commit.

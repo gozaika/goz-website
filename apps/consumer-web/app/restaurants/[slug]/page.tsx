@@ -2,8 +2,22 @@ import { ShellHeader } from "@gozaika/ui";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { loadPublicRestaurant } from "@/lib/restaurants";
+import { createClient } from "@/lib/supabase/server";
+import { isFollowing as checkFollowing } from "@/lib/follows";
+import { resolveConsumerProfilePk } from "@/lib/reviews";
 import { ConsumerNavLinks } from "../../consumer-nav";
 import { RestaurantDetailClient } from "./restaurant-detail-client";
+
+async function loadInitialFollowing(restaurantPk: string): Promise<boolean> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+  const consumerPk = await resolveConsumerProfilePk(supabase, { authUserId: user.id });
+  if (!consumerPk) return false;
+  return checkFollowing(supabase, consumerPk, restaurantPk);
+}
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +32,8 @@ export default async function RestaurantProfilePage({
   if (!restaurant) {
     notFound();
   }
+
+  const initialFollowing = await loadInitialFollowing(restaurant.restaurantPk);
 
   return (
     <main>
@@ -36,7 +52,7 @@ export default async function RestaurantProfilePage({
         </ol>
       </nav>
 
-      <RestaurantDetailClient restaurant={restaurant} />
+      <RestaurantDetailClient restaurant={restaurant} initialFollowing={initialFollowing} />
     </main>
   );
 }

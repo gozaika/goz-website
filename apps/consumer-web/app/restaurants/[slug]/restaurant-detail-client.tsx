@@ -4,7 +4,7 @@ import { DietaryBadge, DropCard } from "@gozaika/ui";
 import type { PublicRestaurantProfile, PublicReview, ReviewsPayload } from "@gozaika/types";
 import { cuisineCoverKey, formatCountdown, formatPaise, ratingLabel } from "@gozaika/utils";
 import { useEffect, useRef, useState } from "react";
-import { Flag, MapPin, Star } from "lucide-react";
+import { Flag, Heart, MapPin, Star } from "lucide-react";
 
 type Tab = "overview" | "active-drops" | "history" | "reviews" | "location";
 
@@ -15,6 +15,62 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "reviews",      label: "Reviews" },
   { id: "location",     label: "Location" },
 ];
+
+function FollowButton({
+  restaurantPk,
+  initialFollowing,
+  initialFollowerCount,
+}: {
+  readonly restaurantPk: string;
+  readonly initialFollowing: boolean;
+  readonly initialFollowerCount: number;
+}) {
+  const [following, setFollowing] = useState(initialFollowing);
+  const [followerCount, setFollowerCount] = useState(initialFollowerCount);
+  const [pending, setPending] = useState(false);
+
+  async function toggle() {
+    if (pending) return;
+    setPending(true);
+    try {
+      const res = await fetch("/api/follows", {
+        method: following ? "DELETE" : "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ restaurantPk }),
+      });
+      const json = await res.json();
+      if (res.status === 401) {
+        window.location.href = "/auth/login";
+        return;
+      }
+      if (json.ok) {
+        setFollowing(json.data.following as boolean);
+        setFollowerCount(json.data.followerCount as number);
+      }
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      disabled={pending}
+      aria-pressed={following}
+      aria-label={following ? "Unfollow this restaurant" : "Follow this restaurant"}
+      className={`flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-semibold transition disabled:opacity-60 ${
+        following
+          ? "border-white/40 bg-white/10 text-white hover:bg-white/20"
+          : "border-[#D4A017] bg-[#D4A017] text-[#2D2D2D] hover:bg-[#c2920f]"
+      }`}
+    >
+      <Heart size={13} className={following ? "fill-white text-white" : "fill-[#2D2D2D] text-[#2D2D2D]"} />
+      {following ? "Following" : "Follow"}
+      <span className="opacity-70">· {followerCount}</span>
+    </button>
+  );
+}
 
 function StarRow({ value }: { readonly value: number }) {
   return (
@@ -180,8 +236,10 @@ function ReviewsSection({ restaurantSlug }: { readonly restaurantSlug: string })
 
 export function RestaurantDetailClient({
   restaurant,
+  initialFollowing,
 }: {
   readonly restaurant: PublicRestaurantProfile;
+  readonly initialFollowing: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [now, setNow] = useState(new Date());
@@ -237,6 +295,11 @@ export function RestaurantDetailClient({
                 >
                   See reviews
                 </button>
+                <FollowButton
+                  restaurantPk={restaurant.restaurantPk}
+                  initialFollowing={initialFollowing}
+                  initialFollowerCount={restaurant.followerCount}
+                />
               </div>
             </div>
           </div>
