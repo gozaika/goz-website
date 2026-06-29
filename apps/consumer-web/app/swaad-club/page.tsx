@@ -22,30 +22,30 @@ export default function SwaadClubPage() {
       <ShellHeader>
         <ConsumerNavLinks />
       </ShellHeader>
-      <section className="bg-[#FFF8F0]">
+      <section className="bg-cream">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 lg:grid-cols-[1fr_380px]">
           <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-[#D4A017]">Swaad Club</p>
-            <h1 className="mt-3 max-w-3xl text-5xl font-bold leading-tight text-[#2D2D2D]">
+            <p className="text-sm font-bold uppercase tracking-wide text-gold-text">Swaad Club</p>
+            <h1 className="mt-3 max-w-3xl text-5xl font-bold leading-tight text-charcoal">
               Priority access for Hyderabad&apos;s first BAM Bag explorers.
             </h1>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-[#2D2D2D]/75">
+            <p className="mt-4 max-w-2xl text-lg leading-8 text-charcoal/75">
               Built for diners who want smarter access to off-menu discovery: early alerts, member-first drop context, and
               launch benefits without turning goZaika into a discount club.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link className="inline-flex min-h-11 items-center rounded-lg bg-[#FF6B35] px-5 text-sm font-semibold text-white" href="/account">
+              <Link className="inline-flex min-h-11 items-center rounded-lg bg-saffron px-5 text-sm font-semibold text-charcoal" href="/account">
                 Notify me from account
               </Link>
-              <Link className="inline-flex min-h-11 items-center rounded-lg border border-[#1A5C38]/25 px-5 text-sm font-semibold text-[#1A5C38]" href="/drops">
+              <Link className="inline-flex min-h-11 items-center rounded-lg border border-forest/25 px-5 text-sm font-semibold text-forest" href="/drops">
                 Browse current drops
               </Link>
             </div>
           </div>
-          <aside className="rounded-lg border border-[#D4A017]/40 bg-white p-5 shadow-sm">
-            <Crown className="h-9 w-9 text-[#D4A017]" aria-hidden="true" />
-            <h2 className="mt-4 text-2xl font-bold text-[#2D2D2D]">Coming soon</h2>
-            <p className="mt-2 text-sm leading-6 text-[#2D2D2D]/70">
+          <aside className="rounded-lg border border-gold/40 bg-white p-5 shadow-sm">
+            <Crown className="h-9 w-9 text-gold" aria-hidden="true" />
+            <h2 className="mt-4 text-2xl font-bold text-charcoal">Coming soon</h2>
+            <p className="mt-2 text-sm leading-6 text-charcoal/70">
               Razorpay recurring subscriptions are not enabled in this slice. No payment mandate, renewal, or entitlement
               is created from this page.
             </p>
@@ -59,28 +59,28 @@ export default function SwaadClubPage() {
             const Icon = [Sparkles, Bell, ShieldCheck, Crown][index]!;
             return (
               <article key={title} className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-                <Icon className="h-6 w-6 text-[#1A5C38]" aria-hidden="true" />
-                <h2 className="mt-4 text-lg font-bold text-[#2D2D2D]">{title}</h2>
-                <p className="mt-2 text-sm leading-6 text-[#2D2D2D]/68">{body}</p>
+                <Icon className="h-6 w-6 text-forest" aria-hidden="true" />
+                <h2 className="mt-4 text-lg font-bold text-charcoal">{title}</h2>
+                <p className="mt-2 text-sm leading-6 text-charcoal/68">{body}</p>
               </article>
             );
           })}
         </div>
 
-        <section className="mt-8 rounded-lg border border-[#1A5C38]/20 bg-[#F2F8EF] p-5">
-          <h2 className="text-2xl font-bold text-[#2D2D2D]">Eligibility and boundary</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-[#2D2D2D]/70">
+        <section className="mt-8 rounded-lg border border-forest/20 bg-success-soft p-5">
+          <h2 className="text-2xl font-bold text-charcoal">Eligibility and boundary</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-charcoal/70">
             Swaad Club starts as a launch waitlist/notification promise. Paid membership, priority queue ordering,
             renewal, cancellation, and invoice handling belong to the next revenue slice after backend activation.
           </p>
         </section>
 
         <section className="mt-8 grid gap-3">
-          <h2 className="text-2xl font-bold text-[#2D2D2D]">FAQs</h2>
+          <h2 className="text-2xl font-bold text-charcoal">FAQs</h2>
           {faqs.map(([question, answer]) => (
             <details key={question} className="rounded-lg border border-black/10 bg-white p-4">
-              <summary className="cursor-pointer font-semibold text-[#2D2D2D]">{question}</summary>
-              <p className="mt-2 text-sm leading-6 text-[#2D2D2D]/68">{answer}</p>
+              <summary className="cursor-pointer font-semibold text-charcoal">{question}</summary>
+              <p className="mt-2 text-sm leading-6 text-charcoal/68">{answer}</p>
             </details>
           ))}
         </section>

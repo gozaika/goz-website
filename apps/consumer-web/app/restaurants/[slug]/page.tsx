@@ -43,12 +43,12 @@ export default async function RestaurantProfilePage({
 
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="mx-auto max-w-7xl px-4 pt-4">
-        <ol className="flex items-center gap-1.5 text-xs text-[#2D2D2D]/55">
-          <li><Link href="/" className="hover:text-[#1A5C38]">Home</Link></li>
+        <ol className="flex items-center gap-1.5 text-xs text-charcoal/55">
+          <li><Link href="/" className="hover:text-forest">Home</Link></li>
           <li aria-hidden="true">/</li>
-          <li><Link href="/restaurants" className="hover:text-[#1A5C38]">Restaurants</Link></li>
+          <li><Link href="/restaurants" className="hover:text-forest">Restaurants</Link></li>
           <li aria-hidden="true">/</li>
-          <li className="font-semibold text-[#2D2D2D]">{restaurant.restaurantName}</li>
+          <li className="font-semibold text-charcoal">{restaurant.restaurantName}</li>
         </ol>
       </nav>
 
