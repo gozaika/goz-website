@@ -33,3 +33,10 @@ pnpm-debug.log*
 
 # scratch
 /tmp/
+
+# Firebase / FCM service-account secrets (never commit)
+Google firebase FCM private key.json
+*firebase*FCM*private*key*.json
+google-services.json
+GoogleService-Info.plist
+fcm-service-account*.json
