@@ -1,0 +1,29 @@
+/*
+ * goZaika web design tokens (Tailwind v4 @theme). Imported by every web app's
+ * globals.css so both apps expose the same utility vocabulary
+ * (bg-saffron, text-saffron-text, text-on-saffron, bg-success-soft, ...).
+ *
+ * These literals MUST mirror @gozaika/design-tokens `palette` — the parity is
+ * locked by packages/ui/src/theme.test.ts (run in the web gate). CSS @theme can
+ * only take literal values, so this is the one sanctioned mirror of the TS
+ * palette; never hand-edit one without the other (the test will fail).
+ */
+@theme inline {
+  --color-saffron: #FF6B35;
+  --color-saffron-text: #B23C0E;
+  --color-forest: #1A5C38;
+  --color-gold: #D4A017;
+  --color-gold-text: #7A5C00;
+  --color-cream: #FFF8F0;
+  --color-charcoal: #2D2D2D;
+  --color-muted: #6B7280;
+  --color-hairline: #E5E7EB;
+  --color-success: #1A5C38;
+  --color-success-soft: #E7F4EC;
+  --color-warning: #8A5A00;
+  --color-warning-soft: #FDF3E2;
+  --color-danger: #B3261E;
+  --color-danger-soft: #FCEBEA;
+  --color-info: #1C4E8A;
+  --color-info-soft: #EAF1FB;
+}

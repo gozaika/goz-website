@@ -11,6 +11,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --pool=threads"
   },
+  "dependencies": {
+    "@gozaika/design-tokens": "*"
+  },
   "peerDependencies": {
     "react": ">=19",
     "react-native": ">=0.83",

@@ -1,14 +1,7 @@
 @import "tailwindcss";
+@import "../../../packages/ui/src/theme.css";
 
 @source "../../../packages/ui/src";
-
-@theme inline {
-  --color-saffron: #FF6B35;
-  --color-forest: #1A5C38;
-  --color-gold: #D4A017;
-  --color-cream: #FFF8F0;
-  --color-charcoal: #2D2D2D;
-}
 
 html {
   scroll-behavior: smooth;

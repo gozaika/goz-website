@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@gozaika/config": "*",
+    "@gozaika/design-tokens": "*",
     "@gozaika/types": "*",
     "@gozaika/utils": "*",
     "lucide-react": "^1.8.0",

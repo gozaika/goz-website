@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
 import { Clock, MapPin, ShieldCheck, Store } from "lucide-react";
 import type { PublicDropCard, PublicRestaurantProfile } from "@gozaika/types";
+import { palette } from "@gozaika/design-tokens";
 import { cn, dietaryBadgeLabel, dropCoverKey, dropTypeRibbon, formatCountdown, formatPaise, formatPickupWindow, getDropClaimAvailability } from "@gozaika/utils";
 
 export { DropShareActions, LaunchCommsPanel } from "./launch-comms-actions";
@@ -9,13 +10,21 @@ export { AdventureDropCard } from "./AdventureDropCard";
 export { FoodStoryCard } from "./FoodStoryCard";
 export { ZaykaPassportCard } from "./ZaykaPassportCard";
 
+// Shared design tokens + WCAG contrast helpers (single source of truth, also used
+// by the native apps). Web code can `import { palette, accentTextColor } from "@gozaika/ui"`.
+export * from "@gozaika/design-tokens";
+// Web base primitives (Card / Text / Badge / Skeleton / ErrorState).
+export * from "./primitives";
+
 export const tokens = {
   colors: {
-    saffron: "#FF6B35",
-    forest: "#1A5C38",
-    gold: "#D4A017",
-    cream: "#FFF8F0",
-    charcoal: "#2D2D2D",
+    saffron: palette.saffron,
+    saffronText: palette.saffronText,
+    forest: palette.forest,
+    gold: palette.gold,
+    goldText: palette.goldText,
+    cream: palette.cream,
+    charcoal: palette.charcoal,
   },
   radius: {
     card: "8px",
@@ -70,11 +79,31 @@ export function BrandIllustration({
   return <img src={src} alt={alt} className={cn("h-auto w-full", className)} {...props} />;
 }
 
-export function Button({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+
+// Token-driven, AA-safe variants. Primary uses charcoal text on the saffron fill
+// (white-on-saffron is only 2.84:1 — fails WCAG AA); this is the same resolution
+// the native apps adopted in Mobile Slice X1. Saffron/forest/danger fills all
+// pair with an AA-readable text color.
+const BUTTON_VARIANT: Record<ButtonVariant, string> = {
+  primary: "bg-saffron text-charcoal hover:opacity-90",
+  secondary: "bg-forest text-white hover:opacity-90",
+  ghost: "border border-forest/30 bg-transparent text-forest hover:bg-forest/5",
+  danger: "bg-danger text-white hover:opacity-90",
+};
+
+export function Button({
+  className,
+  variant = "primary",
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & { readonly variant?: ButtonVariant }) {
   return (
     <button
       className={cn(
-        "inline-flex min-h-11 items-center justify-center rounded-lg bg-[#FF6B35] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e85f2f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A5C38] disabled:cursor-not-allowed disabled:opacity-60",
+        "inline-flex min-h-11 items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold shadow-sm transition",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest",
+        "disabled:cursor-not-allowed disabled:opacity-60",
+        BUTTON_VARIANT[variant],
         className,
       )}
       {...props}

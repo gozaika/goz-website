@@ -32,17 +32,18 @@ function sh(cmd, opts = {}) {
   execSync(cmd, { stdio: "pipe", encoding: "utf8", cwd: root, ...opts });
 }
 
-// 1. Typecheck the web design system + both web apps.
-step("typecheck (@gozaika/ui + web apps)", () => {
+// 1. Typecheck the shared tokens + web design system + both web apps.
+step("typecheck (@gozaika/design-tokens + @gozaika/ui + web apps)", () => {
   sh(
     "npm run typecheck --if-present " +
-      "--workspace @gozaika/ui --workspace @gozaika/consumer-web --workspace @gozaika/restaurant-mgmt-web",
+      "--workspace @gozaika/design-tokens --workspace @gozaika/ui " +
+      "--workspace @gozaika/consumer-web --workspace @gozaika/restaurant-mgmt-web",
   );
 });
 
-// 2. Unit + contract tests for the web design system + web app libs.
+// 2. Unit + contract tests for the shared tokens + web design system + web app libs.
 step("unit/contract tests", () => {
-  sh("npx vitest run --passWithNoTests packages/ui apps/consumer-web apps/restaurant-mgmt-web");
+  sh("npx vitest run --passWithNoTests packages/design-tokens packages/ui apps/consumer-web apps/restaurant-mgmt-web");
 });
 
 // 3. Route tree + RSC build: each web app must build.
