@@ -30,7 +30,12 @@ BFF deploy** (the apps on-device talk to the deployed cloud BFFs `customer.gozai
 | 12 | Location pin (GPS) | Partner → Profile → "Pickup location pin" → **Use my current location** (grant permission) → coords fill → Save → "Pinned"; deny permission → manual entry still works; Clear pin | `PATCH /restaurant/location` | `scripts/smoke/slice12-onboarding-smoke.mjs` |
 | 12 | Resumable onboarding wizard | Partner → Onboarding → progress bar + 6 steps with done badges; tap **Open** on a to-do step → lands on the right screen; OWNER can Start/Mark-done/Reopen operational tasks; close + reopen app → progress persists | `GET`/`PATCH /restaurant/onboarding` | (same smoke) |
 
-> **Slice 12 needs a fresh `expo-location` Android build** (native dep added). Build + install with `pwsh scripts/android-preview-install.ps1 -App restaurant-mobile -CaptureScreenshot` before the GPS walk; manual coordinate entry works without GPS.
+> **Slice 12 needs a fresh `expo-location` Android build** (native dep added). Because
+> the `android/` project is gitignored/managed, first regenerate it so the
+> `expo-location` plugin applies the `ACCESS_FINE/COARSE_LOCATION` manifest
+> permissions: `cd apps/restaurant-mobile && npx expo prebuild --platform android`.
+> Then build + install: `pwsh scripts/android-preview-install.ps1 -App restaurant-mobile -CaptureScreenshot`.
+> Manual coordinate entry works without GPS; only "Use my current location" needs the rebuild + permission grant.
 
 Notes:
 - The invoice download yields a 404 if the seeded invoice has no stored PDF
