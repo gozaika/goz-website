@@ -1,4 +1,4 @@
-import type { ElementType, ReactNode } from "react";
+import type { CSSProperties, ElementType, ReactNode } from "react";
 import type { StatusTone } from "@gozaika/design-tokens";
 import { cn } from "@gozaika/utils";
 
@@ -20,13 +20,17 @@ export function Card({
   children,
   elevated = "sm",
   className,
+  style,
 }: {
   readonly children: ReactNode;
   readonly elevated?: Elevation;
   readonly className?: string;
+  readonly style?: CSSProperties;
 }) {
   return (
-    <div className={cn("rounded-lg border border-hairline bg-white p-5", ELEVATION[elevated], className)}>{children}</div>
+    <div className={cn("rounded-lg border border-hairline bg-white p-5", ELEVATION[elevated], className)} style={style}>
+      {children}
+    </div>
   );
 }
 

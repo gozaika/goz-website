@@ -57,7 +57,7 @@ Plan: [`../../project docs/gozaika_web_parity_implementation_plan_v1.md`](../../
 | Token source of truth + AA contrast companions | U1 + X1 (`mobile-ui/tokens`) | W1 | **Done** — `@gozaika/design-tokens` (shared by mobile + web); `theme.css` mirror (drift-locked by `theme.test.ts`) |
 | Base primitives (Button/Card/Text/Badge/EmptyState/ErrorState/Skeleton) | `mobile-ui` components | W1 | **Done** — `@gozaika/ui` primitives + AA-safe `Button` (charcoal-on-saffron) |
 | Customer primitives (HeroBanner/CountdownChip/FilterChipRow/SegmentedToggle/StickyCTA/PeekBar/ProgressRing/LoyaltyCard) | U2C | W2 | **Done** — `@gozaika/ui` `CustomerPrimitives` (static) + `CustomerControls` (client); shared model in `@gozaika/utils` |
-| Partner primitives (MetricHero/ActionCard/QueueCard/SellThroughBar/Sparkline/DataTable/RoleAwareSection/RestaurantSwitcher) | U2R | W3 | Not started |
+| Partner primitives (MetricHero/ActionCard/QueueCard/SellThroughBar/Sparkline/DataTable/RoleAwareSection/RestaurantSwitcher) | U2R | W3 | **Done** — `@gozaika/ui` `PartnerPrimitives` (static) + `PartnerControls` (client); shared sell-through/sparkline model in `@gozaika/utils` |
 | A11y/contrast/motion pass (kill white-on-saffron; focus; reduced-motion; reflow) | X1 | W6 | Not started |
 | Perf/SEO + bundle secret scan + ledger closure | S17/S18 | W7 | Not started |
 

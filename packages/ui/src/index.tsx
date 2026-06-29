@@ -18,6 +18,9 @@ export * from "./primitives";
 // Customer primitives (W2): static + interactive ports of mobile CustomerPrimitives.
 export * from "./CustomerPrimitives";
 export * from "./CustomerControls";
+// Partner primitives (W3): static + interactive ports of mobile PartnerPrimitives.
+export * from "./PartnerPrimitives";
+export * from "./PartnerControls";
 
 export const tokens = {
   colors: {

@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { clampProgress, formatCountdownParts, progressPercent } from "./primitives-model";
+import {
+  basisPointsToRatio,
+  clampProgress,
+  clampRatio,
+  formatCountdownParts,
+  formatRatioPercent,
+  normalizeSparkline,
+  progressPercent,
+} from "./primitives-model";
 
 // Shared by the mobile + web primitive ports — lock the tone thresholds so the
 // CountdownChip reads identically on both surfaces.
@@ -37,5 +45,18 @@ describe("primitives-model", () => {
 
   it("handles unparseable input gracefully", () => {
     expect(formatCountdownParts("not-a-date", Date.now()).label).toBe("Time unavailable");
+  });
+
+  it("clampRatio + basisPointsToRatio + formatRatioPercent", () => {
+    expect(clampRatio(1.5)).toBe(1);
+    expect(clampRatio(Number.NaN)).toBe(0);
+    expect(basisPointsToRatio(5000)).toBe(0.5);
+    expect(formatRatioPercent(0.5)).toBe("50%");
+  });
+
+  it("normalizeSparkline scales to [0,1] and flattens a constant series to 0.5", () => {
+    expect(normalizeSparkline([])).toEqual([]);
+    expect(normalizeSparkline([5, 5, 5])).toEqual([0.5, 0.5, 0.5]);
+    expect(normalizeSparkline([0, 5, 10])).toEqual([0, 0.5, 1]);
   });
 });
