@@ -51,7 +51,8 @@
         {
           "locationWhenInUsePermission": "goZaika Partner uses your location to drop a pickup pin on your restaurant profile."
         }
-      ]
+      ],
+      "expo-notifications"
     ],
     "extra": {
       "router": {},

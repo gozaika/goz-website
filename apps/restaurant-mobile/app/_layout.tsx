@@ -4,6 +4,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AuthProvider } from "@/auth/AuthProvider";
+import { PushRegistrar } from "@/push/PushRegistrar";
 import { brand } from "@/theme/brand";
 
 const queryClient = new QueryClient(createQueryClientConfig());
@@ -12,6 +13,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <PushRegistrar />
         <SafeAreaProvider>
           <StatusBar style="dark" />
         <Stack

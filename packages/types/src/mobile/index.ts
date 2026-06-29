@@ -18,3 +18,4 @@ export * from "./consent";
 export * from "./documents";
 export * from "./follows";
 export * from "./onboarding";
+export * from "./notifications";
