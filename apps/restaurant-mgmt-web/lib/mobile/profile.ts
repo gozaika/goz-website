@@ -11,8 +11,13 @@ type RestaurantRow = {
   readonly primary_contact_phone_e164: string | null;
   readonly geo_city_fk: string | null;
   readonly geo_neighborhood_fk: string | null;
+  readonly geo_address_fk: string | null;
   readonly geo_city: { city_name: string } | { city_name: string }[] | null;
   readonly geo_neighborhood: { neighborhood_name: string } | { neighborhood_name: string }[] | null;
+  readonly geo_address:
+    | { latitude: number | string | null; longitude: number | string | null }
+    | { latitude: number | string | null; longitude: number | string | null }[]
+    | null;
 };
 
 type PublicProfileRow = {
@@ -33,6 +38,12 @@ function firstRel<T>(value: T | T[] | null | undefined): T | null {
   return Array.isArray(value) ? value[0] ?? null : value ?? null;
 }
 
+function toNumber(value: number | string | null | undefined): number | null {
+  if (value === null || value === undefined) return null;
+  const n = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
 /**
  * Aggregate the role-safe restaurant profile (basics + location + compliance
  * summary). Compliance returns status + presence flags + expiry only — never the
@@ -48,8 +59,9 @@ export async function loadRestaurantProfile(
     .from("restaurant_restaurant")
     .select(
       "restaurant_name,restaurant_slug,legal_entity_name,restaurant_status_code,pickup_instructions," +
-        "primary_contact_email,primary_contact_phone_e164,geo_city_fk,geo_neighborhood_fk," +
-        "geo_city:geo_city_fk(city_name),geo_neighborhood:geo_neighborhood_fk(neighborhood_name)",
+        "primary_contact_email,primary_contact_phone_e164,geo_city_fk,geo_neighborhood_fk,geo_address_fk," +
+        "geo_city:geo_city_fk(city_name),geo_neighborhood:geo_neighborhood_fk(neighborhood_name)," +
+        "geo_address:geo_address_fk(latitude,longitude)",
     )
     .eq("restaurant_restaurant_pk", restaurantPk)
     .maybeSingle<RestaurantRow>();
@@ -87,6 +99,8 @@ export async function loadRestaurantProfile(
     cityName: firstRel(restaurant.geo_city)?.city_name ?? null,
     neighborhoodPk: restaurant.geo_neighborhood_fk,
     neighborhoodName: firstRel(restaurant.geo_neighborhood)?.neighborhood_name ?? null,
+    latitude: toNumber(firstRel(restaurant.geo_address)?.latitude),
+    longitude: toNumber(firstRel(restaurant.geo_address)?.longitude),
     headline: publicProfile?.headline ?? null,
     storyMarkdown: publicProfile?.story_markdown ?? null,
     compliance: {

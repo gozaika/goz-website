@@ -1,9 +1,15 @@
 import { ApiError } from "@gozaika/mobile-core";
 import { Badge, Button, Card, EmptyState, ErrorState, Screen, Text, palette, toneColors } from "@gozaika/mobile-ui";
 import type { RestaurantComplianceStatusCode, RestaurantProfileData } from "@gozaika/types";
+import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Modal, Pressable, ScrollView, TextInput, View } from "react-native";
-import { useGeoOptions, useRestaurantProfile, useUpdateRestaurantBasics } from "@/api/profile";
+import {
+  useGeoOptions,
+  useRestaurantProfile,
+  useUpdateRestaurantBasics,
+  useUpdateRestaurantLocation,
+} from "@/api/profile";
 import { useAuth } from "@/auth/useAuth";
 
 function SelectModal({
@@ -220,6 +226,140 @@ function EditBasics({ profile, restaurantPk }: { readonly profile: RestaurantPro
   );
 }
 
+function LocationCard({
+  profile,
+  restaurantPk,
+  canEdit,
+}: {
+  readonly profile: RestaurantProfileData;
+  readonly restaurantPk: string;
+  readonly canEdit: boolean;
+}) {
+  const update = useUpdateRestaurantLocation(restaurantPk);
+  const [lat, setLat] = useState(profile.latitude !== null ? String(profile.latitude) : "");
+  const [lng, setLng] = useState(profile.longitude !== null ? String(profile.longitude) : "");
+  const [locating, setLocating] = useState(false);
+  const [permissionDenied, setPermissionDenied] = useState(false);
+
+  const latNum = Number.parseFloat(lat);
+  const lngNum = Number.parseFloat(lng);
+  const valid =
+    Number.isFinite(latNum) && Number.isFinite(lngNum) && latNum >= -90 && latNum <= 90 && lngNum >= -180 && lngNum <= 180;
+  const hasPin = profile.latitude !== null && profile.longitude !== null;
+
+  async function useCurrentLocation() {
+    setPermissionDenied(false);
+    setLocating(true);
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setPermissionDenied(true);
+        return;
+      }
+      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+      setLat(pos.coords.latitude.toFixed(6));
+      setLng(pos.coords.longitude.toFixed(6));
+    } catch {
+      setPermissionDenied(true);
+    } finally {
+      setLocating(false);
+    }
+  }
+
+  return (
+    <Card>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+        <Text variant="heading">Pickup location pin</Text>
+        <Badge label={hasPin ? "Pinned" : "Not set"} tone={hasPin ? "success" : "warning"} />
+      </View>
+      <Text variant="caption" color={palette.muted}>
+        A map pin helps customers find your counter. Use your current location or enter coordinates.
+      </Text>
+
+      {!canEdit ? (
+        <Field label="Coordinates" value={hasPin ? `${profile.latitude}, ${profile.longitude}` : null} />
+      ) : (
+        <>
+          <Button
+            label={locating ? "Locating…" : "Use my current location"}
+            variant="secondary"
+            accent={palette.forest}
+            loading={locating}
+            onPress={useCurrentLocation}
+          />
+          {permissionDenied ? (
+            <Text variant="caption" color={toneColors("danger").fg}>
+              Location permission denied. Enter the coordinates manually below.
+            </Text>
+          ) : null}
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            <View style={{ flex: 1, gap: 4 }}>
+              <Text variant="caption" color={palette.muted}>
+                Latitude
+              </Text>
+              <TextInput
+                style={inputStyle}
+                value={lat}
+                onChangeText={setLat}
+                placeholder="17.4400"
+                placeholderTextColor={palette.muted}
+                keyboardType="numbers-and-punctuation"
+              />
+            </View>
+            <View style={{ flex: 1, gap: 4 }}>
+              <Text variant="caption" color={palette.muted}>
+                Longitude
+              </Text>
+              <TextInput
+                style={inputStyle}
+                value={lng}
+                onChangeText={setLng}
+                placeholder="78.3489"
+                placeholderTextColor={palette.muted}
+                keyboardType="numbers-and-punctuation"
+              />
+            </View>
+          </View>
+          <Button
+            label="Save pin"
+            accent={palette.forest}
+            disabled={!valid}
+            loading={update.isPending}
+            onPress={() => update.mutate({ latitude: latNum, longitude: lngNum })}
+          />
+          {hasPin ? (
+            <Button
+              label="Clear pin"
+              variant="ghost"
+              accent={palette.forest}
+              disabled={update.isPending}
+              onPress={() => {
+                setLat("");
+                setLng("");
+                update.mutate({ latitude: null, longitude: null });
+              }}
+            />
+          ) : null}
+          {update.isSuccess ? (
+            <View style={{ backgroundColor: toneColors("success").bg, borderRadius: 10, padding: 12 }}>
+              <Text variant="label" color={toneColors("success").fg}>
+                Location saved.
+              </Text>
+            </View>
+          ) : null}
+          {update.isError ? (
+            <View style={{ backgroundColor: toneColors("danger").bg, borderRadius: 10, padding: 12 }}>
+              <Text variant="caption" color={toneColors("danger").fg}>
+                {update.error instanceof ApiError ? update.error.message : "Could not save the location."}
+              </Text>
+            </View>
+          ) : null}
+        </>
+      )}
+    </Card>
+  );
+}
+
 export default function ProfileScreen() {
   const { selectedRestaurantPk } = useAuth();
   const { data: profile, isLoading, isError, error, refetch } = useRestaurantProfile(selectedRestaurantPk);
@@ -285,6 +425,8 @@ export default function ProfileScreen() {
           License numbers are managed on the web portal (kept off-device).
         </Text>
       </Card>
+
+      <LocationCard profile={profile} restaurantPk={selectedRestaurantPk} canEdit={profile.canEditBasics} />
 
       {profile.canEditBasics ? (
         editing ? (

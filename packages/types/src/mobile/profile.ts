@@ -32,12 +32,30 @@ export const restaurantProfileDataSchema = z.object({
   cityName: z.string().nullable(),
   neighborhoodPk: z.string().nullable(),
   neighborhoodName: z.string().nullable(),
+  /** Pickup-pin coordinates (WGS-84), set via the mobile location pin. Null until pinned. */
+  latitude: z.number().nullable(),
+  longitude: z.number().nullable(),
   headline: z.string().nullable(),
   storyMarkdown: z.string().nullable(),
   compliance: restaurantComplianceSummaryWireSchema,
   /** Whether the actor's role may edit basics (drives the mobile edit affordance). */
   canEditBasics: z.boolean(),
 });
+
+/**
+ * PATCH restaurant/location body (Slice 12 location pin). Both coordinates move
+ * together — supply both to set, or both null to clear. `restaurantPk` is taken
+ * from the authorized context server-side, never the body.
+ */
+export const restaurantLocationUpdateSchema = z
+  .object({
+    latitude: z.number().min(-90).max(90).nullable(),
+    longitude: z.number().min(-180).max(180).nullable(),
+  })
+  .refine((v) => (v.latitude === null) === (v.longitude === null), {
+    message: "Provide both latitude and longitude, or clear both.",
+  });
+export type RestaurantLocationUpdateRequest = z.infer<typeof restaurantLocationUpdateSchema>;
 
 /** Active city + neighborhood options for the location pickers (`GET restaurant/geo-options`). */
 export const geoOptionsDataSchema = z.object({
@@ -81,6 +99,8 @@ export interface RestaurantProfileData {
   readonly cityName: string | null;
   readonly neighborhoodPk: string | null;
   readonly neighborhoodName: string | null;
+  readonly latitude: number | null;
+  readonly longitude: number | null;
   readonly headline: string | null;
   readonly storyMarkdown: string | null;
   readonly compliance: RestaurantComplianceSummary;

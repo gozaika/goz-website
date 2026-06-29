@@ -13,6 +13,8 @@
     "cityName": "Hyderabad",
     "neighborhoodPk": "10000000-0000-0000-0000-000000000009",
     "neighborhoodName": "Banjara Hills",
+    "latitude": 17.4126,
+    "longitude": 78.4482,
     "headline": "Legendary Hyderabadi biryani, surplus-priced",
     "storyMarkdown": "Family-run since 1992. We cook fresh daily and list what's left.",
     "compliance": {

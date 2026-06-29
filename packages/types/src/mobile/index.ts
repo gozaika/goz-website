@@ -17,3 +17,4 @@ export * from "./reports";
 export * from "./consent";
 export * from "./documents";
 export * from "./follows";
+export * from "./onboarding";

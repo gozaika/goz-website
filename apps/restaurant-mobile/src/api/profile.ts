@@ -4,6 +4,7 @@ import {
   restaurantProfileDataSchema,
   type GeoOptionsData,
   type RestaurantBasicsUpdateRequest,
+  type RestaurantLocationUpdateRequest,
   type RestaurantProfileData,
 } from "@gozaika/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -51,6 +52,23 @@ export function useUpdateRestaurantBasics(restaurantPk: string | null) {
   return useMutation({
     mutationFn: async (body: RestaurantBasicsUpdateRequest): Promise<RestaurantProfileData> => {
       const res = await apiClient.request("/restaurant/basics", {
+        method: "PATCH",
+        body,
+        restaurantPk: restaurantPk ?? undefined,
+        dataSchema: restaurantProfileDataSchema,
+      });
+      return res.data as unknown as RestaurantProfileData;
+    },
+    onSuccess: (data) => queryClient.setQueryData(profileKey(restaurantPk), data),
+  });
+}
+
+/** Set / clear the pickup-pin coordinates (OWNER/ADMIN). Updates the profile cache. */
+export function useUpdateRestaurantLocation(restaurantPk: string | null) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: RestaurantLocationUpdateRequest): Promise<RestaurantProfileData> => {
+      const res = await apiClient.request("/restaurant/location", {
         method: "PATCH",
         body,
         restaurantPk: restaurantPk ?? undefined,

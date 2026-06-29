@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "requestId": "66666666-6666-6666-6666-666666666666",
+  "serverTime": "2026-06-28T08:00:00.000Z",
+  "data": {
+    "restaurantPk": "20000000-0000-0000-0000-300000000001",
+    "restaurantName": "Bawarchi",
+    "statusCode": "ONBOARDING",
+    "completedSteps": 3,
+    "totalSteps": 6,
+    "canManage": true,
+    "steps": [
+      { "key": "BASICS", "title": "Restaurant basics", "detail": "Name, contact and city are set.", "done": true, "manual": false, "routePath": "/profile" },
+      { "key": "LOCATION", "title": "Pickup location pin", "detail": "Drop a map pin so customers can find you.", "done": false, "manual": false, "routePath": "/profile" },
+      { "key": "PICKUP", "title": "Pickup instructions", "detail": "Tell customers how to collect.", "done": true, "manual": false, "routePath": "/profile" },
+      { "key": "COMPLIANCE", "title": "Compliance documents", "detail": "Upload FSSAI and tax documents.", "done": true, "manual": false, "routePath": "/compliance" },
+      { "key": "FIRST_TEMPLATE", "title": "Create a BAM Bag template", "detail": "Set up your first bag template.", "done": false, "manual": false, "routePath": "/templates" },
+      { "key": "FIRST_DROP", "title": "Publish your first drop", "detail": "Go live with a Limited Drop.", "done": false, "manual": false, "routePath": "/drops/new" }
+    ],
+    "tasks": [
+      { "taskCode": "SET_PICKUP_INSTRUCTIONS", "taskName": "Set pickup instructions", "statusCode": "COMPLETED", "completedAt": "2026-06-20T10:00:00.000Z" },
+      { "taskCode": "TRAIN_PICKUP_STAFF", "taskName": "Train pickup staff", "statusCode": "PENDING", "completedAt": null },
+      { "taskCode": "VERIFY_BANK_ACCOUNT", "taskName": "Verify bank account", "statusCode": "IN_PROGRESS", "completedAt": null }
+    ]
+  }
+}

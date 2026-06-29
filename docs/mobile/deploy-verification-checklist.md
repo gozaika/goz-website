@@ -27,6 +27,10 @@ BFF deploy** (the apps on-device talk to the deployed cloud BFFs `customer.gozai
 | F1 | Follow a restaurant | Customer → Restaurants → open one → tap **Follow** (signed in) → label flips to "Following", count +1; tap again → unfollows | `POST`/`DELETE /follows` | `scripts/smoke/f1-follows-smoke.mjs` |
 | F1 | Home followed-rail | Customer (signed in, ≥1 follow) → Home → "Restaurants you follow" rail shows followed kitchens with live-drop badge; signed out → rail hidden | `GET /follows` | (same smoke) |
 | F1 | Follower count (web + mobile) | Restaurant detail shows the aggregate follower count (web hero Follow chip + mobile "N followers"); count is aggregate-only, never a follower list | `GET /restaurants/[slug]` (followerCount) | (same smoke) |
+| 12 | Location pin (GPS) | Partner → Profile → "Pickup location pin" → **Use my current location** (grant permission) → coords fill → Save → "Pinned"; deny permission → manual entry still works; Clear pin | `PATCH /restaurant/location` | `scripts/smoke/slice12-onboarding-smoke.mjs` |
+| 12 | Resumable onboarding wizard | Partner → Onboarding → progress bar + 6 steps with done badges; tap **Open** on a to-do step → lands on the right screen; OWNER can Start/Mark-done/Reopen operational tasks; close + reopen app → progress persists | `GET`/`PATCH /restaurant/onboarding` | (same smoke) |
+
+> **Slice 12 needs a fresh `expo-location` Android build** (native dep added). Build + install with `pwsh scripts/android-preview-install.ps1 -App restaurant-mobile -CaptureScreenshot` before the GPS walk; manual coordinate entry works without GPS.
 
 Notes:
 - The invoice download yields a 404 if the seeded invoice has no stored PDF
