@@ -2,7 +2,7 @@ import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { NextResponse } from "next/server";
 import { createDropDraftSchema } from "@gozaika/types";
 import { getPortalActor } from "@/lib/portal-auth";
-import { loadDefaultRestaurant, loadPortalDrops, loadPublicDropsByDropPks, loadRestaurantOpsGuardrails } from "@/lib/slice3";
+import { loadSelectedRestaurant, loadPortalDrops, loadPublicDropsByDropPks, loadRestaurantOpsGuardrails } from "@/lib/slice3";
 
 export async function GET() {
   const actor = await getPortalActor();
@@ -10,7 +10,7 @@ export async function GET() {
     return NextResponse.json({ ok: false, error: "Please sign in to continue." }, { status: 401 });
   }
 
-  const restaurant = await loadDefaultRestaurant(actor.profilePk);
+  const restaurant = await loadSelectedRestaurant(actor.profilePk);
   if (!restaurant) {
     return NextResponse.json({ ok: true, data: [] });
   }
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Please sign in to continue." }, { status: 401 });
   }
 
-  const restaurant = await loadDefaultRestaurant(actor.profilePk);
+  const restaurant = await loadSelectedRestaurant(actor.profilePk);
   if (!restaurant || restaurant.restaurantStatusCode !== "ACTIVE") {
     return NextResponse.json({ ok: false, error: "Only approved active restaurants can publish drops." }, { status: 403 });
   }

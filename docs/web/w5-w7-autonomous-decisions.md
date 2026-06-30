@@ -66,3 +66,27 @@ Ledger: [`web-parity-ledger.md`](web-parity-ledger.md)
   state was browser-verified; the populated path is covered by typecheck + the W7 smoke.
 - These four lower-risk tokenization surfaces were verified-then-committed together as W5(6/n)
   to keep the overnight run moving; each was browser-checked before the commit.
+
+### W5(7/n) RestaurantSwitcher in the portal chrome — **D7**
+- The web portal had **no** selected-restaurant mechanism (unlike the mobile app's
+  `useAuth().selectedRestaurantPk`). Built one at the **app layer only** — no `@gozaika/*`
+  shared-lib, schema, RPC, or BFF change:
+  - `loadSelectedRestaurant(profilePk)` in the app's `lib/slice3.ts`: reads the
+    `gz_portal_restaurant_pk` cookie, returns the matching restaurant **only if** the actor is
+    an ACTIVE member of it (validated via `loadActiveRestaurantsForProfile`), else falls back to
+    `loadDefaultRestaurant`. **No cookie ⇒ byte-identical to today** (the single-membership path).
+  - `RestaurantSwitcherIsland` (client) sets the cookie via `document.cookie` + `location.reload()`
+    — no new API endpoint. Hidden when `< 2` active memberships.
+  - Wired into the **single-restaurant pages** (dashboard, drops, drops/new, templates, profile)
+    **and** the drops/templates **mutation routes** so view and mutation stay on the same
+    restaurant after a switch. Writes can only ever target one of the actor's own ACTIVE
+    restaurants (membership-checked in every route), so the change is safe even unverified.
+- **Scope choice:** the switcher is shown only on the 5 single-restaurant pages where selection
+  actually scopes data. The cross-restaurant pages (orders/finance/reports/reviews) intentionally
+  span **all** memberships, so they do not show it (showing a scoping control that doesn't scope
+  them would be misleading).
+- **Verification gap (flagged for human QA):** the demo account is single-membership, so only the
+  regression path is browser-verified (switcher hidden; chrome tokenized to cream/forest; all
+  rewired pages return 200; `loadSelectedRestaurant` fallback intact). The **multi-membership
+  switch** (≥2 active restaurants) is typecheck/build-verified only and needs a 2-restaurant seed
+  for human QA — recorded in `web-parity-audit.md` (W7).

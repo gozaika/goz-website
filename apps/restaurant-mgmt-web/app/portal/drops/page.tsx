@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
-import { loadDefaultRestaurant, loadPortalDrops } from "@/lib/slice3";
+import { loadActiveRestaurantsForProfile, loadPortalDrops, loadSelectedRestaurant } from "@/lib/slice3";
 import { PortalChrome } from "../portal-nav";
+import { toSwitcherRestaurants } from "../switcher-data";
 import { DropsListClient } from "./drops-list-client";
 
 export const dynamic = "force-dynamic";
@@ -10,13 +11,16 @@ export default async function PortalDropsPage() {
   const actor = await getPortalActor();
   if (!actor) redirect("/auth/login");
 
-  const restaurant = await loadDefaultRestaurant(actor.profilePk);
+  const [restaurant, memberships] = await Promise.all([
+    loadSelectedRestaurant(actor.profilePk),
+    loadActiveRestaurantsForProfile(actor.profilePk),
+  ]);
   if (!restaurant) redirect("/portal/onboarding");
 
   const drops = await loadPortalDrops(restaurant.restaurantPk);
 
   return (
-    <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
+    <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode} switcherRestaurants={toSwitcherRestaurants(memberships)} selectedRestaurantPk={restaurant.restaurantPk}>
       <section className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

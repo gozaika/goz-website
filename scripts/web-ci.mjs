@@ -173,6 +173,8 @@ const MIGRATED_FILES = [
   "apps/restaurant-mgmt-web/app/portal/profile/page.tsx",
   "apps/restaurant-mgmt-web/app/portal/profile/profile-client.tsx",
   "apps/restaurant-mgmt-web/app/portal/reviews/page.tsx",
+  "apps/restaurant-mgmt-web/app/portal/portal-nav.tsx",
+  "apps/restaurant-mgmt-web/app/portal/restaurant-switcher-island.tsx",
 ];
 const BRAND_HEX = /#(?:FF6B35|1A5C38|D4A017|FFF8F0|2D2D2D)\b/i;
 

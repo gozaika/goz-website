@@ -1,8 +1,9 @@
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
-import { loadDefaultRestaurant } from "@/lib/slice3";
+import { loadActiveRestaurantsForProfile, loadSelectedRestaurant } from "@/lib/slice3";
 import { PortalChrome } from "../portal-nav";
+import { toSwitcherRestaurants } from "../switcher-data";
 import { PortalProfileClient, type PortalProfileState } from "./profile-client";
 import { toPublicMediaAsset } from "@/lib/product-media";
 
@@ -10,7 +11,10 @@ export default async function PortalProfilePage() {
   const actor = await getPortalActor();
   if (!actor) redirect("/auth/login");
 
-  const restaurant = await loadDefaultRestaurant(actor.profilePk);
+  const [restaurant, memberships] = await Promise.all([
+    loadSelectedRestaurant(actor.profilePk),
+    loadActiveRestaurantsForProfile(actor.profilePk),
+  ]);
   if (!restaurant) redirect("/portal/onboarding");
 
   const service = createServiceRoleSupabaseClient();
@@ -91,7 +95,7 @@ export default async function PortalProfilePage() {
   };
 
   return (
-    <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
+    <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode} switcherRestaurants={toSwitcherRestaurants(memberships)} selectedRestaurantPk={restaurant.restaurantPk}>
       <PortalProfileClient initialProfile={initialProfile} />
     </PortalChrome>
   );

@@ -1,19 +1,23 @@
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
-import { loadDefaultRestaurant, loadPortalDrops, loadPortalTemplates, loadPublicDropsByDropPks, loadRestaurantOpsGuardrails } from "@/lib/slice3";
+import { loadActiveRestaurantsForProfile, loadPortalDrops, loadPortalTemplates, loadPublicDropsByDropPks, loadRestaurantOpsGuardrails, loadSelectedRestaurant } from "@/lib/slice3";
 import { PortalChrome } from "../../portal-nav";
+import { toSwitcherRestaurants } from "../../switcher-data";
 import { DropPublishingForm } from "./drop-publishing-form";
 
 export default async function NewDropPage() {
   const actor = await getPortalActor();
   if (!actor) redirect("/auth/login");
 
-  const restaurant = await loadDefaultRestaurant(actor.profilePk);
+  const [restaurant, memberships] = await Promise.all([
+    loadSelectedRestaurant(actor.profilePk),
+    loadActiveRestaurantsForProfile(actor.profilePk),
+  ]);
   if (!restaurant) redirect("/portal/onboarding");
 
   if (restaurant.restaurantStatusCode !== "ACTIVE") {
     return (
-      <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
+      <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode} switcherRestaurants={toSwitcherRestaurants(memberships)} selectedRestaurantPk={restaurant.restaurantPk}>
         <section className="mx-auto max-w-3xl px-6 py-8">
           <div className="rounded-lg border border-gold/40 bg-warning-soft p-5">
             <p className="text-sm font-semibold text-warning">Publishing paused</p>
@@ -35,7 +39,7 @@ export default async function NewDropPage() {
   const launchDrops = await loadPublicDropsByDropPks(drops.map((drop) => drop.dropPk));
 
   return (
-    <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
+    <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode} switcherRestaurants={toSwitcherRestaurants(memberships)} selectedRestaurantPk={restaurant.restaurantPk}>
       <section className="px-6 py-6">
         <h1 className="text-3xl font-bold text-charcoal">Create a BAM Bag drop</h1>
         <p className="mt-2 max-w-3xl text-sm text-muted">

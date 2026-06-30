@@ -2,7 +2,7 @@ import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getPortalActor } from "@/lib/portal-auth";
-import { loadDefaultRestaurant, loadRestaurantOpsGuardrails } from "@/lib/slice3";
+import { loadSelectedRestaurant, loadRestaurantOpsGuardrails } from "@/lib/slice3";
 
 const dropStatusActionSchema = z.object({
   statusCode: z.enum(["ACTIVE", "PAUSED", "PICKUP_CLOSED", "EMERGENCY_CLOSED", "CANCELLED"]),
@@ -14,7 +14,7 @@ export async function PATCH(request: Request, { params }: { readonly params: Pro
     return NextResponse.json({ ok: false, error: "Please sign in to continue." }, { status: 401 });
   }
 
-  const restaurant = await loadDefaultRestaurant(actor.profilePk);
+  const restaurant = await loadSelectedRestaurant(actor.profilePk);
   if (!restaurant) {
     return NextResponse.json({ ok: false, error: "No restaurant access found." }, { status: 403 });
   }

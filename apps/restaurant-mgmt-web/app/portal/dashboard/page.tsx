@@ -2,14 +2,18 @@ import { ActionCard, Card, DataTable, MetricHero, SellThroughBar, Sparkline, Tex
 import { formatBasisPoints, formatPaise, rateToBasisPoints } from "@gozaika/utils";
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
-import { loadDefaultRestaurant, loadPortalDrops, loadPortalTemplates, loadRestaurantOpsGuardrails } from "@/lib/slice3";
+import { loadActiveRestaurantsForProfile, loadPortalDrops, loadPortalTemplates, loadRestaurantOpsGuardrails, loadSelectedRestaurant } from "@/lib/slice3";
 import { PortalChrome } from "../portal-nav";
+import { toSwitcherRestaurants } from "../switcher-data";
 
 export default async function DashboardPage() {
   const actor = await getPortalActor();
   if (!actor) redirect("/auth/login");
 
-  const restaurant = await loadDefaultRestaurant(actor.profilePk);
+  const [restaurant, memberships] = await Promise.all([
+    loadSelectedRestaurant(actor.profilePk),
+    loadActiveRestaurantsForProfile(actor.profilePk),
+  ]);
   if (!restaurant) redirect("/portal/onboarding");
 
   const [templates, drops, guardrails] =
@@ -41,7 +45,7 @@ export default async function DashboardPage() {
     .map((drop) => Math.max(0, drop.quantityTotal - drop.quantityAvailable));
 
   return (
-    <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
+    <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode} switcherRestaurants={toSwitcherRestaurants(memberships)} selectedRestaurantPk={restaurant.restaurantPk}>
       <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8">
         <MetricHero
           eyebrow="goZaika Partner"

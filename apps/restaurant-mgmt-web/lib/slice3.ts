@@ -1,6 +1,14 @@
+import { cookies } from "next/headers";
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { publicStorageUrl, STORAGE_BUCKETS } from "@gozaika/supabase";
 import type { PortalBagTemplate, PortalDrop, PublicDropCard } from "@gozaika/types";
+
+// Cookie that persists the OWNER's chosen restaurant when they belong to more
+// than one (the RestaurantSwitcher in the portal chrome). It only ever resolves
+// to a restaurant the actor is an ACTIVE member of (validated below), so writes
+// stay authorized; absent the cookie, behaviour is identical to
+// loadDefaultRestaurant (the single-membership / current path).
+export const PORTAL_RESTAURANT_COOKIE = "gz_portal_restaurant_pk";
 
 export type ActivePortalRestaurant = {
   readonly restaurantPk: string;
@@ -45,6 +53,23 @@ export async function loadDefaultRestaurant(profilePk: string): Promise<ActivePo
     cityPk: restaurant.geo_city_fk,
     neighborhoodPk: restaurant.geo_neighborhood_fk ?? null,
   };
+}
+
+/**
+ * The restaurant the portal should act on for this request: the cookie-selected
+ * one when the actor is an ACTIVE member of it, otherwise the default. Used by
+ * the single-restaurant portal pages + the drops/templates mutation routes so
+ * view and mutation stay on the same restaurant after a switch. Falls back to
+ * loadDefaultRestaurant (so non-active / single-membership behaviour is unchanged).
+ */
+export async function loadSelectedRestaurant(profilePk: string): Promise<ActivePortalRestaurant | null> {
+  const selectedPk = (await cookies()).get(PORTAL_RESTAURANT_COOKIE)?.value;
+  if (selectedPk) {
+    const active = await loadActiveRestaurantsForProfile(profilePk);
+    const match = active.find((restaurant) => restaurant.restaurantPk === selectedPk);
+    if (match) return match;
+  }
+  return loadDefaultRestaurant(profilePk);
 }
 
 export async function loadActiveRestaurantsForProfile(profilePk: string): Promise<ActivePortalRestaurant[]> {

@@ -1,20 +1,24 @@
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
-import { loadDefaultRestaurant, loadPortalTemplates } from "@/lib/slice3";
+import { loadActiveRestaurantsForProfile, loadPortalTemplates, loadSelectedRestaurant } from "@/lib/slice3";
 import { PortalChrome } from "../portal-nav";
+import { toSwitcherRestaurants } from "../switcher-data";
 import { TemplateForm } from "./template-form";
 
 export default async function TemplatesPage() {
   const actor = await getPortalActor();
   if (!actor) redirect("/auth/login");
 
-  const restaurant = await loadDefaultRestaurant(actor.profilePk);
+  const [restaurant, memberships] = await Promise.all([
+    loadSelectedRestaurant(actor.profilePk),
+    loadActiveRestaurantsForProfile(actor.profilePk),
+  ]);
   if (!restaurant || restaurant.restaurantStatusCode !== "ACTIVE") redirect("/portal/onboarding");
 
   const templates = await loadPortalTemplates(restaurant.restaurantPk);
 
   return (
-    <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
+    <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode} switcherRestaurants={toSwitcherRestaurants(memberships)} selectedRestaurantPk={restaurant.restaurantPk}>
       <section className="px-6 py-6">
         <h1 className="text-3xl font-bold text-charcoal">BAM Bag templates</h1>
         <p className="mt-2 max-w-3xl text-sm text-muted">
