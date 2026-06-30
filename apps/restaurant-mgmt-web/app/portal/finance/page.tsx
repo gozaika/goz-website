@@ -1,3 +1,4 @@
+import { Badge } from "@gozaika/ui";
 import {
   financeSettlementStatusLabel,
   financeSettlementStatusTone,
@@ -13,14 +14,6 @@ import { createClient } from "@/lib/supabase/server";
 import { PortalChrome } from "../portal-nav";
 
 export const dynamic = "force-dynamic";
-
-function statusClass(status: string) {
-  const tone = financeSettlementStatusTone(status);
-  if (tone === "success") return "border-[#1A5C38]/30 bg-[#F2F8EF] text-[#1A5C38]";
-  if (tone === "danger") return "border-red-200 bg-red-50 text-red-700";
-  if (tone === "warning") return "border-[#D4A017]/40 bg-[#FFF8E6] text-[#7A5A00]";
-  return "border-black/10 bg-white text-black/70";
-}
 
 function periodLabel(startAt: string, endAt: string): string {
   return `${new Date(startAt).toLocaleDateString("en-IN")} - ${new Date(endAt).toLocaleDateString("en-IN")}`;
@@ -72,11 +65,11 @@ export default async function FinancePage({
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold">Finance</h1>
-            <p className="mt-2 max-w-3xl text-sm text-slate-600">
+            <p className="mt-2 max-w-3xl text-sm text-muted">
               Settlement statements for completed paid pickup orders. Payouts are marked manually by goZaika finance; no live bank transfer is triggered from this portal.
             </p>
           </div>
-          <Link className="min-h-11 rounded-lg border border-[#1A5C38]/25 px-4 py-3 text-sm font-semibold text-[#1A5C38]" href="/portal/orders">
+          <Link className="min-h-11 rounded-lg border border-forest/25 px-4 py-3 text-sm font-semibold text-forest" href="/portal/orders">
             Pickup orders
           </Link>
         </div>
@@ -84,7 +77,7 @@ export default async function FinancePage({
         {settlements.length === 0 ? (
           <section className="mt-6 rounded-lg border border-dashed border-black/15 bg-white p-6">
             <h2 className="text-lg font-bold">No settlement yet</h2>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600">
+            <p className="mt-2 max-w-2xl text-sm text-muted">
               Finance appears after goZaika receives webhook-confirmed captured payments, the pickup window closes, and the order reaches collected or no-show. Payout account basics and human finance review are required before a settlement is locked.
             </p>
           </section>
@@ -95,24 +88,24 @@ export default async function FinancePage({
                 <Link
                   key={settlement.settlementRunPk}
                   href={`/portal/finance?settlement=${settlement.settlementRunPk}`}
-                  className={`rounded-lg border p-4 transition hover:border-[#1A5C38] ${selectedSettlement?.settlementRunPk === settlement.settlementRunPk ? "border-[#1A5C38] bg-[#F2F8EF]" : "border-black/10 bg-white"}`}
+                  className={`rounded-lg border p-4 transition hover:border-forest ${selectedSettlement?.settlementRunPk === settlement.settlementRunPk ? "border-forest bg-success-soft" : "border-hairline bg-white"}`}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-[#1A5C38]">{settlement.restaurantName}</p>
+                      <p className="text-sm font-semibold text-forest">{settlement.restaurantName}</p>
                       <h2 className="mt-1 font-bold">{periodLabel(settlement.periodStartAt, settlement.periodEndAt)}</h2>
                     </div>
-                    <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusClass(settlement.settlementStatusCode)}`}>
+                    <Badge tone={financeSettlementStatusTone(settlement.settlementStatusCode)}>
                       {financeSettlementStatusLabel(settlement.settlementStatusCode)}
-                    </span>
+                    </Badge>
                   </div>
-                  <dl className="mt-3 grid grid-cols-2 gap-2 text-sm text-slate-700">
+                  <dl className="mt-3 grid grid-cols-2 gap-2 text-sm text-charcoal/80">
                     <div>
-                      <dt className="font-semibold text-slate-950">Orders</dt>
+                      <dt className="font-semibold text-charcoal">Orders</dt>
                       <dd>{settlement.orderCount}</dd>
                     </div>
                     <div>
-                      <dt className="font-semibold text-slate-950">Net payout</dt>
+                      <dt className="font-semibold text-charcoal">Net payout</dt>
                       <dd>{formatPaise(settlement.netPayoutPaise)}</dd>
                     </div>
                   </dl>
@@ -121,57 +114,57 @@ export default async function FinancePage({
             </section>
 
             {selectedSettlement ? (
-              <section className="rounded-lg border border-black/10 bg-white p-4">
+              <section className="rounded-lg border border-hairline bg-white p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-[#1A5C38]">{selectedSettlement.restaurantName}</p>
+                    <p className="text-sm font-semibold text-forest">{selectedSettlement.restaurantName}</p>
                     <h2 className="mt-1 text-xl font-bold">{periodLabel(selectedSettlement.periodStartAt, selectedSettlement.periodEndAt)}</h2>
-                    <p className="mt-1 text-sm text-slate-600">
+                    <p className="mt-1 text-sm text-muted">
                       Payout account: {selectedSettlement.maskedPayoutAccount ?? "not configured"} / {selectedSettlement.payoutAccountStatusCode ?? "PENDING"}
                     </p>
                   </div>
-                  <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusClass(selectedSettlement.settlementStatusCode)}`}>
+                  <Badge tone={financeSettlementStatusTone(selectedSettlement.settlementStatusCode)}>
                     {financeSettlementStatusLabel(selectedSettlement.settlementStatusCode)}
-                  </span>
+                  </Badge>
                 </div>
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-4">
                   <div className="rounded-md bg-black/[0.03] p-3">
-                    <p className="text-xs font-semibold text-slate-500">Gross sales</p>
+                    <p className="text-xs font-semibold text-muted">Gross sales</p>
                     <p className="mt-1 text-lg font-bold">{formatPaise(selectedSettlement.grossSalesPaise)}</p>
                   </div>
                   <div className="rounded-md bg-black/[0.03] p-3">
-                    <p className="text-xs font-semibold text-slate-500">Commission</p>
+                    <p className="text-xs font-semibold text-muted">Commission</p>
                     <p className="mt-1 text-lg font-bold">{formatPaise(selectedSettlement.commissionPaise)}</p>
                   </div>
                   <div className="rounded-md bg-black/[0.03] p-3">
-                    <p className="text-xs font-semibold text-slate-500">Tax/fees/refunds</p>
+                    <p className="text-xs font-semibold text-muted">Tax/fees/refunds</p>
                     <p className="mt-1 text-lg font-bold">{formatPaise(selectedSettlement.taxPaise + selectedSettlement.paymentFeePaise + selectedSettlement.refundPaise)}</p>
                   </div>
-                  <div className="rounded-md bg-[#F2F8EF] p-3">
-                    <p className="text-xs font-semibold text-[#1A5C38]">Net payout</p>
+                  <div className="rounded-md bg-success-soft p-3">
+                    <p className="text-xs font-semibold text-forest">Net payout</p>
                     <p className="mt-1 text-lg font-bold">{formatPaise(selectedSettlement.netPayoutPaise)}</p>
                   </div>
                 </div>
 
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
-                  <div className="rounded-lg border border-black/10 p-3">
-                    <p className="text-xs font-semibold uppercase text-slate-500">Invoice</p>
+                  <div className="rounded-lg border border-hairline p-3">
+                    <p className="text-xs font-semibold uppercase text-muted">Invoice</p>
                     <p className="mt-1 font-bold">{selectedSettlement.invoice.invoiceNumber ?? "Not issued"}</p>
-                    <p className="mt-1 text-sm text-slate-600">{selectedSettlement.invoice.invoiceStatusCode ?? "Not available"}</p>
+                    <p className="mt-1 text-sm text-muted">{selectedSettlement.invoice.invoiceStatusCode ?? "Not available"}</p>
                   </div>
-                  <div className="rounded-lg border border-black/10 p-3">
-                    <p className="text-xs font-semibold uppercase text-slate-500">Payout status</p>
+                  <div className="rounded-lg border border-hairline p-3">
+                    <p className="text-xs font-semibold uppercase text-muted">Payout status</p>
                     <p className="mt-1 font-bold">{financeSettlementStatusLabel(selectedSettlement.settlementStatusCode)}</p>
-                    <p className="mt-1 text-sm text-slate-600">{selectedSettlement.payoutProviderReferenceText ? `Reference ${selectedSettlement.payoutProviderReferenceText}` : "Manual finance update pending"}</p>
+                    <p className="mt-1 text-sm text-muted">{selectedSettlement.payoutProviderReferenceText ? `Reference ${selectedSettlement.payoutProviderReferenceText}` : "Manual finance update pending"}</p>
                   </div>
-                  <div className="rounded-lg border border-black/10 p-3">
-                    <p className="text-xs font-semibold uppercase text-slate-500">Review note</p>
-                    <p className="mt-1 text-sm text-slate-700">{selectedSettlement.statusNoteText ?? "Finance review note will appear here."}</p>
+                  <div className="rounded-lg border border-hairline p-3">
+                    <p className="text-xs font-semibold uppercase text-muted">Review note</p>
+                    <p className="mt-1 text-sm text-charcoal/80">{selectedSettlement.statusNoteText ?? "Finance review note will appear here."}</p>
                   </div>
                 </div>
 
-                <p className="mt-4 rounded-lg border border-[#D4A017]/40 bg-[#FFF8E6] p-3 text-sm font-medium text-slate-800">
+                <p className="mt-4 rounded-lg border border-gold/40 bg-warning-soft p-3 text-sm font-medium text-charcoal">
                   Commission, provider fee tax, refunds, and adjustments are pilot settlement facts for review. GST/legal invoice wording remains human-reviewed before final use.
                 </p>
 
@@ -179,7 +172,7 @@ export default async function FinancePage({
                   <h3 className="font-semibold">Settlement entries</h3>
                   <div className="mt-3 overflow-x-auto">
                     <table className="w-full min-w-[720px] text-left text-sm">
-                      <thead className="border-b border-black/10 text-xs uppercase text-slate-500">
+                      <thead className="border-b border-hairline text-xs uppercase text-muted">
                         <tr>
                           <th className="py-2 pr-3">Type</th>
                           <th className="py-2 pr-3">Order</th>
@@ -190,7 +183,7 @@ export default async function FinancePage({
                       </thead>
                       <tbody>
                         {details.map((entry) => (
-                          <tr key={entry.payoutEntryPk} className="border-b border-black/5">
+                          <tr key={entry.payoutEntryPk} className="border-b border-hairline/60">
                             <td className="py-2 pr-3 font-semibold">{entry.entryTypeCode.replaceAll("_", " ")}</td>
                             <td className="py-2 pr-3">{entry.orderNumber ?? "Manual"}</td>
                             <td className="py-2 pr-3">{entry.bagDisplayName ?? entry.descriptionText ?? "-"}</td>
