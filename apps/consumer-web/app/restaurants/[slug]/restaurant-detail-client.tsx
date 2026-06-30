@@ -4,6 +4,7 @@ import { DietaryBadge, DropCard, FilterChipRow } from "@gozaika/ui";
 import { palette } from "@gozaika/design-tokens";
 import type { PublicRestaurantProfile, PublicReview, ReviewsPayload } from "@gozaika/types";
 import { cuisineCoverKey, formatCountdown, formatPaise, ratingLabel } from "@gozaika/utils";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Flag, Heart, MapPin, Star } from "lucide-react";
 
@@ -262,11 +263,14 @@ export function RestaurantDetailClient({
     <>
       {/* Photo strip / hero — cuisine art behind a forest overlay (keeps white text AA-readable) */}
       <section className="relative overflow-hidden px-4 py-12">
-        <img
+        <Image
           src={`/art/cover-${cuisineCoverKey(restaurant.restaurantName, restaurant.cuisineTags) ?? "biryani"}.svg`}
           alt=""
           aria-hidden
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          fill
+          unoptimized
+          sizes="100vw"
+          className="pointer-events-none object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-forest/92 to-[#0F3D25]/96" />
         <div className="relative mx-auto max-w-7xl">

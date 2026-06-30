@@ -157,6 +157,36 @@ export function AccountClient({
         <p className="mt-6 rounded-lg border border-gold/40 bg-white px-3 py-2 text-sm text-charcoal">{status}</p>
       ) : null}
 
+      {/* Active holds are time-limited (they expire and release the bags), so they
+          surface first as the page's primary CTA — ahead of paid history/profile. */}
+      {activeClaims.length > 0 ? (
+        <section className="mt-6 rounded-lg border-2 border-saffron/40 bg-cream p-5 shadow-sm">
+          <h2 className="text-xl font-bold text-charcoal">
+            Finish paying — {activeClaims.length} active hold{activeClaims.length === 1 ? "" : "s"}
+          </h2>
+          <p className="mt-1 text-sm text-muted">Holds reserve your bags but expire soon. Complete payment before the timer runs out.</p>
+          <div className="mt-4 grid gap-3">
+            {activeClaims.map((claim) => (
+              <article key={claim.holdPk} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-forest/25 bg-white p-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-forest">{claim.restaurantName}</p>
+                  <h3 className="mt-0.5 font-bold text-charcoal">{claim.bagDisplayName}</h3>
+                  <p className="mt-1 text-xs text-muted">
+                    {claim.quantityHeld} held · {formatPaise(claim.pricePaise)} · Expires {new Date(claim.expiresAt).toLocaleString("en-IN")}
+                  </p>
+                </div>
+                <Link
+                  href={`/checkout/${claim.holdPk}`}
+                  className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-saffron px-5 text-sm font-bold text-charcoal shadow-sm transition hover:opacity-90"
+                >
+                  Complete payment
+                </Link>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <section className="mt-6 grid gap-4 md:grid-cols-3">
         <article className="rounded-lg border border-gold/35 bg-cream p-4">
           <div className="flex items-center gap-2">
@@ -326,43 +356,6 @@ export function AccountClient({
                     ))}
                   </div>
                 ) : null}
-              </article>
-            ))
-          )}
-        </div>
-      </section>
-
-      <section className="mt-6 rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-        <h2 className="text-xl font-bold text-charcoal">Current holds</h2>
-        <p className="mt-1 text-sm text-muted">Active payment-pending holds that still reserve availability.</p>
-        <div className="mt-4 grid gap-3">
-          {activeClaims.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-muted">
-              You do not have active claim holds right now.
-            </p>
-          ) : (
-            activeClaims.map((claim) => (
-              <article key={claim.holdPk} className="rounded-lg border border-forest/25 bg-success-soft p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-forest">{claim.restaurantName}</p>
-                    <h3 className="mt-1 font-bold text-charcoal">{claim.bagDisplayName}</h3>
-                    <p className="mt-1 text-xs text-muted">
-                      {claim.statusCode === "ACTIVE" ? "Active hold" : claim.statusCode.toLowerCase()} -{" "}
-                      {formatPickupWindow(claim.pickupStartAt, claim.pickupEndAt)}
-                    </p>
-                  </div>
-                  <span className="rounded-full border border-forest/25 px-3 py-1 text-xs font-semibold text-forest">
-                    {claim.quantityHeld} held
-                  </span>
-                </div>
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
-                  <span>{formatPaise(claim.pricePaise)}</span>
-                  <span>Expires {new Date(claim.expiresAt).toLocaleString("en-IN")}</span>
-                  <Link className="font-semibold text-forest" href={`/checkout/${claim.holdPk}`}>
-                    View hold
-                  </Link>
-                </div>
               </article>
             ))
           )}

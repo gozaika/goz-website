@@ -4,6 +4,7 @@ import { DropCard, DropShareActions, EmptyState, FilterChipRow, SegmentedToggle 
 import { palette } from "@gozaika/design-tokens";
 import type { PublicDropCard } from "@gozaika/types";
 import { createPublicDropUrl, dietaryBadgeLabel, dropCoverKey, dropTypeRibbon, formatPickupWindow, generateManualDropAlertText } from "@gozaika/utils";
+import Image from "next/image";
 import { Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/browser";
@@ -185,12 +186,15 @@ export function DropDiscoveryClient({
           <div className="flex gap-4 overflow-x-auto pb-2">
             {closing.map((drop) => (
               <article key={drop.dropPk} className="min-w-[280px] overflow-hidden rounded-lg border border-gold/40 bg-cream p-4">
-                <div className="relative -mx-4 -mt-4 mb-3">
-                  <img
+                <div className="relative -mx-4 -mt-4 mb-3 h-24">
+                  <Image
                     src={`/art/cover-${dropCoverKey(drop) ?? "biryani"}.svg`}
                     alt=""
                     aria-hidden
-                    className="h-24 w-full object-cover"
+                    fill
+                    unoptimized
+                    sizes="280px"
+                    className="object-cover"
                   />
                   {dropTypeRibbon(drop.dropTypeCode) ? (
                     <span className="absolute left-3 top-3 rounded-full bg-gold px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-charcoal shadow-sm">
@@ -213,24 +217,39 @@ export function DropDiscoveryClient({
       {viewMode === "map" ? (
         <section className="rounded-lg border border-hairline bg-white p-4">
           <h2 className="text-xl font-bold text-charcoal">Map view</h2>
-          {coordinateDrops.length === 0 ? (
-            <div className="mt-4 rounded-lg border border-dashed border-gold/45 bg-cream p-6 text-sm leading-6 text-muted">
-              Map pins need public restaurant coordinates. This environment does not expose any safe public coordinates yet, so list view
-              remains the source of truth for BAM Bag claims.
-            </div>
-          ) : (
-            <div className="relative mt-4 h-[520px] overflow-hidden rounded-lg border border-forest/15 bg-success-soft">
-              {coordinateDrops.map((drop, index) => (
+          {/* Hyderabad pickup area (Google output=embed — no map SDK/key, same as the
+              restaurant directory). Drops with public coordinates are listed below as
+              pins; without an SDK we can't plot multiple custom markers on the embed. */}
+          <div className="mt-4 overflow-hidden rounded-lg border border-hairline" style={{ height: 480 }}>
+            <iframe
+              title="Hyderabad pickup map"
+              width="100%"
+              height="480"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              src="https://www.google.com/maps?q=17.385,78.4867&z=12&output=embed"
+            />
+          </div>
+          {coordinateDrops.length > 0 ? (
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {coordinateDrops.map((drop) => (
                 <a
                   key={drop.dropPk}
                   href={`/drops/${drop.dropPk}`}
-                  className="absolute rounded-full bg-saffron px-3 py-2 text-xs font-bold text-charcoal shadow-lg"
-                  style={{ left: `${18 + (index % 4) * 20}%`, top: `${18 + Math.floor(index / 4) * 18}%` }}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-hairline bg-white p-3 transition hover:border-forest/30"
                 >
-                  {drop.restaurantName} / {drop.quantityAvailable}
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-charcoal">{drop.restaurantName}</p>
+                    <p className="text-xs text-muted">{drop.neighborhoodName ?? drop.cityName ?? "Hyderabad"}</p>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-saffron px-2.5 py-1 text-xs font-bold text-charcoal">{drop.quantityAvailable} left</span>
                 </a>
               ))}
             </div>
+          ) : (
+            <p className="mt-3 text-sm leading-6 text-muted">
+              No live drops expose public coordinates right now, so there are no pins to place — switch to list view for every claimable BAM Bag.
+            </p>
           )}
         </section>
       ) : null}
