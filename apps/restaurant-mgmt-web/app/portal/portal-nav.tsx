@@ -81,7 +81,7 @@ export function PortalChrome({
               <ShieldCheck aria-hidden="true" />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Zayka Pro</p>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">goZaika Partner</p>
               <p className="max-w-[180px] truncate font-bold text-[#2D2D2D]">{restaurantName ?? "Restaurant portal"}</p>
             </div>
           </div>

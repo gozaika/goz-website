@@ -102,7 +102,7 @@ export function LoginForm() {
     <section className="mx-auto grid min-h-[calc(100vh-72px)] w-full max-w-6xl items-center gap-8 px-4 py-8 md:grid-cols-[1fr_0.9fr]">
       <div className="order-2 md:order-1">
         <GoZaikaLogo className="h-12" />
-        <p className="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-[#1A5C38]">Zayka Pro</p>
+        <p className="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-[#1A5C38]">goZaika Partner</p>
         <h1 className="mt-3 text-4xl font-bold leading-tight text-[#2D2D2D] md:text-5xl">
           Restaurant dignity first.
         </h1>

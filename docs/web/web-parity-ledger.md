@@ -37,7 +37,7 @@ Plan: [`../../project docs/gozaika_web_parity_implementation_plan_v1.md`](../../
 
 | Web route | Backing lib | Mobile twin | UX gap to close | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| `/portal/dashboard` | `lib/slice3` (drops/templates/guardrails) | `(tabs)/index` (R1) | MetricHero; SellThroughBar + Sparkline; ActionCards; reconcile "Zayka Pro" label | W5 | Not started |
+| `/portal/dashboard` | `lib/slice3` (drops/templates/guardrails) | `(tabs)/index` (R1) | MetricHero; SellThroughBar + Sparkline; ActionCards; reconcile "Zayka Pro" label | W5 | **Done** — recomposed: MetricHero (headline revenue, `titleAs="h1"`, status Badge), DataTable (Today's numbers), Sparkline + SellThroughBar rows, ActionCards (status notices + ops). **Label reconciled "Zayka Pro" → "goZaika Partner"** (owner-approved, matches mobile twin) across dashboard + login + portal-nav + onboarding copy. Zero brand-hex; h1→h2 order restored; demo-OWNER browser-verified (Biryani Baithak) |
 | `/portal/orders` | `/api/portal/orders/*` | `(tabs)/orders` (R2) | QueueCard rows; Active/All/Collected/Issues filters | W5 | Not started |
 | `/portal/drops` (+ `/new`) | `lib/portal` drops | `(tabs)/drops` (R3) | Status filters; command-center summary; reserved bars; lifecycle on tokens | W5 | Not started |
 | `/portal/templates` | `/api/portal/templates*` | `templates` | Tokenize form + list | W5 | Not started |

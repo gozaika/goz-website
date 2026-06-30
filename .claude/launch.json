@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--workspace", "@gozaika/consumer-web", "run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "restaurant-mgmt-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--workspace", "@gozaika/restaurant-mgmt-web", "run", "dev"],
+      "port": 3001
     }
   ]
 }

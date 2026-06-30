@@ -205,7 +205,7 @@ export function OnboardingClient() {
       <section className="mx-auto max-w-4xl px-4 py-10">
         <EmptyState
           title="Create your restaurant onboarding"
-          body="Start with a private Zayka Pro profile. Drops and templates come later, after compliance review."
+          body="Start with a private goZaika Partner profile. Drops and templates come later, after compliance review."
           action={<Button onClick={createRestaurant} disabled={saving === "create"}>{saving === "create" ? "Starting..." : "Start onboarding"}</Button>}
         />
       </section>

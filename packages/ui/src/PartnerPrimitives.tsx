@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ElementType, ReactNode } from "react";
 import { accentTextColor, accents, type StatusTone } from "@gozaika/design-tokens";
 import { cn, clampRatio, formatRatioPercent, normalizeSparkline } from "@gozaika/utils";
 import { Badge, Card, Text } from "./primitives";
@@ -18,6 +18,8 @@ const TONE_TEXT: Record<StatusTone, string> = {
 export interface MetricHeroProps {
   readonly eyebrow?: string;
   readonly title: string;
+  /** Heading element for the title — set to "h1" to make the hero the page's main heading. Defaults to "p". */
+  readonly titleAs?: ElementType;
   readonly value: string;
   readonly helper?: string;
   readonly badgeLabel?: string;
@@ -27,7 +29,8 @@ export interface MetricHeroProps {
   readonly className?: string;
 }
 
-export function MetricHero({ eyebrow, title, value, helper, badgeLabel, badgeTone = "neutral", accent = accents.restaurant, children, className }: MetricHeroProps) {
+export function MetricHero({ eyebrow, title, titleAs, value, helper, badgeLabel, badgeTone = "neutral", accent = accents.restaurant, children, className }: MetricHeroProps) {
+  const TitleTag = titleAs ?? "p";
   return (
     <Card elevated="md" className={cn("border-l-4", className)} style={{ borderLeftColor: accent }}>
       <div className="flex justify-between gap-3">
@@ -37,7 +40,7 @@ export function MetricHero({ eyebrow, title, value, helper, badgeLabel, badgeTon
               {eyebrow}
             </p>
           ) : null}
-          <p className="text-sm font-semibold text-muted">{title}</p>
+          <TitleTag className="text-sm font-semibold text-muted">{title}</TitleTag>
           <p className="text-4xl font-extrabold leading-tight" style={{ color: accentTextColor(accent) }}>
             {value}
           </p>

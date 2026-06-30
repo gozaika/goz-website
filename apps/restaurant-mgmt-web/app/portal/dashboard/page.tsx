@@ -1,3 +1,4 @@
+import { ActionCard, Card, DataTable, MetricHero, SellThroughBar, Sparkline, Text } from "@gozaika/ui";
 import { formatBasisPoints, formatPaise, rateToBasisPoints } from "@gozaika/utils";
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
@@ -31,106 +32,110 @@ export default async function DashboardPage() {
     .filter((drop) => Date.parse(drop.pickupEndAt) > nowMs)
     .sort((left, right) => Date.parse(left.pickupStartAt) - Date.parse(right.pickupStartAt))[0];
   const isActive = restaurant.restaurantStatusCode === "ACTIVE";
+  const publishingPaused = isActive && guardrails != null && !guardrails.publishingEnabled;
+
+  // Recent drops oldest→newest so the sparkline reads left-to-right in time.
+  const recentDrops = drops.slice(0, 6);
+  const sparkValues = [...recentDrops]
+    .reverse()
+    .map((drop) => Math.max(0, drop.quantityTotal - drop.quantityAvailable));
 
   return (
     <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
       <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8">
-        <div className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#1A5C38]">Zayka Pro</p>
-          <h1 className="mt-2 text-3xl font-bold">Today at {restaurant.restaurantName}</h1>
-          <p className="mt-2 text-sm text-black/65">Production dashboard from existing drops, holds, finance, and ROI-ready facts. No payment or settlement state is changed here.</p>
-        </div>
+        <MetricHero
+          eyebrow="goZaika Partner"
+          title={`Today at ${restaurant.restaurantName}`}
+          titleAs="h1"
+          value={formatPaise(todayRevenue)}
+          helper="Today's revenue, estimated from visible sold quantity. No payment or settlement state is changed here."
+          badgeLabel={isActive ? (publishingPaused ? "Publishing paused" : "Active") : "Activation required"}
+          badgeTone={isActive ? (publishingPaused ? "warning" : "success") : "warning"}
+        />
 
         {!isActive ? (
-          <section className="rounded-lg border border-[#D4A017]/40 bg-[#FFF8E6] p-5">
-            <h2 className="text-lg font-semibold">Activation required</h2>
-            <p className="mt-2 text-sm text-[#7A5A00]">
-              Complete onboarding and admin approval before creating templates or publishing drops.
-            </p>
-            <a className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-[#1A5C38] px-4 text-sm font-semibold text-white" href="/portal/onboarding">
-              Continue onboarding
-            </a>
-          </section>
+          <a href="/portal/onboarding" className="block">
+            <ActionCard
+              tone="warning"
+              title="Activation required"
+              detail="Complete onboarding and admin approval before creating templates or publishing drops."
+              actionLabel="Continue onboarding →"
+            />
+          </a>
         ) : null}
 
-        {isActive && guardrails && !guardrails.publishingEnabled ? (
-          <section className="rounded-lg border border-[#D4A017]/40 bg-[#FFF8E6] p-5">
-            <h2 className="text-lg font-semibold">Publishing paused by ops</h2>
-            <p className="mt-2 text-sm text-[#7A5A00]">
-              New Limited Drops are temporarily unavailable while goZaika ops reviews this restaurant. Existing orders, finance, and reports remain read-only.
-            </p>
-          </section>
+        {publishingPaused ? (
+          <ActionCard
+            tone="warning"
+            title="Publishing paused by ops"
+            detail="New Limited Drops are temporarily unavailable while goZaika ops reviews this restaurant. Existing orders, finance, and reports remain read-only."
+          />
         ) : null}
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <Metric label="Today revenue" value={formatPaise(todayRevenue)} helper="Estimated from visible sold quantity" />
-          <Metric label="Bags sold/listed" value={`${soldBags}/${listedBags}`} helper={`${availableBags} available across live history`} />
-          <Metric label="Sell-through" value={formatBasisPoints(sellThroughBps)} helper={`${activeDrops} active, ${scheduledDrops} scheduled`} />
-          <Metric label="AOV" value={formatPaise(aov)} helper={`${templates.length} active template records`} />
-        </div>
+        <DataTable
+          title="Today's numbers"
+          rows={[
+            { label: "Bags sold / listed", value: `${soldBags}/${listedBags}`, helper: `${availableBags} available across live history` },
+            { label: "Sell-through", value: formatBasisPoints(sellThroughBps), helper: `${activeDrops} active · ${scheduledDrops} scheduled` },
+            { label: "AOV", value: formatPaise(aov), helper: `${templates.length} active template records` },
+          ]}
+        />
 
         <section className="grid gap-4 lg:grid-cols-[1fr_360px]">
-          <div className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-            <h2 className="text-xl font-bold">Sell-through by recent drop</h2>
-            <div className="mt-4 grid gap-3">
-              {drops.slice(0, 6).map((drop) => {
+          <Card>
+            <Text variant="heading" as="h2">Sell-through by recent drop</Text>
+            {sparkValues.length ? (
+              <div className="mt-4">
+                <Sparkline values={sparkValues} label="Bags sold across recent drops, oldest to newest" />
+              </div>
+            ) : null}
+            <div className="mt-4 grid gap-4">
+              <SellThroughBar sold={soldBags} total={listedBags} label="Overall today" />
+              {recentDrops.map((drop) => {
                 const sold = Math.max(0, drop.quantityTotal - drop.quantityAvailable);
-                return (
-                  <div key={drop.dropPk} className="grid gap-2 rounded-lg border border-black/10 p-3">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="font-semibold">{drop.dropTitle}</p>
-                      <span className="text-sm text-black/60">{formatBasisPoints(rateToBasisPoints(sold, drop.quantityTotal))}</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-black/10">
-                      <div className="h-2 rounded-full bg-[#1A5C38]" style={{ width: `${Math.min(100, Math.round((sold / Math.max(1, drop.quantityTotal)) * 100))}%` }} />
-                    </div>
-                  </div>
-                );
+                return <SellThroughBar key={drop.dropPk} sold={sold} total={drop.quantityTotal} label={drop.dropTitle} />;
               })}
-              {drops.length === 0 ? <p className="text-sm text-black/60">Publish a Limited Drop to see trend rows.</p> : null}
+              {drops.length === 0 ? <p className="text-sm text-muted">Publish a Limited Drop to see trend rows.</p> : null}
             </div>
-          </div>
-          <aside className="rounded-lg border border-[#D4A017]/40 bg-[#FFF8F0] p-5">
-            <h2 className="text-xl font-bold">Next drop</h2>
+          </Card>
+
+          <Card className="bg-cream">
+            <Text variant="heading" as="h2">Next drop</Text>
             {nextDrop ? (
               <div className="mt-3">
-                <p className="font-semibold">{nextDrop.dropTitle}</p>
-                <p className="mt-1 text-sm text-black/65">{new Date(nextDrop.pickupStartAt).toLocaleString("en-IN")}</p>
-                <p className="mt-3 text-sm font-semibold text-[#1A5C38]">{nextDrop.quantityAvailable}/{nextDrop.quantityTotal} bags available</p>
+                <p className="font-semibold text-charcoal">{nextDrop.dropTitle}</p>
+                <p className="mt-1 text-sm text-muted">{new Date(nextDrop.pickupStartAt).toLocaleString("en-IN")}</p>
+                <p className="mt-3 text-sm font-semibold text-forest">{nextDrop.quantityAvailable}/{nextDrop.quantityTotal} bags available</p>
               </div>
             ) : (
-              <p className="mt-2 text-sm text-black/65">No upcoming drop. Create one when publishing is enabled.</p>
+              <p className="mt-2 text-sm text-muted">No upcoming drop. Create one when publishing is enabled.</p>
             )}
             <div className="mt-5 grid gap-2">
-              <a className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#FF6B35] px-4 text-sm font-semibold text-white" href="/portal/drops/new">Create drop</a>
-              <a className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[#1A5C38]/25 px-4 text-sm font-semibold text-[#1A5C38]" href="/portal/drops">View drop list</a>
+              <a className="inline-flex min-h-11 items-center justify-center rounded-lg bg-saffron px-4 text-sm font-semibold text-charcoal shadow-sm transition hover:opacity-90" href="/portal/drops/new">Create drop</a>
+              <a className="inline-flex min-h-11 items-center justify-center rounded-lg border border-forest/25 px-4 text-sm font-semibold text-forest transition hover:bg-forest/5" href="/portal/drops">View drop list</a>
             </div>
-          </aside>
+          </Card>
         </section>
 
-        {isActive && guardrails?.publishingEnabled !== false ? (
+        {isActive && !publishingPaused ? (
           <section className="grid gap-4 md:grid-cols-2">
-            <a className="rounded-lg border border-black/10 bg-white p-5 transition hover:border-[#1A5C38]" href="/portal/templates">
-              <h2 className="text-xl font-bold">Create BAM Bag template</h2>
-              <p className="mt-2 text-sm text-black/65">Add reusable dietary, allergen, serving, holding, and pricing disclosures.</p>
+            <a href="/portal/templates" className="block">
+              <ActionCard
+                title="Create BAM Bag template"
+                detail="Add reusable dietary, allergen, serving, holding, and pricing disclosures."
+                actionLabel="Open templates →"
+              />
             </a>
-            <a className="rounded-lg border border-black/10 bg-white p-5 transition hover:border-[#1A5C38]" href="/portal/drops/new">
-              <h2 className="text-xl font-bold">Publish a drop</h2>
-              <p className="mt-2 text-sm text-black/65">Choose a template, set quantity and pickup window, then publish to consumer discovery.</p>
+            <a href="/portal/drops/new" className="block">
+              <ActionCard
+                title="Publish a drop"
+                detail="Choose a template, set quantity and pickup window, then publish to consumer discovery."
+                actionLabel="Create drop →"
+              />
             </a>
           </section>
         ) : null}
       </section>
     </PortalChrome>
-  );
-}
-
-function Metric({ label, value, helper }: { readonly label: string; readonly value: string; readonly helper: string }) {
-  return (
-    <article className="rounded-lg border border-black/10 bg-white p-4 shadow-sm">
-      <p className="text-sm font-semibold text-slate-500">{label}</p>
-      <p className="mt-2 text-3xl font-bold">{value}</p>
-      <p className="mt-1 text-xs text-slate-500">{helper}</p>
-    </article>
   );
 }
