@@ -3,11 +3,16 @@ import { PeekBar, palette } from "@gozaika/mobile-ui";
 import type { ConsumerOrderDto } from "@gozaika/types";
 import { Tabs, useRouter } from "expo-router";
 import { View } from "react-native";
+import { useActiveHolds } from "@/api/holds";
 import { useOrders } from "@/api/orders";
 import { useAuth } from "@/auth/useAuth";
 import { brand } from "@/theme/brand";
 
 const ACTIVE_ORDER_STATUSES = ["PAID", "CONFIRMED", "READY_FOR_PICKUP"];
+
+function expiresAtLabel(iso: string): string {
+  return new Date(iso).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
+}
 
 function activeOrder(orders: readonly ConsumerOrderDto[]): ConsumerOrderDto | null {
   const now = Date.now();
@@ -28,7 +33,11 @@ export default function TabsLayout() {
   const { session } = useAuth();
   const router = useRouter();
   const { data } = useOrders({ enabled: Boolean(session) });
+  const { data: holds } = useActiveHolds({ enabled: Boolean(session) });
   const order = session ? activeOrder(data?.orders ?? []) : null;
+  // Holds are unpaid and time-limited, so they take priority over the (paid)
+  // pickup reminder for the single floating slot.
+  const activeHolds = session ? holds ?? null : null;
 
   return (
     <View style={{ flex: 1 }}>
@@ -67,7 +76,16 @@ export default function TabsLayout() {
           options={{ title: "Account", tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} /> }}
         />
       </Tabs>
-      {order ? (
+      {activeHolds && activeHolds.count > 0 ? (
+        <PeekBar
+          title={`${activeHolds.count} hold${activeHolds.count === 1 ? "" : "s"} · finish paying`}
+          detail={activeHolds.earliestExpiresAt ? `Earliest expires ${expiresAtLabel(activeHolds.earliestExpiresAt)}` : "Tap to complete payment"}
+          actionLabel="Pay"
+          accent={palette.saffron}
+          onPress={() => router.push(activeHolds.earliestHoldPk ? `/checkout/${activeHolds.earliestHoldPk}` : "/(tabs)/account")}
+          style={{ position: "absolute", left: 16, right: 16, bottom: 84 }}
+        />
+      ) : order ? (
         <PeekBar
           title={`${order.bagDisplayName} pickup`}
           detail={`${order.restaurantName} · ${pickupTime(order)}`}

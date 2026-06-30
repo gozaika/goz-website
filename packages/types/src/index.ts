@@ -259,6 +259,14 @@ export const claimRequestSchema = z.object({
   quantity: positiveQuantitySchema.default(1),
 });
 
+// Active-holds summary for the mobile holds pill (count + earliest-expiring hold).
+export const activeHoldsSummarySchema = z.object({
+  count: z.number().int().nonnegative(),
+  earliestExpiresAt: z.string().nullable(),
+  earliestHoldPk: z.string().nullable(),
+});
+export type ActiveHoldsSummaryDto = z.infer<typeof activeHoldsSummarySchema>;
+
 export const razorpayCheckoutOrderRequestSchema = z.object({
   holdPk: uuidSchema,
   idempotencyKey: z.string().min(16).max(128),
