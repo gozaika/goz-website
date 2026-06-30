@@ -1,6 +1,7 @@
 "use client";
 
-import { EmptyState, RestaurantCard } from "@gozaika/ui";
+import { EmptyState, FilterChipRow, RestaurantCard } from "@gozaika/ui";
+import { palette } from "@gozaika/design-tokens";
 import type { PublicRestaurantProfile } from "@gozaika/types";
 import { Filter, Map, LayoutGrid, Search, Star, X } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -42,24 +43,24 @@ function MapView({
     <div className="relative">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-4 text-xs font-semibold">
-          <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-[#1A5C38]" />Active</span>
-          <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-[#FF6B35]" />Closing soon</span>
+          <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-forest" />Active</span>
+          <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-saffron" />Closing soon</span>
           <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-black/25" />No drops</span>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="flex items-center gap-1.5 rounded-lg border border-black/15 px-3 py-1.5 text-xs font-semibold text-[#2D2D2D]/70 hover:border-black/30"
+          className="flex items-center gap-1.5 rounded-lg border border-hairline px-3 py-1.5 text-xs font-semibold text-charcoal/70 hover:border-black/30"
         >
           <X size={12} /> List view
         </button>
       </div>
 
       {located.length === 0 ? (
-        <div className="flex h-[480px] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-black/15 bg-white">
-          <Map size={32} className="text-[#2D2D2D]/25" />
-          <p className="text-sm text-[#2D2D2D]/50">No location data available for these restaurants</p>
-          <p className="text-xs text-[#2D2D2D]/35">Restaurants set their coordinates via the partner portal.</p>
+        <div className="flex h-[480px] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-hairline bg-white">
+          <Map size={32} className="text-charcoal/25" />
+          <p className="text-sm text-charcoal/50">No location data available for these restaurants</p>
+          <p className="text-xs text-charcoal/35">Restaurants set their coordinates via the partner portal.</p>
         </div>
       ) : embedSrc ? (
         <div className="overflow-hidden rounded-xl border border-black/10" style={{ height: 480 }}>
@@ -90,7 +91,7 @@ function MapView({
       {/* Restaurant cards below map */}
       {located.length > 0 && (
         <div className="mt-4 grid gap-3">
-          <p className="text-sm font-semibold text-[#2D2D2D]/60">{located.length} restaurant{located.length !== 1 ? "s" : ""} with location data</p>
+          <p className="text-sm font-semibold text-charcoal/60">{located.length} restaurant{located.length !== 1 ? "s" : ""} with location data</p>
           <div className="grid gap-3 sm:grid-cols-2">
             {located.slice(0, 6).map((r) => {
               const color = pinColor(r);
@@ -98,18 +99,18 @@ function MapView({
                 <a
                   key={r.restaurantSlug}
                   href={`/restaurants/${r.restaurantSlug}`}
-                  className="flex items-center gap-3 rounded-lg border border-black/10 bg-white p-3 hover:border-[#1A5C38]/30 transition"
+                  className="flex items-center gap-3 rounded-lg border border-hairline bg-white p-3 hover:border-forest/30 transition"
                 >
                   <span
                     className="h-3 w-3 shrink-0 rounded-full"
-                    style={{ backgroundColor: color === "green" ? "#1A5C38" : color === "orange" ? "#FF6B35" : "#9CA3AF" }}
+                    style={{ backgroundColor: color === "green" ? palette.forest : color === "orange" ? palette.saffron : palette.muted }}
                   />
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-[#2D2D2D]">{r.restaurantName}</p>
-                    <p className="text-xs text-[#2D2D2D]/55">{r.neighborhoodName ?? r.cityName ?? "Hyderabad"}</p>
+                    <p className="truncate text-sm font-semibold text-charcoal">{r.restaurantName}</p>
+                    <p className="text-xs text-charcoal/55">{r.neighborhoodName ?? r.cityName ?? "Hyderabad"}</p>
                   </div>
                   {r.activeDropCount > 0 && (
-                    <span className="ml-auto shrink-0 rounded-full bg-[#FF6B35] px-1.5 py-0.5 text-[10px] font-bold text-white">
+                    <span className="ml-auto shrink-0 rounded-full bg-saffron px-1.5 py-0.5 text-[10px] font-bold text-charcoal">
                       {r.activeDropCount}
                     </span>
                   )}
@@ -235,7 +236,7 @@ export function RestaurantDirectoryClient({
     <div className="grid gap-6">
       {/* Sort */}
       <fieldset>
-        <legend className="text-xs font-bold uppercase tracking-wide text-[#2D2D2D]/60">Sort by</legend>
+        <legend className="text-xs font-bold uppercase tracking-wide text-charcoal/60">Sort by</legend>
         <div className="mt-2 grid gap-1">
           {SORT_OPTIONS.map((opt) => (
             <label key={opt.value} className="flex cursor-pointer items-center gap-2 text-sm">
@@ -245,7 +246,7 @@ export function RestaurantDirectoryClient({
                 value={opt.value}
                 checked={sort === opt.value}
                 onChange={() => setSort(opt.value)}
-                className="accent-[#1A5C38]"
+                className="accent-forest"
               />
               {opt.label}
             </label>
@@ -255,13 +256,13 @@ export function RestaurantDirectoryClient({
 
       {/* Active drops toggle */}
       <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold text-[#2D2D2D]">Show only restaurants with active drops</span>
+        <span className="text-sm font-semibold text-charcoal">Show only restaurants with active drops</span>
         <button
           type="button"
           role="switch"
           aria-checked={activeDropsOnly}
           onClick={() => setActiveDropsOnly((v) => !v)}
-          className={`relative h-6 w-11 rounded-full transition-colors ${activeDropsOnly ? "bg-[#1A5C38]" : "bg-black/20"}`}
+          className={`relative h-6 w-11 rounded-full transition-colors ${activeDropsOnly ? "bg-forest" : "bg-black/20"}`}
         >
           <span
             className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${activeDropsOnly ? "translate-x-5" : "translate-x-0.5"}`}
@@ -271,14 +272,14 @@ export function RestaurantDirectoryClient({
 
       {/* Rating */}
       <fieldset>
-        <legend className="text-xs font-bold uppercase tracking-wide text-[#2D2D2D]/60">Rating</legend>
+        <legend className="text-xs font-bold uppercase tracking-wide text-charcoal/60">Rating</legend>
         <div className="mt-2 flex flex-wrap gap-2">
           {RATING_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               type="button"
               onClick={() => setRating(opt.value)}
-              className={`flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-semibold ${rating === opt.value ? "border-[#FF6B35] bg-[#FF6B35] text-white" : "border-black/15 text-[#2D2D2D]/70"}`}
+              className={`flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-semibold ${rating === opt.value ? "border-saffron bg-saffron text-charcoal" : "border-hairline text-charcoal/70"}`}
             >
               {opt.value !== "any" && <Star size={10} />} {opt.label}
             </button>
@@ -288,14 +289,14 @@ export function RestaurantDirectoryClient({
 
       {/* Cuisine */}
       <fieldset>
-        <legend className="text-xs font-bold uppercase tracking-wide text-[#2D2D2D]/60">Cuisine</legend>
+        <legend className="text-xs font-bold uppercase tracking-wide text-charcoal/60">Cuisine</legend>
         <div className="mt-2 flex flex-wrap gap-2">
           {visibleCuisines.map((tag) => (
             <button
               key={tag}
               type="button"
               onClick={() => toggleCuisine(tag)}
-              className={`rounded-full border px-3 py-1 text-xs font-semibold ${cuisines.includes(tag) ? "border-[#1A5C38] bg-[#1A5C38] text-white" : "border-black/15 text-[#2D2D2D]/70"}`}
+              className={`rounded-full border px-3 py-1 text-xs font-semibold ${cuisines.includes(tag) ? "border-forest bg-forest text-white" : "border-hairline text-charcoal/70"}`}
             >
               {tag}
             </button>
@@ -304,7 +305,7 @@ export function RestaurantDirectoryClient({
             <button
               type="button"
               onClick={() => setShowAllCuisines((v) => !v)}
-              className="rounded-full border border-dashed border-black/20 px-3 py-1 text-xs text-[#2D2D2D]/60"
+              className="rounded-full border border-dashed border-black/20 px-3 py-1 text-xs text-charcoal/60"
             >
               {showAllCuisines ? "Show less" : `+ ${allCuisines.length - 12} more`}
             </button>
@@ -314,14 +315,14 @@ export function RestaurantDirectoryClient({
 
       {/* Dietary */}
       <fieldset>
-        <legend className="text-xs font-bold uppercase tracking-wide text-[#2D2D2D]/60">Dietary</legend>
+        <legend className="text-xs font-bold uppercase tracking-wide text-charcoal/60">Dietary</legend>
         <div className="mt-2 flex flex-wrap gap-2">
           {DIETARY_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               type="button"
               onClick={() => setDietary(opt.value)}
-              className={`rounded-full border px-3 py-1 text-xs font-semibold ${dietary === opt.value ? "border-[#FF6B35] bg-[#FF6B35] text-white" : "border-black/15 text-[#2D2D2D]/70"}`}
+              className={`rounded-full border px-3 py-1 text-xs font-semibold ${dietary === opt.value ? "border-saffron bg-saffron text-charcoal" : "border-hairline text-charcoal/70"}`}
             >
               {opt.label}
             </button>
@@ -330,7 +331,7 @@ export function RestaurantDirectoryClient({
       </fieldset>
 
       {activeFilterCount > 0 && (
-        <button type="button" onClick={clearAll} className="text-xs font-semibold text-red-600 hover:underline">
+        <button type="button" onClick={clearAll} className="text-xs font-semibold text-danger hover:underline">
           Clear all filters
         </button>
       )}
@@ -343,23 +344,23 @@ export function RestaurantDirectoryClient({
       <div className="mb-4 flex items-center gap-2 lg:hidden">
         <label className="relative flex-1">
           <span className="sr-only">Search restaurants</span>
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#2D2D2D]/40" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-charcoal/40" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search restaurant, cuisine…"
-            className="min-h-11 w-full rounded-lg border border-black/15 pl-9 pr-3 text-sm outline-none focus:border-[#1A5C38]"
+            className="min-h-11 w-full rounded-lg border border-hairline pl-9 pr-3 text-sm outline-none focus:border-forest"
           />
         </label>
         <button
           type="button"
           onClick={() => setDrawerOpen(true)}
           aria-label={`Filters${activeFilterCount > 0 ? ` (${activeFilterCount} active)` : ""}`}
-          className="relative flex min-h-11 items-center gap-1.5 rounded-lg border border-black/15 px-3 text-sm font-semibold"
+          className="relative flex min-h-11 items-center gap-1.5 rounded-lg border border-hairline px-3 text-sm font-semibold"
         >
           <Filter size={16} /> Filters
           {activeFilterCount > 0 && (
-            <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#FF6B35] text-[10px] font-black text-white">
+            <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-saffron text-[10px] font-black text-charcoal">
               {activeFilterCount}
             </span>
           )}
@@ -367,23 +368,18 @@ export function RestaurantDirectoryClient({
       </div>
 
       {/* Mobile sort chips */}
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-1 lg:hidden" aria-label="Sort options">
-        {SORT_OPTIONS.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => setSort(opt.value)}
-            className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold ${sort === opt.value ? "border-[#1A5C38] bg-[#1A5C38] text-white" : "border-black/15 text-[#2D2D2D]/70"}`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
+      <FilterChipRow
+        ariaLabel="Sort options"
+        accent={palette.forest}
+        className="mb-4 flex-nowrap overflow-x-auto pb-1 lg:hidden"
+        chips={SORT_OPTIONS.map((opt) => ({ id: opt.value, label: opt.label, selected: sort === opt.value }))}
+        onSelect={(id) => setSort(id as SortKey)}
+      />
 
       <div className="flex gap-6">
         {/* Desktop filter sidebar */}
         <aside className="hidden w-64 shrink-0 lg:block">
-          <div className="sticky top-28 rounded-xl border border-black/10 bg-white p-5 shadow-sm">
+          <div className="sticky top-28 rounded-xl border border-hairline bg-white p-5 shadow-sm">
             {FilterPanel}
           </div>
         </aside>
@@ -394,30 +390,30 @@ export function RestaurantDirectoryClient({
           <div className="mb-4 hidden items-center justify-between gap-3 lg:flex">
             <div className="flex items-center gap-3">
               <label className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#2D2D2D]/40" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-charcoal/40" />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search…"
-                  className="min-h-10 rounded-lg border border-black/15 pl-9 pr-3 text-sm outline-none focus:border-[#1A5C38]"
+                  className="min-h-10 rounded-lg border border-hairline pl-9 pr-3 text-sm outline-none focus:border-forest"
                 />
                 {query && (
-                  <button type="button" onClick={() => setQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#2D2D2D]/40">
+                  <button type="button" onClick={() => setQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-charcoal/40">
                     <X size={14} />
                   </button>
                 )}
               </label>
-              <p className="text-sm text-[#2D2D2D]/60">
-                <strong className="text-[#2D2D2D]">{visible.length}</strong> restaurants · sorted by{" "}
+              <p className="text-sm text-charcoal/60">
+                <strong className="text-charcoal">{visible.length}</strong> restaurants · sorted by{" "}
                 <span className="font-semibold">{sortLabel}</span>
               </p>
             </div>
-            <div className="flex items-center gap-1 rounded-lg border border-black/15 bg-white p-1">
+            <div className="flex items-center gap-1 rounded-lg border border-hairline bg-white p-1">
               <button
                 type="button"
                 onClick={() => setViewMode("list")}
                 aria-label="List view"
-                className={`rounded p-1.5 ${viewMode === "list" ? "bg-[#1A5C38] text-white" : "text-[#2D2D2D]/60"}`}
+                className={`rounded p-1.5 ${viewMode === "list" ? "bg-forest text-white" : "text-charcoal/60"}`}
               >
                 <LayoutGrid size={16} />
               </button>
@@ -425,7 +421,7 @@ export function RestaurantDirectoryClient({
                 type="button"
                 onClick={() => setViewMode("map")}
                 aria-label="Map view"
-                className={`rounded p-1.5 ${viewMode === "map" ? "bg-[#1A5C38] text-white" : "text-[#2D2D2D]/60"}`}
+                className={`rounded p-1.5 ${viewMode === "map" ? "bg-forest text-white" : "text-charcoal/60"}`}
               >
                 <Map size={16} />
               </button>
@@ -433,8 +429,8 @@ export function RestaurantDirectoryClient({
           </div>
 
           {/* Mobile result count */}
-          <p className="mb-3 text-sm text-[#2D2D2D]/60 lg:hidden">
-            <strong className="text-[#2D2D2D]">{visible.length}</strong> restaurants
+          <p className="mb-3 text-sm text-charcoal/60 lg:hidden">
+            <strong className="text-charcoal">{visible.length}</strong> restaurants
           </p>
 
           {viewMode === "map" ? (
@@ -444,7 +440,7 @@ export function RestaurantDirectoryClient({
               title="No restaurants match those filters"
               body="Try a broader cuisine, dietary, or rating filter. New partners appear after public profile activation."
               action={activeFilterCount > 0 ? (
-                <button type="button" onClick={clearAll} className="text-sm font-semibold text-[#1A5C38] hover:underline">
+                <button type="button" onClick={clearAll} className="text-sm font-semibold text-forest hover:underline">
                   Clear all filters
                 </button>
               ) : undefined}
@@ -465,16 +461,16 @@ export function RestaurantDirectoryClient({
           <div className="absolute inset-0 bg-black/50" onClick={() => setDrawerOpen(false)} />
           <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-white p-5">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-base font-bold text-[#2D2D2D]">Filters</h2>
+              <h2 className="text-base font-bold text-charcoal">Filters</h2>
               <button type="button" onClick={() => setDrawerOpen(false)} aria-label="Close filters">
-                <X size={20} className="text-[#2D2D2D]/60" />
+                <X size={20} className="text-charcoal/60" />
               </button>
             </div>
             {FilterPanel}
             <button
               type="button"
               onClick={() => setDrawerOpen(false)}
-              className="mt-6 flex min-h-11 w-full items-center justify-center rounded-lg bg-[#1A5C38] font-semibold text-white"
+              className="mt-6 flex min-h-11 w-full items-center justify-center rounded-lg bg-forest font-semibold text-white"
             >
               Show {visible.length} result{visible.length !== 1 ? "s" : ""}
             </button>
@@ -487,7 +483,7 @@ export function RestaurantDirectoryClient({
         <button
           type="button"
           onClick={() => setViewMode("map")}
-          className="fixed bottom-6 left-1/2 z-30 -translate-x-1/2 flex items-center gap-2 rounded-full bg-[#2D2D2D] px-5 py-2.5 text-sm font-bold text-white shadow-lg lg:hidden"
+          className="fixed bottom-6 left-1/2 z-30 -translate-x-1/2 flex items-center gap-2 rounded-full bg-charcoal px-5 py-2.5 text-sm font-bold text-white shadow-lg lg:hidden"
         >
           <Map size={16} /> Map
         </button>
