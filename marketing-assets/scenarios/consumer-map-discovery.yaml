@@ -22,6 +22,12 @@ captures:
     flow: consumer-map-discovery
     viewport: android-portrait
     sourceOfTruth: Real consumer mobile map/list state
+  - id: web-drops-map
+    kind: web
+    app: consumer-web
+    route: /drops
+    viewport: desktop-wide
+    sourceOfTruth: Real consumer web drops route with Hyderabad map proof
 copy:
   headline: Find pickup drops nearby
   subhead: Map-first discovery for real local restaurant drops.

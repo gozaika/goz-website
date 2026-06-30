@@ -22,6 +22,12 @@ captures:
     flow: restaurant-zaikaiq-report
     viewport: android-portrait
     sourceOfTruth: Real restaurant mobile reports payload
+  - id: web-report
+    kind: web
+    app: restaurant-web
+    route: /portal/reports
+    viewport: desktop-wide
+    sourceOfTruth: Real restaurant web reports route with authenticated partner session
 copy:
   headline: Read the operation at a glance
   subhead: ZaikaIQ surfaces what the partner app already knows.

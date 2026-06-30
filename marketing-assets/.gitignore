@@ -2,5 +2,5 @@ captures/raw/
 captures/normalized/
 frames/
 tmp/
+auth/
 *.log
-

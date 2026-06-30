@@ -45,6 +45,7 @@ export const marketingScenarioSchema = z
           .object({
             id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
             kind: captureKindSchema,
+            app: appSurfaceSchema.optional(),
             route: z.string().min(1).optional(),
             flow: z.string().min(1).optional(),
             viewport: z.string().min(2).optional(),
@@ -53,6 +54,9 @@ export const marketingScenarioSchema = z
           .strict()
           .refine((capture) => Boolean(capture.route ?? capture.flow), {
             message: "Capture must declare either a route or a flow.",
+          })
+          .refine((capture) => capture.kind !== "web" || ["consumer-web", "restaurant-web", "website"].includes(capture.app ?? ""), {
+            message: "Web captures must declare app as website, consumer-web, or restaurant-web.",
           }),
       )
       .min(1),

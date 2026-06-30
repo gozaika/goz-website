@@ -30,6 +30,7 @@ The first active factory contract lives in:
 - `marketing-assets/manifests/export-presets.json` - output dimensions and safe-margin presets.
 - `marketing-assets/manifests/asset-catalog.json` - planned asset IDs mapped back to scenarios.
 - `marketing-assets/src/scenarios/` - schema, loader, copy lint, and validation CLI.
+- `marketing-assets/src/capture/` - web capture target planning, Playwright capture, and Sharp normalization.
 
 Run:
 
@@ -48,6 +49,26 @@ Starter scenarios:
 - `restaurant-live-pickup-queue`
 - `restaurant-zaikaiq-overview`
 - `staff-pickup-proof`
+
+## Web Capture Lane
+
+Run the relevant app server first, then capture active web targets:
+
+```bash
+npm run assets:capture:web -- --app consumer-web --base-url http://localhost:3000
+npm run assets:capture:web -- --app restaurant-web --base-url http://localhost:3001 --storage-state marketing-assets/auth/restaurant-web.storage.json
+npm run assets:normalize
+```
+
+Defaults:
+
+- Website and consumer web default to `http://localhost:3000`.
+- Restaurant web defaults to `http://localhost:3001`.
+- Raw screenshots and sidecars are written under ignored `marketing-assets/captures/raw/`.
+- Normalized screenshots and trace sidecars are written under ignored `marketing-assets/captures/normalized/`.
+
+Partner portal captures require a real authenticated Playwright storage-state file. If a protected
+route redirects to auth, the capture command fails and tells you to provide `--storage-state`.
 
 ## Guardrails
 

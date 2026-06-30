@@ -23,6 +23,12 @@ captures:
     flow: restaurant-publish-drop
     viewport: android-portrait
     sourceOfTruth: Real restaurant mobile template or drop form
+  - id: web-template-list
+    kind: web
+    app: restaurant-web
+    route: /portal/templates
+    viewport: desktop-wide
+    sourceOfTruth: Real restaurant web template route with authenticated partner session
 copy:
   headline: Publish the next drop fast
   subhead: Templates keep the operation focused on real pickup demand.
