@@ -146,6 +146,7 @@ const MIGRATED_FILES = [
   "apps/consumer-web/app/restaurants/page.tsx",
   "apps/consumer-web/app/restaurants/restaurant-directory-client.tsx",
   "apps/consumer-web/app/restaurants/[slug]/page.tsx",
+  "apps/consumer-web/app/restaurants/[slug]/restaurant-detail-client.tsx",
   "apps/consumer-web/app/swaad-club/page.tsx",
   "apps/consumer-web/app/checkout/[orderId]/page.tsx",
   "apps/consumer-web/app/orders/[orderId]/page.tsx",

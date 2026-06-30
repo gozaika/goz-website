@@ -1,7 +1,7 @@
 # goZaika Web Parity — Implementation Plan v1
 
-Status: **approved 2026-06-29 — full program (W0–W7), both web apps** · Next up: **finish W4** (3 client views) → W5
-Progress: W0–W3 done; W4 in progress (13/16 customer surfaces tokenized, gate-enforced).
+Status: **approved 2026-06-29 — full program (W0–W7), both web apps** · Next up: **W5** (partner portal recomposition)
+Progress: W0–W4 done; all 16 customer surfaces + 3 interactive client views tokenized, gate-enforced (web 7/7, mobile 7/7).
 Spec: [`gozaika_web_parity_spec_v1.md`](gozaika_web_parity_spec_v1.md)
 
 Brings `apps/consumer-web` + `apps/restaurant-mgmt-web` up to the mobile UX
@@ -30,7 +30,7 @@ green, evidenced vertical at a time, committed + pushed per slice.
 | Web W1 | Web design-system foundation (tokens + contrast + base primitives) | W0 | **Done 2026-06-29** — `@gozaika/design-tokens` shared by mobile+web (mobile gate still 7/7); `theme.css` drift-locked; `@gozaika/ui` base primitives + AA-safe Button; web gate 7/7. |
 | Web W2 | Customer primitives (web ports) | W1 | **Done 2026-06-29** — `@gozaika/ui` CustomerPrimitives + CustomerControls; shared countdown/progress model promoted to `@gozaika/utils` (mobile gate still 7/7); web gate 7/7. |
 | Web W3 | Partner primitives (web ports) | W1 | **Done 2026-06-29** — `@gozaika/ui` PartnerPrimitives + PartnerControls; shared ratio/sparkline model in `@gozaika/utils` (mobile gate 7/7); web gate 7/7. |
-| Web W4 | Customer surface recomposition + F1 home rail | W2 | **In progress 2026-06-29** — 13 customer page surfaces + `drop-discovery-client` tokenized + gate-enforced (Home w/ HeroBanner+CountdownChip+**F1 follow rail**, drop detail w/ CountdownChip, drops discovery client w/ FilterChipRow+SegmentedToggle, restaurants/[slug] shells, checkout, orders, account+passport+discovery, swaad-club, consent, cities). Home + drops-client + directory-client browser-verified. **Remaining:** 1 interactive client view — `restaurant-detail-client.tsx`. |
+| Web W4 | Customer surface recomposition + F1 home rail | W2 | **Done 2026-06-29** — all 16 customer surfaces tokenized + gate-enforced, incl. the 3 large interactive client views: `drop-discovery-client` (FilterChipRow + SegmentedToggle), `restaurant-directory-client` (FilterChipRow sort + tokenized sidebar/drawer/map), `restaurant-detail-client` (D1 art hero + Follow chip preserved, reviews sort → FilterChipRow). Home + F1 follow rail + all 3 clients browser-verified. Web gate 16 migrated files, 7/7; mobile 7/7. |
 | Web W5 | Partner surface recomposition + switcher | W3 | Not started |
 | Web W6 | Accessibility / contrast / motion gate | W4, W5 | Not started |
 | Web W7 | Release polish, perf/SEO & ledger closure | W6 | Not started |
