@@ -9,7 +9,7 @@ creation, staged-rollout percentage changes — **requires explicit owner
 authorization at action time** and is listed in §7. Nothing here performs one.
 
 This doc is the tracked repo record; it supersedes the gitignored Codex-lane
-`/.codex-artifacts/gozaika-store-launch/release/eas-config-audit.md` (2026-06-23),
+`/.codex-artifacts/archive/launch-assets-pre-factory/gozaika-store-launch/release/eas-config-audit.md` (2026-06-23),
 whose gaps are reconciled below.
 
 ---
@@ -113,7 +113,9 @@ Track in `deploy-verification-checklist.md`.
 ## 8. Reviewer accounts & creatives
 
 Reviewer test accounts + per-app reviewer notes live in the launch package
-(`.codex-artifacts/gozaika-store-launch/reviewer/`, local/gitignored). Reviewer
+(`.codex-artifacts/archive/launch-assets-pre-factory/gozaika-store-launch/reviewer/`, local/gitignored). Reviewer
 notes must state: phone-OTP uses fixed demo OTP fixtures (non-expiring), payment
 is the gated simulator (real Razorpay deferred), and the partner app needs an
-OWNER-role membership. Polished store creatives are in `store-assets/` (D1f).
+OWNER-role membership. Historical D1f store creatives are archived in
+`docs/archived/launch-assets-pre-factory/legacy-store-assets/store-assets-v1/`; new launch-grade
+creatives must use `marketing-assets/`.

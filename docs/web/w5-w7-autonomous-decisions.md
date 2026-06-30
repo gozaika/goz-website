@@ -5,8 +5,8 @@ remaining web-parity work (rest of W5, then W6, W7) overnight. This file records
 every decision made without a live owner check so they can be reviewed/reversed.
 Nothing here is hard to undo.
 
-Spec: [`../../project docs/gozaika_web_parity_spec_v1.md`](../../project%20docs/gozaika_web_parity_spec_v1.md) ·
-Plan: [`../../project docs/gozaika_web_parity_implementation_plan_v1.md`](../../project%20docs/gozaika_web_parity_implementation_plan_v1.md) ·
+Spec: [`specs/web-parity-spec-v1.md`](specs/web-parity-spec-v1.md) ·
+Plan: [`plans/web-parity-implementation-plan-v1.md`](plans/web-parity-implementation-plan-v1.md) ·
 Ledger: [`web-parity-ledger.md`](web-parity-ledger.md)
 
 ## Standing decisions (apply to all remaining slices)

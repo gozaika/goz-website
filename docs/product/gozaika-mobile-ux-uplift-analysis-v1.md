@@ -38,7 +38,7 @@
 
 **The opportunity.** Close the polish gap **without touching payment/pickup/notification/finance behavior** — the lane prior polish passes respected. Customer app gains energy, urgency, and delight (hero discovery, drop countdowns, animated claim→pickup, a tactile loyalty Passport). Partner app gains operational density and confidence (a real "today" command center, a fast KDS‑style queue, a focused verify flow). They become **siblings via shared tokens/components, differentiated via density, accent, and tone.**
 
-**Biggest constraint `[OBSERVED]`.** Store/marketing work is blocked on real captures and product‑truth approvals (Expo dev overlay on customer shots; missing partner authenticated captures; OTP/order‑ID/finance wording needs approval — `.codex-artifacts/gozaika-polish-v2/CURRENT_STATE.md`, `.codex-artifacts/gozaika-store-launch/screenshots/raw/INDEX.md`). Part C is the checklist to clear those gaps.
+**Biggest constraint `[OBSERVED]`.** Store/marketing work is blocked on real captures and product‑truth approvals (Expo dev overlay on customer shots; missing partner authenticated captures; OTP/order‑ID/finance wording needs approval — `.codex-artifacts/archive/launch-assets-pre-factory/gozaika-polish-v2/CURRENT_STATE.md`, `.codex-artifacts/archive/launch-assets-pre-factory/gozaika-store-launch/screenshots/raw/INDEX.md`). Part C is the checklist to clear those gaps.
 
 ---
 
@@ -298,7 +298,7 @@ Each slice respects no‑drift rules: shared‑lib reuse, `scripts/mobile-ci.mjs
 
 ## Part C — OWNER Capture Checklist
 
-> **Deliverable (c).** A capture pass to clear the store‑asset gaps in `.codex-artifacts/gozaika-store-launch/screenshots/raw/INDEX.md` and the blockers in `CURRENT_STATE.md`. Goal: clean, native, production‑build screenshots with **no Expo dev‑client gear overlay** and **no fabricated product truth**.
+> **Deliverable (c).** A capture pass to clear the store‑asset gaps in `.codex-artifacts/archive/launch-assets-pre-factory/gozaika-store-launch/screenshots/raw/INDEX.md` and the blockers in `CURRENT_STATE.md`. Goal: clean, native, production‑build screenshots with **no Expo dev‑client gear overlay** and **no fabricated product truth**.
 
 ### C0. Pre‑flight (do once)
 - [ ] **Build a production/preview build** of each app (NOT the Expo dev client) so no gear overlay appears. Caveat **C1** in `CAVEATS.md`: customer dev‑client shots show the gear overlay and must be recaptured from a production/preview build.
@@ -422,14 +422,14 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 - Shopify merchant app / Stripe Dashboard — merchant dashboard & financial‑presentation patterns (public apps)
 - Starbucks — loyalty visualization patterns (public app)
 
-**Repo sources cited inline above:** `docs/mobile/CONTINUE-HERE.md`; `packages/mobile-ui/src/{tokens,components}/*`; `apps/{consumer,restaurant}-mobile/app/**`; `docs/product/{brand-assets,premium-ux-transformation,ux-audit-production-polish}.md`; `.codex-artifacts/gozaika-polish-v2/CURRENT_STATE.md`; `.codex-artifacts/gozaika-store-launch/screenshots/raw/INDEX.md`.
+**Repo sources cited inline above:** `docs/mobile/CONTINUE-HERE.md`; `packages/mobile-ui/src/{tokens,components}/*`; `apps/{consumer,restaurant}-mobile/app/**`; `docs/product/{brand-assets,premium-ux-transformation,ux-audit-production-polish}.md`; `.codex-artifacts/archive/launch-assets-pre-factory/gozaika-polish-v2/CURRENT_STATE.md`; `.codex-artifacts/archive/launch-assets-pre-factory/gozaika-store-launch/screenshots/raw/INDEX.md`.
 
 ## Uplift Implementation Record
 
 ### U1 - Design-system depth (Complete, 2026-06-25)
 
 - Branch: `codex/mobile-ux-uplift/u1-depth`.
-- Files changed: `packages/mobile-ui/src/tokens/layout.ts`, `packages/mobile-ui/src/motion.ts`, `packages/mobile-ui/src/motion.test.ts`, `packages/mobile-ui/src/components/Button.tsx`, `packages/mobile-ui/src/components/Card.tsx`, `packages/mobile-ui/src/index.ts`; plan docs updated in this file and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Files changed: `packages/mobile-ui/src/tokens/layout.ts`, `packages/mobile-ui/src/motion.ts`, `packages/mobile-ui/src/motion.test.ts`, `packages/mobile-ui/src/components/Button.tsx`, `packages/mobile-ui/src/components/Card.tsx`, `packages/mobile-ui/src/index.ts`; plan docs updated in this file and `docs/mobile/plans/mobile-implementation-plan-v1.md`.
 - Public surface: exported `elevation`/`ElevationLevel`, `motion`, `getPressFeedbackStyle`, and `useReducedMotion`; `Card` now accepts optional `elevated?: boolean | ElevationLevel`; `Button` now has visual press feedback only.
 - Compatibility: existing Card default remains flat (`elevated=false`); existing Button props/routes/data behavior unchanged; no haptics, native dependencies, product data, API contracts, or app behavior changes.
 - Verification: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` passed after moving the native reduced-motion API behind a hook-time dynamic import so pure motion token tests do not load React Native into Vitest; full `node scripts/mobile-ci.mjs` is green 7/7 after clearing active Orbitwell owner drift from app configs and removing a server-secret identifier from a Maestro comment.
@@ -439,7 +439,7 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 ### U2C - Customer primitives (Complete, 2026-06-25)
 
 - Branch: `codex/mobile-ux-uplift/u2c-customer-primitives`.
-- Files changed: `packages/mobile-ui/src/components/CustomerPrimitives.tsx`, `packages/mobile-ui/src/components/customerPrimitivesModel.ts`, `packages/mobile-ui/src/components/customerPrimitivesModel.test.ts`, `packages/mobile-ui/src/index.ts`; plan docs updated in this file and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Files changed: `packages/mobile-ui/src/components/CustomerPrimitives.tsx`, `packages/mobile-ui/src/components/customerPrimitivesModel.ts`, `packages/mobile-ui/src/components/customerPrimitivesModel.test.ts`, `packages/mobile-ui/src/index.ts`; plan docs updated in this file and `docs/mobile/plans/mobile-implementation-plan-v1.md`.
 - Public surface: exported `HeroBanner`, `CountdownChip`, `FilterChipRow`, `SegmentedToggle`, `StickyActionBar`, `PeekBar`, `ProgressRing`, `LoyaltyCard`, and pure helper functions for countdown/progress formatting.
 - Compatibility: no consumer app routes, data fetching, claims, checkout, pickup proof, order states, restaurants, prices, metrics, ratings, or loyalty counts were fabricated or changed. Primitives render only caller-provided real values.
 - Verification: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
@@ -449,7 +449,7 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 ### U2R - Partner primitives (Complete, 2026-06-25)
 
 - Branch: `codex/mobile-ux-uplift/u2r-partner-primitives`.
-- Files changed: `packages/mobile-ui/src/components/PartnerPrimitives.tsx`, `packages/mobile-ui/src/components/partnerPrimitivesModel.ts`, `packages/mobile-ui/src/components/partnerPrimitivesModel.test.ts`, `packages/mobile-ui/src/index.ts`; plan docs updated in this file and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Files changed: `packages/mobile-ui/src/components/PartnerPrimitives.tsx`, `packages/mobile-ui/src/components/partnerPrimitivesModel.ts`, `packages/mobile-ui/src/components/partnerPrimitivesModel.test.ts`, `packages/mobile-ui/src/index.ts`; plan docs updated in this file and `docs/mobile/plans/mobile-implementation-plan-v1.md`.
 - Public surface: exported `MetricHero`, `ActionCard`, `QueueCard`, `SellThroughBar`, `Sparkline`, `DataTable`, `RoleAwareSection`, `RestaurantSwitcher`, and pure helper functions for sell-through/progress/trend normalization.
 - Compatibility: no restaurant routes, data fetching, role matrix, pickup verification, finance/ROI formulas, order states, metrics, payouts, QR/OTP, or claims were fabricated or changed. Primitives render only caller-provided server values.
 - Verification: `npm.cmd --workspace @gozaika/mobile-ui run typecheck` passed; `npm.cmd --workspace @gozaika/mobile-ui test` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
@@ -459,7 +459,7 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 ### C1 - Customer Home/Discover composition (Complete, 2026-06-25)
 
 - Branch: `codex/mobile-ux-uplift/c1-home-discover`.
-- Files changed: `apps/consumer-mobile/app/(tabs)/index.tsx`; plan docs updated in this file and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Files changed: `apps/consumer-mobile/app/(tabs)/index.tsx`; plan docs updated in this file and `docs/mobile/plans/mobile-implementation-plan-v1.md`.
 - Screen surface: Home now renders a U2C hero, real active-drop stat, closing-soon horizontal rail, live dietary/neighborhood chips, loading skeletons, error retry, no-live-drop empty state, and account/passport/consent link card.
 - Data truth: every visible restaurant/drop/price/window/quantity/tag comes from `useDrops()` and `MobilePublicDropCard`; favorite/follow rail is omitted until F1 creates real follow data.
 - Compatibility: no API/schema/auth/payment/pickup/notification behavior changed; no fake restaurants, prices, metrics, ratings, QR/OTP, order states, or claims introduced.
@@ -470,7 +470,7 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 ### C2 - Drops list + map toggle (Complete, 2026-06-25)
 
 - Branch: `codex/mobile-ux-uplift/c2-drops-map`.
-- Files changed: `apps/consumer-mobile/app/(tabs)/drops/index.tsx`; plan docs updated in this file and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Files changed: `apps/consumer-mobile/app/(tabs)/drops/index.tsx`; plan docs updated in this file and `docs/mobile/plans/mobile-implementation-plan-v1.md`.
 - Screen surface: Drops now has a discovery header, List/Map segmented toggle, dietary filters, closing-soon/availability sorting, refreshed list view, and a native coordinate-pin map view.
 - Data truth: map pins render only drops with public `latitude`/`longitude`; no private address, fake coordinate, restaurant, price, rating, QR/OTP, order state, or unsupported claim was introduced. List view remains the fallback/source of truth.
 - Dependency decision: no new map SDK dependency in this slice; full provider tiles can be introduced later with explicit Expo/Android build proof.
@@ -481,7 +481,7 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 ### R1 - Partner role-shaped Today dashboard (Complete, 2026-06-25)
 
 - Branch: `codex/mobile-ux-uplift/r1-partner-dashboard`.
-- Files changed: `apps/restaurant-mobile/app/(tabs)/index.tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Files changed: `apps/restaurant-mobile/app/(tabs)/index.tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `docs/mobile/plans/mobile-implementation-plan-v1.md`.
 - Screen surface: Partner Home/Today now composes `MetricHero`, role/status badges, status and publishing notices, finance sell-through summary, operations action cards, next-drop context, and the gated new-drop action from the existing dashboard payload.
 - Role/data truth: `QUEUE_ONLY` leads with pickup queue and never shows financials; `SUMMARY` leads with finance and never shows operational queue actions; `FULL` can show both only when both sections are present. No previous-period trend delta, fabricated metric, restaurant claim, QR/OTP, order state, rating, or user-count claim was introduced.
 - Verification: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
@@ -491,7 +491,7 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 ### C3 - Drop detail + checkout polish (Complete, 2026-06-25)
 
 - Branch: `codex/mobile-ux-uplift/c3-detail-checkout`.
-- Files changed: `apps/consumer-mobile/app/(tabs)/drops/[dropPk].tsx`, `apps/consumer-mobile/app/checkout/[holdPk].tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Files changed: `apps/consumer-mobile/app/(tabs)/drops/[dropPk].tsx`, `apps/consumer-mobile/app/checkout/[holdPk].tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `docs/mobile/plans/mobile-implementation-plan-v1.md`.
 - Screen surface: Drop detail now has a pickup-end countdown, availability/low-stock card, price/allergen/pickup guidance cards, and sticky claim bar; checkout now has clearer simulator/demo copy, failure/retry controls, server-confirmation wait state, and confirmed-order success presentation.
 - Data truth: countdown derives from `pickupEndAt`; stock copy derives from `quantityAvailable`/`quantityTotal`; success renders only after `/checkout/status` returns `orderPk` and `orderStatusCode`. No fake pickup code, QR/OTP, order state, price, metric, rating, user-count, or unsupported payment claim was introduced.
 - Verification: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
@@ -501,7 +501,7 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 ### R2 - Counter focus-mode (Complete, 2026-06-25)
 
 - Branch: `codex/mobile-ux-uplift/r2-counter-focus`.
-- Files changed: `apps/restaurant-mobile/app/(tabs)/orders/index.tsx`, `apps/restaurant-mobile/src/counter/OrderActionsPanel.tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Files changed: `apps/restaurant-mobile/app/(tabs)/orders/index.tsx`, `apps/restaurant-mobile/src/counter/OrderActionsPanel.tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `docs/mobile/plans/mobile-implementation-plan-v1.md`.
 - Screen surface: Counter now has focus-mode queue counts, Active/All/Collected/Issues filters, U2R `QueueCard` rows, retained offline banner, retained tablet master-detail split, and a focused verification panel with elevated verify/no-show/incident cards.
 - Security/behavior truth: pickup verification still uses the existing server-authoritative hooks, stable idempotency keys, QR/OTP inputs, offline not-confirmed warning, no-show server rejection, and incident creation path. No fake order state, QR/OTP, pickup result, haptic/sound claim, metric, rating, or user-count claim was introduced.
 - Dependency decision: no haptic/sound dependency in this slice; counter-only haptic/sound can be introduced later with explicit native/device verification.
@@ -512,7 +512,7 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 ### C4 - Orders timeline + peek bar (Complete, 2026-06-25)
 
 - Branch: `codex/mobile-ux-uplift/c4-orders-timeline`.
-- Files changed: `apps/consumer-mobile/app/(tabs)/_layout.tsx`, `apps/consumer-mobile/app/(tabs)/orders/index.tsx`, `apps/consumer-mobile/app/(tabs)/orders/[orderPk].tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Files changed: `apps/consumer-mobile/app/(tabs)/_layout.tsx`, `apps/consumer-mobile/app/(tabs)/orders/index.tsx`, `apps/consumer-mobile/app/(tabs)/orders/[orderPk].tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `docs/mobile/plans/mobile-implementation-plan-v1.md`.
 - Screen surface: Orders now has active pickup counts, elevated active-order cards, explicit native press targets, an active-order peek bar above tabs, and a detail timeline.
 - Data truth: peek and timeline derive only from real `ConsumerOrderDto` fields (`orderStatusCode`, `paymentStatusCode`, `createdAt`, pickup window, `collectedAt`, restaurant/order labels). No pickup code, QR/OTP, fake payment claim, fabricated order state, metric, rating, or user-count claim was introduced.
 - Verification: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
@@ -522,7 +522,7 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 ### C5 - Passport/loyalty viz (Complete, 2026-06-25)
 
 - Branch: `codex/mobile-ux-uplift/c5-passport-loyalty`.
-- Files changed: `apps/consumer-mobile/app/(tabs)/account/index.tsx`, `apps/consumer-mobile/app/(tabs)/account/passport.tsx`, `apps/consumer-mobile/app/(tabs)/account/discovery.tsx`, `scripts/android-preview-install.ps1`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Files changed: `apps/consumer-mobile/app/(tabs)/account/index.tsx`, `apps/consumer-mobile/app/(tabs)/account/passport.tsx`, `apps/consumer-mobile/app/(tabs)/account/discovery.tsx`, `scripts/android-preview-install.ps1`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `docs/mobile/plans/mobile-implementation-plan-v1.md`.
 - Screen surface: Account now includes an elevated signed-in card, real Passport preview, and explicit action cards; Passport uses `LoyaltyCard` tier/progress visualization with real stats and badge states; Flavour Diversity uses `ProgressRing`, stat tiles, and real live-new-cuisine nudges.
 - Data truth: all visible tier/progress/stat/badge/cuisine/neighbourhood/personality values derive from Slice 11 `usePassport()` and `useDiscoveryProfile()` payloads. No fake rewards, referral mechanics, subscription entitlement, impact counter, restaurant, price, order state, pickup proof, QR, or OTP was introduced.
 - Verification: `npm.cmd --workspace @gozaika/consumer-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` result recorded with the slice commit.
@@ -532,7 +532,7 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 ### R3a - Drops visual polish (Complete, 2026-06-26)
 
 - Branch: `codex/mobile-ux-uplift/r3a-drops-visual-polish`.
-- Files changed: `apps/restaurant-mobile/app/(tabs)/drops/index.tsx`, `apps/restaurant-mobile/app/(tabs)/drops/[dropPk].tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Files changed: `apps/restaurant-mobile/app/(tabs)/drops/index.tsx`, `apps/restaurant-mobile/app/(tabs)/drops/[dropPk].tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `docs/mobile/plans/mobile-implementation-plan-v1.md`.
 - Screen surface: Drops now has a command-center summary, status filters, next-action card, elevated rows with reserved bars, and a richer detail view with inventory table and read-only next-action guidance.
 - Data truth: bars are labeled "Reserved" because the current mobile drops DTO exposes total, available, and held quantities but not a separate finalized-sold count. No lifecycle mutation, fake sell-through/revenue claim, order state, QR/OTP, rating, or customer data was added.
 - Verification: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7; Android release Gradle build passed from the short build tree via `cmd.exe`.
@@ -542,7 +542,7 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 ### R3b - Drop lifecycle actions (Complete, 2026-06-26)
 
 - Branch: `codex/mobile-ux-uplift/r3b-drop-lifecycle-actions`.
-- Files changed: `packages/types/src/mobile/catalog.ts`, `packages/types/src/mobile/catalog.test.ts`, `apps/restaurant-mgmt-web/app/api/mobile/v1/drops/[dropId]/status/route.ts`, `apps/restaurant-mobile/src/api/catalog.ts`, `apps/restaurant-mobile/app/(tabs)/drops/[dropPk].tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Files changed: `packages/types/src/mobile/catalog.ts`, `packages/types/src/mobile/catalog.test.ts`, `apps/restaurant-mgmt-web/app/api/mobile/v1/drops/[dropId]/status/route.ts`, `apps/restaurant-mobile/src/api/catalog.ts`, `apps/restaurant-mobile/app/(tabs)/drops/[dropPk].tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `docs/mobile/plans/mobile-implementation-plan-v1.md`.
 - Screen/API surface: Drop detail now renders lifecycle actions from real status, confirms each mutation, calls a role-gated mobile BFF status endpoint, and refreshes the Drops cache after success.
 - Data truth: actions never fabricate order impact; copy states that paid orders are not changed. Activation/scheduling respects restaurant status and publishing guardrails; terminal drops are rejected; cancellation stamps existing cancellation metadata.
 - Verification: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; `npm.cmd --workspace @gozaika/restaurant-mgmt-web run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7; Android release Gradle build passed from the short build tree via `cmd.exe`.
@@ -552,7 +552,7 @@ External benchmarks are named, verifiable public products cited at the *pattern*
 ### R3c - Reports/finance polish (Complete, 2026-06-26)
 
 - Branch: `codex/mobile-ux-uplift/r3c-reports-finance-polish`.
-- Files changed: `apps/restaurant-mobile/app/reports.tsx`, `apps/restaurant-mobile/app/finance.tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `project docs/gozaika_mobile_implementation_plan_v1.md`.
+- Files changed: `apps/restaurant-mobile/app/reports.tsx`, `apps/restaurant-mobile/app/finance.tsx`; plan docs updated in this file, `docs/mobile/CONTINUE-HERE.md`, and `docs/mobile/plans/mobile-implementation-plan-v1.md`.
 - Screen surface: Reports now leads with net recovery, sell-through, report-basis rows, drop mix, assumptions, actions, and exceptions from the ROI report payload. Finance now leads with latest payout, payout trend, settlement totals, per-settlement breakdowns, and a polished zero-settlement state when the seeded payload has no settlement runs.
 - Data truth: all displayed values come from `useRoiReport()` and `useFinance()`. Share/export presentation remains read-only and counts-only; no fabricated payout, revenue, rating, user count, QR/OTP, order state, or external claim was introduced.
 - Verification: `npm.cmd --workspace @gozaika/restaurant-mobile run typecheck` passed; full `node scripts/mobile-ci.mjs` passed 7/7.

@@ -3,8 +3,8 @@
 Status: **automated program complete (W0–W7) 2026-06-30** · Human a11y sign-off: **PENDING**
 Branch: `codex/mobile-ux-uplift/d1-demo-presales` → `main`
 
-Companion: [spec](../../project%20docs/gozaika_web_parity_spec_v1.md) ·
-[plan](../../project%20docs/gozaika_web_parity_implementation_plan_v1.md) ·
+Companion: [spec](specs/web-parity-spec-v1.md) ·
+[plan](plans/web-parity-implementation-plan-v1.md) ·
 [ledger](web-parity-ledger.md) ·
 [autonomous decision log](w5-w7-autonomous-decisions.md)
 

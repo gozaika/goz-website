@@ -1,8 +1,8 @@
 # scripts/store-launch
 
 Code-side tooling for the goZaika mobile store-readiness package. Companion to
-`project docs/gozaika_mobile_store_launch_readiness_plan_v1.md`. Outputs land in
-`.codex-artifacts/gozaika-store-launch/`.
+`docs/archived/launch-assets-pre-factory/old-plans/gozaika_mobile_store_launch_readiness_plan_v1.md`. Outputs land in
+`.codex-artifacts/archive/launch-assets-pre-factory/gozaika-store-launch/`.
 
 ## Scripts
 
@@ -10,7 +10,7 @@ Code-side tooling for the goZaika mobile store-readiness package. Companion to
 | --- | --- |
 | `capture-store-screenshots.mjs` | Grab the current Android foreground frame via `adb screencap` into a named store slot. Operator/Maestro-driven (navigate, then capture). |
 | `validate-store-assets.mjs` | Validate raw screenshots (dims/aspect), icon masters (size/alpha), and banned words in reviewer/copy text. |
-| `manifest.schema.json` | JSON Schema for `.codex-artifacts/gozaika-store-launch/manifest.json`. |
+| `manifest.schema.json` | JSON Schema for `.codex-artifacts/archive/launch-assets-pre-factory/gozaika-store-launch/manifest.json`. |
 
 ## Commands
 
@@ -29,8 +29,8 @@ npm run store:capture:screenshots -- --app gozaika --slot 06-orders
 ## Capture prerequisites
 
 1. Seed the demo data: `npm run db:seed:marketing-videos` (deterministic Hyderabad content;
-   personas + IDs in `.codex-artifacts/gozaika-marketing-videos/seed/seed-output.json`).
-2. Reviewer/test identities: see `.codex-artifacts/gozaika-store-launch/reviewer/test-accounts.json`.
+   personas + IDs in `.codex-artifacts/archive/launch-assets-pre-factory/gozaika-marketing-videos/seed/seed-output.json`).
+2. Reviewer/test identities: see `.codex-artifacts/archive/launch-assets-pre-factory/gozaika-store-launch/reviewer/test-accounts.json`.
 3. **Customer app: build a `preview`/`production` client, not the Expo dev client** — the dev
    client paints a floating gear over every frame (caveat C1). Partner dev-client frames are clean.
 4. Connect one device/emulator (`adb devices`). Captures are device-resolution PNGs; Google

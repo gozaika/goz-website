@@ -16,7 +16,7 @@ The right truth hierarchy is:
 1. Real app state from seeded/demo data.
 2. Real screenshots and recordings captured by Playwright and Maestro.
 3. Deterministic static composition and Remotion motion.
-4. Optional AI image editing only for protected background/atmosphere passes.
+4. Curated AI-enhanced backgrounds and lighting passes, strictly masked away from real UI.
 
 This is the best way to avoid fake UI, fake claims, unreadable app-store assets,
 and drift between website, app stores, partner sales, social, and tradeshow
@@ -31,7 +31,7 @@ materials.
   React/Next/React Native oriented.
 - ffmpeg remains useful for transcode/normalization, but should not be the
   creative video engine.
-- AI image generation/editing should be background-only and mask-protected.
+- AI image generation/editing should be background-only, mask-protected, and introduced during static-asset polish so the image quality bar is known before video production.
 - Scenario manifests are the correct abstraction. Every asset should trace back
   to a scenario, persona, app state, and source capture.
 - QA must be automated: dimensions, banned words, traceability, duration, file
@@ -48,7 +48,6 @@ materials.
 | Use app name `restaurant-staff-mobile` | Current repo app is `apps/restaurant-mobile`; store name is `goZaika Partner`. | Use `restaurant-mobile` / `goZaika Partner` consistently. If staff-only scenes are needed, model them as scenarios/roles, not a new app identity. |
 | Build five new packages immediately | Package sprawl before first assets could slow delivery. | Start with `marketing-assets/src/*` modules, then extract to packages only once APIs stabilize. Create at most two packages up front: `@gozaika/demo-scenarios` and `@gozaika/asset-factory`, unless reuse pressure proves otherwise. |
 | Make `assets:all` capture mobile, render static, render video, and QA in one command from day one | Full end-to-end mobile capture is fragile, especially with a physical Android device and app auth state. | Provide `assets:all` eventually, but first ship reliable lane-specific commands: web capture, mobile flow generation, normalize, compose static, render one Remotion loop, QA. |
-| Treat AI image editing as part of the first implementation wave | This adds model keys, masks, human-review policy, and artifact tracking before the deterministic path proves itself. | Defer AI editing until deterministic capture/composition/video works and QA reports exist. Add the interface early only if cheap, but keep it disabled by default. |
 | Generate QR pickup visuals as a priority | Existing product may use SMS pickup-code proof and QR/OTP paths vary by app/screen. Fake QR is explicitly forbidden. | Capture whichever pickup-proof UI actually exists today. Use "pickup proof" generically unless a real QR screen is present and safe. |
 | Site review includes current gozaika.in copy issues | This is valuable but not directly covered by repo asset factory unless site source contains those strings. | Add a first slice to audit/fix website copy leaks and footer-year inconsistency in repo if present; otherwise record as external-site task. |
 | Use `marketing-assets/` for everything | Good clean-start name, but outputs and source need separation to keep git sane. | Use `marketing-assets/` as the single project home with `src/`, `scenarios/`, `briefs/`, `exports/`, `qa-reports/`, and `.gitignore` for bulky generated raw/intermediate outputs. |
@@ -62,8 +61,8 @@ The new strategy should reduce ambiguity aggressively:
   and `.codex-artifacts/gozaika-marketing-videos` source documents after extracting only reusable
   scenario/caption facts.
 - Archive old tracked `store-assets/` cards/videos as historical v1 deliverables.
-- Archive `scripts/store-video/` as legacy static-preview tooling.
-- Archive `scripts/store-cards/` once the new compositor can regenerate equivalent examples.
+- Archive `docs/archived/launch-assets-pre-factory/legacy-ffmpeg-static-preview/store-video/` as legacy static-preview tooling.
+- Archive `scripts/store-cards/` as legacy pre-factory tooling because it only targets historical v1 deliverables.
 - Keep only docs/assets that directly support the new scenario-driven factory.
 
 Suggested archive target:
@@ -108,6 +107,7 @@ marketing-assets/
     compositor/
       templates/
       qa/
+      ai/
     motion/
       remotion/
   scripts/
@@ -154,12 +154,12 @@ Tasks:
   docs" language.
 - Create `docs/archived/launch-assets-pre-factory/README.md`.
 - Archive or pointer-replace old tracked docs:
-  - `docs/store-video/store-video-parity-and-plan.md`
+  - the former `docs/store-video/store-video-parity-and-plan.md`
   - `docs/planning/task-bc-doc-inventory-and-marketing-rebaseline-plan.md`
-  - marketing-specific `project docs/gozaika_*store*`, `*marketing_video*`,
+  - marketing-specific files formerly under `project docs/gozaika_*store*`, `*marketing_video*`,
     `*asset_replacement*`, and image-generation docs after extracting useful
     facts into the new README/briefs.
-- Archive `scripts/store-video/` as legacy.
+- Archive `docs/archived/launch-assets-pre-factory/legacy-ffmpeg-static-preview/store-video/` as legacy.
 - Mark `store-assets/` as historical v1 deliverables and move or pointer it
   according to git-size tolerance.
 - Do not delete `.codex-artifacts` evidence; create an archive manifest and stop
@@ -229,7 +229,7 @@ Acceptance:
 
 ### Slice 4: Static Compositor
 
-Goal: generate high-polish static assets from real captures.
+Goal: generate high-polish static assets from real captures, device mockups, brand tokens, shadows, gradients, and curated AI-enhanced backgrounds.
 
 Tasks:
 
@@ -241,15 +241,48 @@ Tasks:
   - tradeshow poster
 - Render with Playwright/HTML/CSS and Sharp where useful.
 - Use design tokens from existing packages.
+- Add the masked AI-background interface for countertop, Hyderabad ambience, premium launch fields, and BAM Bag atmosphere. It must protect UI regions and save prompts/source hashes.
 - Generate at least 8 app-store-style graphics and 3 website/restaurant graphics.
+- Force three render passes per candidate:
+  - `v1-functional`: correct source proof, dimensions, and composition.
+  - `v2-polished`: refined hierarchy, shadows, gradients, and background atmosphere.
+  - `v3-launch-grade`: final-grade crop, copy restraint, premium polish, and human-review readiness.
 
 Acceptance:
 
 - Outputs are real PNGs in correct dimensions.
 - All outputs link to scenario/source screenshot metadata.
 - Text safe margins are checked.
+- AI artifacts are absent from protected UI and flagged in the creative review.
+- Each selected asset has v1/v2/v3 scores.
 
-### Slice 5: Remotion Motion Foundation
+### Slice 5: Creative Review Discipline
+
+Goal: make premium creative judgment explicit before video work starts.
+
+Tasks:
+
+- Add `marketing-assets/creative-review.md`.
+- Define a 1-5 scoring rubric for:
+  - premium feel within two seconds
+  - immediate product proof
+  - screen readability
+  - copy restraint
+  - smooth/restrained/expensive motion where applicable
+  - tasteful shadows/glows
+  - no discount-app vibes
+  - no AI artifacts
+  - credibility next to Cash App, CRED, Superlist, or Phantom
+  - correct consumer vs restaurant surface language
+- Require Codex to score every generated asset and record `v1`, `v2`, and `v3` pass notes.
+- Leave room for owner overrides to downscore/upscore and record the final launch decision.
+
+Acceptance:
+
+- No asset can be marked launch-grade without a creative-review entry.
+- Every launch-grade candidate has score history and owner-review space.
+
+### Slice 6: Remotion Motion Foundation
 
 Goal: produce the first real launch loops.
 
@@ -268,8 +301,9 @@ Acceptance:
 - At least three MP4 loops render.
 - Duration/dimension checks pass.
 - UI screenshots remain real and readable.
+- Template choices are explicitly benchmarked against Cash App / CRED / Superlist-level restraint: large type, generous negative space, smooth easing, expensive shadows, and no noisy slideshow motion.
 
-### Slice 6: QA And Asset Catalog
+### Slice 7: QA And Asset Catalog
 
 Goal: make the system safe enough for high-visibility iteration.
 
@@ -286,22 +320,6 @@ Acceptance:
 - `npm run assets:qa` creates a report.
 - Every generated asset has traceability metadata.
 - The README tells a fresh agent how to regenerate the full set.
-
-### Slice 7: AI Image Editing Interface, Disabled By Default
-
-Goal: add controlled beauty-pass capability only after deterministic output works.
-
-Tasks:
-
-- Add image-edit interface with mask requirement.
-- Save prompts and source/output hashes.
-- Add protected-UI policy and human-review status.
-- Do not run paid/model-backed generation unless explicitly approved.
-
-Acceptance:
-
-- Interface exists but deterministic pipeline remains primary.
-- AI cannot alter UI regions by default.
 
 ## Root Scripts To Add
 
@@ -333,7 +351,7 @@ Prefer Windows-friendly `npm.cmd`/PowerShell wrappers:
 5. Restaurant proof visuals, especially dashboard/queue/ZaikaIQ.
 6. Safety/trust visuals.
 7. Tradeshow loop.
-8. AI background beauty pass only after the above is deterministic.
+8. AI-enhanced background variants for the strongest static assets before video production.
 
 ## Verification Gates
 

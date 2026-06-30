@@ -10,9 +10,9 @@ Continue the goZaika mobile + web UX uplift. You own the whole monorepo (single-
 
 **Read first, in order:**
 1. `docs/mobile/CONTINUE-HERE.md` — entry point; the "Mobile UX uplift overlay" section has live state.
-2. `project docs/gozaika_mobile_implementation_plan_v1.md` — slice tracker + per-slice completion records (see the **D1** record + the **X1 accepted deviation** note).
+2. `docs/mobile/plans/mobile-implementation-plan-v1.md` — slice tracker + per-slice completion records (see the **D1** record + the **X1 accepted deviation** note).
 3. `docs/product/gozaika-mobile-ux-uplift-analysis-v1.md` §A5 — the D1 sub-slice table.
-4. `.codex-artifacts/gozaika-polish-v2/CURRENT_STATE.md` — the store-asset track to reconcile before D1d.
+4. `.codex-artifacts/archive/launch-assets-pre-factory/gozaika-polish-v2/CURRENT_STATE.md` — the store-asset track to reconcile before D1d.
 
 **Current state (verify with `git log --oneline -8` and `node scripts/mobile-ci.mjs` → expect 7/7):**
 - `main` holds the consolidated uplift chain U1→X1. **Active branch: `codex/mobile-ux-uplift/d1-demo-presales`** — continue D1 here; it merges to `main` (fast-forward) only when D1 is complete.
@@ -22,7 +22,7 @@ Continue the goZaika mobile + web UX uplift. You own the whole monorepo (single-
 **Your tasks, in order:**
 1. **First — D1b web visual QA (outstanding):** `npm.cmd --workspace @gozaika/consumer-web run dev`, open `/drops` and `/restaurants/[slug]`, and confirm the hero overlay keeps white text readable and the cover banners crop well. Fix anything off, re-commit.
 2. **D1c:** drop-type / blind-bag art variants (CHEF_SPECIAL, BLIND_ADVENTURE) layered on the cuisine cover.
-3. **D1d:** store-listing screenshot cards composed from the now-vibrant states — **reconcile with `.codex-artifacts/gozaika-polish-v2` first** (don't duplicate/conflict).
+3. **D1d:** store-listing screenshot cards composed from the now-vibrant states — **reconcile with `.codex-artifacts/archive/launch-assets-pre-factory/gozaika-polish-v2` first** (don't duplicate/conflict).
 4. **D1e:** Maestro demo-flow polish + a capture manifest.
 
 **No-drift rules (follow exactly):**

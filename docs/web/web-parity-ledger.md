@@ -4,8 +4,8 @@ Status: **program complete W0–W7 (automated) 2026-06-30 — human a11y sign-of
 Source of truth: checked-in code. One row per customer + partner web surface.
 A web-parity slice cannot be marked complete until its rows here carry evidence.
 
-Spec: [`../../project docs/gozaika_web_parity_spec_v1.md`](../../project%20docs/gozaika_web_parity_spec_v1.md) ·
-Plan: [`../../project docs/gozaika_web_parity_implementation_plan_v1.md`](../../project%20docs/gozaika_web_parity_implementation_plan_v1.md)
+Spec: [`specs/web-parity-spec-v1.md`](specs/web-parity-spec-v1.md) ·
+Plan: [`plans/web-parity-implementation-plan-v1.md`](plans/web-parity-implementation-plan-v1.md)
 
 ## Legend
 - **Route/data** — already at parity (every web surface exists on the same shared lib + Supabase data as its mobile twin). This column is **Done at baseline** for every row.

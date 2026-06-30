@@ -23,8 +23,8 @@ is also green — `web-ci` now runs eslint too, so a green local web gate ⇒ gr
 ## 1. READ-FIRST index (review these to understand current state)
 
 ### Strategy / product (the "why" + canonical positioning — do not contradict)
-- `project docs/goZaika_Technology_Specification_v4.md` — current technical spec of record.
-- `project docs/claude_goZaika_Master_Business_Document_v4.docx` — business model / positioning v4.
+- `docs/strategy/technology-specification-v4.md` — current technical spec of record.
+- `docs/strategy/business/master-business-document-v4.docx` — business model / positioning v4.
 - `docs/product/` — per-feature product specs. Most relevant:
   `drop-publishing-discovery.md`, `claim-hold-order-intent.md`, `product-media-pipeline.md`,
   `pickup-verification-incident-basics.md`, `transactional-notifications.md`,
@@ -33,8 +33,8 @@ is also green — `web-ci` now runs eslint too, so a green local web gate ⇒ gr
   `leftover|stale|cheap|clearance|liquidation|food rescue|sample|surplus`. Enforced by both gates.
 
 ### Web app state (this is the freshest workstream — start here)
-- `project docs/gozaika_web_parity_spec_v1.md` — web parity spec (approved, both web apps).
-- `project docs/gozaika_web_parity_implementation_plan_v1.md` — sliced plan + tracker (W0–W7 **done**).
+- `docs/web/specs/web-parity-spec-v1.md` — web parity spec (approved, both web apps).
+- `docs/web/plans/web-parity-implementation-plan-v1.md` — sliced plan + tracker (W0–W7 **done**).
 - `docs/web/web-parity-ledger.md` — **per-surface status** for every customer + partner web route.
 - `docs/web/web-parity-audit.md` — program closure + the **human a11y sign-off checklist (PENDING)**.
 - `docs/web/w5-w7-autonomous-decisions.md` — **decision log D1–D9** (label, no-map-SDK, the
@@ -42,11 +42,11 @@ is also green — `web-ci` now runs eslint too, so a green local web gate ⇒ gr
   Read this to avoid re-litigating settled decisions.
 
 ### Mobile app state
-- `project docs/gozaika_mobile_implementation_plan_v1.md` — mobile UX uplift plan (Slices U1→R4,
+- `docs/mobile/plans/mobile-implementation-plan-v1.md` — mobile UX uplift plan (Slices U1→R4,
   X1, D1, F1, Slices 10–18) — **complete**.
-- `project docs/gozaika_customer_mobile_technical_spec_v1.md`,
-  `project docs/gozaika_restaurant_mobile_technical_spec_v1.md`,
-  `project docs/gozaika_mobile_shared_architecture_and_release_spec_v1.md` — mobile architecture.
+- `docs/mobile/specs/customer-mobile-technical-spec-v1.md`,
+  `docs/mobile/specs/restaurant-mobile-technical-spec-v1.md`,
+  `docs/mobile/specs/mobile-shared-architecture-and-release-spec-v1.md` — mobile architecture.
 - `docs/mobile/CONTINUE-HERE.md` + `docs/mobile/mobile-parity-ledger.md` — mobile resume point +
   per-screen ledger + no-drift rules.
 - `docs/mobile/role-matrix-enforcement-gap.md`, `slice18-release-readiness.md` — open mobile items.

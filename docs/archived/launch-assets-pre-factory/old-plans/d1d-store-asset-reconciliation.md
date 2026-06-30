@@ -5,7 +5,7 @@ Date: 2026-06-27 · Owner: source-code agent (mobile UX uplift, slice D) · Stat
 ## TL;DR
 
 D1d does **not** produce store-listing cards. After reconciling with the
-authoritative store-asset track (`.codex-artifacts/gozaika-polish-v2/`), doing so
+authoritative store-asset track (`.codex-artifacts/archive/launch-assets-pre-factory/gozaika-polish-v2/`), doing so
 would **duplicate and conflict** with a deliberately-gated pipeline and overstep the
 store-launch **lane split**. Instead, D1d records what the D1a–D1c art work + the
 mojibake repair changed in the *source material* that pipeline consumes, and hands
@@ -34,7 +34,7 @@ creatives, final Play review.** Polished store cards are Codex's lane.
 Conclusion: the no-drift D1d deliverable is **(a)** this reconciliation, **(b)** the
 list of polish-v2 sources that D1 improved and must be recaptured, and **(c)** the
 already-captured web evidence proving the vibrant states render correctly. No files
-were written into `.codex-artifacts/gozaika-polish-v2/` (another track's working
+were written into `.codex-artifacts/archive/launch-assets-pre-factory/gozaika-polish-v2/` (another track's working
 tree) — this doc lives in the source-code track and references polish-v2 by path.
 
 ## What D1 changed in the polish-v2 source material

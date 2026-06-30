@@ -24,7 +24,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const RAW = resolve(repo, ".codex-artifacts/gozaika-store-launch/screenshots/raw");
+const RAW = resolve(repo, ".codex-artifacts/archive/launch-assets-pre-factory/gozaika-store-launch/screenshots/raw");
 
 // Slot plans mirror screenshots/raw/INDEX.md (plan §6).
 const SLOTS = {

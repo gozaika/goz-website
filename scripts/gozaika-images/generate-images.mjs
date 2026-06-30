@@ -79,8 +79,8 @@ const PLAN = {
 };
 
 const REQUIRED_INPUTS = [
-  "project docs/gozaika_image_generation_manifest_v1.md",
-  "project docs/gozaika_image_generation_prompt_pack_v1.md",
+  "docs/archived/launch-assets-pre-factory/old-plans/gozaika_image_generation_manifest_v1.md",
+  "docs/archived/launch-assets-pre-factory/old-plans/gozaika_image_generation_prompt_pack_v1.md",
   "icons/gozaika-logo.svg",
   "icons/flame.svg",
 ];

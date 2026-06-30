@@ -1,0 +1,6 @@
+captures/raw/
+captures/normalized/
+frames/
+tmp/
+*.log
+

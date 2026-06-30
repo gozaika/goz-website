@@ -15,7 +15,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const ROOT = resolve(repo, ".codex-artifacts/gozaika-store-launch");
+const ROOT = resolve(repo, ".codex-artifacts/archive/launch-assets-pre-factory/gozaika-store-launch");
 const RAW = join(ROOT, "screenshots/raw");
 
 const args = process.argv.slice(2);

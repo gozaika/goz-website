@@ -45,13 +45,13 @@ counter/owner proof flows. Listed here so the demo index is complete.
 
 ## How this fits the other tracks (no overlap)
 
-- **`.codex-artifacts/gozaika-marketing-videos/`** — cinematic app-preview *videos* (storyboards,
+- **`.codex-artifacts/archive/launch-assets-pre-factory/gozaika-marketing-videos/`** — cinematic app-preview *videos* (storyboards,
   captions, `manifest.json`, ffmpeg polish). The `marketing-*` Maestro flows above feed it. D1e
   does not change those flows or that manifest.
-- **`.codex-artifacts/gozaika-polish-v2/`** — App Store / Play *store cards + cinematic videos*
+- **`.codex-artifacts/archive/launch-assets-pre-factory/gozaika-polish-v2/`** — App Store / Play *store cards + cinematic videos*
   (Codex-owned finals; gated). See `docs/mobile/d1d-store-asset-reconciliation.md` for what slice D
   improved in its customer source material and the native recapture handoff.
-- **`.codex-artifacts/gozaika-store-launch/`** — closed-beta store *submission package*
+- **`.codex-artifacts/archive/launch-assets-pre-factory/gozaika-store-launch/`** — closed-beta store *submission package*
   (raw shots, reviewer data, EAS/build evidence).
 
 ## Status / caveats

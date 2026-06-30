@@ -22,7 +22,7 @@ social assets are controlled by:
 
 The detailed production contract is:
 
-`project docs/gozaika_asset_replacement_spec_v1.md`
+`docs/archived/launch-assets-pre-factory/old-plans/gozaika_asset_replacement_spec_v1.md`
 
 ## Free validation
 

@@ -275,7 +275,7 @@ _Added: 2026-06-22. Reviewer: strategic sounding-board pass against the canonica
 
 ## ⚠️ Critical Flag: This Document Contradicts the Canonical v4 Strategy
 
-The canonical strategy is the **two-sided positioning** in `project docs/claude_goZaika_Master_Business_Document_v4.docx` (dated 2026-06-16, deployed to production). This sounding-board doc (dated 2026-06-23, seven days later) quietly reverses three of v4's locked decisions:
+The canonical strategy is the **two-sided positioning** in `docs/strategy/business/master-business-document-v4.docx` (dated 2026-06-16, deployed to production). This sounding-board doc (dated 2026-06-23, seven days later) quietly reverses three of v4's locked decisions:
 
 | Decision | v4 Canonical (locked) | This Sounding-Board Doc |
 |---|---|---|

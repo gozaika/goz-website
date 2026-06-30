@@ -9,7 +9,7 @@ goZaika is a premium-access, pickup-only BAM Bag marketplace for India. The plat
   - `https://customer.gozaika.in/`
   - `https://restaurant.gozaika.in/`
   - `https://admin.gozaika.in/`
-- Product and technology specification: `C:\venkat\limca\gozaika\sourcecode\project docs\goZaika_Technology_Specification_v2.docx`
+- Product and technology specification: `docs/strategy/technology-specification-v4.md`
 - Canonical DDL: `C:\venkat\limca\gozaika\website\dbschema\gozaika_consolidated_schema.sql`
 
 Owned domains now include `gozaik.in` and `gozaika.com`. Treat them as reserved domains until DNS and Vercel aliases are explicitly configured.
