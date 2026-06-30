@@ -157,6 +157,8 @@ const MIGRATED_FILES = [
   "apps/consumer-web/app/cities/[city]/page.tsx",
   // W5 — partner portal surfaces migrated to tokens/primitives:
   "apps/restaurant-mgmt-web/app/portal/dashboard/page.tsx",
+  "apps/restaurant-mgmt-web/app/portal/orders/page.tsx",
+  "apps/restaurant-mgmt-web/app/portal/orders/orders-client.tsx",
 ];
 const BRAND_HEX = /#(?:FF6B35|1A5C38|D4A017|FFF8F0|2D2D2D)\b/i;
 

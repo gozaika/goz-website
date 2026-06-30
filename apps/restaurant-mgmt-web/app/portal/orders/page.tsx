@@ -103,8 +103,8 @@ export default async function OrdersPage() {
   return (
     <PortalChrome restaurantName={restaurants[0]?.restaurantName} statusCode="ACTIVE">
       <section className="px-4 py-6 sm:px-6">
-        <h1 className="text-3xl font-bold">Pickup orders</h1>
-        <p className="mt-2 max-w-3xl text-sm text-slate-600">
+        <h1 className="text-3xl font-bold text-charcoal">Pickup orders</h1>
+        <p className="mt-2 max-w-3xl text-sm text-muted">
           Verify paid pickup-ready BAM Bag orders with a customer OTP, paste a QR payload when needed, mark true no-shows
           after the pickup window, and log short pilot incidents.
         </p>
