@@ -41,6 +41,14 @@ step("typecheck (@gozaika/design-tokens + @gozaika/ui + web apps)", () => {
   );
 });
 
+// 1b. ESLint both web apps (mirrors the GitHub "Quality Gates" lint). `eslint .`
+//     exits non-zero on errors only (warnings allowed), so this catches blocking
+//     lint regressions — e.g. next/no-html-link-for-pages, no-require-imports —
+//     that typecheck + build don't.
+step("eslint (web apps)", () => {
+  sh("npm run lint --workspace @gozaika/consumer-web --workspace @gozaika/restaurant-mgmt-web");
+});
+
 // 2. Unit + contract tests for the shared tokens + web design system + web app libs.
 step("unit/contract tests", () => {
   sh("npx vitest run --passWithNoTests packages/design-tokens packages/utils packages/ui apps/consumer-web apps/restaurant-mgmt-web");

@@ -76,6 +76,26 @@ Ledger: [`web-parity-ledger.md`](web-parity-ledger.md)
 - Added a root `vitest.config.ts` excluding `**/*.spec.ts` + `**/tests/**` so vitest (unit, uses
   `*.test.ts`) and Playwright (e2e/a11y, uses `*.spec.ts`) don't collide.
 
+### Post-merge — GitHub "Quality Gates" (eslint) parity — **D9**
+- The GitHub `ci.yml` "Quality Gates" runs **eslint**, which `scripts/web-ci.mjs` did **not** —
+  so two blocking lint errors slipped past the local gate. **Added an `eslint (web apps)` step
+  to web-ci** (now 10/10) running `npm run lint` per app (errors fail, warnings allowed — matches
+  CI). Fixes:
+  - `not-found.tsx` (both apps): `<a>`→`next/link` `<Link>` (`@next/next/no-html-link-for-pages`).
+  - `lib/push/fcm.ts` (pre-existing, Slice 16): `require("node:fs")` → top-level
+    `import { readFileSync }` (`@typescript-eslint/no-require-imports`).
+- **Two data/structural bugs the eslint+a11y gate surfaced (both pre-existing, data-dependent —
+  they only triggered once the audited pages rendered real cards):**
+  - `api/discovery/cuisine-stats/route.ts` crashed on `restaurant_restaurant?.flatMap` — Supabase
+    returns a **to-one embed as an object**, not an array. Added an `asArray()` normaliser
+    (handles object | array | null). Defensive, no schema/query change.
+  - `heading-order`: `DropCard`/`RestaurantCard` titles were `<h3>`, skipping from the page `<h1>`
+    when no `<h2>` section preceded them. Changed both card titles to `<h2>` (the earlier a11y
+    runs only passed because those pages happened to render empty/no-card states — fragile).
+- Remaining eslint **warnings** are pre-existing and non-blocking (unused vars in a few API
+  routes; two `<img>`→`next/image` LCP hints on DropCard cover art / detail hero — candidates for
+  the recommended perf residual, not gated).
+
 ## Per-surface / per-slice notes
 
 ### W5(3/n) `/portal/drops` (+ `/new`)

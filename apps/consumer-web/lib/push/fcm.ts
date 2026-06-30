@@ -1,4 +1,5 @@
 import { createSign } from "node:crypto";
+import { readFileSync } from "node:fs";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
@@ -31,9 +32,7 @@ function loadServiceAccount(): ServiceAccount | null {
   if (cachedAccount) return cachedAccount;
   let raw = process.env.FCM_SERVICE_ACCOUNT_JSON ?? null;
   if (!raw && process.env.FCM_SERVICE_ACCOUNT_PATH) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const fs = require("node:fs") as typeof import("node:fs");
-    raw = fs.readFileSync(process.env.FCM_SERVICE_ACCOUNT_PATH, "utf8");
+    raw = readFileSync(process.env.FCM_SERVICE_ACCOUNT_PATH, "utf8");
   }
   if (!raw) return null;
   const parsed = JSON.parse(raw) as ServiceAccount;

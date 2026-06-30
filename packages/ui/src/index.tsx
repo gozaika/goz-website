@@ -288,13 +288,13 @@ export function DropCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-forest">{drop.restaurantName}</p>
-          <h3 className="mt-1 text-xl font-semibold text-charcoal">
+          <h2 className="mt-1 text-xl font-semibold text-charcoal">
             {isBlindAdventure ? (
               <span className="text-gold-text">Mystery Cuisine</span>
             ) : (
               drop.bagDisplayName
             )}
-          </h3>
+          </h2>
           {!isBlindAdventure && drop.bagShortDescription ? (
             <p className="mt-1 line-clamp-2 text-sm text-muted">{drop.bagShortDescription}</p>
           ) : null}
@@ -382,7 +382,7 @@ export function RestaurantCard({
           <p className="text-xs font-bold uppercase tracking-wide text-forest">
             {restaurant.neighborhoodName ? `${restaurant.neighborhoodName} pickup` : restaurant.cityName ?? "Pickup partner"}
           </p>
-          <h3 className="mt-2 text-2xl font-bold text-charcoal">{restaurant.restaurantName}</h3>
+          <h2 className="mt-2 text-2xl font-bold text-charcoal">{restaurant.restaurantName}</h2>
           <p className="mt-2 line-clamp-2 text-sm text-muted">
             {restaurant.headline ?? "Chef-led BAM Bags with published dietary, allergen, and pickup details."}
           </p>

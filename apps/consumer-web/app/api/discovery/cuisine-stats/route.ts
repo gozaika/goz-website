@@ -2,6 +2,13 @@ import type { CuisineStatsResult } from "@gozaika/types";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+// Supabase embeds: a to-one relation comes back as an object (or null), a
+// to-many relation as an array. These types allow both shapes; `asArray` below
+// normalises them before iterating.
+type CuisineMap = { master_cuisine_fk: string };
+type RestaurantRow = { restaurant_cuisine_map: CuisineMap | CuisineMap[] | null };
+type RestaurantCuisineRelation = RestaurantRow | RestaurantRow[] | null;
+
 export async function GET() {
   const supabase = await createClient();
   const now = new Date();
@@ -28,14 +35,21 @@ export async function GET() {
   const neighbourhoodActivity = (nRows ?? []).map((row) => {
     const n = row as {
       neighborhood_name: string;
-      drop_drop: { drop_status_code: string; pickup_end_at: string; restaurant_restaurant: { restaurant_cuisine_map: { master_cuisine_fk: string }[] }[] }[];
+      drop_drop: { drop_status_code: string; pickup_end_at: string; restaurant_restaurant: RestaurantCuisineRelation }[];
     };
+    // Supabase returns a to-one embed as an object (or null), not an array; a
+    // to-many embed as an array. Normalise both shapes before flatMapping.
+    const asArray = <T,>(value: T | T[] | null | undefined): T[] =>
+      Array.isArray(value) ? value : value == null ? [] : [value];
+
     const activeDrops = (n.drop_drop ?? []).filter(
       (d) => ["ACTIVE", "SCHEDULED"].includes(d.drop_status_code) && Date.parse(d.pickup_end_at) > now.getTime(),
     );
     const cuisines = new Set(
       activeDrops.flatMap((d) =>
-        d.restaurant_restaurant?.flatMap((r) => r.restaurant_cuisine_map?.map((cm) => cm.master_cuisine_fk) ?? []) ?? [],
+        asArray(d.restaurant_restaurant).flatMap((r) =>
+          asArray(r?.restaurant_cuisine_map).map((cm) => cm.master_cuisine_fk),
+        ),
       ),
     );
     return {

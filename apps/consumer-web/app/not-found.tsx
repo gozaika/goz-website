@@ -1,4 +1,5 @@
 import { EmptyState } from "@gozaika/ui";
+import Link from "next/link";
 
 export default function NotFound() {
   return (
@@ -8,12 +9,12 @@ export default function NotFound() {
           title="This page isn't on the menu"
           body="The drop, restaurant, or page you're looking for may have closed or moved. Browse today's live BAM Bags instead."
           action={
-            <a
+            <Link
               href="/drops"
               className="inline-flex min-h-11 items-center justify-center rounded-lg bg-saffron px-5 text-sm font-semibold text-charcoal shadow-sm transition hover:opacity-90"
             >
               Browse live drops
-            </a>
+            </Link>
           }
         />
       </div>
