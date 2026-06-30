@@ -25,7 +25,7 @@ export function PassportHomeSection() {
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-forest">Zayka Passport</p>
             <h2 className="mt-1 text-2xl font-bold text-charcoal">Track your food journey</h2>
-            <p className="mt-2 max-w-lg text-sm text-charcoal/70">
+            <p className="mt-2 max-w-lg text-sm text-muted">
               Every BAM Bag you claim expands your Flavour Passport — new cuisines, new neighbourhoods, higher tier access.
             </p>
           </div>

@@ -57,14 +57,14 @@ export default function DiscoveryPage() {
       </ShellHeader>
 
       <div className="mx-auto max-w-2xl px-4 py-10">
-        <nav className="mb-6 flex items-center gap-2 text-sm text-charcoal/60">
+        <nav className="mb-6 flex items-center gap-2 text-sm text-muted">
           <Link href="/account" className="hover:text-forest">Account</Link>
           <span>/</span>
           <span className="font-semibold text-charcoal">Flavour Passport</span>
         </nav>
 
         {loading && (
-          <div className="rounded-xl border border-black/10 bg-white p-8 text-center text-sm text-charcoal/60">
+          <div className="rounded-xl border border-black/10 bg-white p-8 text-center text-sm text-muted">
             Loading your Flavour Passport…
           </div>
         )}
@@ -82,7 +82,7 @@ export default function DiscoveryPage() {
               <p className="text-xs font-bold uppercase tracking-widest text-forest">Flavour Diversity Score</p>
               <p className="mt-2 text-6xl font-black text-forest">{profile.flavourDiversityScore}</p>
               <p className="mt-1 text-sm font-semibold text-gold-text">{profile.flavourPersonalityLabel}</p>
-              <p className="mt-1 text-xs text-charcoal/60">
+              <p className="mt-1 text-xs text-muted">
                 {profile.triedCuisines.length} of {profile.totalAvailableCuisines} cuisines explored ·{" "}
                 {profile.triedNeighbourhoods.length} of {profile.totalActiveNeighbourhoods} neighbourhoods visited
               </p>

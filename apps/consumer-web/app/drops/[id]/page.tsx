@@ -46,7 +46,7 @@ export default async function DropDetailPage({
         <div>
           <p className="text-sm font-bold uppercase text-forest">{drop.restaurantName}</p>
           <h1 className="mt-2 text-4xl font-bold text-charcoal">{drop.bagDisplayName}</h1>
-          {drop.bagShortDescription ? <p className="mt-3 text-lg text-charcoal/75">{drop.bagShortDescription}</p> : null}
+          {drop.bagShortDescription ? <p className="mt-3 text-lg text-muted">{drop.bagShortDescription}</p> : null}
 
           <div className="mt-6 flex flex-wrap items-center gap-2">
             <DietaryBadge code={drop.dietaryCategoryCode} />
@@ -55,7 +55,7 @@ export default async function DropDetailPage({
                 {drop.spiceLevelCode.replaceAll("_", " ")}
               </span>
             ) : null}
-            <span className="rounded-full border border-black/10 px-2.5 py-1 text-xs font-semibold text-charcoal/75">
+            <span className="rounded-full border border-black/10 px-2.5 py-1 text-xs font-semibold text-muted">
               Pickup only
             </span>
             <CountdownChip targetTime={drop.pickupEndAt} />
@@ -65,7 +65,7 @@ export default async function DropDetailPage({
             <h2 className="text-lg font-semibold">Disclosure</h2>
             <div className="mt-4 grid gap-4">
               <div>
-                <p className="text-sm font-semibold text-charcoal/65">Allergens</p>
+                <p className="text-sm font-semibold text-muted">Allergens</p>
                 <div className="mt-2">
                   <AllergenChips codes={drop.allergenCodes} />
                 </div>
@@ -73,7 +73,7 @@ export default async function DropDetailPage({
                   <p className="mt-2 text-sm font-medium text-danger">{drop.allergenSummaryText}</p>
                 ) : null}
               </div>
-              <div className="grid gap-3 text-sm text-charcoal/75 sm:grid-cols-2">
+              <div className="grid gap-3 text-sm text-muted sm:grid-cols-2">
                 <p>
                   <span className="font-semibold text-charcoal">Serves:</span> {serves}
                 </p>
@@ -93,26 +93,26 @@ export default async function DropDetailPage({
                   </p>
                 ) : null}
               </div>
-              {drop.holdingGuidanceText ? <p className="text-sm text-charcoal/70">{drop.holdingGuidanceText}</p> : null}
+              {drop.holdingGuidanceText ? <p className="text-sm text-muted">{drop.holdingGuidanceText}</p> : null}
             </div>
           </section>
         </div>
 
-        <aside className="h-fit rounded-lg border border-hairline bg-white p-5">
-          <p className="text-sm font-semibold text-charcoal/60">BAM Bag price</p>
+        <div className="h-fit rounded-lg border border-hairline bg-white p-5">
+          <p className="text-sm font-semibold text-muted">BAM Bag price</p>
           <p className="mt-1 text-4xl font-bold text-charcoal">{formatPaise(drop.pricePaise)}</p>
           <div className="mt-5">
             <ProgressBar available={drop.quantityAvailable} total={drop.quantityTotal} />
-            <p className="mt-2 text-sm font-semibold text-charcoal/70">
+            <p className="mt-2 text-sm font-semibold text-muted">
               {drop.quantityAvailable} of {drop.quantityTotal} bags remaining
             </p>
           </div>
           <ClaimPanel drop={drop} isSignedIn={Boolean(user)} autoClaim={query?.claim === "1"} />
           <DropShareActions publicUrl={publicDropUrl} shareText={alertText} className="mt-3" />
-          <p className="mt-3 text-xs text-charcoal/60">
+          <p className="mt-3 text-xs text-muted">
             Holds are temporary inventory reservations. Pay from checkout before the timer expires to confirm pickup.
           </p>
-        </aside>
+        </div>
       </section>
     </main>
   );

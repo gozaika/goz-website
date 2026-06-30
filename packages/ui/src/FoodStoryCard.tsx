@@ -14,7 +14,7 @@ export function FoodStoryCard({ neighbourhoodName, storyLine, activeDropCount, n
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-xs font-bold uppercase tracking-wide text-forest">📍 {neighbourhoodName}</p>
-          <p className="mt-1.5 text-sm leading-relaxed text-charcoal/80">{storyLine}</p>
+          <p className="mt-1.5 text-sm leading-relaxed text-muted">{storyLine}</p>
         </div>
         <span className="shrink-0 rounded-full bg-forest/10 px-2.5 py-1 text-xs font-bold text-forest">
           {activeDropCount} drop{activeDropCount !== 1 ? "s" : ""}

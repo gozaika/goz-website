@@ -164,6 +164,18 @@ step("no brand-hex literals in web app + @gozaika/ui source (global)", () => {
   if (offenders.length) throw new Error(`Raw brand-hex literals (use tokens):\n${offenders.join("\n")}`);
 });
 
+// 5. Accessibility (axe) — structural WCAG rules on the key public shells of both
+//    product web apps. Each app's playwright.config boots its own `next start`
+//    (reusing the build above). color-contrast is reported non-blocking (locked at
+//    the token layer by contrast.test.ts); authed portal axe is opt-in
+//    (RUN_AUTHED_A11Y). Needs the build, so it is skipped in --fast.
+if (!fast) {
+  step("a11y axe checks (consumer-web + restaurant-mgmt-web public shells)", () => {
+    sh("npm run a11y --workspace @gozaika/consumer-web");
+    sh("npm run a11y --workspace @gozaika/restaurant-mgmt-web");
+  });
+}
+
 // Summary
 const failed = results.filter((r) => !r.ok);
 process.stdout.write(`\n${"=".repeat(48)}\n`);

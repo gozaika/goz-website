@@ -19,7 +19,7 @@ export default async function RestaurantsPage() {
           <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight text-charcoal">
             Discover kitchens curating Limited Drops for goZaika.
           </h1>
-          <p className="mt-3 max-w-2xl text-base leading-7 text-charcoal/72">
+          <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
             Browse active public partners, cuisine signals, pickup neighborhoods, and safe profile details. Private compliance,
             payout, and team data stay off this surface.
           </p>

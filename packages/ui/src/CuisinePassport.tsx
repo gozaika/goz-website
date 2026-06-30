@@ -44,7 +44,7 @@ export function CuisinePassport({ triedCuisines, untriedCuisines, score, persona
       <div className="mt-4 flex flex-col items-center gap-1 text-center">
         <span className="text-5xl font-black text-charcoal">{score}</span>
         <span className="text-sm font-bold text-gold-text">/ 100 · {personalityLabel}</span>
-        <p className="mt-1 text-xs text-charcoal/60">
+        <p className="mt-1 text-xs text-muted">
           You've explored {triedCuisines.length} of {totalCount} cuisines
         </p>
       </div>
@@ -65,7 +65,7 @@ export function CuisinePassport({ triedCuisines, untriedCuisines, score, persona
                 ✓
               </span>
               <span className="text-xs font-semibold text-charcoal">{c.cuisineName.replace(/_/g, " ")}</span>
-              <span className="text-[10px] text-charcoal/55">{c.bagCount} bag{c.bagCount !== 1 ? "s" : ""}</span>
+              <span className="text-[10px] text-muted">{c.bagCount} bag{c.bagCount !== 1 ? "s" : ""}</span>
             </button>
           );
         })}
@@ -80,17 +80,17 @@ export function CuisinePassport({ triedCuisines, untriedCuisines, score, persona
               c.activeDropCount > 0 ? "cursor-pointer hover:border-saffron/50 hover:bg-cream" : "cursor-default opacity-60",
             )}
           >
-            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-charcoal/20 text-[10px] text-charcoal/40">
+            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-charcoal/20 text-[10px] text-muted">
               ?
             </span>
-            <span className="text-xs font-semibold text-charcoal/70">{c.cuisineName.replace(/_/g, " ")}</span>
+            <span className="text-xs font-semibold text-muted">{c.cuisineName.replace(/_/g, " ")}</span>
             {c.activeDropCount > 0 ? (
               <span className="flex items-center gap-1 text-[10px] font-semibold text-saffron-text">
                 <span className="h-1.5 w-1.5 rounded-full bg-saffron" />
                 Drop available
               </span>
             ) : (
-              <span className="text-[10px] text-charcoal/40">Undiscovered</span>
+              <span className="text-[10px] text-muted">Undiscovered</span>
             )}
           </button>
         ))}

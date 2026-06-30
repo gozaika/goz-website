@@ -99,7 +99,7 @@ export default async function FinancePage({
                       {financeSettlementStatusLabel(settlement.settlementStatusCode)}
                     </Badge>
                   </div>
-                  <dl className="mt-3 grid grid-cols-2 gap-2 text-sm text-charcoal/80">
+                  <dl className="mt-3 grid grid-cols-2 gap-2 text-sm text-muted">
                     <div>
                       <dt className="font-semibold text-charcoal">Orders</dt>
                       <dd>{settlement.orderCount}</dd>
@@ -160,7 +160,7 @@ export default async function FinancePage({
                   </div>
                   <div className="rounded-lg border border-hairline p-3">
                     <p className="text-xs font-semibold uppercase text-muted">Review note</p>
-                    <p className="mt-1 text-sm text-charcoal/80">{selectedSettlement.statusNoteText ?? "Finance review note will appear here."}</p>
+                    <p className="mt-1 text-sm text-muted">{selectedSettlement.statusNoteText ?? "Finance review note will appear here."}</p>
                   </div>
                 </div>
 

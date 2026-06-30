@@ -26,7 +26,7 @@ export default async function PortalDropsPage() {
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-forest">Limited Drops</p>
             <h1 className="mt-2 text-3xl font-bold text-charcoal">Active drop list</h1>
-            <p className="mt-2 max-w-3xl text-sm text-charcoal/65">
+            <p className="mt-2 max-w-3xl text-sm text-muted">
               Filter by status, scan the command-center summary, then read title, pickup, price, listed/reserved bags, and
               sell-through per drop. Pause/close controls remain in the publish workflow with existing guardrails.
             </p>

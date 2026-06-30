@@ -134,7 +134,7 @@ export function ConsentForm({ nextPath = "/account" }: { readonly nextPath?: str
           <ShieldCheck className="mt-1 text-forest" aria-hidden="true" />
           <div>
             <h1 className="text-3xl font-bold text-charcoal">Your DPDP consent</h1>
-            <p className="mt-2 text-sm leading-6 text-charcoal/70">
+            <p className="mt-2 text-sm leading-6 text-muted">
               goZaika records consent purpose-by-purpose. Operational service messages support orders and pickup; marketing
               consent is separate and is not used for transactional pickup updates.
             </p>
@@ -167,9 +167,9 @@ export function ConsentForm({ nextPath = "/account" }: { readonly nextPath?: str
                       {purpose.purpose_name}
                       {purpose.is_required_for_service ? " (required)" : ""}
                     </span>
-                    <span className="mt-1 block text-sm leading-5 text-charcoal/70">{purpose.description}</span>
+                    <span className="mt-1 block text-sm leading-5 text-muted">{purpose.description}</span>
                     {latestEvent?.recorded_at ? (
-                      <span className="mt-2 block text-xs text-charcoal/55">
+                      <span className="mt-2 block text-xs text-muted">
                         Latest: {latestEvent.consent_state_code?.toLowerCase()} on{" "}
                         {new Date(latestEvent.recorded_at).toLocaleString("en-IN")}
                       </span>

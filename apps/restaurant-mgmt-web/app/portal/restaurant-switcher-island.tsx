@@ -32,7 +32,7 @@ export function RestaurantSwitcherIsland({
 
   return (
     <div className="px-4 pb-2">
-      <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.16em] text-charcoal/45">Restaurant</p>
+      <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.16em] text-muted">Restaurant</p>
       <RestaurantSwitcher restaurants={restaurants} selectedId={selectedId} onSelect={select} />
     </div>
   );

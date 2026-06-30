@@ -106,7 +106,7 @@ export function LoginForm() {
         <h1 className="mt-3 text-4xl font-bold leading-tight text-charcoal md:text-5xl">
           Restaurant dignity first.
         </h1>
-        <p className="mt-4 max-w-xl text-base leading-7 text-charcoal/75">
+        <p className="mt-4 max-w-xl text-base leading-7 text-muted">
           Set up your pickup-only BAM Bag channel, upload compliance docs privately, and keep your restaurant brand front
           and center.
         </p>
@@ -118,7 +118,7 @@ export function LoginForm() {
           <Phone className="text-saffron-text" aria-hidden="true" />
           <div>
             <h2 className="text-2xl font-bold text-charcoal">Restaurant owner login</h2>
-            <p className="text-sm text-charcoal/65">Phone OTP first, demo account locally.</p>
+            <p className="text-sm text-muted">Phone OTP first, demo account locally.</p>
           </div>
         </div>
 

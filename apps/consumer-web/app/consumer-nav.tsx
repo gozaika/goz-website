@@ -25,7 +25,7 @@ export function ConsumerNavLinks() {
             className={`inline-flex min-h-9 items-center whitespace-nowrap rounded-md px-3 transition-colors ${
               active
                 ? "bg-forest/10 text-forest"
-                : "text-charcoal/65 hover:bg-black/5 hover:text-charcoal"
+                : "text-muted hover:bg-black/5 hover:text-charcoal"
             }`}
           >
             {label}

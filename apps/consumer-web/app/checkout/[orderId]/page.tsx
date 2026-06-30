@@ -66,7 +66,7 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-forest">Checkout</p>
           <h1 className="mt-2 text-3xl font-bold text-charcoal">Pay for your held BAM Bag</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-charcoal/70">
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
             Your hold reserves availability until the timer expires. The order becomes confirmed only after Razorpay sends a
             verified payment webhook to goZaika.
           </p>
@@ -77,13 +77,13 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
                 <p className="text-sm font-semibold text-forest">{claim.restaurantName}</p>
                 <h2 className="mt-1 text-2xl font-bold text-charcoal">{claim.bagDisplayName}</h2>
                 {claim.bagShortDescription ? (
-                  <p className="mt-2 text-sm text-charcoal/70">{claim.bagShortDescription}</p>
+                  <p className="mt-2 text-sm text-muted">{claim.bagShortDescription}</p>
                 ) : null}
               </div>
               <DietaryBadge code={claim.dietaryCategoryCode} />
             </div>
 
-            <div className="mt-5 grid gap-4 text-sm text-charcoal/75 sm:grid-cols-2">
+            <div className="mt-5 grid gap-4 text-sm text-muted sm:grid-cols-2">
               <p>
                 <span className="font-semibold text-charcoal">Pickup:</span>{" "}
                 {formatPickupWindow(claim.pickupStartAt, claim.pickupEndAt)}
@@ -110,20 +110,20 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
               ) : null}
             </div>
 
-            {claim.holdingGuidanceText ? <p className="mt-5 text-sm text-charcoal/70">{claim.holdingGuidanceText}</p> : null}
+            {claim.holdingGuidanceText ? <p className="mt-5 text-sm text-muted">{claim.holdingGuidanceText}</p> : null}
           </section>
         </div>
 
-        <aside className="h-fit rounded-lg border border-black/10 bg-white p-5">
-          <p className="text-sm font-semibold text-charcoal/60">Hold status</p>
+        <div className="h-fit rounded-lg border border-black/10 bg-white p-5">
+          <p className="text-sm font-semibold text-muted">Hold status</p>
           <p className="mt-1 text-2xl font-bold text-charcoal">{claim.statusCode === "ACTIVE" ? "Hold active" : claim.statusCode}</p>
           <div className="mt-5 rounded-lg border border-forest/20 bg-success-soft p-4 text-sm">
             <p>
               <HoldCountdown expiresAt={claim.expiresAt} />
             </p>
-            <p className="mt-2 text-charcoal/70">Expires at {expiresAtText} IST.</p>
+            <p className="mt-2 text-muted">Expires at {expiresAtText} IST.</p>
           </div>
-          <p className="mt-4 text-sm text-charcoal/70">
+          <p className="mt-4 text-sm text-muted">
             If this hold expires before payment is confirmed, the release job returns the bag to the drop.
           </p>
           <RazorpayCheckoutPanel
@@ -140,7 +140,7 @@ export default async function CheckoutPage({ params }: { readonly params: Promis
               View account holds
             </Link>
           </div>
-        </aside>
+        </div>
       </section>
     </main>
   );

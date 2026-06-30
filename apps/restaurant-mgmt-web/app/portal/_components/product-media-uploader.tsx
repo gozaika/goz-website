@@ -94,7 +94,7 @@ export function ProductMediaUploader({
   return (
     <section className="rounded-lg border border-black/10 bg-white p-5">
       <h3 className="text-lg font-bold text-charcoal">{label}</h3>
-      <p className="mt-1 text-sm text-charcoal/65">{guidance}</p>
+      <p className="mt-1 text-sm text-muted">{guidance}</p>
 
       {media ? (
         <div className="mt-4 overflow-hidden rounded-lg border border-black/10 bg-cream">
@@ -103,7 +103,7 @@ export function ProductMediaUploader({
           <img src={media.url} alt={media.alt ?? ""} className="h-48 w-full object-contain" />
         </div>
       ) : (
-        <div className="mt-4 grid h-32 place-items-center rounded-lg border border-dashed border-black/20 bg-cream text-sm text-charcoal/55">
+        <div className="mt-4 grid h-32 place-items-center rounded-lg border border-dashed border-black/20 bg-cream text-sm text-muted">
           No verified image yet
         </div>
       )}
@@ -141,7 +141,7 @@ export function ProductMediaUploader({
           {busy ? "Processing..." : media ? "Replace image" : "Upload image"}
         </button>
       </div>
-      {status ? <p aria-live="polite" className="mt-3 text-sm text-charcoal/75">{status}</p> : null}
+      {status ? <p aria-live="polite" className="mt-3 text-sm text-muted">{status}</p> : null}
     </section>
   );
 }

@@ -30,14 +30,14 @@ export default function PassportPage() {
       </ShellHeader>
 
       <div className="mx-auto max-w-2xl px-4 py-10">
-        <nav className="mb-6 flex items-center gap-2 text-sm text-charcoal/60">
+        <nav className="mb-6 flex items-center gap-2 text-sm text-muted">
           <Link href="/account" className="hover:text-forest">Account</Link>
           <span>/</span>
           <span className="font-semibold text-charcoal">Zayka Passport</span>
         </nav>
 
         {loading && (
-          <div className="rounded-xl border border-black/10 bg-white p-8 text-center text-sm text-charcoal/60">
+          <div className="rounded-xl border border-black/10 bg-white p-8 text-center text-sm text-muted">
             Loading your passport…
           </div>
         )}
@@ -76,7 +76,7 @@ export default function PassportPage() {
                       </div>
                       <ul className="mt-1 space-y-0.5">
                         {t.perks.map((perk) => (
-                          <li key={perk} className="text-xs text-charcoal/65">· {perk}</li>
+                          <li key={perk} className="text-xs text-muted">· {perk}</li>
                         ))}
                       </ul>
                     </div>

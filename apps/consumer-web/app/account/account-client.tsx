@@ -145,7 +145,7 @@ export function AccountClient({
         <div>
           <GoZaikaLogo className="h-10" />
           <h1 className="mt-5 text-4xl font-bold text-charcoal">Account</h1>
-          <p className="mt-2 text-sm text-charcoal/70">Your BAM Bag profile, referral code and DPDP consent settings.</p>
+          <p className="mt-2 text-sm text-muted">Your BAM Bag profile, referral code and DPDP consent settings.</p>
         </div>
         <Button type="button" className="bg-forest hover:bg-[#154b2e]" onClick={signOut}>
           <LogOut size={18} aria-hidden="true" />
@@ -163,22 +163,22 @@ export function AccountClient({
             <Crown className="h-5 w-5 text-gold-text" aria-hidden="true" />
             <h2 className="font-bold text-charcoal">Swaad Club</h2>
           </div>
-          <p className="mt-2 text-sm text-charcoal/70">Subscription billing is not active yet. Join the launch list for priority-access updates.</p>
+          <p className="mt-2 text-sm text-muted">Subscription billing is not active yet. Join the launch list for priority-access updates.</p>
           <Link className="mt-3 inline-flex min-h-10 items-center rounded-lg border border-forest/25 px-3 text-sm font-semibold text-forest" href="/swaad-club">
             View benefits
           </Link>
         </article>
         <article className="rounded-lg border border-black/10 bg-white p-4">
-          <p className="text-sm font-semibold text-charcoal/55">Profile completeness</p>
+          <p className="text-sm font-semibold text-muted">Profile completeness</p>
           <p className="mt-2 text-3xl font-bold text-charcoal">
             {[profile.fullName, profile.phone, profile.email].filter(Boolean).length}/3
           </p>
-          <p className="mt-1 text-sm text-charcoal/65">Name, phone, and email help support identify your account safely.</p>
+          <p className="mt-1 text-sm text-muted">Name, phone, and email help support identify your account safely.</p>
         </article>
         <article className="rounded-lg border border-black/10 bg-white p-4">
-          <p className="text-sm font-semibold text-charcoal/55">Order affordance</p>
+          <p className="text-sm font-semibold text-muted">Order affordance</p>
           <p className="mt-2 text-3xl font-bold text-charcoal">{initialOrders.length}</p>
-          <p className="mt-1 text-sm text-charcoal/65">Paid orders stay below with pickup proof and notification status.</p>
+          <p className="mt-1 text-sm text-muted">Paid orders stay below with pickup proof and notification status.</p>
         </article>
       </section>
 
@@ -226,7 +226,7 @@ export function AccountClient({
             </label>
             <div className="rounded-lg bg-cream p-3 text-sm">
               <p className="font-semibold text-charcoal">Referral code</p>
-              <p className="mt-1 text-charcoal/70">{profile.referralCode ?? "Generating after first login"}</p>
+              <p className="mt-1 text-muted">{profile.referralCode ?? "Generating after first login"}</p>
             </div>
             <Button type="button" onClick={saveProfile} disabled={saving}>
               {saving ? "Saving..." : "Save profile"}
@@ -239,7 +239,7 @@ export function AccountClient({
             <ShieldCheck className="text-forest" aria-hidden="true" />
             <h2 className="text-xl font-bold text-charcoal">Consent settings</h2>
           </div>
-          <p className="mt-2 text-sm text-charcoal/65">
+          <p className="mt-2 text-sm text-muted">
             Operational service messages cover orders and pickup. Marketing purposes stay separate and are not used for this pickup loop.
           </p>
           <div className="mt-5 grid gap-3">
@@ -256,7 +256,7 @@ export function AccountClient({
                       {consent.purpose_name}
                       {consent.is_required_for_service ? " (required)" : ""}
                     </span>
-                    <span className="mt-1 block text-xs text-charcoal/60">
+                    <span className="mt-1 block text-xs text-muted">
                       {consent.recorded_at
                         ? `Latest ${consent.consent_state_code?.toLowerCase()} on ${new Date(
                             consent.recorded_at,
@@ -276,7 +276,7 @@ export function AccountClient({
             })}
             {consents.length === 0
               ? consentPurposeCodes.map((purpose) => (
-                  <div key={purpose} className="rounded-lg border border-black/10 p-4 text-sm text-charcoal/70">
+                  <div key={purpose} className="rounded-lg border border-black/10 p-4 text-sm text-muted">
                     {purpose.replaceAll("_", " ")} is not configured yet.
                   </div>
                 ))
@@ -287,10 +287,10 @@ export function AccountClient({
 
       <section className="mt-6 rounded-lg border border-black/10 bg-white p-5 shadow-sm">
         <h2 className="text-xl font-bold text-charcoal">Paid orders</h2>
-        <p className="mt-1 text-sm text-charcoal/65">Confirmed BAM Bag pickups paid through Razorpay.</p>
+        <p className="mt-1 text-sm text-muted">Confirmed BAM Bag pickups paid through Razorpay.</p>
         <div className="mt-4 grid gap-3">
           {initialOrders.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-charcoal/60">
+            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-muted">
               You do not have paid orders yet.
             </p>
           ) : (
@@ -300,7 +300,7 @@ export function AccountClient({
                   <div>
                     <p className="text-sm font-semibold text-forest">{order.restaurantName}</p>
                     <h3 className="mt-1 font-bold text-charcoal">{order.bagDisplayName}</h3>
-                    <p className="mt-1 text-xs text-charcoal/60">
+                    <p className="mt-1 text-xs text-muted">
                       {order.orderNumber} - {formatPickupWindow(order.pickupWindowStartAt, order.pickupWindowEndAt)}
                     </p>
                   </div>
@@ -308,7 +308,7 @@ export function AccountClient({
                     {order.orderStatusCode.replaceAll("_", " ")}
                   </span>
                 </div>
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-charcoal/70">
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
                   <span>{formatPaise(order.paidAmountPaise)}</span>
                   <span>{order.quantity} bag</span>
                   {order.collectedAt ? <span>Collected {new Date(order.collectedAt).toLocaleString("en-IN")}</span> : null}
@@ -319,7 +319,7 @@ export function AccountClient({
                 {notificationsByOrder.get(order.orderPk)?.length ? (
                   <div className="mt-3 flex flex-wrap gap-2">
                     {notificationsByOrder.get(order.orderPk)!.slice(0, 3).map((notification) => (
-                      <span key={notification.notificationOutboxPk} className="rounded-full border border-black/10 px-2.5 py-1 text-xs font-semibold text-charcoal/70">
+                      <span key={notification.notificationOutboxPk} className="rounded-full border border-black/10 px-2.5 py-1 text-xs font-semibold text-muted">
                         {notification.templateCode.replaceAll("_", " ").toLowerCase()}:{" "}
                         {notificationStatusLabel(notification.sendStatusCode, notification.deliveryReasonCode)}
                       </span>
@@ -334,10 +334,10 @@ export function AccountClient({
 
       <section className="mt-6 rounded-lg border border-black/10 bg-white p-5 shadow-sm">
         <h2 className="text-xl font-bold text-charcoal">Current holds</h2>
-        <p className="mt-1 text-sm text-charcoal/65">Active payment-pending holds that still reserve availability.</p>
+        <p className="mt-1 text-sm text-muted">Active payment-pending holds that still reserve availability.</p>
         <div className="mt-4 grid gap-3">
           {activeClaims.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-charcoal/60">
+            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-muted">
               You do not have active claim holds right now.
             </p>
           ) : (
@@ -347,7 +347,7 @@ export function AccountClient({
                   <div>
                     <p className="text-sm font-semibold text-forest">{claim.restaurantName}</p>
                     <h3 className="mt-1 font-bold text-charcoal">{claim.bagDisplayName}</h3>
-                    <p className="mt-1 text-xs text-charcoal/60">
+                    <p className="mt-1 text-xs text-muted">
                       {claim.statusCode === "ACTIVE" ? "Active hold" : claim.statusCode.toLowerCase()} -{" "}
                       {formatPickupWindow(claim.pickupStartAt, claim.pickupEndAt)}
                     </p>
@@ -356,7 +356,7 @@ export function AccountClient({
                     {claim.quantityHeld} held
                   </span>
                 </div>
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-charcoal/70">
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
                   <span>{formatPaise(claim.pricePaise)}</span>
                   <span>Expires {new Date(claim.expiresAt).toLocaleString("en-IN")}</span>
                   <Link className="font-semibold text-forest" href={`/checkout/${claim.holdPk}`}>
@@ -371,10 +371,10 @@ export function AccountClient({
 
       <section className="mt-6 rounded-lg border border-black/10 bg-white p-5 shadow-sm">
         <h2 className="text-xl font-bold text-charcoal">Hold history</h2>
-        <p className="mt-1 text-sm text-charcoal/65">Expired, released, or converted holds are kept here so active holds stay easy to find.</p>
+        <p className="mt-1 text-sm text-muted">Expired, released, or converted holds are kept here so active holds stay easy to find.</p>
         <div className="mt-4 grid gap-3">
           {holdHistory.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-charcoal/60">
+            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-muted">
               No older holds yet.
             </p>
           ) : (
@@ -382,17 +382,17 @@ export function AccountClient({
               <article key={claim.holdPk} className="rounded-lg border border-black/10 bg-black/[0.02] p-4 opacity-85">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-charcoal/70">{claim.restaurantName}</p>
+                    <p className="text-sm font-semibold text-muted">{claim.restaurantName}</p>
                     <h3 className="mt-1 font-bold text-charcoal">{claim.bagDisplayName}</h3>
-                    <p className="mt-1 text-xs text-charcoal/60">
+                    <p className="mt-1 text-xs text-muted">
                       {claim.statusCode.toLowerCase()} - {formatPickupWindow(claim.pickupStartAt, claim.pickupEndAt)}
                     </p>
                   </div>
-                  <span className="rounded-full border border-black/15 px-3 py-1 text-xs font-semibold text-charcoal/70">
+                  <span className="rounded-full border border-black/15 px-3 py-1 text-xs font-semibold text-muted">
                     {claim.statusCode}
                   </span>
                 </div>
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-charcoal/60">
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
                   <span>{formatPaise(claim.pricePaise)}</span>
                   <span>Expired {new Date(claim.expiresAt).toLocaleString("en-IN")}</span>
                 </div>

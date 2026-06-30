@@ -90,7 +90,7 @@ export function DropsListClient({ drops }: { readonly drops: readonly PortalDrop
       ) : (
         <div className="overflow-x-auto rounded-lg border border-hairline bg-white shadow-sm">
           <table className="w-full min-w-[920px] text-left text-sm">
-            <thead className="border-b border-hairline bg-cream text-xs uppercase text-charcoal/55">
+            <thead className="border-b border-hairline bg-cream text-xs uppercase text-muted">
               <tr>
                 <th className="px-4 py-3">Drop</th>
                 <th className="px-4 py-3">Pickup</th>
@@ -108,10 +108,10 @@ export function DropsListClient({ drops }: { readonly drops: readonly PortalDrop
                 return (
                   <tr key={drop.dropPk} className="border-b border-hairline/60">
                     <td className="px-4 py-3 font-semibold text-charcoal">{drop.dropTitle}</td>
-                    <td className="px-4 py-3 text-charcoal/75">{formatPickupWindow(drop.pickupStartAt, drop.pickupEndAt)}</td>
+                    <td className="px-4 py-3 text-muted">{formatPickupWindow(drop.pickupStartAt, drop.pickupEndAt)}</td>
                     <td className="px-4 py-3 text-right font-semibold text-charcoal">{formatPaise(drop.pricePaise)}</td>
-                    <td className="px-4 py-3 text-right text-charcoal/75">{drop.quantityTotal}</td>
-                    <td className="px-4 py-3 text-right text-charcoal/75">{drop.quantityHeld}</td>
+                    <td className="px-4 py-3 text-right text-muted">{drop.quantityTotal}</td>
+                    <td className="px-4 py-3 text-right text-muted">{drop.quantityHeld}</td>
                     <td className="px-4 py-3">
                       <SellThroughBar
                         className="min-w-[160px]"

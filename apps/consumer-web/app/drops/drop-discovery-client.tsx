@@ -125,7 +125,7 @@ export function DropDiscoveryClient({
       <section className="grid gap-3 rounded-lg border border-hairline bg-white p-4 shadow-sm">
         <label className="relative">
           <span className="sr-only">Search drops</span>
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-charcoal/45" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" />
           <input
             className="min-h-12 w-full rounded-lg border border-hairline pl-10 pr-10 text-base outline-none focus:border-forest"
             placeholder="Search restaurant, BAM Bag, cuisine, dietary, allergen..."
@@ -136,7 +136,7 @@ export function DropDiscoveryClient({
             <button
               type="button"
               aria-label="Clear search"
-              className="absolute right-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-lg text-charcoal/60 hover:bg-black/5"
+              className="absolute right-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-lg text-muted hover:bg-black/5"
               onClick={() => setQuery("")}
             >
               <X size={18} aria-hidden="true" />
@@ -179,7 +179,7 @@ export function DropDiscoveryClient({
           <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 className="text-2xl font-bold text-charcoal">Closing soon</h2>
-              <p className="mt-1 text-sm text-charcoal/65">Limited Drops with pickup windows ending soon.</p>
+              <p className="mt-1 text-sm text-muted">Limited Drops with pickup windows ending soon.</p>
             </div>
           </div>
           <div className="flex gap-4 overflow-x-auto pb-2">
@@ -200,7 +200,7 @@ export function DropDiscoveryClient({
                 </div>
                 <p className="text-sm font-semibold text-forest">{drop.restaurantName}</p>
                 <h3 className="mt-1 text-lg font-bold text-charcoal">{drop.bagDisplayName}</h3>
-                <p className="mt-2 text-sm text-charcoal/65">{formatPickupWindow(drop.pickupStartAt, drop.pickupEndAt)}</p>
+                <p className="mt-2 text-sm text-muted">{formatPickupWindow(drop.pickupStartAt, drop.pickupEndAt)}</p>
                 <a className="mt-4 inline-flex min-h-10 items-center rounded-lg bg-saffron px-4 text-sm font-semibold text-charcoal" href={`/drops/${drop.dropPk}`}>
                   View drop
                 </a>
@@ -214,7 +214,7 @@ export function DropDiscoveryClient({
         <section className="rounded-lg border border-hairline bg-white p-4">
           <h2 className="text-xl font-bold text-charcoal">Map view</h2>
           {coordinateDrops.length === 0 ? (
-            <div className="mt-4 rounded-lg border border-dashed border-gold/45 bg-cream p-6 text-sm leading-6 text-charcoal/72">
+            <div className="mt-4 rounded-lg border border-dashed border-gold/45 bg-cream p-6 text-sm leading-6 text-muted">
               Map pins need public restaurant coordinates. This environment does not expose any safe public coordinates yet, so list view
               remains the source of truth for BAM Bag claims.
             </div>
@@ -261,7 +261,7 @@ export function DropDiscoveryClient({
         <section>
           <div className="mb-3">
             <h2 className="text-2xl font-bold text-charcoal">Recently missed</h2>
-            <p className="mt-1 text-sm text-charcoal/65">Closed pickup windows are read-only and separate from active holds.</p>
+            <p className="mt-1 text-sm text-muted">Closed pickup windows are read-only and separate from active holds.</p>
           </div>
           <div className="grid gap-4 opacity-80 md:grid-cols-2 xl:grid-cols-3">
             {missed.slice(0, 6).map((drop) => (

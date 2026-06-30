@@ -200,7 +200,7 @@ export function RazorpayCheckoutPanel({
         <RefreshCw size={16} aria-hidden="true" />
         Refresh payment status
       </button>
-      <div className="rounded-lg border border-forest/20 bg-success-soft p-3 text-sm text-charcoal/75">
+      <div className="rounded-lg border border-forest/20 bg-success-soft p-3 text-sm text-muted">
         <p>
           Pay <span className="font-semibold text-charcoal">{formatPaise(amountPaise)}</span> through Razorpay. We confirm
           the order only after the verified Razorpay webhook is processed.

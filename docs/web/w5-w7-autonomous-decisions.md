@@ -52,6 +52,30 @@ Ledger: [`web-parity-ledger.md`](web-parity-ledger.md)
 - **AA fixes applied during the sweep:** every white-on-saffron CTA → `text-charcoal`;
   saffron-as-text → `text-saffron-text`; gold-as-text on light → `text-gold-text`.
 
+### W6(2/n) axe-playwright a11y specs + structural fixes — **D8**
+- Added `playwright.config.ts` + `tests/a11y.spec.ts` to **consumer-web** (audits `/`, `/drops`,
+  `/restaurants`, `/swaad-club`) and **restaurant-mgmt-web** (audits `/auth/login`), mirroring
+  `apps/website/tests/a11y.spec.ts`. Wired a new `a11y` step into `scripts/web-ci.mjs` (now 8/8);
+  deps + Chromium were already hoisted, so no install was needed.
+- **Structural fixes axe surfaced (now hard-gated green):** `role="switch"` toggle missing a
+  name → `aria-label`; nested `<aside>` complementary landmarks inside `<main>` → `<div>` (6
+  files); `ProgressBar` `aria-label` on a role-less div → `role="progressbar"` + value attrs;
+  mgmt app had **no `<title>`** → added root-layout `metadata.title`.
+- **Contrast cleanup:** opacity-dimmed `text-charcoal/40…80` renders below AA (alpha compositing),
+  so all opacity-charcoal **text** → `text-muted` (solid #6B7280, AA-safe). Primary `text-charcoal`
+  (solid) kept.
+- **D8 — `color-contrast` is reported, not gate-blocking.** Token contrast is already proven by
+  `@gozaika/design-tokens/contrast.test.ts`; the residual axe contrast items (37 on `/drops`, 1 on
+  `/swaad-club`, 1 on `/auth/login`) are semantic component accents on live data cards
+  (dietary/allergen badges) that need a human design decision — exactly the mandated human a11y
+  sign-off. The specs HARD-FAIL on every structural rule and `console.log` the contrast count for
+  the reviewer.
+- **Authed portal axe is opt-in** (`RUN_AUTHED_A11Y=1`): the demo password sign-in against live
+  Supabase is too slow/flaky (~1 min) to gate on deterministically. Authed portal surfaces were
+  browser-verified per-surface in W5 and remain part of the human sign-off (D4).
+- Added a root `vitest.config.ts` excluding `**/*.spec.ts` + `**/tests/**` so vitest (unit, uses
+  `*.test.ts`) and Playwright (e2e/a11y, uses `*.spec.ts`) don't collide.
+
 ## Per-surface / per-slice notes
 
 ### W5(3/n) `/portal/drops` (+ `/new`)

@@ -142,7 +142,7 @@ export function LoginForm({ nextPath }: { readonly nextPath?: string | null }) {
         <h1 className="mt-3 text-4xl font-bold leading-tight text-charcoal md:text-5xl">
           Great food. No menu. No algorithm.
         </h1>
-        <p className="mt-4 max-w-xl text-base leading-7 text-charcoal/75">
+        <p className="mt-4 max-w-xl text-base leading-7 text-muted">
           Sign in to claim chef-curated BAM Bags with allergen-disclosed, pickup-only trust.
         </p>
         <BrandIllustration src="/brand/hero-bam-bag.webp" className="mt-8 max-w-md" alt="" />
@@ -153,7 +153,7 @@ export function LoginForm({ nextPath }: { readonly nextPath?: string | null }) {
           <Phone className="text-saffron-text" aria-hidden="true" />
           <div>
             <h2 className="text-2xl font-bold text-charcoal">Login with phone OTP</h2>
-            <p className="text-sm text-charcoal/65">Primary access for BAM Bag claims.</p>
+            <p className="text-sm text-muted">Primary access for BAM Bag claims.</p>
           </div>
         </div>
 

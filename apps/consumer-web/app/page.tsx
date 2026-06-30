@@ -164,7 +164,7 @@ export default async function HomePage() {
                   {r.restaurantName.charAt(0)}
                 </div>
                 <p className="mt-2 line-clamp-2 text-xs font-bold text-charcoal">{r.restaurantName}</p>
-                <p className="mt-0.5 text-[10px] text-charcoal/50">{r.neighborhoodName ?? r.cityName ?? "Hyderabad"}</p>
+                <p className="mt-0.5 text-[10px] text-muted">{r.neighborhoodName ?? r.cityName ?? "Hyderabad"}</p>
                 {r.activeDropCount > 0 ? (
                   <span className="mt-1.5 inline-block rounded-full bg-saffron px-1.5 py-0.5 text-[10px] font-bold text-charcoal">{r.activeDropCount} live</span>
                 ) : null}
@@ -268,7 +268,7 @@ export default async function HomePage() {
                   {r.restaurantName.charAt(0)}
                 </div>
                 <p className="mt-2 line-clamp-2 text-xs font-bold text-charcoal">{r.restaurantName}</p>
-                <p className="mt-0.5 text-[10px] text-charcoal/50">{r.totalDropCount} drop{r.totalDropCount !== 1 ? "s" : ""}</p>
+                <p className="mt-0.5 text-[10px] text-muted">{r.totalDropCount} drop{r.totalDropCount !== 1 ? "s" : ""}</p>
                 {r.activeDropCount > 0 && (
                   <span className="mt-1.5 inline-block rounded-full bg-saffron px-1.5 py-0.5 text-[10px] font-bold text-charcoal">
                     {r.activeDropCount} live
@@ -296,7 +296,7 @@ export default async function HomePage() {
                 </div>
                 <div className="min-w-0">
                   <p className="truncate text-sm font-bold text-charcoal">{r.restaurantName}</p>
-                  <p className="text-xs text-charcoal/50">{r.neighborhoodName ?? r.cityName ?? "Hyderabad"} · New</p>
+                  <p className="text-xs text-muted">{r.neighborhoodName ?? r.cityName ?? "Hyderabad"} · New</p>
                 </div>
               </Link>
             ))}
@@ -311,7 +311,7 @@ export default async function HomePage() {
       <section className="mx-auto max-w-7xl px-4 pb-12">
         <div className="rounded-lg border border-hairline bg-white p-5">
           <h2 className="text-2xl font-bold text-charcoal">Discover kitchens</h2>
-          <p className="mt-2 text-sm text-charcoal/70">
+          <p className="mt-2 text-sm text-muted">
             Browse partner identity, cuisine signals, active drops, and safe disclosure reminders.
           </p>
           <Link

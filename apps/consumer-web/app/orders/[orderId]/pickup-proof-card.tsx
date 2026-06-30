@@ -47,13 +47,13 @@ export function PickupProofCard({ proof }: { readonly proof: PickupProof }) {
           </div>
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-charcoal/55">OTP fallback</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">OTP fallback</p>
           <p className="mt-2 font-mono text-5xl font-bold tracking-[0.18em] text-charcoal">{proof.otp}</p>
-          <p className="mt-4 text-sm leading-6 text-charcoal/70">
+          <p className="mt-4 text-sm leading-6 text-muted">
             Show this proof at the restaurant counter during the pickup window. The QR nonce and OTP are shown here only for
             you; goZaika stores hashes for future verification.
           </p>
-          <p className="mt-3 text-xs text-charcoal/55">Issued {new Date(proof.issuedAt).toLocaleString("en-IN")}.</p>
+          <p className="mt-3 text-xs text-muted">Issued {new Date(proof.issuedAt).toLocaleString("en-IN")}.</p>
         </div>
       </div>
     </section>

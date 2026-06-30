@@ -65,7 +65,7 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
                   : "Order confirmed"}
             </p>
             <h1 className="mt-2 text-3xl font-bold text-charcoal">{order.orderNumber}</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-charcoal/70">
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
               {order.orderStatusCode === "COLLECTED"
                 ? "This BAM Bag was collected at the restaurant. Pickup proof is now closed."
                 : order.orderStatusCode === "NO_SHOW"
@@ -79,12 +79,12 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
               <div>
                 <p className="text-sm font-semibold text-forest">{order.restaurantName}</p>
                 <h2 className="mt-1 text-2xl font-bold text-charcoal">{order.bagDisplayName}</h2>
-                <p className="mt-1 text-sm text-charcoal/65">{order.dropTitle}</p>
+                <p className="mt-1 text-sm text-muted">{order.dropTitle}</p>
               </div>
               <DietaryBadge code={order.dietaryCategoryCode} />
             </div>
 
-            <dl className="mt-5 grid gap-4 text-sm text-charcoal/75 sm:grid-cols-2">
+            <dl className="mt-5 grid gap-4 text-sm text-muted sm:grid-cols-2">
               <div>
                 <dt className="font-semibold text-charcoal">Pickup window</dt>
                 <dd>{formatPickupWindow(order.pickupWindowStartAt, order.pickupWindowEndAt)}</dd>
@@ -143,7 +143,7 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
               <p className="text-sm font-semibold text-forest">
                 {pickupTerminal ? "Pickup proof closed" : "Pickup proof unavailable"}
               </p>
-              <p className="mt-2 text-sm leading-6 text-charcoal/70">
+              <p className="mt-2 text-sm leading-6 text-muted">
                 {pickupTerminal
                   ? "QR and OTP pickup proof are no longer usable after an order is collected or marked no-show."
                   : proofUnavailableMessage}
@@ -155,7 +155,7 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
             <p className="text-sm font-semibold text-forest">Order messages</p>
             <div className="mt-3 grid gap-2">
               {notifications.length === 0 ? (
-                <p className="text-sm text-charcoal/65">
+                <p className="text-sm text-muted">
                   Message status is not available yet. Your payment and pickup proof still work normally.
                 </p>
               ) : (
@@ -174,12 +174,12 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
           </section>
         </div>
 
-        <aside className="h-fit rounded-lg border border-black/10 bg-white p-5">
-          <p className="text-sm font-semibold text-charcoal/60">Pickup instructions</p>
-          <p className="mt-2 text-sm leading-6 text-charcoal/75">
+        <div className="h-fit rounded-lg border border-black/10 bg-white p-5">
+          <p className="text-sm font-semibold text-muted">Pickup instructions</p>
+          <p className="mt-2 text-sm leading-6 text-muted">
             {order.pickupInstructions ?? "Show your pickup proof at the restaurant counter during the pickup window."}
           </p>
-          <div className="mt-5 rounded-lg border border-forest/20 bg-success-soft p-4 text-sm text-charcoal/75">
+          <div className="mt-5 rounded-lg border border-forest/20 bg-success-soft p-4 text-sm text-muted">
             <p className="font-semibold text-forest">Food safety check</p>
             <p className="mt-2">
               Confirm the restaurant name, dietary badge, and allergen disclosure before pickup. Ask staff before collecting if
@@ -194,7 +194,7 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
               Browse more drops
             </Link>
           </div>
-        </aside>
+        </div>
       </section>
     </main>
   );

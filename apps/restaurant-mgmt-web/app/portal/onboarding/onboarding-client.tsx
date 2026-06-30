@@ -217,12 +217,12 @@ export function OnboardingClient() {
       <aside className="rounded-lg border border-hairline bg-white p-4">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-forest">Onboarding</p>
         <h1 className="mt-2 text-2xl font-bold text-charcoal">{summary.restaurant.restaurant_name}</h1>
-        <p className="mt-2 text-sm text-charcoal/65">Status: {summary.restaurant.restaurant_status_code}</p>
-        <p className="text-sm text-charcoal/65">Compliance: {summary.compliance?.compliance_status_code ?? "PENDING"}</p>
+        <p className="mt-2 text-sm text-muted">Status: {summary.restaurant.restaurant_status_code}</p>
+        <p className="text-sm text-muted">Compliance: {summary.compliance?.compliance_status_code ?? "PENDING"}</p>
         <div className="mt-5 grid gap-2">
           {summary.tasks.map((task) => (
             <div key={task.restaurant_onboarding_task_pk} className="flex items-center gap-2 text-sm">
-              <CheckCircle2 size={16} className={task.task_status_code === "COMPLETED" ? "text-forest" : "text-charcoal/25"} />
+              <CheckCircle2 size={16} className={task.task_status_code === "COMPLETED" ? "text-forest" : "text-muted"} />
               <span>{task.task_name}</span>
             </div>
           ))}
@@ -286,7 +286,7 @@ export function OnboardingClient() {
                 <div key={type.type_code} className="flex flex-col gap-3 rounded-lg border border-hairline p-4 md:flex-row md:items-center md:justify-between">
                   <div>
                     <p className="font-semibold">{type.type_name}</p>
-                    <p className="text-sm text-charcoal/65">{latest?.master_document_status?.status_name ?? "Missing"}{latest?.rejection_reason ? ` - ${latest.rejection_reason}` : ""}</p>
+                    <p className="text-sm text-muted">{latest?.master_document_status?.status_name ?? "Missing"}{latest?.rejection_reason ? ` - ${latest.rejection_reason}` : ""}</p>
                   </div>
                   <label className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-lg bg-forest px-4 text-sm font-semibold text-white">
                     {saving === type.type_code ? "Uploading..." : "Upload"}

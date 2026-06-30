@@ -30,7 +30,7 @@ export function ZaykaPassportCard({ passport, compact = false }: ZaykaPassportCa
           <p className="text-xs font-bold uppercase tracking-widest" style={{ color: styles.text }}>
             Zayka Passport · Hyderabad
           </p>
-          <p className="mt-1 text-xs text-charcoal/55">goZaika</p>
+          <p className="mt-1 text-xs text-muted">goZaika</p>
         </div>
         <span
           className="rounded-full px-3 py-1 text-xs font-black tracking-wider"
@@ -55,7 +55,7 @@ export function ZaykaPassportCard({ passport, compact = false }: ZaykaPassportCa
           ].map((s) => (
             <div key={s.label} className="rounded-lg bg-white/70 p-2">
               <p className="text-lg font-black text-charcoal">{s.value}</p>
-              <p className="text-[10px] text-charcoal/55">{s.label}</p>
+              <p className="text-[10px] text-muted">{s.label}</p>
             </div>
           ))}
         </div>
@@ -69,7 +69,7 @@ export function ZaykaPassportCard({ passport, compact = false }: ZaykaPassportCa
           </p>
         ) : (
           <>
-            <div className="flex items-center justify-between text-xs text-charcoal/60">
+            <div className="flex items-center justify-between text-xs text-muted">
               <span>{bNext} more bags to {nextTierCode}</span>
               <span>{progressPercent}%</span>
             </div>
@@ -86,7 +86,7 @@ export function ZaykaPassportCard({ passport, compact = false }: ZaykaPassportCa
       {/* Badges row (compact shows first 4) */}
       {!compact && badges.length > 0 && (
         <div className="mt-4">
-          <p className="text-xs font-bold uppercase tracking-wide text-charcoal/50">Stamps</p>
+          <p className="text-xs font-bold uppercase tracking-wide text-muted">Stamps</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {badges.slice(0, 6).map((badge) => (
               <div

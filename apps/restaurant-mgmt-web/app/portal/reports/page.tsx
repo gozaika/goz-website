@@ -88,7 +88,7 @@ export default async function PortalReportsPage({
 
         <section className="mt-5 rounded-lg border border-gold/40 bg-warning-soft p-4">
           <h2 className="font-bold">Report assumptions</h2>
-          <ul className="mt-2 grid gap-1 text-sm text-charcoal/80">
+          <ul className="mt-2 grid gap-1 text-sm text-muted">
             {report.summary.assumptions.map((assumption) => (
               <li key={assumption}>{assumption}</li>
             ))}
@@ -162,7 +162,7 @@ export default async function PortalReportsPage({
         <section className="mt-5 grid gap-4 lg:grid-cols-2">
           <div className="rounded-lg border border-hairline bg-white p-4">
             <h2 className="font-bold">Next actions</h2>
-            <ul className="mt-2 grid gap-2 text-sm text-charcoal/80">
+            <ul className="mt-2 grid gap-2 text-sm text-muted">
               {report.summary.nextActions.map((action) => (
                 <li key={action}>{action}</li>
               ))}

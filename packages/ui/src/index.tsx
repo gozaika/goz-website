@@ -140,7 +140,7 @@ export function EmptyState({
   return (
     <section className="rounded-lg border border-dashed border-forest/30 bg-white p-8 text-center">
       <p className="text-lg font-semibold text-charcoal">{title}</p>
-      <p className="mx-auto mt-2 max-w-md text-sm text-charcoal/70">{body}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-muted">{body}</p>
       {action ? <div className="mt-5">{action}</div> : null}
     </section>
   );
@@ -180,7 +180,14 @@ export function ProgressBar({ available, total }: { readonly available: number; 
   const urgent = percentage < 20;
 
   return (
-    <div className="h-2 w-full rounded-full bg-black/10" aria-label={`${available} of ${total} bags available`}>
+    <div
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={total}
+      aria-valuenow={available}
+      aria-label={`${available} of ${total} bags available`}
+      className="h-2 w-full rounded-full bg-black/10"
+    >
       <div
         className={cn("h-2 rounded-full", urgent ? "bg-red-600" : "bg-forest")}
         style={{ width: `${percentage}%` }}
@@ -289,10 +296,10 @@ export function DropCard({
             )}
           </h3>
           {!isBlindAdventure && drop.bagShortDescription ? (
-            <p className="mt-1 line-clamp-2 text-sm text-charcoal/70">{drop.bagShortDescription}</p>
+            <p className="mt-1 line-clamp-2 text-sm text-muted">{drop.bagShortDescription}</p>
           ) : null}
           {isBlindAdventure && (
-            <p className="mt-1 text-xs text-charcoal/55">
+            <p className="mt-1 text-xs text-muted">
               Cuisine revealed after pickup. Allergens always disclosed.
             </p>
           )}
@@ -302,7 +309,7 @@ export function DropCard({
       <div className="mt-4">
         <AllergenChips codes={drop.allergenCodes} />
       </div>
-      <div className="mt-4 grid gap-2 text-sm text-charcoal/75">
+      <div className="mt-4 grid gap-2 text-sm text-muted">
         <div className="flex items-center gap-2">
           <Clock size={16} aria-hidden="true" />
           {closingSoon ? (
@@ -326,7 +333,7 @@ export function DropCard({
       </div>
       <div className="mt-4">
         <ProgressBar available={drop.quantityAvailable} total={drop.quantityTotal} />
-        <p className="mt-2 text-xs font-semibold text-charcoal/65">
+        <p className="mt-2 text-xs font-semibold text-muted">
           {drop.quantityAvailable} of {drop.quantityTotal} bags remaining
           {goingFast && !almostGone ? (
             <span className="ml-2 text-saffron-text">· Going fast</span>
@@ -376,7 +383,7 @@ export function RestaurantCard({
             {restaurant.neighborhoodName ? `${restaurant.neighborhoodName} pickup` : restaurant.cityName ?? "Pickup partner"}
           </p>
           <h3 className="mt-2 text-2xl font-bold text-charcoal">{restaurant.restaurantName}</h3>
-          <p className="mt-2 line-clamp-2 text-sm text-charcoal/70">
+          <p className="mt-2 line-clamp-2 text-sm text-muted">
             {restaurant.headline ?? "Chef-led BAM Bags with published dietary, allergen, and pickup details."}
           </p>
         </div>
@@ -395,17 +402,17 @@ export function RestaurantCard({
             <DietaryBadge key={tag} code={tag} />
           ))}
         </div>
-        <dl className="grid grid-cols-3 gap-2 text-sm text-charcoal/70">
+        <dl className="grid grid-cols-3 gap-2 text-sm text-muted">
           <div>
-            <dt className="text-xs font-semibold uppercase text-charcoal/45">Active</dt>
+            <dt className="text-xs font-semibold uppercase text-muted">Active</dt>
             <dd className="mt-1 font-bold text-charcoal">{restaurant.activeDropCount}</dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase text-charcoal/45">History</dt>
+            <dt className="text-xs font-semibold uppercase text-muted">History</dt>
             <dd className="mt-1 font-bold text-charcoal">{restaurant.totalDropCount}</dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase text-charcoal/45">Trust</dt>
+            <dt className="text-xs font-semibold uppercase text-muted">Trust</dt>
             <dd className="mt-1 font-bold text-charcoal">Disclosed</dd>
           </div>
         </dl>

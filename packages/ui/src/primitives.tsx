@@ -105,7 +105,7 @@ export function ErrorState({
   return (
     <section role="alert" className="rounded-lg border border-danger/30 bg-danger-soft p-8 text-center">
       <p className="text-lg font-semibold text-danger">{title}</p>
-      <p className="mx-auto mt-2 max-w-md text-sm text-charcoal/80">{body}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-muted">{body}</p>
       {action ? <div className="mt-5">{action}</div> : null}
     </section>
   );

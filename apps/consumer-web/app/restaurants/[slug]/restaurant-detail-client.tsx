@@ -98,10 +98,10 @@ function ReviewCard({ review }: { readonly review: PublicReview }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-base font-bold text-charcoal">{review.ratingValue}/5</span>
-            <span className="text-sm text-charcoal/60">{label}</span>
+            <span className="text-sm text-muted">{label}</span>
             <StarRow value={review.ratingValue} />
           </div>
-          <p className="mt-1 text-xs text-charcoal/60">
+          <p className="mt-1 text-xs text-muted">
             {review.reviewerDisplayName}
             {review.orderDietaryCode ? ` · ${review.orderDietaryCode.replace("_", "-")} order` : ""}
             {" · "}{date}
@@ -110,7 +110,7 @@ function ReviewCard({ review }: { readonly review: PublicReview }) {
         <button
           type="button"
           aria-label="Report review"
-          className="rounded p-1 text-charcoal/30 hover:text-danger transition"
+          className="rounded p-1 text-muted hover:text-danger transition"
         >
           <Flag size={14} />
         </button>
@@ -118,7 +118,7 @@ function ReviewCard({ review }: { readonly review: PublicReview }) {
 
       {review.reviewText && (
         <div className="mt-3">
-          <p className={`text-sm text-charcoal/80 leading-relaxed ${!expanded ? "line-clamp-3" : ""}`}>
+          <p className={`text-sm text-muted leading-relaxed ${!expanded ? "line-clamp-3" : ""}`}>
             {review.reviewText}
           </p>
           {(review.reviewText?.length ?? 0) > 160 && (
@@ -134,7 +134,7 @@ function ReviewCard({ review }: { readonly review: PublicReview }) {
       )}
 
       {review.bagDisplayName && (
-        <p className="mt-3 text-xs text-charcoal/50">
+        <p className="mt-3 text-xs text-muted">
           BAM Bag: {review.bagDisplayName} · Verified order ⓘ
         </p>
       )}
@@ -161,13 +161,13 @@ function ReviewsSection({ restaurantSlug }: { readonly restaurantSlug: string })
     return () => { cancelled = true; };
   }, [restaurantSlug, sort, currentKey]);
 
-  if (loading) return <p className="py-4 text-sm text-charcoal/60">Loading reviews…</p>;
+  if (loading) return <p className="py-4 text-sm text-muted">Loading reviews…</p>;
 
   if (!payload || payload.ratingCount === 0) {
     return (
       <div className="rounded-lg border border-dashed border-forest/20 bg-white p-8 text-center">
         <p className="text-sm font-semibold text-charcoal">Be the first to review</p>
-        <p className="mt-1 text-xs text-charcoal/60">Order a BAM Bag and share your experience.</p>
+        <p className="mt-1 text-xs text-muted">Order a BAM Bag and share your experience.</p>
       </div>
     );
   }
@@ -181,11 +181,11 @@ function ReviewsSection({ restaurantSlug }: { readonly restaurantSlug: string })
             {payload.averageRating?.toFixed(1) ?? "—"}/5
           </span>
           {payload.averageRating != null && (
-            <span className="ml-2 text-sm font-semibold text-charcoal/70">{ratingLabel(payload.averageRating)}</span>
+            <span className="ml-2 text-sm font-semibold text-muted">{ratingLabel(payload.averageRating)}</span>
           )}
         </div>
         <div>
-          <p className="text-sm text-charcoal/60" title="From verified BAM Bag orders only">
+          <p className="text-sm text-muted" title="From verified BAM Bag orders only">
             {payload.ratingCount} verified review{payload.ratingCount !== 1 ? "s" : ""} ⓘ
           </p>
         </div>
@@ -196,7 +196,7 @@ function ReviewsSection({ restaurantSlug }: { readonly restaurantSlug: string })
         <div className="grid grid-cols-2 gap-3">
           {Object.entries(payload.categoryAverages).map(([key, val]) => (
             <div key={key}>
-              <div className="flex items-center justify-between text-xs text-charcoal/70">
+              <div className="flex items-center justify-between text-xs text-muted">
                 <span className="capitalize">{key.replace(/_/g, " ")}</span>
                 <span className="font-semibold">{(val as number).toFixed(1)}</span>
               </div>
@@ -307,12 +307,12 @@ export function RestaurantDetailClient({
       <div className="border-b border-black/10 bg-white">
         <div className="mx-auto flex max-w-7xl flex-wrap gap-3 overflow-x-auto px-4 py-3">
           {restaurant.neighborhoodName && (
-            <span className="flex items-center gap-1.5 rounded-full border border-black/10 px-3 py-1 text-xs text-charcoal/70">
+            <span className="flex items-center gap-1.5 rounded-full border border-black/10 px-3 py-1 text-xs text-muted">
               <MapPin size={12} /> {restaurant.neighborhoodName}, Hyderabad
             </span>
           )}
           {restaurant.cuisineTags.slice(0, 2).map((tag) => (
-            <span key={tag} className="rounded-full border border-black/10 px-3 py-1 text-xs text-charcoal/70">
+            <span key={tag} className="rounded-full border border-black/10 px-3 py-1 text-xs text-muted">
               🍽️ {tag}
             </span>
           ))}
@@ -338,7 +338,7 @@ export function RestaurantDetailClient({
               className={`shrink-0 border-b-2 px-4 py-3 text-sm font-semibold transition ${
                 activeTab === tab.id
                   ? "border-forest text-forest"
-                  : "border-transparent text-charcoal/60 hover:text-charcoal"
+                  : "border-transparent text-muted hover:text-charcoal"
               }`}
             >
               {tab.label}
@@ -363,12 +363,12 @@ export function RestaurantDetailClient({
               {restaurant.storyMarkdown ? (
                 <section>
                   <h2 className="text-xl font-bold text-charcoal">About {restaurant.restaurantName}</h2>
-                  <p className="mt-3 leading-7 text-charcoal/80">{restaurant.storyMarkdown}</p>
+                  <p className="mt-3 leading-7 text-muted">{restaurant.storyMarkdown}</p>
                 </section>
               ) : (
                 <section>
                   <h2 className="text-xl font-bold text-charcoal">About {restaurant.restaurantName}</h2>
-                  <p className="mt-3 leading-7 text-charcoal/75">
+                  <p className="mt-3 leading-7 text-muted">
                     Chef-curated BAM Bags with full allergen disclosure and pickup-only trust.
                     Check active drops for today&apos;s selection.
                   </p>
@@ -378,7 +378,7 @@ export function RestaurantDetailClient({
               {/* Pickup policy */}
               <div className="rounded-lg border border-forest/30 bg-success-soft p-4">
                 <h3 className="text-sm font-bold text-forest">Pickup policy</h3>
-                <p className="mt-2 text-sm leading-6 text-charcoal/75">
+                <p className="mt-2 text-sm leading-6 text-muted">
                   {restaurant.pickupInstructions ??
                     "Pickup instructions appear on drop detail and confirmed order screens. Show QR code or 6-digit OTP at the counter."}
                 </p>
@@ -389,7 +389,7 @@ export function RestaurantDetailClient({
                 <summary className="cursor-pointer px-4 py-3 text-sm font-bold text-charcoal">
                   How BAM Bags work
                 </summary>
-                <ol className="grid gap-3 px-4 pb-4 pt-2 text-sm text-charcoal/75">
+                <ol className="grid gap-3 px-4 pb-4 pt-2 text-sm text-muted">
                   {["Discover drops from this restaurant", "Pay online — allergens always shown before checkout", "Show QR or OTP at pickup counter"].map((step, i) => (
                     <li key={step} className="flex items-start gap-3">
                       <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-forest text-[10px] font-black text-white">
@@ -416,7 +416,7 @@ export function RestaurantDetailClient({
               {restaurant.activeDrops.length === 0 ? (
                 <div className="rounded-lg border border-dashed border-forest/20 bg-white p-8 text-center">
                   <p className="text-sm font-semibold text-charcoal">No active drops right now</p>
-                  <p className="mt-1 text-xs text-charcoal/60">Follow this restaurant for alerts.</p>
+                  <p className="mt-1 text-xs text-muted">Follow this restaurant for alerts.</p>
                 </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2">
@@ -433,7 +433,7 @@ export function RestaurantDetailClient({
             <div className="grid gap-3">
               <h2 className="text-xl font-bold text-charcoal">Drop history</h2>
               {restaurant.pastDrops.length === 0 ? (
-                <p className="rounded-lg border border-dashed border-black/15 bg-white p-4 text-sm text-charcoal/65">
+                <p className="rounded-lg border border-dashed border-black/15 bg-white p-4 text-sm text-muted">
                   Past public drops appear here after pickup windows close.
                 </p>
               ) : (
@@ -442,7 +442,7 @@ export function RestaurantDetailClient({
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <p className="font-bold text-charcoal">{drop.bagDisplayName}</p>
-                        <p className="mt-0.5 text-xs text-charcoal/55">
+                        <p className="mt-0.5 text-xs text-muted">
                           {new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(new Date(drop.pickupStartAt))}
                         </p>
                       </div>
@@ -460,7 +460,7 @@ export function RestaurantDetailClient({
                           }}
                         />
                       </div>
-                      <p className="mt-1 text-[10px] text-charcoal/45">
+                      <p className="mt-1 text-[10px] text-muted">
                         {drop.quantityTotal - drop.quantityAvailable}/{drop.quantityTotal} claimed
                       </p>
                     </div>
@@ -492,11 +492,11 @@ export function RestaurantDetailClient({
                 </div>
               ) : (
                 <div className="flex h-40 items-center justify-center rounded-lg border border-dashed border-black/15 bg-white">
-                  <p className="text-sm text-charcoal/50">Location not set by restaurant</p>
+                  <p className="text-sm text-muted">Location not set by restaurant</p>
                 </div>
               )}
               {restaurant.pickupInstructions && (
-                <p className="rounded-lg border border-forest/20 bg-success-soft p-4 text-sm text-charcoal/80">
+                <p className="rounded-lg border border-forest/20 bg-success-soft p-4 text-sm text-muted">
                   {restaurant.pickupInstructions}
                 </p>
               )}
@@ -515,12 +515,12 @@ export function RestaurantDetailClient({
         </div>
 
         {/* Right column — claim panel (desktop) */}
-        <aside className="hidden lg:block">
+        <div className="hidden lg:block">
           <div className="sticky top-32 rounded-xl border border-forest/25 bg-white p-5 shadow-sm">
             {restaurant.activeDrops.length === 0 ? (
               <div className="text-center">
-                <p className="text-sm font-semibold text-charcoal/60">No active drops right now</p>
-                <p className="mt-1 text-xs text-charcoal/45">Check back when the next Chef&apos;s Selection goes live.</p>
+                <p className="text-sm font-semibold text-muted">No active drops right now</p>
+                <p className="mt-1 text-xs text-muted">Check back when the next Chef&apos;s Selection goes live.</p>
               </div>
             ) : (
               <>
@@ -563,7 +563,7 @@ export function RestaurantDetailClient({
             )}
 
             {restaurant.averageRating != null && restaurant.ratingCount > 0 && (
-              <div className="mt-4 border-t border-black/10 pt-4 text-xs text-charcoal/60">
+              <div className="mt-4 border-t border-black/10 pt-4 text-xs text-muted">
                 <div className="flex items-center gap-1.5">
                   <StarRow value={restaurant.averageRating} />
                   <span>{restaurant.averageRating.toFixed(1)}/5 · {restaurant.ratingCount} review{restaurant.ratingCount !== 1 ? "s" : ""}</span>
@@ -572,7 +572,7 @@ export function RestaurantDetailClient({
               </div>
             )}
           </div>
-        </aside>
+        </div>
       </div>
 
       {/* Mobile sticky bottom claim bar */}
@@ -581,7 +581,7 @@ export function RestaurantDetailClient({
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <p className="truncate text-sm font-bold text-charcoal">{firstActiveDrop.bagDisplayName}</p>
-              <p className="text-xs text-charcoal/60">{formatPaise(firstActiveDrop.pricePaise)}</p>
+              <p className="text-xs text-muted">{formatPaise(firstActiveDrop.pricePaise)}</p>
             </div>
             <a
               href={`/drops/${firstActiveDrop.dropPk}?claim=1`}

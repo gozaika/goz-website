@@ -93,7 +93,7 @@ export function ClaimPanel({
       {message ? (
         <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700">{message}</p>
       ) : null}
-      <div className="rounded-lg border border-forest/20 bg-success-soft p-3 text-sm text-charcoal/75">
+      <div className="rounded-lg border border-forest/20 bg-success-soft p-3 text-sm text-muted">
         <p className="flex items-start gap-2 font-semibold text-forest">
           <Clock className="mt-0.5 h-4 w-4" aria-hidden="true" />
           A hold reserves 1 bag until the timer expires. Payment happens on the checkout screen.

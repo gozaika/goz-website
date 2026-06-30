@@ -97,7 +97,7 @@ export function PortalProfileClient({ initialProfile }: { readonly initialProfil
       <div className="rounded-lg border border-hairline bg-white p-5">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-forest">Profile</p>
         <h1 className="mt-2 text-3xl font-bold text-charcoal">{initialProfile.restaurantName}</h1>
-        <p className="mt-2 text-sm text-charcoal/65">
+        <p className="mt-2 text-sm text-muted">
           Keep account and operational contact details current for email and WhatsApp order alerts.
         </p>
       </div>
@@ -123,7 +123,7 @@ export function PortalProfileClient({ initialProfile }: { readonly initialProfil
             <Store className="text-forest" aria-hidden="true" />
             <h2 className="text-xl font-bold text-charcoal">Operational alerts</h2>
           </div>
-          <p className="mt-2 text-sm text-charcoal/65">
+          <p className="mt-2 text-sm text-muted">
             New paid order and pickup alert notifications use this restaurant contact.
           </p>
           <div className="mt-5 grid gap-4">
@@ -162,7 +162,7 @@ export function PortalProfileClient({ initialProfile }: { readonly initialProfil
           <MapPin className="text-forest" aria-hidden="true" />
           <h2 className="text-xl font-bold text-charcoal">Address &amp; Location</h2>
         </div>
-        <p className="mt-2 text-sm text-charcoal/65">
+        <p className="mt-2 text-sm text-muted">
           Set your pickup address and coordinates so customers can find you on the map. Latitude and
           longitude enable the map pin — enter them as decimal degrees (e.g. 17.385000, 78.486700).
         </p>

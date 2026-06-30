@@ -108,7 +108,7 @@ export function PortalChrome({
         >
           {groups.map((group) => (
             <div key={group.label} className="shrink-0">
-              <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.14em] text-charcoal/40">
+              <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.14em] text-muted">
                 {group.label}
               </p>
               <div className="flex gap-1.5">
@@ -120,7 +120,7 @@ export function PortalChrome({
                       href={href}
                       aria-current={active ? "page" : undefined}
                       className={`inline-flex min-h-10 items-center gap-2 rounded-lg px-3 text-sm font-semibold transition ${
-                        active ? "bg-forest text-white" : "border border-hairline bg-white text-charcoal/70 hover:border-forest/30 hover:text-forest"
+                        active ? "bg-forest text-white" : "border border-hairline bg-white text-muted hover:border-forest/30 hover:text-forest"
                       }`}
                     >
                       <Icon size={15} aria-hidden="true" />
@@ -137,7 +137,7 @@ export function PortalChrome({
         <nav className="hidden px-3 lg:grid lg:gap-5" aria-label="Restaurant portal">
           {groups.map((group) => (
             <div key={group.label}>
-              <p className="mb-1.5 px-3 text-xs font-bold uppercase tracking-[0.16em] text-charcoal/45">
+              <p className="mb-1.5 px-3 text-xs font-bold uppercase tracking-[0.16em] text-muted">
                 {group.label}
               </p>
               <div className="grid gap-0.5">
@@ -149,7 +149,7 @@ export function PortalChrome({
                       href={href}
                       aria-current={active ? "page" : undefined}
                       className={`inline-flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm font-semibold transition ${
-                        active ? "bg-forest text-white" : "text-charcoal/70 hover:bg-success-soft hover:text-forest"
+                        active ? "bg-forest text-white" : "text-muted hover:bg-success-soft hover:text-forest"
                       }`}
                     >
                       <Icon size={18} aria-hidden="true" />

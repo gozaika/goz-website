@@ -29,7 +29,7 @@ export default function SwaadClubPage() {
             <h1 className="mt-3 max-w-3xl text-5xl font-bold leading-tight text-charcoal">
               Priority access for Hyderabad&apos;s first BAM Bag explorers.
             </h1>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-charcoal/75">
+            <p className="mt-4 max-w-2xl text-lg leading-8 text-muted">
               Built for diners who want smarter access to off-menu discovery: early alerts, member-first drop context, and
               launch benefits without turning goZaika into a discount club.
             </p>
@@ -42,14 +42,14 @@ export default function SwaadClubPage() {
               </Link>
             </div>
           </div>
-          <aside className="rounded-lg border border-gold/40 bg-white p-5 shadow-sm">
+          <div className="rounded-lg border border-gold/40 bg-white p-5 shadow-sm">
             <Crown className="h-9 w-9 text-gold" aria-hidden="true" />
             <h2 className="mt-4 text-2xl font-bold text-charcoal">Coming soon</h2>
-            <p className="mt-2 text-sm leading-6 text-charcoal/70">
+            <p className="mt-2 text-sm leading-6 text-muted">
               Razorpay recurring subscriptions are not enabled in this slice. No payment mandate, renewal, or entitlement
               is created from this page.
             </p>
-          </aside>
+          </div>
         </div>
       </section>
 
@@ -61,7 +61,7 @@ export default function SwaadClubPage() {
               <article key={title} className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">
                 <Icon className="h-6 w-6 text-forest" aria-hidden="true" />
                 <h2 className="mt-4 text-lg font-bold text-charcoal">{title}</h2>
-                <p className="mt-2 text-sm leading-6 text-charcoal/68">{body}</p>
+                <p className="mt-2 text-sm leading-6 text-muted">{body}</p>
               </article>
             );
           })}
@@ -69,7 +69,7 @@ export default function SwaadClubPage() {
 
         <section className="mt-8 rounded-lg border border-forest/20 bg-success-soft p-5">
           <h2 className="text-2xl font-bold text-charcoal">Eligibility and boundary</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-charcoal/70">
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
             Swaad Club starts as a launch waitlist/notification promise. Paid membership, priority queue ordering,
             renewal, cancellation, and invoice handling belong to the next revenue slice after backend activation.
           </p>
@@ -80,7 +80,7 @@ export default function SwaadClubPage() {
           {faqs.map(([question, answer]) => (
             <details key={question} className="rounded-lg border border-black/10 bg-white p-4">
               <summary className="cursor-pointer font-semibold text-charcoal">{question}</summary>
-              <p className="mt-2 text-sm leading-6 text-charcoal/68">{answer}</p>
+              <p className="mt-2 text-sm leading-6 text-muted">{answer}</p>
             </details>
           ))}
         </section>

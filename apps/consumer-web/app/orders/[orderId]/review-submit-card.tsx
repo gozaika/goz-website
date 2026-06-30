@@ -31,7 +31,7 @@ export function ReviewSubmitCard({
     return (
       <section className="rounded-xl border border-forest/25 bg-[#F0F9F4] p-5">
         <p className="text-sm font-bold text-forest">Review submitted</p>
-        <p className="mt-1 text-xs text-charcoal/60">
+        <p className="mt-1 text-xs text-muted">
           Thank you! Your review is awaiting moderation and will appear publicly once approved.
         </p>
         <a href="/account/discovery" className="mt-3 inline-block text-xs font-semibold text-forest hover:underline">
@@ -73,7 +73,7 @@ export function ReviewSubmitCard({
     <section className="rounded-xl border border-gold/30 bg-[#FFFDF5] p-5">
       <p className="text-xs font-bold uppercase tracking-wide text-gold-text">How was it?</p>
       <h2 className="mt-1 text-base font-bold text-charcoal">Rate your BAM Bag from {restaurantName}</h2>
-      <p className="mt-1 text-xs text-charcoal/60">
+      <p className="mt-1 text-xs text-muted">
         Only verified BAM Bag orders can leave reviews. Your name will be masked (e.g. &ldquo;Priya K.&rdquo;).
       </p>
 
@@ -98,7 +98,7 @@ export function ReviewSubmitCard({
         <>
           {/* Text field */}
           <label className="mt-4 block">
-            <span className="text-xs font-semibold text-charcoal/70">Your review (optional)</span>
+            <span className="text-xs font-semibold text-muted">Your review (optional)</span>
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value.slice(0, 500))}
@@ -106,7 +106,7 @@ export function ReviewSubmitCard({
               rows={3}
               className="mt-1.5 w-full rounded-lg border border-black/15 p-3 text-sm outline-none focus:border-forest resize-none"
             />
-            <span className="mt-0.5 block text-right text-[10px] text-charcoal/40">{text.length}/500</span>
+            <span className="mt-0.5 block text-right text-[10px] text-muted">{text.length}/500</span>
           </label>
 
           {/* Category sliders */}
@@ -114,7 +114,7 @@ export function ReviewSubmitCard({
             {CATEGORY_LABELS.map(({ key, label }) => (
               <label key={key} className="grid gap-1">
                 <div className="flex justify-between text-xs">
-                  <span className="font-semibold text-charcoal/70">{label}</span>
+                  <span className="font-semibold text-muted">{label}</span>
                   <span className="font-bold text-charcoal">{categories[key] != null ? `${categories[key]}/5` : "—"}</span>
                 </div>
                 <input
@@ -150,7 +150,7 @@ export function ReviewSubmitCard({
         <button
           type="button"
           onClick={() => setSkipped(true)}
-          className="min-h-10 rounded-lg border border-black/15 px-4 text-sm font-semibold text-charcoal/60 hover:border-black/30"
+          className="min-h-10 rounded-lg border border-black/15 px-4 text-sm font-semibold text-muted hover:border-black/30"
         >
           Skip
         </button>
