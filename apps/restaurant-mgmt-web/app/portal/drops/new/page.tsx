@@ -15,10 +15,10 @@ export default async function NewDropPage() {
     return (
       <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
         <section className="mx-auto max-w-3xl px-6 py-8">
-          <div className="rounded-lg border border-[#D4A017]/40 bg-[#FFF8E6] p-5">
-            <p className="text-sm font-semibold text-[#7A5A00]">Publishing paused</p>
-            <h1 className="mt-2 text-2xl font-bold">Drop publishing is unavailable</h1>
-            <p className="mt-2 text-sm text-[#7A5A00]">
+          <div className="rounded-lg border border-gold/40 bg-warning-soft p-5">
+            <p className="text-sm font-semibold text-warning">Publishing paused</p>
+            <h1 className="mt-2 text-2xl font-bold text-charcoal">Drop publishing is unavailable</h1>
+            <p className="mt-2 text-sm text-warning">
               goZaika ops must reactivate this restaurant before new Limited Drops can be published. Existing orders and read-only finance/report pages remain available.
             </p>
           </div>
@@ -37,8 +37,8 @@ export default async function NewDropPage() {
   return (
     <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
       <section className="px-6 py-6">
-        <h1 className="text-3xl font-bold">Create a BAM Bag drop</h1>
-        <p className="mt-2 max-w-3xl text-sm text-slate-600">
+        <h1 className="text-3xl font-bold text-charcoal">Create a BAM Bag drop</h1>
+        <p className="mt-2 max-w-3xl text-sm text-muted">
           Publish scheduled or active inventory to consumer discovery. Holds are visible for launch support, but they are not paid orders yet.
         </p>
         <div className="mt-6">

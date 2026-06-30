@@ -159,6 +159,10 @@ const MIGRATED_FILES = [
   "apps/restaurant-mgmt-web/app/portal/dashboard/page.tsx",
   "apps/restaurant-mgmt-web/app/portal/orders/page.tsx",
   "apps/restaurant-mgmt-web/app/portal/orders/orders-client.tsx",
+  "apps/restaurant-mgmt-web/app/portal/drops/page.tsx",
+  "apps/restaurant-mgmt-web/app/portal/drops/drops-list-client.tsx",
+  "apps/restaurant-mgmt-web/app/portal/drops/new/page.tsx",
+  "apps/restaurant-mgmt-web/app/portal/drops/new/drop-publishing-form.tsx",
 ];
 const BRAND_HEX = /#(?:FF6B35|1A5C38|D4A017|FFF8F0|2D2D2D)\b/i;
 

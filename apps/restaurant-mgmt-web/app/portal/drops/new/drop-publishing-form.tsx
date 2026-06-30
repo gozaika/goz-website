@@ -259,20 +259,20 @@ export function DropPublishingForm({
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)] lg:items-start">
-      <form onSubmit={onSubmit} className="grid h-fit gap-4 rounded-lg border border-black/10 bg-white p-4 sm:p-5">
+      <form onSubmit={onSubmit} className="grid h-fit gap-4 rounded-lg border border-hairline bg-white p-4 sm:p-5">
         <div>
           <h2 className="text-lg font-semibold">Quick publish drop</h2>
-          <p className="mt-1 text-sm text-slate-600">Defaults come from the template. Confirm the count and pickup window, then publish.</p>
+          <p className="mt-1 text-sm text-muted">Defaults come from the template. Confirm the count and pickup window, then publish.</p>
         </div>
 
         {activeTemplates.length === 0 ? (
-          <p className="rounded-md border border-[#D4A017]/40 bg-[#FFF8E6] p-3 text-sm font-medium text-[#7A5A00]">
+          <p className="rounded-md border border-gold/40 bg-warning-soft p-3 text-sm font-medium text-warning">
             Create a BAM Bag template before publishing a drop.
           </p>
         ) : null}
 
         {!guardrails.publishingEnabled ? (
-          <p className="rounded-md border border-[#D4A017]/40 bg-[#FFF8E6] p-3 text-sm font-medium text-[#7A5A00]">
+          <p className="rounded-md border border-gold/40 bg-warning-soft p-3 text-sm font-medium text-warning">
             goZaika ops has paused publishing for this restaurant or pilot. Existing drops and orders remain visible, but new drops cannot be published.
           </p>
         ) : null}
@@ -281,8 +281,8 @@ export function DropPublishingForm({
           <div
             className={
               feedback.kind === "error"
-                ? "rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700"
-                : "rounded-md border border-[#1A5C38]/25 bg-[#EAF3DE] p-3 text-sm text-[#1A5C38]"
+                ? "rounded-md border border-danger/30 bg-danger-soft p-3 text-sm text-danger"
+                : "rounded-md border border-forest/25 bg-success-soft p-3 text-sm text-forest"
             }
           >
             <p className="font-semibold">{feedback.text}</p>
@@ -316,7 +316,7 @@ export function DropPublishingForm({
 
         <label className="grid gap-1 text-sm font-medium">
           Template
-          <select value={templateRevisionPk} onChange={(event) => changeTemplate(event.target.value)} required className="min-h-11 rounded-md border border-black/10 px-3">
+          <select value={templateRevisionPk} onChange={(event) => changeTemplate(event.target.value)} required className="min-h-11 rounded-md border border-hairline px-3">
             <option value="">Choose template</option>
             {activeTemplates.map((template) => (
               <option key={template.templatePk} value={template.activeRevisionPk ?? ""}>
@@ -329,42 +329,42 @@ export function DropPublishingForm({
         <div className="grid gap-3 sm:grid-cols-[1fr_120px_140px]">
           <label className="grid gap-1 text-sm font-medium">
             Drop title
-            <input value={dropTitle} onChange={(event) => setDropTitle(event.target.value)} className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input value={dropTitle} onChange={(event) => setDropTitle(event.target.value)} className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Bags
-            <input value={quantityTotal} onChange={(event) => setQuantityTotal(Number(event.target.value))} type="number" min="1" max={guardrails.maxBagsPerDrop} required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input value={quantityTotal} onChange={(event) => setQuantityTotal(Number(event.target.value))} type="number" min="1" max={guardrails.maxBagsPerDrop} required className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Price INR
-            <input value={priceRupees} onChange={(event) => setPriceRupees(Number(event.target.value))} type="number" min="1" required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input value={priceRupees} onChange={(event) => setPriceRupees(Number(event.target.value))} type="number" min="1" required className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-[1fr_150px_1fr]">
           <label className="grid gap-1 text-sm font-medium">
             Pickup starts
-            <input value={pickupStartAt} onChange={(event) => changeStart(event.target.value)} type="datetime-local" required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input value={pickupStartAt} onChange={(event) => changeStart(event.target.value)} type="datetime-local" required className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Duration
-            <input value={durationMinutes} onChange={(event) => changeDuration(Number(event.target.value))} type="number" min="15" max="480" required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input value={durationMinutes} onChange={(event) => changeDuration(Number(event.target.value))} type="number" min="15" max="480" required className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Pickup ends
-            <input value={pickupEndAt} onChange={(event) => changeEnd(event.target.value)} type="datetime-local" required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input value={pickupEndAt} onChange={(event) => changeEnd(event.target.value)} type="datetime-local" required className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
         </div>
 
         <div className="flex flex-wrap gap-2" aria-label="Quick time controls">
           {[15, 30, 60].map((offset) => (
-            <button key={offset} type="button" onClick={() => changeStart(nextRoundedStart(offset))} className="inline-flex min-h-9 items-center gap-1 rounded-md border border-black/10 px-2 text-xs font-semibold">
+            <button key={offset} type="button" onClick={() => changeStart(nextRoundedStart(offset))} className="inline-flex min-h-9 items-center gap-1 rounded-md border border-hairline px-2 text-xs font-semibold">
               <Clock3 size={14} aria-hidden="true" />
               Start +{offset}m
             </button>
           ))}
           {[60, 90, 120, 180].map((duration) => (
-            <button key={duration} type="button" onClick={() => changeDuration(duration)} className="inline-flex min-h-9 items-center rounded-md border border-black/10 px-2 text-xs font-semibold">
+            <button key={duration} type="button" onClick={() => changeDuration(duration)} className="inline-flex min-h-9 items-center rounded-md border border-hairline px-2 text-xs font-semibold">
               {duration}m window
             </button>
           ))}
@@ -373,7 +373,7 @@ export function DropPublishingForm({
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="grid gap-1 text-sm font-medium">
             Type
-            <select value={dropTypeCode} onChange={(event) => setDropTypeCode(event.target.value)} className="min-h-11 rounded-md border border-black/10 px-3">
+            <select value={dropTypeCode} onChange={(event) => setDropTypeCode(event.target.value)} className="min-h-11 rounded-md border border-hairline px-3">
               <option value="STANDARD">Standard</option>
               <option value="SPOTLIGHT">Spotlight</option>
               <option value="CHEF_SPECIAL">Chef special</option>
@@ -384,7 +384,7 @@ export function DropPublishingForm({
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Lifecycle
-            <select value={statusCode} onChange={(event) => setStatusCode(event.target.value)} className="min-h-11 rounded-md border border-black/10 px-3">
+            <select value={statusCode} onChange={(event) => setStatusCode(event.target.value)} className="min-h-11 rounded-md border border-hairline px-3">
               <option value="ACTIVE">Active now</option>
               <option value="SCHEDULED">Scheduled</option>
               <option value="DRAFT">Draft</option>
@@ -392,48 +392,48 @@ export function DropPublishingForm({
           </label>
         </div>
 
-        <button disabled={pending || activeTemplates.length === 0 || !guardrails.publishingEnabled} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#FF6B35] px-4 font-semibold text-white disabled:opacity-60">
+        <button disabled={pending || activeTemplates.length === 0 || !guardrails.publishingEnabled} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-saffron px-4 font-semibold text-charcoal disabled:opacity-60">
           <Save size={18} aria-hidden="true" />
           {pending ? "Publishing..." : "Publish drop"}
         </button>
       </form>
 
-      <section className="rounded-lg border border-black/10 bg-white p-4 sm:p-5 lg:max-h-[calc(100vh-170px)] lg:overflow-y-auto">
+      <section className="rounded-lg border border-hairline bg-white p-4 sm:p-5 lg:max-h-[calc(100vh-170px)] lg:overflow-y-auto">
         <h2 className="text-lg font-semibold">Recent drops</h2>
         <div className="mt-4 grid gap-3">
           {drops.length === 0 ? (
-            <p className="text-sm text-slate-600">No drops published yet.</p>
+            <p className="text-sm text-muted">No drops published yet.</p>
           ) : (
             drops.map((drop) => (
-              <article key={drop.dropPk} className="rounded-md border border-black/10 p-3">
+              <article key={drop.dropPk} className="rounded-md border border-hairline p-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold">{drop.dropTitle}</p>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-muted">
                       {drop.statusCode} - {formatPickupWindow(drop.pickupStartAt, drop.pickupEndAt)}
                     </p>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-muted">
                       {drop.quantityAvailable} / {drop.quantityTotal} available - {drop.quantityHeld} held, not paid -{" "}
                       {formatPaise(drop.pricePaise)}
                     </p>
                   </div>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <button type="button" disabled={drop.statusCode === "ACTIVE" || busyDropAction !== null} onClick={() => updateStatus(drop.dropPk, "ACTIVE")} className="inline-flex min-h-9 items-center gap-1 rounded-md border border-[#1A5C38]/30 px-2 text-xs font-semibold text-[#1A5C38] disabled:opacity-45">
+                  <button type="button" disabled={drop.statusCode === "ACTIVE" || busyDropAction !== null} onClick={() => updateStatus(drop.dropPk, "ACTIVE")} className="inline-flex min-h-9 items-center gap-1 rounded-md border border-forest/30 px-2 text-xs font-semibold text-forest disabled:opacity-45">
                     <Play size={14} aria-hidden="true" />
                     Active
                   </button>
-                  <button type="button" disabled={drop.statusCode === "PAUSED" || busyDropAction !== null} onClick={() => updateStatus(drop.dropPk, "PAUSED")} className="inline-flex min-h-9 items-center gap-1 rounded-md border border-[#D4A017]/40 px-2 text-xs font-semibold text-[#7A5A00] disabled:opacity-45">
+                  <button type="button" disabled={drop.statusCode === "PAUSED" || busyDropAction !== null} onClick={() => updateStatus(drop.dropPk, "PAUSED")} className="inline-flex min-h-9 items-center gap-1 rounded-md border border-gold/40 px-2 text-xs font-semibold text-warning disabled:opacity-45">
                     <Pause size={14} aria-hidden="true" />
                     Pause
                   </button>
-                  <button type="button" disabled={drop.statusCode === "PICKUP_CLOSED" || busyDropAction !== null} onClick={() => updateStatus(drop.dropPk, "PICKUP_CLOSED")} className="inline-flex min-h-9 items-center gap-1 rounded-md border border-red-200 px-2 text-xs font-semibold text-red-700 disabled:opacity-45">
+                  <button type="button" disabled={drop.statusCode === "PICKUP_CLOSED" || busyDropAction !== null} onClick={() => updateStatus(drop.dropPk, "PICKUP_CLOSED")} className="inline-flex min-h-9 items-center gap-1 rounded-md border border-danger/30 px-2 text-xs font-semibold text-danger disabled:opacity-45">
                     <XCircle size={14} aria-hidden="true" />
                     Close
                   </button>
                 </div>
-                <details className="mt-3 rounded-md border border-black/10 p-2">
-                  <summary className="cursor-pointer text-xs font-semibold text-[#1A5C38]">Manage drop image</summary>
+                <details className="mt-3 rounded-md border border-hairline p-2">
+                  <summary className="cursor-pointer text-xs font-semibold text-forest">Manage drop image</summary>
                   <div className="mt-2">
                     <ProductMediaUploader
                       restaurantPk={restaurantPk}
@@ -461,7 +461,7 @@ export function DropPublishingForm({
                     })()}
                   </div>
                 ) : (
-                  <p className="mt-3 rounded-md border border-dashed border-black/15 bg-black/[0.02] p-2 text-xs text-slate-500">
+                  <p className="mt-3 rounded-md border border-dashed border-black/15 bg-black/[0.02] p-2 text-xs text-muted">
                     Public sharing appears for active or scheduled public drops.
                   </p>
                 )}
