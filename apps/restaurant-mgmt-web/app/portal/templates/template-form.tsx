@@ -114,18 +114,18 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_0.85fr]">
-      <form key={editingTemplate?.templatePk ?? "new-template"} onSubmit={onSubmit} className="grid gap-4 rounded-lg border border-black/10 bg-white p-5">
+      <form key={editingTemplate?.templatePk ?? "new-template"} onSubmit={onSubmit} className="grid gap-4 rounded-lg border border-hairline bg-white p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold">{editingTemplate ? "Edit BAM Bag template" : "New BAM Bag template"}</h2>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-muted">
               {editingTemplate
                 ? "Edits publish a new revision for future drops. Existing drops keep their original revision."
                 : "Publish reusable disclosure data before creating a public drop."}
             </p>
           </div>
           {editingTemplate ? (
-            <button type="button" className="inline-flex min-h-9 items-center gap-1 rounded-md border border-black/10 px-2 text-xs font-semibold" onClick={() => setEditingTemplatePk(null)}>
+            <button type="button" className="inline-flex min-h-9 items-center gap-1 rounded-md border border-hairline px-2 text-xs font-semibold" onClick={() => setEditingTemplatePk(null)}>
               <X size={14} aria-hidden="true" />
               Cancel
             </button>
@@ -135,23 +135,23 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="grid gap-1 text-sm font-medium">
             Internal name
-            <input name="templateName" required defaultValue={editingTemplate?.templateName ?? ""} className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input name="templateName" required defaultValue={editingTemplate?.templateName ?? ""} className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Public bag name
-            <input name="displayName" required defaultValue={editingTemplate?.displayName ?? ""} className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input name="displayName" required defaultValue={editingTemplate?.displayName ?? ""} className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
         </div>
 
         <label className="grid gap-1 text-sm font-medium">
           Card description
-          <textarea name="shortDescription" rows={3} defaultValue={editingTemplate?.shortDescription ?? ""} className="rounded-md border border-black/10 px-3 py-2" />
+          <textarea name="shortDescription" rows={3} defaultValue={editingTemplate?.shortDescription ?? ""} className="rounded-md border border-hairline px-3 py-2" />
         </label>
 
         <div className="grid gap-3 sm:grid-cols-4">
           <label className="grid gap-1 text-sm font-medium">
             Dietary
-            <select name="dietaryCategoryCode" defaultValue={editingTemplate?.dietaryCategoryCode ?? "VEG"} className="min-h-11 rounded-md border border-black/10 px-3">
+            <select name="dietaryCategoryCode" defaultValue={editingTemplate?.dietaryCategoryCode ?? "VEG"} className="min-h-11 rounded-md border border-hairline px-3">
               <option value="VEG">Veg</option>
               <option value="NON_VEG">Non-veg</option>
               <option value="JAIN">Jain</option>
@@ -160,7 +160,7 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Spice
-            <select name="spiceLevelCode" defaultValue={editingTemplate?.spiceLevelCode ?? "MILD"} className="min-h-11 rounded-md border border-black/10 px-3">
+            <select name="spiceLevelCode" defaultValue={editingTemplate?.spiceLevelCode ?? "MILD"} className="min-h-11 rounded-md border border-hairline px-3">
               <option value="MILD">Mild</option>
               <option value="MEDIUM">Medium</option>
               <option value="HOT">Hot</option>
@@ -169,46 +169,46 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Serves min
-            <input name="servesMin" type="number" min="1" max="12" defaultValue={editingTemplate?.servesMin ?? 1} required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input name="servesMin" type="number" min="1" max="12" defaultValue={editingTemplate?.servesMin ?? 1} required className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Serves max
-            <input name="servesMax" type="number" min="1" max="12" defaultValue={editingTemplate?.servesMax ?? 1} required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input name="servesMax" type="number" min="1" max="12" defaultValue={editingTemplate?.servesMax ?? 1} required className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3">
           <label className="grid gap-1 text-sm font-medium">
             Menu value INR
-            <input name="minMenuValueRupees" type="number" min="1" defaultValue={rupees(editingTemplate?.minMenuValuePaise ?? 59900)} required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input name="minMenuValueRupees" type="number" min="1" defaultValue={rupees(editingTemplate?.minMenuValuePaise ?? 59900)} required className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Suggested price INR
-            <input name="suggestedPriceRupees" type="number" min="1" defaultValue={rupees(editingTemplate?.suggestedPricePaise ?? 34900)} required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input name="suggestedPriceRupees" type="number" min="1" defaultValue={rupees(editingTemplate?.suggestedPricePaise ?? 34900)} required className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Holding minutes
-            <input name="maxHoldingMinutes" type="number" min="30" max="480" defaultValue={editingTemplate?.maxHoldingMinutes ?? 120} required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input name="maxHoldingMinutes" type="number" min="30" max="480" defaultValue={editingTemplate?.maxHoldingMinutes ?? 120} required className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
         </div>
 
         <label className="grid gap-1 text-sm font-medium">
           Holding guidance
-          <input name="holdingGuidanceText" defaultValue={editingTemplate?.holdingGuidanceText ?? "Consume within 2 hours of pickup."} className="min-h-11 rounded-md border border-black/10 px-3" />
+          <input name="holdingGuidanceText" defaultValue={editingTemplate?.holdingGuidanceText ?? "Consume within 2 hours of pickup."} className="min-h-11 rounded-md border border-hairline px-3" />
         </label>
 
         <div className="grid gap-3 sm:grid-cols-3">
           <label className="grid gap-1 text-sm font-medium">
             Default bags
-            <input name="defaultDropQuantity" type="number" min="1" max="500" defaultValue={editingTemplate?.defaultDropQuantity ?? 10} required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input name="defaultDropQuantity" type="number" min="1" max="500" defaultValue={editingTemplate?.defaultDropQuantity ?? 10} required className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Start after minutes
-            <input name="defaultPickupStartOffsetMinutes" type="number" min="0" max="1440" defaultValue={editingTemplate?.defaultPickupStartOffsetMinutes ?? 15} required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input name="defaultPickupStartOffsetMinutes" type="number" min="0" max="1440" defaultValue={editingTemplate?.defaultPickupStartOffsetMinutes ?? 15} required className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
           <label className="grid gap-1 text-sm font-medium">
             Pickup duration
-            <input name="defaultPickupDurationMinutes" type="number" min="15" max="480" defaultValue={editingTemplate?.defaultPickupDurationMinutes ?? 90} required className="min-h-11 rounded-md border border-black/10 px-3" />
+            <input name="defaultPickupDurationMinutes" type="number" min="15" max="480" defaultValue={editingTemplate?.defaultPickupDurationMinutes ?? 90} required className="min-h-11 rounded-md border border-hairline px-3" />
           </label>
         </div>
 
@@ -216,7 +216,7 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
           <p className="text-sm font-medium">Allergen disclosure</p>
           <div className="mt-2 grid gap-2 sm:grid-cols-3">
             {allergenCodes.map((code) => (
-              <label key={code} className="flex items-center gap-2 rounded-md border border-black/10 px-3 py-2 text-sm">
+              <label key={code} className="flex items-center gap-2 rounded-md border border-hairline px-3 py-2 text-sm">
                 <input name="allergenCodes" type="checkbox" value={code} defaultChecked={editingTemplate?.allergenCodes.includes(code) ?? false} />
                 {code.replaceAll("_", " ")}
               </label>
@@ -226,47 +226,47 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
 
         <label className="grid gap-1 text-sm font-medium">
           Allergen summary
-          <input name="allergenSummaryText" required defaultValue={editingTemplate?.allergenSummaryText ?? ""} className="min-h-11 rounded-md border border-black/10 px-3" />
+          <input name="allergenSummaryText" required defaultValue={editingTemplate?.allergenSummaryText ?? ""} className="min-h-11 rounded-md border border-hairline px-3" />
         </label>
         <label className="grid gap-1 text-sm font-medium">
           Surprise-safe item hint
-          <input name="includedItemHintText" defaultValue={editingTemplate?.includedItemHintText ?? ""} className="min-h-11 rounded-md border border-black/10 px-3" />
+          <input name="includedItemHintText" defaultValue={editingTemplate?.includedItemHintText ?? ""} className="min-h-11 rounded-md border border-hairline px-3" />
         </label>
 
-        {message ? <p className="text-sm font-semibold text-[#1A5C38]">{message}</p> : null}
-        <button disabled={pending} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#FF6B35] px-4 font-semibold text-white disabled:opacity-60">
+        {message ? <p className="text-sm font-semibold text-forest">{message}</p> : null}
+        <button disabled={pending} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-saffron px-4 font-semibold text-charcoal disabled:opacity-60">
           <Save size={18} aria-hidden="true" />
           {pending ? "Saving" : editingTemplate ? "Publish edited revision" : "Publish template"}
         </button>
       </form>
 
-      <section className="h-fit rounded-lg border border-black/10 bg-white p-5">
+      <section className="h-fit rounded-lg border border-hairline bg-white p-5">
         <h2 className="text-lg font-semibold">Template library</h2>
         <div className="mt-4 grid gap-3">
           {templates.length === 0 ? (
-            <p className="text-sm text-slate-600">No templates yet.</p>
+            <p className="text-sm text-muted">No templates yet.</p>
           ) : (
             templates.map((template) => (
-              <article key={template.templatePk} className="rounded-md border border-black/10 p-3">
+              <article key={template.templatePk} className="rounded-md border border-hairline p-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold">{template.displayName ?? template.templateName}</p>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-muted">
                       {template.activeRevisionPk ? "Ready for drops" : "Needs published revision"} - {template.templateStatusCode}
                     </p>
-                    <p className="mt-1 text-xs text-slate-500">Created {createdLabel(template.createdAt)}</p>
-                    <p className="mt-1 text-xs text-slate-500">{template.dietaryCategoryCode ?? "Draft"} - {template.allergenCodes.join(", ") || "No allergens linked"}</p>
+                    <p className="mt-1 text-xs text-muted">Created {createdLabel(template.createdAt)}</p>
+                    <p className="mt-1 text-xs text-muted">{template.dietaryCategoryCode ?? "Draft"} - {template.allergenCodes.join(", ") || "No allergens linked"}</p>
                   </div>
                   {template.suggestedPricePaise ? <p className="font-semibold">{formatPaise(template.suggestedPricePaise)}</p> : null}
                 </div>
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs text-muted">
                   Defaults: {template.defaultDropQuantity} bags, starts after {template.defaultPickupStartOffsetMinutes} min, {template.defaultPickupDurationMinutes} min window
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {!template.activeRevisionPk ? (
                     <button
                       type="button"
-                      className="inline-flex min-h-9 items-center gap-1 rounded-md border border-[#1A5C38]/30 px-2 text-xs font-semibold text-[#1A5C38] transition hover:border-[#1A5C38] hover:bg-[#EAF3DE] disabled:opacity-60"
+                      className="inline-flex min-h-9 items-center gap-1 rounded-md border border-forest/30 px-2 text-xs font-semibold text-forest transition hover:border-forest hover:bg-success-soft disabled:opacity-60"
                       disabled={busyTemplatePk === template.templatePk}
                       onClick={() => templateAction(template.templatePk, "publish_latest_revision")}
                     >
@@ -274,15 +274,15 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
                       Publish revision
                     </button>
                   ) : null}
-                  <button type="button" className="inline-flex min-h-9 items-center gap-1 rounded-md border border-black/10 px-2 text-xs font-semibold" onClick={() => setEditingTemplatePk(template.templatePk)}>
+                  <button type="button" className="inline-flex min-h-9 items-center gap-1 rounded-md border border-hairline px-2 text-xs font-semibold" onClick={() => setEditingTemplatePk(template.templatePk)}>
                     <Pencil size={14} aria-hidden="true" />
                     Edit
                   </button>
-                  <button type="button" className="inline-flex min-h-9 items-center gap-1 rounded-md border border-black/10 px-2 text-xs font-semibold disabled:opacity-50" disabled={!template.activeRevisionPk || busyTemplatePk === template.templatePk} onClick={() => templateAction(template.templatePk, "duplicate")}>
+                  <button type="button" className="inline-flex min-h-9 items-center gap-1 rounded-md border border-hairline px-2 text-xs font-semibold disabled:opacity-50" disabled={!template.activeRevisionPk || busyTemplatePk === template.templatePk} onClick={() => templateAction(template.templatePk, "duplicate")}>
                     <Copy size={14} aria-hidden="true" />
                     Duplicate
                   </button>
-                  <button type="button" className="inline-flex min-h-9 items-center gap-1 rounded-md border border-red-200 px-2 text-xs font-semibold text-red-700 disabled:opacity-50" disabled={template.templateStatusCode === "ARCHIVED" || busyTemplatePk === template.templatePk} onClick={() => templateAction(template.templatePk, "archive")}>
+                  <button type="button" className="inline-flex min-h-9 items-center gap-1 rounded-md border border-danger/30 px-2 text-xs font-semibold text-danger disabled:opacity-50" disabled={template.templateStatusCode === "ARCHIVED" || busyTemplatePk === template.templatePk} onClick={() => templateAction(template.templatePk, "archive")}>
                     <Archive size={14} aria-hidden="true" />
                     Archive
                   </button>

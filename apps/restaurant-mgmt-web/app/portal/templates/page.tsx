@@ -16,8 +16,8 @@ export default async function TemplatesPage() {
   return (
     <PortalChrome restaurantName={restaurant.restaurantName} statusCode={restaurant.restaurantStatusCode}>
       <section className="px-6 py-6">
-        <h1 className="text-3xl font-bold">BAM Bag templates</h1>
-        <p className="mt-2 max-w-3xl text-sm text-slate-600">
+        <h1 className="text-3xl font-bold text-charcoal">BAM Bag templates</h1>
+        <p className="mt-2 max-w-3xl text-sm text-muted">
           Create reusable, allergen-disclosed BAM Bag templates for approved restaurants before publishing drops.
         </p>
         <div className="mt-6">
