@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { ConsumerFooter } from "./footer";
+import { HoldsPill } from "./holds-pill";
 
 export const metadata: Metadata = {
   title: "goZaika | BAM Bag Discovery",
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { readonly children: ReactNode 
           Skip to main content
         </a>
         {children}
+        <HoldsPill />
         <ConsumerFooter />
       </body>
     </html>

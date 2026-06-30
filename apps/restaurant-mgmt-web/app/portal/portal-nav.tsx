@@ -34,14 +34,26 @@ const groups = [
   },
 ] as const;
 
+// The single active nav item is the one whose href is the LONGEST prefix of the
+// current path. This stops "/portal/drops" from also lighting up on
+// "/portal/drops/new" (which is its own, more-specific nav item).
+const NAV_HREFS = groups.flatMap((group) => group.links.map(([, href]) => href));
+
+function activeNavHref(pathname: string): string | null {
+  return (
+    NAV_HREFS.filter((href) => pathname === href || pathname.startsWith(`${href}/`)).sort((a, b) => b.length - a.length)[0] ?? null
+  );
+}
+
 export function PortalNav() {
   const pathname = usePathname();
+  const activeHref = activeNavHref(pathname);
 
   return (
     <nav className="flex flex-wrap items-center gap-2" aria-label="Restaurant portal">
       {groups.flatMap((group) =>
         group.links.map(([label, href, Icon]) => {
-          const active = pathname === href || (href !== "/portal/dashboard" && pathname.startsWith(`${href}/`));
+          const active = href === activeHref;
           return (
             <a
               key={href}
@@ -76,6 +88,7 @@ export function PortalChrome({
   readonly selectedRestaurantPk?: string | null;
 }) {
   const pathname = usePathname();
+  const activeHref = activeNavHref(pathname);
 
   return (
     <main className="min-h-screen bg-cream lg:grid lg:grid-cols-[280px_1fr]">
@@ -113,7 +126,7 @@ export function PortalChrome({
               </p>
               <div className="flex gap-1.5">
                 {group.links.map(([label, href, Icon]) => {
-                  const active = pathname === href || (href !== "/portal/dashboard" && pathname.startsWith(`${href}/`));
+                  const active = href === activeHref;
                   return (
                     <a
                       key={href}
@@ -142,7 +155,7 @@ export function PortalChrome({
               </p>
               <div className="grid gap-0.5">
                 {group.links.map(([label, href, Icon]) => {
-                  const active = pathname === href || (href !== "/portal/dashboard" && pathname.startsWith(`${href}/`));
+                  const active = href === activeHref;
                   return (
                     <a
                       key={href}
