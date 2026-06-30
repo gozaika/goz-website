@@ -43,10 +43,10 @@ Plan: [`../../project docs/gozaika_web_parity_implementation_plan_v1.md`](../../
 | `/portal/templates` | `/api/portal/templates*` | `templates` | Tokenize form + list | W5 | **Done** — template create/edit form + library list tokenized (saffron+charcoal publish, danger archive, forest success message); allergen/disclosure inputs on tokens. Zero brand-hex. demo-OWNER browser-verified |
 | `/portal/finance` | `lib/finance` | `finance` (R3c) | DataTable; payout readability; invoice download | W5 | **Done** — tokenized settlement statements; status pills → `Badge` (tone via `financeSettlementStatusTone`); KPI tiles + entries table on tokens; read-only preserved. Zero brand-hex. demo-OWNER browser-verified (Reconciled badge success-soft, entries table) |
 | `/portal/reports` | `lib/roi-report` | `reports` (R3c) | DataTable + Sparkline; counts-only share | W5 | **Done** — tokenized ROI report; added `Sparkline` of sell-through across drops (oldest→newest); metric cards + drop-performance table on tokens; read-only preserved. Zero brand-hex. demo-OWNER browser-verified (15-row table + sparkline over a multi-drop period) |
-| `/portal/onboarding` | `/api/portal/onboarding` | `onboarding` (S12) | Tokenize resumable wizard | W5 | Not started |
-| `/portal/compliance` | `/api/portal/.../compliance` | `compliance` (S12) | Tokenize doc upload/status | W5 | Not started |
-| `/portal/profile` | `/api/portal/profile`, location | `profile` (S12) | Tokenize; location pin; basics form | W5 | Not started |
-| `/portal/reviews` | server + `lib/*` | `reviews` (S14) | Rating summary + moderation badges on primitives | W5 | Not started |
+| `/portal/onboarding` | `/api/portal/onboarding` | `onboarding` (S12) | Tokenize resumable wizard | W5 | **Done** — basics + compliance + private-document upload sections tokenized (forest task ticks, danger error, forest upload). Zero brand-hex. demo-OWNER browser-verified (3 sections, save actions) |
+| `/portal/compliance` | `/api/portal/.../compliance` | `compliance` (S12) | Tokenize doc upload/status | W5 | **Done** — route redirects to `/portal/onboarding` (compliance lives in the onboarding client, now tokenized) |
+| `/portal/profile` | `/api/portal/profile`, location | `profile` (S12) | Tokenize; location pin; basics form | W5 | **Done** — account/alert contacts + media uploaders + address/location (Google `output=embed` map pin, no new SDK) tokenized. Zero brand-hex. demo-OWNER browser-verified (Save profile/location, 12 inputs) |
+| `/portal/reviews` | server + `lib/*` | `reviews` (S14) | Rating summary + moderation badges on primitives | W5 | **Done** — rating summary + category bars tokenized; moderation status → `Badge` (PENDING=warning, APPROVED=success, REJECTED=danger, HIDDEN=neutral); read-only (no respond/edit). Zero brand-hex. demo-OWNER browser-verified (h1 + score panel; demo has 0 reviews → empty state) |
 
 ---
 

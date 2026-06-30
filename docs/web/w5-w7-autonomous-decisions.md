@@ -51,3 +51,18 @@ Ledger: [`web-parity-ledger.md`](web-parity-ledger.md)
   EMERGENCY_CLOSED, CANCELLED, DRAFT.
 - Lifecycle Active/Pause/Close controls kept as tokenized icon-chips (not Button) to preserve
   the compact three-up affordance; publish CTA uses the saffron+charcoal primary.
+
+### W5(4/n)–(6/n) finance, reports, templates, onboarding/compliance, profile, reviews
+- **finance/reports** stay server-rendered, read-only. Status pills → `Badge` (tone via
+  `financeSettlementStatusTone`); reports gained a `Sparkline` of sell-through bps across drops.
+- **compliance** route already just `redirect("/portal/onboarding")` — the compliance form lives
+  in the onboarding client, so tokenizing onboarding closes both ledger rows. No new compliance
+  surface was invented.
+- **profile** address/location keeps the existing Google Maps `output=embed` iframe pin (D2 — no
+  new map SDK).
+- **reviews** is read-only (no respond/edit affordance added — matches the on-page note and the
+  mobile twin). Moderation status → `Badge` tones (PENDING=warning, APPROVED=success,
+  REJECTED=danger, HIDDEN=neutral). Demo restaurant has 0 reviews, so only the empty/aggregate
+  state was browser-verified; the populated path is covered by typecheck + the W7 smoke.
+- These four lower-risk tokenization surfaces were verified-then-committed together as W5(6/n)
+  to keep the overnight run moving; each was browser-checked before the commit.

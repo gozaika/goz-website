@@ -167,6 +167,12 @@ const MIGRATED_FILES = [
   "apps/restaurant-mgmt-web/app/portal/reports/page.tsx",
   "apps/restaurant-mgmt-web/app/portal/templates/page.tsx",
   "apps/restaurant-mgmt-web/app/portal/templates/template-form.tsx",
+  "apps/restaurant-mgmt-web/app/portal/onboarding/page.tsx",
+  "apps/restaurant-mgmt-web/app/portal/onboarding/onboarding-client.tsx",
+  "apps/restaurant-mgmt-web/app/portal/compliance/page.tsx",
+  "apps/restaurant-mgmt-web/app/portal/profile/page.tsx",
+  "apps/restaurant-mgmt-web/app/portal/profile/profile-client.tsx",
+  "apps/restaurant-mgmt-web/app/portal/reviews/page.tsx",
 ];
 const BRAND_HEX = /#(?:FF6B35|1A5C38|D4A017|FFF8F0|2D2D2D)\b/i;
 

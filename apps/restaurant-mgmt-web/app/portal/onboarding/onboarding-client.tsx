@@ -214,15 +214,15 @@ export function OnboardingClient() {
 
   return (
     <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8 lg:grid-cols-[280px_1fr]">
-      <aside className="rounded-lg border border-black/10 bg-white p-4">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A5C38]">Onboarding</p>
-        <h1 className="mt-2 text-2xl font-bold text-[#2D2D2D]">{summary.restaurant.restaurant_name}</h1>
-        <p className="mt-2 text-sm text-[#2D2D2D]/65">Status: {summary.restaurant.restaurant_status_code}</p>
-        <p className="text-sm text-[#2D2D2D]/65">Compliance: {summary.compliance?.compliance_status_code ?? "PENDING"}</p>
+      <aside className="rounded-lg border border-hairline bg-white p-4">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-forest">Onboarding</p>
+        <h1 className="mt-2 text-2xl font-bold text-charcoal">{summary.restaurant.restaurant_name}</h1>
+        <p className="mt-2 text-sm text-charcoal/65">Status: {summary.restaurant.restaurant_status_code}</p>
+        <p className="text-sm text-charcoal/65">Compliance: {summary.compliance?.compliance_status_code ?? "PENDING"}</p>
         <div className="mt-5 grid gap-2">
           {summary.tasks.map((task) => (
             <div key={task.restaurant_onboarding_task_pk} className="flex items-center gap-2 text-sm">
-              <CheckCircle2 size={16} className={task.task_status_code === "COMPLETED" ? "text-[#1A5C38]" : "text-black/25"} />
+              <CheckCircle2 size={16} className={task.task_status_code === "COMPLETED" ? "text-forest" : "text-charcoal/25"} />
               <span>{task.task_name}</span>
             </div>
           ))}
@@ -230,10 +230,10 @@ export function OnboardingClient() {
       </aside>
 
       <div className="grid gap-6">
-        {error ? <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
+        {error ? <p className="rounded-lg border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger">{error}</p> : null}
 
-        <section className="rounded-lg border border-black/10 bg-white p-5">
-          <div className="flex items-center gap-2"><Store className="text-[#1A5C38]" /><h2 className="text-xl font-bold">Restaurant basics</h2></div>
+        <section className="rounded-lg border border-hairline bg-white p-5">
+          <div className="flex items-center gap-2"><Store className="text-forest" /><h2 className="text-xl font-bold">Restaurant basics</h2></div>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <Field label="Restaurant name" value={basics.restaurantName} onChange={(value) => setBasics({ ...basics, restaurantName: value, restaurantSlug: basics.restaurantSlug || slugifyRestaurantName(value) })} />
             <Field label="Slug" value={basics.restaurantSlug} onChange={(value) => setBasics({ ...basics, restaurantSlug: slugifyRestaurantName(value) })} />
@@ -242,13 +242,13 @@ export function OnboardingClient() {
             <Field label="Primary phone" value={basics.primaryContactPhoneE164} onChange={(value) => setBasics({ ...basics, primaryContactPhoneE164: value })} />
             <label className="grid gap-2 text-sm font-semibold">
               City
-              <select className="min-h-11 rounded-lg border border-black/20 px-3" value={basics.cityPk} onChange={(event) => setBasics({ ...basics, cityPk: event.target.value })}>
+              <select className="min-h-11 rounded-lg border border-hairline px-3" value={basics.cityPk} onChange={(event) => setBasics({ ...basics, cityPk: event.target.value })}>
                 {summary.cities.map((city) => <option key={city.geo_city_pk} value={city.geo_city_pk}>{city.city_name}</option>)}
               </select>
             </label>
             <label className="grid gap-2 text-sm font-semibold">
               Neighborhood
-              <select className="min-h-11 rounded-lg border border-black/20 px-3" value={basics.neighborhoodPk} onChange={(event) => setBasics({ ...basics, neighborhoodPk: event.target.value })}>
+              <select className="min-h-11 rounded-lg border border-hairline px-3" value={basics.neighborhoodPk} onChange={(event) => setBasics({ ...basics, neighborhoodPk: event.target.value })}>
                 <option value="">Select area</option>
                 {summary.neighborhoods.filter((item) => !basics.cityPk || item.geo_city_fk === basics.cityPk).map((item) => <option key={item.geo_neighborhood_pk} value={item.geo_neighborhood_pk}>{item.neighborhood_name}</option>)}
               </select>
@@ -256,14 +256,14 @@ export function OnboardingClient() {
             <Field label="Public headline" value={basics.headline} onChange={(value) => setBasics({ ...basics, headline: value })} />
             <label className="grid gap-2 text-sm font-semibold md:col-span-2">
               Pickup instructions
-              <textarea className="min-h-28 rounded-lg border border-black/20 px-3 py-2" value={basics.pickupInstructions} onChange={(event) => setBasics({ ...basics, pickupInstructions: event.target.value })} />
+              <textarea className="min-h-28 rounded-lg border border-hairline px-3 py-2" value={basics.pickupInstructions} onChange={(event) => setBasics({ ...basics, pickupInstructions: event.target.value })} />
             </label>
           </div>
           <Button className="mt-5" onClick={saveBasics} disabled={saving === "basics"}>{saving === "basics" ? "Saving..." : "Save basics"}</Button>
         </section>
 
-        <section className="rounded-lg border border-black/10 bg-white p-5">
-          <div className="flex items-center gap-2"><ShieldCheck className="text-[#1A5C38]" /><h2 className="text-xl font-bold">Compliance details</h2></div>
+        <section className="rounded-lg border border-hairline bg-white p-5">
+          <div className="flex items-center gap-2"><ShieldCheck className="text-forest" /><h2 className="text-xl font-bold">Compliance details</h2></div>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <Field label="FSSAI license number" value={compliance.fssaiLicenseNumber} onChange={(value) => setCompliance({ ...compliance, fssaiLicenseNumber: value })} />
             <Field label="FSSAI expiry date" type="date" value={compliance.fssaiLicenseExpiryDate} onChange={(value) => setCompliance({ ...compliance, fssaiLicenseExpiryDate: value })} />
@@ -277,18 +277,18 @@ export function OnboardingClient() {
           <Button className="mt-5" onClick={saveCompliance} disabled={saving === "compliance"}>{saving === "compliance" ? "Saving..." : "Save compliance"}</Button>
         </section>
 
-        <section className="rounded-lg border border-black/10 bg-white p-5">
-          <div className="flex items-center gap-2"><FileUp className="text-[#1A5C38]" /><h2 className="text-xl font-bold">Private documents</h2></div>
+        <section className="rounded-lg border border-hairline bg-white p-5">
+          <div className="flex items-center gap-2"><FileUp className="text-forest" /><h2 className="text-xl font-bold">Private documents</h2></div>
           <div className="mt-5 grid gap-3">
             {summary.documentTypes.filter((type) => type.is_required).map((type) => {
               const latest = summary.documents.find((doc) => doc.master_document_type?.type_code === type.type_code);
               return (
-                <div key={type.type_code} className="flex flex-col gap-3 rounded-lg border border-black/10 p-4 md:flex-row md:items-center md:justify-between">
+                <div key={type.type_code} className="flex flex-col gap-3 rounded-lg border border-hairline p-4 md:flex-row md:items-center md:justify-between">
                   <div>
                     <p className="font-semibold">{type.type_name}</p>
-                    <p className="text-sm text-[#2D2D2D]/65">{latest?.master_document_status?.status_name ?? "Missing"}{latest?.rejection_reason ? ` - ${latest.rejection_reason}` : ""}</p>
+                    <p className="text-sm text-charcoal/65">{latest?.master_document_status?.status_name ?? "Missing"}{latest?.rejection_reason ? ` - ${latest.rejection_reason}` : ""}</p>
                   </div>
-                  <label className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-lg bg-[#1A5C38] px-4 text-sm font-semibold text-white">
+                  <label className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-lg bg-forest px-4 text-sm font-semibold text-white">
                     {saving === type.type_code ? "Uploading..." : "Upload"}
                     <input className="sr-only" type="file" accept=".pdf,image/png,image/jpeg,image/webp" onChange={(event) => void uploadDocument(type.type_code, event.target.files?.[0] ?? null)} />
                   </label>
@@ -319,7 +319,7 @@ function Field({
     <label className="grid gap-2 text-sm font-semibold">
       {label}
       <input
-        className="min-h-11 rounded-lg border border-black/20 px-3"
+        className="min-h-11 rounded-lg border border-hairline px-3"
         type={type}
         placeholder={placeholder}
         value={value}

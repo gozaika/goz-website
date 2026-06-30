@@ -94,23 +94,23 @@ export function PortalProfileClient({ initialProfile }: { readonly initialProfil
 
   return (
     <section className="mx-auto grid max-w-5xl gap-6 px-4 py-8">
-      <div className="rounded-lg border border-black/10 bg-white p-5">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#1A5C38]">Profile</p>
-        <h1 className="mt-2 text-3xl font-bold text-[#2D2D2D]">{initialProfile.restaurantName}</h1>
-        <p className="mt-2 text-sm text-[#2D2D2D]/65">
+      <div className="rounded-lg border border-hairline bg-white p-5">
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-forest">Profile</p>
+        <h1 className="mt-2 text-3xl font-bold text-charcoal">{initialProfile.restaurantName}</h1>
+        <p className="mt-2 text-sm text-charcoal/65">
           Keep account and operational contact details current for email and WhatsApp order alerts.
         </p>
       </div>
 
       {status ? (
-        <p className="rounded-lg border border-[#D4A017]/40 bg-white px-3 py-2 text-sm text-[#2D2D2D]">{status}</p>
+        <p className="rounded-lg border border-gold/40 bg-white px-3 py-2 text-sm text-charcoal">{status}</p>
       ) : null}
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <section className="rounded-lg border border-black/10 bg-white p-5">
+        <section className="rounded-lg border border-hairline bg-white p-5">
           <div className="flex items-center gap-2">
-            <UserRound className="text-[#1A5C38]" aria-hidden="true" />
-            <h2 className="text-xl font-bold text-[#2D2D2D]">Your account contact</h2>
+            <UserRound className="text-forest" aria-hidden="true" />
+            <h2 className="text-xl font-bold text-charcoal">Your account contact</h2>
           </div>
           <div className="mt-5 grid gap-4">
             <ContactField icon="mail" label="Account email" value={staffEmail} onChange={setStaffEmail} type="email" />
@@ -118,12 +118,12 @@ export function PortalProfileClient({ initialProfile }: { readonly initialProfil
           </div>
         </section>
 
-        <section className="rounded-lg border border-black/10 bg-white p-5">
+        <section className="rounded-lg border border-hairline bg-white p-5">
           <div className="flex items-center gap-2">
-            <Store className="text-[#1A5C38]" aria-hidden="true" />
-            <h2 className="text-xl font-bold text-[#2D2D2D]">Operational alerts</h2>
+            <Store className="text-forest" aria-hidden="true" />
+            <h2 className="text-xl font-bold text-charcoal">Operational alerts</h2>
           </div>
-          <p className="mt-2 text-sm text-[#2D2D2D]/65">
+          <p className="mt-2 text-sm text-charcoal/65">
             New paid order and pickup alert notifications use this restaurant contact.
           </p>
           <div className="mt-5 grid gap-4">
@@ -157,37 +157,37 @@ export function PortalProfileClient({ initialProfile }: { readonly initialProfil
       </section>
 
       {/* Address & Location */}
-      <section className="rounded-lg border border-black/10 bg-white p-5">
+      <section className="rounded-lg border border-hairline bg-white p-5">
         <div className="flex items-center gap-2">
-          <MapPin className="text-[#1A5C38]" aria-hidden="true" />
-          <h2 className="text-xl font-bold text-[#2D2D2D]">Address &amp; Location</h2>
+          <MapPin className="text-forest" aria-hidden="true" />
+          <h2 className="text-xl font-bold text-charcoal">Address &amp; Location</h2>
         </div>
-        <p className="mt-2 text-sm text-[#2D2D2D]/65">
+        <p className="mt-2 text-sm text-charcoal/65">
           Set your pickup address and coordinates so customers can find you on the map. Latitude and
           longitude enable the map pin — enter them as decimal degrees (e.g. 17.385000, 78.486700).
         </p>
 
         <div className="mt-5 grid gap-4">
-          <label className="grid gap-1.5 text-sm font-semibold text-[#2D2D2D]">
+          <label className="grid gap-1.5 text-sm font-semibold text-charcoal">
             Street address *
             <input
               value={addressLine1}
               onChange={(e) => setAddressLine1(e.target.value)}
               placeholder="Plot 12, Road 4, Banjara Hills"
-              className="min-h-11 rounded-lg border border-black/15 px-3 text-sm font-normal outline-none focus:border-[#1A5C38]"
+              className="min-h-11 rounded-lg border border-hairline px-3 text-sm font-normal outline-none focus:border-forest"
             />
           </label>
-          <label className="grid gap-1.5 text-sm font-semibold text-[#2D2D2D]">
+          <label className="grid gap-1.5 text-sm font-semibold text-charcoal">
             Landmark (optional)
             <input
               value={addressLandmark}
               onChange={(e) => setAddressLandmark(e.target.value)}
               placeholder="Near Inorbit Mall gate 2"
-              className="min-h-11 rounded-lg border border-black/15 px-3 text-sm font-normal outline-none focus:border-[#1A5C38]"
+              className="min-h-11 rounded-lg border border-hairline px-3 text-sm font-normal outline-none focus:border-forest"
             />
           </label>
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="grid gap-1.5 text-sm font-semibold text-[#2D2D2D]">
+            <label className="grid gap-1.5 text-sm font-semibold text-charcoal">
               Latitude
               <input
                 value={latitude}
@@ -195,10 +195,10 @@ export function PortalProfileClient({ initialProfile }: { readonly initialProfil
                 placeholder="17.385000"
                 type="number"
                 step="0.000001"
-                className="min-h-11 rounded-lg border border-black/15 px-3 text-sm font-normal outline-none focus:border-[#1A5C38]"
+                className="min-h-11 rounded-lg border border-hairline px-3 text-sm font-normal outline-none focus:border-forest"
               />
             </label>
-            <label className="grid gap-1.5 text-sm font-semibold text-[#2D2D2D]">
+            <label className="grid gap-1.5 text-sm font-semibold text-charcoal">
               Longitude
               <input
                 value={longitude}
@@ -206,14 +206,14 @@ export function PortalProfileClient({ initialProfile }: { readonly initialProfil
                 placeholder="78.486700"
                 type="number"
                 step="0.000001"
-                className="min-h-11 rounded-lg border border-black/15 px-3 text-sm font-normal outline-none focus:border-[#1A5C38]"
+                className="min-h-11 rounded-lg border border-hairline px-3 text-sm font-normal outline-none focus:border-forest"
               />
             </label>
           </div>
 
           {/* Map preview when coordinates set */}
           {latitude && longitude && !isNaN(Number(latitude)) && !isNaN(Number(longitude)) && (
-            <div className="overflow-hidden rounded-lg border border-black/10" style={{ height: 220 }}>
+            <div className="overflow-hidden rounded-lg border border-hairline" style={{ height: 220 }}>
               <iframe
                 key={`${latitude},${longitude}`}
                 title="Map pin preview"
@@ -253,10 +253,10 @@ function ContactField({
   const Icon = icon === "mail" ? Mail : Phone;
 
   return (
-    <label className="grid gap-2 text-sm font-semibold text-[#2D2D2D]">
+    <label className="grid gap-2 text-sm font-semibold text-charcoal">
       {label}
-      <span className="flex min-h-11 items-center gap-2 rounded-lg border border-black/20 px-3">
-        <Icon size={18} className="text-[#1A5C38]" aria-hidden="true" />
+      <span className="flex min-h-11 items-center gap-2 rounded-lg border border-hairline px-3">
+        <Icon size={18} className="text-forest" aria-hidden="true" />
         <input
           className="min-h-10 flex-1 bg-transparent text-sm outline-none"
           type={type}
