@@ -1,0 +1,51 @@
+id: restaurant-publish-drop
+title: Restaurant publishes a drop from a reusable template
+surface: restaurant
+persona: Owner or admin preparing today's drop
+app: restaurant-mobile
+storyRole: publish-proof
+sourceTruth:
+  demoData:
+    - docs/product/drop-publishing-discovery.md defines drop publishing from templates
+    - docs/handoff/gozaika_handoff_v1.md records template image carry-forward behavior
+  verifiedRoutes:
+    - /(tabs)/drops
+    - /portal/templates
+    - /portal/drops/new
+  requiredProof:
+    - Real publish form or template surface from partner app
+    - Real template/drop fields from seeded or demo app state
+  blockedIfMissing:
+    - Stop if the app cannot display a real editable template or publish flow
+captures:
+  - id: publish-form
+    kind: mobile
+    flow: restaurant-publish-drop
+    viewport: android-portrait
+    sourceOfTruth: Real restaurant mobile template or drop form
+copy:
+  headline: Publish the next drop fast
+  subhead: Templates keep the operation focused on real pickup demand.
+  labels:
+    - Template-led
+    - Pickup window
+    - Partner app
+  languageBoundary: restaurant-only
+plannedOutputs:
+  - id: partner-store-publish-card
+    surface: app-store
+    preset: app-store-portrait-1290x2796
+    passTarget: v1-functional
+  - id: restaurant-proof-publish-card
+    surface: restaurant-sales
+    preset: restaurant-proof-card-1600x1000
+    passTarget: v1-functional
+truthGuards:
+  - Do not fabricate drop status, pickup window, template fields, product images, or order outcomes.
+  - Do not claim automation that is not visible in the real app state.
+review:
+  requiredPasses:
+    - v1-functional
+    - v2-polished
+    - v3-launch-grade
+  creativeReviewRequired: true

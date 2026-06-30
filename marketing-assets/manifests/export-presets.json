@@ -1,0 +1,40 @@
+{
+  "presets": [
+    {
+      "id": "app-store-portrait-1290x2796",
+      "surface": "app-store",
+      "width": 1290,
+      "height": 2796,
+      "format": "png",
+      "safeMarginPx": 96,
+      "notes": "Portrait store screenshot composition with device mockup and protected UI mask."
+    },
+    {
+      "id": "website-proof-card-1600x1000",
+      "surface": "website",
+      "width": 1600,
+      "height": 1000,
+      "format": "png",
+      "safeMarginPx": 80,
+      "notes": "Website proof still for hero or section-level product evidence."
+    },
+    {
+      "id": "restaurant-proof-card-1600x1000",
+      "surface": "restaurant-sales",
+      "width": 1600,
+      "height": 1000,
+      "format": "png",
+      "safeMarginPx": 80,
+      "notes": "Restaurant acquisition still with partner app proof and restrained copy."
+    },
+    {
+      "id": "tradeshow-poster-2160x3840",
+      "surface": "tradeshow",
+      "width": 2160,
+      "height": 3840,
+      "format": "png",
+      "safeMarginPx": 144,
+      "notes": "Tall proof panel for booth loops, poster frames, and large displays."
+    }
+  ]
+}

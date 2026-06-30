@@ -1,0 +1,46 @@
+id: consumer-allergen-trust
+title: Consumer allergen and dietary trust proof
+surface: customer
+persona: Customer checking food safety before claiming
+app: consumer-mobile
+storyRole: trust-proof
+sourceTruth:
+  demoData:
+    - docs/product/claim-hold-order-intent.md requires dietary and allergen disclosure in confirmation
+    - docs/product/drop-publishing-discovery.md requires dietary, allergen, pickup, price, and remaining count display
+  verifiedRoutes:
+    - /drops/[dropPk]
+    - /checkout/[holdPk]
+  requiredProof:
+    - Real drop detail or checkout screenshot where allergen disclosure is readable
+    - Real pickup window and claim context from the app
+  blockedIfMissing:
+    - Stop if allergen disclosure is not visible or readable in the captured screen
+captures:
+  - id: allergen-card
+    kind: mobile
+    flow: consumer-allergen-card
+    viewport: android-portrait
+    sourceOfTruth: Real disclosure component rendered by the app
+copy:
+  headline: See disclosures before you claim
+  subhead: Pickup decisions stay grounded in visible app truth.
+  labels:
+    - Dietary
+    - Allergens
+    - Pickup context
+  languageBoundary: customer-only
+plannedOutputs:
+  - id: app-store-trust-card
+    surface: app-store
+    preset: app-store-portrait-1290x2796
+    passTarget: v1-functional
+truthGuards:
+  - Do not invent allergen text, dietary category, freshness status, or compliance claims.
+  - Keep the captured disclosure readable; never replace it with generated text.
+review:
+  requiredPasses:
+    - v1-functional
+    - v2-polished
+    - v3-launch-grade
+  creativeReviewRequired: true

@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "app-store-claim-card",
+      "scenarioId": "consumer-claim-bawarchi",
+      "outputId": "app-store-claim-card",
+      "status": "planned",
+      "reviewPath": "marketing-assets/creative-review.md"
+    },
+    {
+      "id": "app-store-map-card",
+      "scenarioId": "consumer-map-discovery",
+      "outputId": "app-store-map-card",
+      "status": "planned",
+      "reviewPath": "marketing-assets/creative-review.md"
+    },
+    {
+      "id": "app-store-trust-card",
+      "scenarioId": "consumer-allergen-trust",
+      "outputId": "app-store-trust-card",
+      "status": "planned",
+      "reviewPath": "marketing-assets/creative-review.md"
+    },
+    {
+      "id": "app-store-passport-card",
+      "scenarioId": "consumer-passport-swaad-club",
+      "outputId": "app-store-passport-card",
+      "status": "planned",
+      "reviewPath": "marketing-assets/creative-review.md"
+    },
+    {
+      "id": "partner-store-publish-card",
+      "scenarioId": "restaurant-publish-drop",
+      "outputId": "partner-store-publish-card",
+      "status": "planned",
+      "reviewPath": "marketing-assets/creative-review.md"
+    },
+    {
+      "id": "partner-store-queue-card",
+      "scenarioId": "restaurant-live-pickup-queue",
+      "outputId": "partner-store-queue-card",
+      "status": "planned",
+      "reviewPath": "marketing-assets/creative-review.md"
+    },
+    {
+      "id": "partner-store-zaikaiq-card",
+      "scenarioId": "restaurant-zaikaiq-overview",
+      "outputId": "partner-store-zaikaiq-card",
+      "status": "planned",
+      "reviewPath": "marketing-assets/creative-review.md"
+    },
+    {
+      "id": "restaurant-proof-verification-card",
+      "scenarioId": "staff-pickup-proof",
+      "outputId": "restaurant-proof-verification-card",
+      "status": "planned",
+      "reviewPath": "marketing-assets/creative-review.md"
+    }
+  ]
+}

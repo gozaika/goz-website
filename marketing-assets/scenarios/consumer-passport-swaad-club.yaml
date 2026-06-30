@@ -1,0 +1,47 @@
+id: consumer-passport-swaad-club
+title: Consumer Passport and Swaad Club retention surface
+surface: customer
+persona: Returning customer building taste history
+app: consumer-mobile
+storyRole: loyalty-proof
+sourceTruth:
+  demoData:
+    - supabase/seed_demo/demo_seed.sql covers Swaad Club and Zayka Passport
+    - docs/mobile/mobile-parity-ledger.md records Account and Passport screens
+  verifiedRoutes:
+    - /(tabs)/account
+    - /account/passport
+    - /account/discovery
+  requiredProof:
+    - Real Passport or discovery-profile screenshot using app-provided values
+    - Real Swaad Club surface if membership copy is visible
+  blockedIfMissing:
+    - Stop if signed-in Passport state cannot be captured; do not fake tier counts
+captures:
+  - id: passport-card
+    kind: mobile
+    flow: consumer-passport
+    viewport: android-portrait
+    sourceOfTruth: Real consumer account payload
+copy:
+  headline: Build your food passport
+  subhead: Your app history becomes a richer pickup story.
+  labels:
+    - Passport
+    - Discovery profile
+    - Swaad Club
+  languageBoundary: customer-only
+plannedOutputs:
+  - id: app-store-passport-card
+    surface: app-store
+    preset: app-store-portrait-1290x2796
+    passTarget: v1-functional
+truthGuards:
+  - Do not invent tier, cuisine, badge, subscription, referral, or impact values.
+  - Use only values rendered by the real app payload.
+review:
+  requiredPasses:
+    - v1-functional
+    - v2-polished
+    - v3-launch-grade
+  creativeReviewRequired: true

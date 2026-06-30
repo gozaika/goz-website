@@ -1,0 +1,55 @@
+id: consumer-claim-bawarchi
+title: Consumer claim flow from Bawarchi drop detail
+surface: customer
+persona: Food-curious Hyderabad customer
+app: consumer-mobile
+storyRole: claim-flow-proof
+sourceTruth:
+  demoData:
+    - packages/types/test-fixtures/mobile/discovery-drops.json includes Bawarchi Biryani Palace
+    - packages/types/test-fixtures/mobile/consumer-orders.json includes Bawarchi order state
+  verifiedRoutes:
+    - /drops/[dropPk]
+    - /checkout/[holdPk]
+  requiredProof:
+    - Real drop detail screenshot with restaurant, pickup window, price, and allergen disclosure visible
+    - Real checkout or hold confirmation state from the app
+  blockedIfMissing:
+    - Stop if the claim flow cannot reach an authenticated hold or order state
+captures:
+  - id: drop-detail
+    kind: mobile
+    flow: consumer-drop-detail
+    viewport: android-portrait
+    sourceOfTruth: Real consumer mobile route state
+  - id: checkout-hold
+    kind: mobile
+    flow: consumer-checkout-hold
+    viewport: android-portrait
+    sourceOfTruth: Real server-created hold or order state
+copy:
+  headline: Claim a chef-curated BAM Bag
+  subhead: Real pickup windows, real disclosure, no menu guessing.
+  labels:
+    - Limited Drop
+    - Pickup-first
+    - Allergen disclosure
+  languageBoundary: customer-only
+plannedOutputs:
+  - id: app-store-claim-card
+    surface: app-store
+    preset: app-store-portrait-1290x2796
+    passTarget: v1-functional
+  - id: website-claim-proof
+    surface: website
+    preset: website-proof-card-1600x1000
+    passTarget: v1-functional
+truthGuards:
+  - Do not alter captured UI text, prices, restaurant names, pickup windows, or order states.
+  - Do not add QR, OTP, ratings, counts, or payment success claims unless the screenshot already shows them.
+review:
+  requiredPasses:
+    - v1-functional
+    - v2-polished
+    - v3-launch-grade
+  creativeReviewRequired: true

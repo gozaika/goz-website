@@ -1,0 +1,50 @@
+id: consumer-map-discovery
+title: Consumer map discovery around nearby drops
+surface: customer
+persona: Nearby pickup customer
+app: consumer-mobile
+storyRole: local-discovery-proof
+sourceTruth:
+  demoData:
+    - docs/web/web-parity-ledger.md records a real Hyderabad map embed for /drops
+    - docs/product/gozaika-mobile-ux-uplift-analysis-v1.md keeps maps explicit in customer discovery
+  verifiedRoutes:
+    - /(tabs)/drops
+    - /drops
+  requiredProof:
+    - Real map or map-list toggle screenshot from the current app
+    - Real drop cards sourced from seeded/demo state
+  blockedIfMissing:
+    - Stop if mobile map state is unavailable; use web map proof only for website outputs
+captures:
+  - id: mobile-map
+    kind: mobile
+    flow: consumer-map-discovery
+    viewport: android-portrait
+    sourceOfTruth: Real consumer mobile map/list state
+copy:
+  headline: Find pickup drops nearby
+  subhead: Map-first discovery for real local restaurant drops.
+  labels:
+    - Nearby
+    - Pickup windows
+    - Real app map
+  languageBoundary: customer-only
+plannedOutputs:
+  - id: app-store-map-card
+    surface: app-store
+    preset: app-store-portrait-1290x2796
+    passTarget: v1-functional
+  - id: website-map-proof
+    surface: website
+    preset: website-proof-card-1600x1000
+    passTarget: v1-functional
+truthGuards:
+  - Do not draw fake pins, fake restaurant names, fake distances, or fake availability.
+  - If native map capture is blocked, record the blocker instead of fabricating map UI.
+review:
+  requiredPasses:
+    - v1-functional
+    - v2-polished
+    - v3-launch-grade
+  creativeReviewRequired: true

@@ -1,0 +1,46 @@
+id: staff-pickup-proof
+title: Staff pickup proof verification without exposing secrets
+surface: restaurant
+persona: Counter operator verifying a handoff
+app: restaurant-mobile
+storyRole: verification-proof
+sourceTruth:
+  demoData:
+    - docs/product/pickup-verification-incident-basics.md defines pickup verification and incident basics
+    - apps/restaurant-mgmt-web/app/api/mobile/v1/orders/[orderId]/pickup/verify/route.ts keeps verification server-authoritative
+  verifiedRoutes:
+    - /(tabs)/counter/[orderId]
+    - /portal/orders/[orderId]
+  requiredProof:
+    - Real verification UI with secret values masked or absent
+    - Real order status context from app state
+  blockedIfMissing:
+    - Stop if the only available proof would reveal a raw OTP or QR payload
+captures:
+  - id: pickup-proof
+    kind: mobile
+    flow: restaurant-pickup-proof
+    viewport: android-portrait
+    sourceOfTruth: Real verification UI with secrets protected
+copy:
+  headline: Verify pickup without leaking proof
+  subhead: The handoff flow stays server-authoritative and staff-safe.
+  labels:
+    - Verification
+    - Staff-safe
+    - Server truth
+  languageBoundary: restaurant-only
+plannedOutputs:
+  - id: restaurant-proof-verification-card
+    surface: restaurant-sales
+    preset: restaurant-proof-card-1600x1000
+    passTarget: v1-functional
+truthGuards:
+  - Never render raw QR, OTP, pickup token, customer phone, or private order proof in a marketing asset.
+  - Do not imply a pickup succeeded unless the captured app state shows it.
+review:
+  requiredPasses:
+    - v1-functional
+    - v2-polished
+    - v3-launch-grade
+  creativeReviewRequired: true

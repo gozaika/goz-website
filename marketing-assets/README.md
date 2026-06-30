@@ -22,6 +22,33 @@ archived under `docs/archived/launch-assets-pre-factory/` and must not drive new
 4. Move only approved, launch-grade outputs into final asset folders.
 5. Build Remotion templates only after the still-image quality bar is visible and accepted.
 
+## Slice 1 Foundation
+
+The first active factory contract lives in:
+
+- `marketing-assets/scenarios/*.yaml` - scenario truth, capture intent, copy boundary, planned outputs.
+- `marketing-assets/manifests/export-presets.json` - output dimensions and safe-margin presets.
+- `marketing-assets/manifests/asset-catalog.json` - planned asset IDs mapped back to scenarios.
+- `marketing-assets/src/scenarios/` - schema, loader, copy lint, and validation CLI.
+
+Run:
+
+```bash
+npm run assets:validate
+npm run assets:test
+```
+
+Starter scenarios:
+
+- `consumer-claim-bawarchi`
+- `consumer-map-discovery`
+- `consumer-allergen-trust`
+- `consumer-passport-swaad-club`
+- `restaurant-publish-drop`
+- `restaurant-live-pickup-queue`
+- `restaurant-zaikaiq-overview`
+- `staff-pickup-proof`
+
 ## Guardrails
 
 - Real screenshots are the product truth.
@@ -30,4 +57,3 @@ archived under `docs/archived/launch-assets-pre-factory/` and must not drive new
   ratings, customer counts, or order states.
 - Keep customer-facing and restaurant-facing copy separated.
 - Prefer fewer stronger frames over many average frames.
-

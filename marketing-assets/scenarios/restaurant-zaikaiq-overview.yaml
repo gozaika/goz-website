@@ -1,0 +1,50 @@
+id: restaurant-zaikaiq-overview
+title: Restaurant ZaikaIQ overview and performance surface
+surface: restaurant
+persona: Owner reviewing operating performance
+app: restaurant-mobile
+storyRole: analytics-proof
+sourceTruth:
+  demoData:
+    - packages/types/test-fixtures/mobile/roi-report.json contains Bawarchi ROI report payload
+    - docs/mobile/role-matrix-enforcement-gap.md constrains role-specific visibility
+  verifiedRoutes:
+    - /(tabs)/reports
+    - /portal/reports
+  requiredProof:
+    - Real report or dashboard screenshot from restaurant app
+    - Real metric labels and values rendered by the app
+  blockedIfMissing:
+    - Stop if report payload is unavailable; do not invent performance metrics
+captures:
+  - id: zaikaiq-report
+    kind: mobile
+    flow: restaurant-zaikaiq-report
+    viewport: android-portrait
+    sourceOfTruth: Real restaurant mobile reports payload
+copy:
+  headline: Read the operation at a glance
+  subhead: ZaikaIQ surfaces what the partner app already knows.
+  labels:
+    - ZaikaIQ
+    - Sell-through
+    - Pickup rhythm
+  languageBoundary: restaurant-only
+plannedOutputs:
+  - id: partner-store-zaikaiq-card
+    surface: app-store
+    preset: app-store-portrait-1290x2796
+    passTarget: v1-functional
+  - id: tradeshow-zaikaiq-panel
+    surface: tradeshow
+    preset: tradeshow-poster-2160x3840
+    passTarget: v1-functional
+truthGuards:
+  - Do not create revenue, sell-through, customer, rating, or trend claims outside captured app values.
+  - Respect role-specific metric visibility.
+review:
+  requiredPasses:
+    - v1-functional
+    - v2-polished
+    - v3-launch-grade
+  creativeReviewRequired: true

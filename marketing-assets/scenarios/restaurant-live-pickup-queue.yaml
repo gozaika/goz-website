@@ -1,0 +1,50 @@
+id: restaurant-live-pickup-queue
+title: Restaurant live pickup queue and staff handoff
+surface: restaurant
+persona: Pickup counter staff during service
+app: restaurant-mobile
+storyRole: operations-proof
+sourceTruth:
+  demoData:
+    - packages/types/test-fixtures/mobile/counter-orders.json contains pickup queue data
+    - docs/product/pickup-verification-incident-basics.md defines verification boundaries
+  verifiedRoutes:
+    - /(tabs)/counter
+    - /portal/orders
+  requiredProof:
+    - Real pickup queue screenshot
+    - Real status grouping or verification action visible in app
+  blockedIfMissing:
+    - Stop if queue state is empty and no seeded pickup-ready order exists
+captures:
+  - id: pickup-queue
+    kind: mobile
+    flow: restaurant-pickup-queue
+    viewport: android-portrait
+    sourceOfTruth: Real restaurant mobile counter payload
+copy:
+  headline: Run pickup from one live queue
+  subhead: Staff see the next handoff without changing the product truth.
+  labels:
+    - Pickup queue
+    - Staff mode
+    - Live status
+  languageBoundary: restaurant-only
+plannedOutputs:
+  - id: partner-store-queue-card
+    surface: app-store
+    preset: app-store-portrait-1290x2796
+    passTarget: v1-functional
+  - id: restaurant-proof-queue-card
+    surface: restaurant-sales
+    preset: restaurant-proof-card-1600x1000
+    passTarget: v1-functional
+truthGuards:
+  - Do not expose raw OTP, QR payload, customer phone, or private pickup credentials.
+  - Do not invent ready, collected, no-show, or incident states.
+review:
+  requiredPasses:
+    - v1-functional
+    - v2-polished
+    - v3-launch-grade
+  creativeReviewRequired: true

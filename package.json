@@ -26,6 +26,8 @@
     "db:demo:delete": "dotenv -e .env.local -- tsx scripts/demo/delete-demo-sql-data.ts",
     "store:capture:screenshots": "node scripts/store-launch/capture-store-screenshots.mjs",
     "store:validate:assets": "node scripts/store-launch/validate-store-assets.mjs --all",
+    "assets:validate": "tsx marketing-assets/src/scenarios/validate-scenarios.ts",
+    "assets:test": "vitest run marketing-assets",
     "demo:auth:create": "dotenv -e .env.local -- tsx scripts/demo/create-demo-auth-users.ts",
     "demo:admin:create": "dotenv -e .env.local -- tsx scripts/demo/create-demo-admin-user.ts",
     "demo:auth:delete": "dotenv -e .env.local -- tsx scripts/demo/delete-demo-auth-users.ts",
@@ -53,6 +55,8 @@
     "supabase": "^2.95.5",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "yaml": "^2.8.3",
+    "zod": "^4.3.6"
   }
 }
