@@ -16,6 +16,7 @@ type UploadTicket = {
 export function ProductMediaUploader({
   restaurantPk,
   dropPk,
+  templateRevisionPk,
   targetCode,
   label,
   guidance,
@@ -23,6 +24,7 @@ export function ProductMediaUploader({
 }: {
   readonly restaurantPk: string;
   readonly dropPk?: string | null;
+  readonly templateRevisionPk?: string | null;
   readonly targetCode: ProductMediaTargetCode;
   readonly label: string;
   readonly guidance: string;
@@ -49,6 +51,7 @@ export function ProductMediaUploader({
         body: JSON.stringify({
           restaurantPk,
           dropPk: dropPk ?? null,
+          templateRevisionPk: templateRevisionPk ?? null,
           targetCode,
           fileName: file.name,
           mimeType: file.type,

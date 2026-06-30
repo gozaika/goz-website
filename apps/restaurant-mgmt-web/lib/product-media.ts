@@ -20,6 +20,7 @@ export const PRODUCT_MEDIA_TARGETS: Record<ProductMediaTargetCode, ProductMediaT
   RESTAURANT_HERO: { width: 1600, height: 900, fit: "cover", minimumSide: 800, pathSegment: "profile/hero" },
   RESTAURANT_LOGO: { width: 512, height: 512, fit: "contain", minimumSide: 128, pathSegment: "profile/logo" },
   DROP_PRIMARY: { width: 1200, height: 900, fit: "cover", minimumSide: 600, pathSegment: "drops/primary" },
+  TEMPLATE_PRIMARY: { width: 1200, height: 900, fit: "cover", minimumSide: 600, pathSegment: "templates/primary" },
 };
 
 const MIME_BY_FORMAT = {
@@ -43,11 +44,16 @@ export function createPublicMediaPath(
   restaurantPk: string,
   targetCode: ProductMediaTargetCode,
   dropPk?: string | null,
+  templateRevisionPk?: string | null,
 ): string {
   const target = PRODUCT_MEDIA_TARGETS[targetCode];
   if (targetCode === "DROP_PRIMARY") {
     if (!dropPk) throw new Error("DROP_TARGET_REQUIRED");
     return `restaurants/${restaurantPk}/drops/${dropPk}/primary/${randomUUID()}.webp`;
+  }
+  if (targetCode === "TEMPLATE_PRIMARY") {
+    if (!templateRevisionPk) throw new Error("TEMPLATE_TARGET_REQUIRED");
+    return `restaurants/${restaurantPk}/templates/${templateRevisionPk}/primary/${randomUUID()}.webp`;
   }
   return `restaurants/${restaurantPk}/${target.pathSegment}/${randomUUID()}.webp`;
 }

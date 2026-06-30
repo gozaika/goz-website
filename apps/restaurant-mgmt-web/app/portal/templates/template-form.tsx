@@ -5,6 +5,7 @@ import { formatPaise } from "@gozaika/utils";
 import { Archive, CheckCircle2, Copy, Pencil, Save, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { ProductMediaUploader } from "../_components/product-media-uploader";
 
 const allergenCodes = [
   "DAIRY",
@@ -31,7 +32,13 @@ function createdLabel(value: string) {
   return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(new Date(value));
 }
 
-export function TemplateForm({ templates }: { readonly templates: readonly PortalBagTemplate[] }) {
+export function TemplateForm({
+  restaurantPk,
+  templates,
+}: {
+  readonly restaurantPk: string;
+  readonly templates: readonly PortalBagTemplate[];
+}) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -114,23 +121,24 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_0.85fr]">
-      <form key={editingTemplate?.templatePk ?? "new-template"} onSubmit={onSubmit} className="grid gap-4 rounded-lg border border-hairline bg-white p-5">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-semibold">{editingTemplate ? "Edit BAM Bag template" : "New BAM Bag template"}</h2>
-            <p className="mt-1 text-sm text-muted">
-              {editingTemplate
-                ? "Edits publish a new revision for future drops. Existing drops keep their original revision."
-                : "Publish reusable disclosure data before creating a public drop."}
-            </p>
+      <div className="grid gap-4">
+        <form key={editingTemplate?.templatePk ?? "new-template"} onSubmit={onSubmit} className="grid gap-4 rounded-lg border border-hairline bg-white p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold">{editingTemplate ? "Edit BAM Bag template" : "New BAM Bag template"}</h2>
+              <p className="mt-1 text-sm text-muted">
+                {editingTemplate
+                  ? "Edits publish a new revision for future drops. Existing drops keep their original revision."
+                  : "Publish reusable disclosure data before creating a public drop."}
+              </p>
+            </div>
+            {editingTemplate ? (
+              <button type="button" className="inline-flex min-h-9 items-center gap-1 rounded-md border border-hairline px-2 text-xs font-semibold" onClick={() => setEditingTemplatePk(null)}>
+                <X size={14} aria-hidden="true" />
+                Cancel
+              </button>
+            ) : null}
           </div>
-          {editingTemplate ? (
-            <button type="button" className="inline-flex min-h-9 items-center gap-1 rounded-md border border-hairline px-2 text-xs font-semibold" onClick={() => setEditingTemplatePk(null)}>
-              <X size={14} aria-hidden="true" />
-              Cancel
-            </button>
-          ) : null}
-        </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="grid gap-1 text-sm font-medium">
@@ -234,11 +242,23 @@ export function TemplateForm({ templates }: { readonly templates: readonly Porta
         </label>
 
         {message ? <p className="text-sm font-semibold text-forest">{message}</p> : null}
-        <button disabled={pending} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-saffron px-4 font-semibold text-charcoal disabled:opacity-60">
-          <Save size={18} aria-hidden="true" />
-          {pending ? "Saving" : editingTemplate ? "Publish edited revision" : "Publish template"}
-        </button>
-      </form>
+          <button disabled={pending} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-saffron px-4 font-semibold text-charcoal disabled:opacity-60">
+            <Save size={18} aria-hidden="true" />
+            {pending ? "Saving" : editingTemplate ? "Publish edited revision" : "Publish template"}
+          </button>
+        </form>
+
+        {editingTemplate?.activeRevisionPk ? (
+          <ProductMediaUploader
+            restaurantPk={restaurantPk}
+            templateRevisionPk={editingTemplate.activeRevisionPk}
+            targetCode="TEMPLATE_PRIMARY"
+            label="Template drop image"
+            guidance="This image carries into every future drop from this active template revision. A per-drop image can still override it."
+            initialMedia={editingTemplate.primaryImage}
+          />
+        ) : null}
+      </div>
 
       <section className="h-fit rounded-lg border border-hairline bg-white p-5">
         <h2 className="text-lg font-semibold">Template library</h2>

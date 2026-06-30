@@ -288,6 +288,7 @@ describe("API schemas", () => {
   it("enforces product-media target ownership shape and upload bounds", () => {
     const restaurantPk = "11111111-1111-4111-8111-111111111111";
     const dropPk = "22222222-2222-4222-8222-222222222222";
+    const templateRevisionPk = "33333333-3333-4333-8333-333333333333";
 
     expect(
       productMediaUploadRequestSchema.safeParse({
@@ -309,6 +310,43 @@ describe("API schemas", () => {
         mimeType: "image/jpeg",
         sizeBytes: 100,
         altText: "Missing ownership target",
+      }).success,
+    ).toBe(false);
+
+    expect(
+      productMediaUploadRequestSchema.safeParse({
+        restaurantPk,
+        targetCode: "TEMPLATE_PRIMARY",
+        templateRevisionPk,
+        fileName: "template-drop.jpg",
+        mimeType: "image/jpeg",
+        sizeBytes: 1_000_000,
+        altText: "A prepared BAM Bag on the pickup counter",
+      }).success,
+    ).toBe(true);
+
+    expect(
+      productMediaUploadRequestSchema.safeParse({
+        restaurantPk,
+        targetCode: "TEMPLATE_PRIMARY",
+        dropPk,
+        templateRevisionPk,
+        fileName: "conflicting-targets.jpg",
+        mimeType: "image/jpeg",
+        sizeBytes: 1_000_000,
+        altText: "Conflicting target identifiers",
+      }).success,
+    ).toBe(false);
+
+    expect(
+      productMediaUploadRequestSchema.safeParse({
+        restaurantPk,
+        targetCode: "RESTAURANT_HERO",
+        templateRevisionPk,
+        fileName: "wrong-template-target.png",
+        mimeType: "image/png",
+        sizeBytes: 1_000_000,
+        altText: "Restaurant dining room",
       }).success,
     ).toBe(false);
 

@@ -2,7 +2,7 @@
 
 Status: implementation contract  
 Owner: product/platform  
-Initial surfaces: restaurant hero, restaurant logo, drop primary image
+Initial surfaces: restaurant hero, restaurant logo, drop primary image, template primary image
 
 ## Why this is a pipeline
 
@@ -11,11 +11,11 @@ An uploaded image is untrusted input. A production system must establish who own
 ## Ownership model
 
 - `marketing-source/` and website campaign masters are not product media.
-- Restaurant teams own restaurant hero/logo and drop-specific imagery for restaurants they can administer.
+- Restaurant teams own restaurant hero/logo, reusable template imagery, and drop-specific imagery for restaurants they can administer.
 - `storage_object` is the durable metadata record for a verified rendition.
 - `restaurant_public_profile` attaches the current hero and logo.
 - `drop_media` attaches a drop-specific primary image.
-- `catalog_bag_template_media` remains the immutable template-revision fallback.
+- `catalog_bag_template_media` stores reusable primary images on immutable template revisions.
 - Consumer clients receive only a bounded `{ url, width, height, alt, blurhash }` contract. They never receive bucket credentials or internal upload-session data.
 
 ## Trust boundary and state machine
@@ -37,6 +37,7 @@ Completion is idempotent: repeating completion for a completed session returns t
 | Restaurant hero | 1600 x 900 WebP | cover, attention crop | JPEG/PNG/WebP, <= 8 MiB, 800..12000 px per side, <= 40 MP |
 | Restaurant logo | up to 512 x 512 WebP | contain, transparent | JPEG/PNG/WebP, <= 8 MiB, 128..12000 px per side, <= 40 MP |
 | Drop primary | 1200 x 900 WebP | cover, attention crop | JPEG/PNG/WebP, <= 8 MiB, 600..12000 px per side, <= 40 MP |
+| Template primary | 1200 x 900 WebP | cover, attention crop | JPEG/PNG/WebP, <= 8 MiB, 600..12000 px per side, <= 40 MP |
 
 The pipeline strips EXIF and other source metadata. Animated images, SVG, HEIC and arbitrary binary uploads are not accepted in v1. SVG is deliberately excluded because active content and external references require a separate sanitizer.
 
@@ -51,6 +52,8 @@ The database view emits only `READY` objects from `public-media`. The BFF constr
 ## Replacement and deletion
 
 Replacing media first attaches the new object. The detached object remains `READY` until a retention job proves it is unreferenced; only then may it become `SUPERSEDED`. This prevents a shared object from breaking historical or editorial surfaces. A scheduled retention job may delete unreferenced superseded objects after 30 days. Hard deletion must verify that no restaurant profile, drop media, template media, review media, or CMS feature still references the object.
+
+Template edits publish immutable revisions. A new revision carries forward the previous revision's `PRIMARY` media row by copying the `storage_object` reference, so editing copy or disclosure fields does not silently remove the reusable drop image. Restaurants may replace the active revision's template image after publishing, and individual drops may still override with their own `DROP_PRIMARY`.
 
 ## Accessibility and editorial requirements
 

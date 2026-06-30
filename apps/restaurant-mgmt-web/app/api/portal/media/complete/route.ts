@@ -8,6 +8,7 @@ type UploadSession = {
   readonly media_upload_session_pk: string;
   readonly restaurant_fk: string;
   readonly drop_fk: string | null;
+  readonly catalog_bag_template_revision_fk: string | null;
   readonly target_code: ProductMediaTargetCode;
   readonly ingest_bucket_name: string;
   readonly ingest_object_path: string;
@@ -120,7 +121,12 @@ export async function POST(request: Request) {
     const rendered = await verifyAndRenderProductMedia(source, session.target_code);
     if (rendered.sourceMimeType !== session.declared_mime_type) throw new Error("DECLARED_MEDIA_MISMATCH");
 
-    publicPath = createPublicMediaPath(session.restaurant_fk, session.target_code, session.drop_fk);
+    publicPath = createPublicMediaPath(
+      session.restaurant_fk,
+      session.target_code,
+      session.drop_fk,
+      session.catalog_bag_template_revision_fk,
+    );
     const { error: publicUploadError } = await service.storage.from(STORAGE_BUCKETS.publicMedia).upload(publicPath, rendered.bytes, {
       cacheControl: "31536000",
       contentType: "image/webp",
@@ -172,6 +178,28 @@ export async function POST(request: Request) {
             .eq("drop_media_pk", existing.drop_media_pk)
         : service.from("drop_media").insert({
             drop_fk: session.drop_fk,
+            storage_object_fk: storageObjectPk,
+            media_role_code: "PRIMARY",
+            display_order: 0,
+          });
+      const { error } = await mutation;
+      if (error) throw new Error("MEDIA_ATTACH_FAILED");
+    } else if (session.target_code === "TEMPLATE_PRIMARY") {
+      if (!session.catalog_bag_template_revision_fk) throw new Error("TEMPLATE_TARGET_REQUIRED");
+      const { data: existing } = await service
+        .from("catalog_bag_template_media")
+        .select("catalog_bag_template_media_pk,storage_object_fk")
+        .eq("catalog_bag_template_revision_fk", session.catalog_bag_template_revision_fk)
+        .eq("media_role_code", "PRIMARY")
+        .maybeSingle();
+      previousStorageObjectPk = existing?.storage_object_fk ?? null;
+      const mutation = existing
+        ? service
+            .from("catalog_bag_template_media")
+            .update({ storage_object_fk: storageObjectPk, updated_at: new Date().toISOString() })
+            .eq("catalog_bag_template_media_pk", existing.catalog_bag_template_media_pk)
+        : service.from("catalog_bag_template_media").insert({
+            catalog_bag_template_revision_fk: session.catalog_bag_template_revision_fk,
             storage_object_fk: storageObjectPk,
             media_role_code: "PRIMARY",
             display_order: 0,

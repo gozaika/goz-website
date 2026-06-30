@@ -14,4 +14,10 @@ describe("product-media role policy", () => {
     expect(canRoleManageProductMedia("PICKUP_STAFF", "DROP_PRIMARY")).toBe(false);
     expect(canRoleManageProductMedia("FINANCE", "DROP_PRIMARY")).toBe(false);
   });
+
+  it("limits reusable template imagery to owner and admin", () => {
+    expect(canRoleManageProductMedia("OWNER", "TEMPLATE_PRIMARY")).toBe(true);
+    expect(canRoleManageProductMedia("ADMIN", "TEMPLATE_PRIMARY")).toBe(true);
+    expect(canRoleManageProductMedia("OPERATIONS", "TEMPLATE_PRIMARY")).toBe(false);
+  });
 });

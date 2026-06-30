@@ -141,6 +141,8 @@ non-blocking; authed routes opt-in via `RUN_AUTHED_A11Y` / `RUN_AUTHED_SMOKE`).
 
 ## 4. FEATURE HANDOFF — Template "Drop image" (carry into every drop)
 
+Status: **implemented in code on 2026-06-30; DB migration file added but not applied.**
+
 ### Goal (from the owner)
 Restaurant → Templates should capture a **Drop image** once per template. Every drop created from
 that template **inherits the image automatically** (drops must be creatable in seconds, no per-drop
@@ -157,13 +159,12 @@ upload). A restaurant **may override** per drop, but most drops carry the templa
   own image **already** shows the template image, and a per-drop `DROP_PRIMARY` upload already
   overrides it. **No read-side / view / DropCard work is needed.**
 
-### The ONLY gap — there is no way to UPLOAD a template image
-`productMediaTargetCodes` (in `@gozaika/types`) = `RESTAURANT_HERO | RESTAURANT_LOGO | DROP_PRIMARY`.
-The upload pipeline (`media_upload_session` → `sign-upload` → `complete`) has no `TEMPLATE_PRIMARY`
-target. Closing the gap = **one small migration + add a target through the existing pipeline + add
-the uploader to the template form.**
+### Implemented upload path — template image
+`productMediaTargetCodes` (in `@gozaika/types`) now includes `TEMPLATE_PRIMARY`.
+The upload pipeline (`media_upload_session` → `sign-upload` → `complete`) supports template-revision
+targets and attaches verified public renditions to `catalog_bag_template_media`.
 
-### 4.1 Migration (1 file) — `supabase/migrations/<new-ts>_template_media_upload_target.sql`
+### 4.1 Migration (1 file) — `supabase/migrations/20260630000000_template_media_upload_target.sql`
 The `media_upload_session` table (defined in the product-media migration) hard-lists targets in two
 CHECK constraints and has only `drop_fk`. Add the template path:
 ```sql
@@ -186,7 +187,8 @@ alter table media_upload_session add constraint ck_media_upload_session_target_e
 ```
 Verify the exact current constraint bodies in the product-media migration before editing (the snapshot
 in `dbschema/` may trail). `catalog_bag_template_media` + its RLS already exist — do **not** recreate.
-Also extend `createPublicMediaPath` (see §4.3) to a template path scheme.
+This migration has been added to the repo but must not be applied to Supabase until the owner explicitly
+approves the database change. `createPublicMediaPath` now uses a template-revision scoped path.
 
 ### 4.2 Shared types — `packages/types/src/index.ts`
 - Add `"TEMPLATE_PRIMARY"` to `productMediaTargetCodes` (~line 982).
@@ -207,17 +209,13 @@ Also extend `createPublicMediaPath` (see §4.3) to a template path scheme.
   `{ catalog_bag_template_revision_fk, storage_object_fk, media_role_code:'PRIMARY' }`. Reuse the
   same render/verify + public-path move; add a `createPublicMediaPath` template branch.
 - **Important (revisions are immutable):** the image attaches to a **revision** PK. Editing a
-  template publishes a NEW revision — decide & document whether the new revision **carries forward**
-  the previous revision's PRIMARY media row (recommended: copy the storage object reference so an
-  edit doesn't drop the image). The template publish/revision API is in
-  `app/api/portal/templates/route.ts` + `[id]/route.ts`.
+  template publishes a NEW revision and now **carries forward** the previous revision's PRIMARY media
+  row by copying the storage object reference, so copy/disclosure edits do not drop the image.
 
 ### 4.4 Partner UI — `apps/restaurant-mgmt-web/app/portal/templates/template-form.tsx`
-- Render the existing `ProductMediaUploader` (in `app/portal/_components/product-media-uploader.tsx`)
-  with `targetCode="TEMPLATE_PRIMARY"` + a new `templateRevisionPk` prop, on the **edit** path (you
-  need the active `templateRevisionPk` — for a brand-new template, upload after the first publish, or
-  publish-then-attach). The uploader currently takes `dropPk`; add an optional `templateRevisionPk`
-  and send it in the sign-upload body.
+- The existing `ProductMediaUploader` (in `app/portal/_components/product-media-uploader.tsx`) now
+  accepts `templateRevisionPk` and is rendered with `targetCode="TEMPLATE_PRIMARY"` on the **edit**
+  path. Brand-new templates publish first, then the active revision can receive the image.
 - Copy: make clear the image is **carried into every drop from this template** and can be overridden
   per drop. Honesty + banned-copy rules apply; tokens only.
 
@@ -254,5 +252,6 @@ mirrors `apps/consumer-mobile/src/api/*` + `@gozaika/mobile-core` `apiClient`.
 
 ---
 
-_Maintainer note: keep this handoff current. When the template-image feature lands, update §4 →
-done, the web ledger, and `docs/web/w5-w7-autonomous-decisions.md`._
+_Maintainer note: keep this handoff current. Next milestone: apply
+`20260630000000_template_media_upload_target.sql` only after explicit owner approval, then run the
+manual acceptance flow in §4.6._

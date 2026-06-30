@@ -28,6 +28,23 @@ export async function POST(request: Request) {
       .maybeSingle();
     if (!drop) return NextResponse.json({ ok: false, error: "This drop does not belong to the selected restaurant." }, { status: 403 });
   }
+  if (input.targetCode === "TEMPLATE_PRIMARY") {
+    const { data: revision } = await service
+      .from("catalog_bag_template_revision")
+      .select("catalog_bag_template_fk")
+      .eq("catalog_bag_template_revision_pk", input.templateRevisionPk)
+      .maybeSingle();
+    const { data: template } = revision?.catalog_bag_template_fk
+      ? await service
+          .from("catalog_bag_template")
+          .select("restaurant_fk")
+          .eq("catalog_bag_template_pk", revision.catalog_bag_template_fk)
+          .maybeSingle()
+      : { data: null };
+    if (!template || template.restaurant_fk !== input.restaurantPk) {
+      return NextResponse.json({ ok: false, error: "This template does not belong to the selected restaurant." }, { status: 403 });
+    }
+  }
 
   const objectPath = createMediaIngestPath(input.restaurantPk, input.mimeType);
   const expiresAt = new Date(Date.now() + 30 * 60_000).toISOString();
@@ -36,6 +53,7 @@ export async function POST(request: Request) {
     .insert({
       restaurant_fk: input.restaurantPk,
       drop_fk: input.dropPk ?? null,
+      catalog_bag_template_revision_fk: input.templateRevisionPk ?? null,
       target_code: input.targetCode,
       ingest_bucket_name: STORAGE_BUCKETS.mediaIngest,
       ingest_object_path: objectPath,

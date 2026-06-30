@@ -16,6 +16,10 @@ describe("product media", () => {
     );
     expect(createPublicMediaPath(restaurantPk, "RESTAURANT_HERO")).toContain("/profile/hero/");
     expect(() => createPublicMediaPath(restaurantPk, "DROP_PRIMARY")).toThrow("DROP_TARGET_REQUIRED");
+    expect(() => createPublicMediaPath(restaurantPk, "TEMPLATE_PRIMARY")).toThrow("TEMPLATE_TARGET_REQUIRED");
+    expect(createPublicMediaPath(restaurantPk, "TEMPLATE_PRIMARY", null, "33333333-3333-4333-8333-333333333333")).toContain(
+      "/templates/33333333-3333-4333-8333-333333333333/primary/",
+    );
     expect(safeUploadExtension("image/webp")).toBe("webp");
   });
 

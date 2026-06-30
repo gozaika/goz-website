@@ -2,7 +2,7 @@ import { createServiceRoleSupabaseClient, STORAGE_BUCKETS } from "@gozaika/supab
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { canRoleManageProductMedia } from "./product-media-policy";
+import { canRoleManageProductMedia, type ProductMediaPolicyTarget } from "./product-media-policy";
 
 export interface PortalActor {
   readonly authUserId: string;
@@ -65,7 +65,7 @@ export async function assertRestaurantAccess(restaurantPk: string, profilePk: st
 export async function assertRestaurantMediaAccess(
   restaurantPk: string,
   profilePk: string,
-  targetCode: "RESTAURANT_HERO" | "RESTAURANT_LOGO" | "DROP_PRIMARY",
+  targetCode: ProductMediaPolicyTarget,
 ): Promise<boolean> {
   const service = createServiceRoleSupabaseClient();
   const { data } = await service

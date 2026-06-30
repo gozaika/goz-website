@@ -1,4 +1,4 @@
-export type ProductMediaPolicyTarget = "RESTAURANT_HERO" | "RESTAURANT_LOGO" | "DROP_PRIMARY";
+export type ProductMediaPolicyTarget = "RESTAURANT_HERO" | "RESTAURANT_LOGO" | "DROP_PRIMARY" | "TEMPLATE_PRIMARY";
 
 export function canRoleManageProductMedia(roleCode: string | null, targetCode: ProductMediaPolicyTarget): boolean {
   if (!roleCode) return false;

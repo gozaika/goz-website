@@ -987,7 +987,7 @@ export const restaurantDocumentUploadRequestSchema = z.object({
   expiresAt: z.preprocess(optionalString, z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()),
 });
 
-export const productMediaTargetCodes = ["RESTAURANT_HERO", "RESTAURANT_LOGO", "DROP_PRIMARY"] as const;
+export const productMediaTargetCodes = ["RESTAURANT_HERO", "RESTAURANT_LOGO", "DROP_PRIMARY", "TEMPLATE_PRIMARY"] as const;
 export type ProductMediaTargetCode = (typeof productMediaTargetCodes)[number];
 
 export const productMediaUploadRequestSchema = z
@@ -995,6 +995,7 @@ export const productMediaUploadRequestSchema = z
     restaurantPk: uuidSchema,
     targetCode: z.enum(productMediaTargetCodes),
     dropPk: uuidSchema.optional().nullable(),
+    templateRevisionPk: uuidSchema.optional().nullable(),
     fileName: z.string().trim().min(1).max(180),
     mimeType: z.enum(["image/jpeg", "image/png", "image/webp"]),
     sizeBytes: z.number().int().min(1).max(8 * 1024 * 1024),
@@ -1006,6 +1007,18 @@ export const productMediaUploadRequestSchema = z
   })
   .refine((value) => value.targetCode === "DROP_PRIMARY" || value.dropPk == null, {
     message: "Restaurant media cannot include a drop identifier.",
+    path: ["dropPk"],
+  })
+  .refine((value) => value.targetCode !== "TEMPLATE_PRIMARY" || Boolean(value.templateRevisionPk), {
+    message: "Template primary media requires a template revision identifier.",
+    path: ["templateRevisionPk"],
+  })
+  .refine((value) => value.targetCode === "TEMPLATE_PRIMARY" || value.templateRevisionPk == null, {
+    message: "Non-template media cannot include a template revision identifier.",
+    path: ["templateRevisionPk"],
+  })
+  .refine((value) => value.targetCode !== "TEMPLATE_PRIMARY" || value.dropPk == null, {
+    message: "Template media cannot include a drop identifier.",
     path: ["dropPk"],
   });
 
@@ -1345,6 +1358,7 @@ export interface PortalBagTemplate {
   readonly templateName: string;
   readonly templateStatusCode: string;
   readonly activeRevisionPk: string | null;
+  readonly primaryImage: PublicMediaAsset | null;
   readonly displayName: string | null;
   readonly shortDescription: string | null;
   readonly dietaryCategoryCode: DietaryCategoryCode | null;

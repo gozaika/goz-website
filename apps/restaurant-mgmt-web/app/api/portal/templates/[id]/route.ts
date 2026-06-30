@@ -4,6 +4,37 @@ import { NextResponse } from "next/server";
 import { getPortalActor } from "@/lib/portal-auth";
 import { loadSelectedRestaurant } from "@/lib/slice3";
 
+type ServiceClient = ReturnType<typeof createServiceRoleSupabaseClient>;
+
+async function carryForwardTemplatePrimaryMedia(
+  service: ServiceClient,
+  sourceRevisionPk: string | null,
+  targetRevisionPk: string,
+  now: string,
+): Promise<boolean> {
+  if (!sourceRevisionPk) return true;
+  const { data: sourceMedia, error: loadError } = await service
+    .from("catalog_bag_template_media")
+    .select("storage_object_fk")
+    .eq("catalog_bag_template_revision_fk", sourceRevisionPk)
+    .eq("media_role_code", "PRIMARY")
+    .maybeSingle();
+
+  if (loadError) return false;
+  if (!sourceMedia?.storage_object_fk) return true;
+
+  const { error: insertError } = await service.from("catalog_bag_template_media").insert({
+    catalog_bag_template_revision_fk: targetRevisionPk,
+    storage_object_fk: sourceMedia.storage_object_fk,
+    media_role_code: "PRIMARY",
+    display_order: 0,
+    created_at: now,
+    updated_at: now,
+  });
+
+  return !insertError;
+}
+
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
   const actor = await getPortalActor();
   if (!actor) {
@@ -114,6 +145,12 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     const { error: allergenInsertError } = allergenPayload.length
       ? await service.from("catalog_bag_template_allergen").insert(allergenPayload)
       : { error: null };
+    const mediaCopied = await carryForwardTemplatePrimaryMedia(
+      service,
+      template.active_revision_fk,
+      revision.catalog_bag_template_revision_pk,
+      now,
+    );
     const { error: updateError } = await service
       .from("catalog_bag_template")
       .update({
@@ -127,7 +164,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       })
       .eq("catalog_bag_template_pk", id);
 
-    if (allergenInsertError || updateError) {
+    if (allergenInsertError || !mediaCopied || updateError) {
       return NextResponse.json({ ok: false, error: "Revision saved, but template finalization failed." }, { status: 500 });
     }
 
@@ -219,6 +256,16 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
           updated_at: now,
         })),
       );
+    }
+
+    const mediaCopied = await carryForwardTemplatePrimaryMedia(
+      service,
+      template.active_revision_fk,
+      newRevision.catalog_bag_template_revision_pk,
+      now,
+    );
+    if (!mediaCopied) {
+      return NextResponse.json({ ok: false, error: "Template duplicated, but media copy failed." }, { status: 500 });
     }
 
     await service

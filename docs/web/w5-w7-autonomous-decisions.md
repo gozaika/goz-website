@@ -36,6 +36,11 @@ Ledger: [`web-parity-ledger.md`](web-parity-ledger.md)
 - **D6 — Honesty + banned-copy rules hard-enforced.** Real data only; no fabricated
   loyalty/pickup/QR/OTP/order/payment/rating/revenue state; banned-copy list applies; no
   new features beyond the already-shipped F1 rail.
+- **D10 — Template primary media carries forward across immutable revisions.** Template edits create
+  a new `catalog_bag_template_revision`, but the new revision copies the previous revision's PRIMARY
+  `storage_object` reference. This prevents disclosure/copy edits from silently dropping the reusable
+  drop image; restaurants can still replace the active revision's template image or override a single
+  drop with `DROP_PRIMARY`.
 
 ## W6 notes
 

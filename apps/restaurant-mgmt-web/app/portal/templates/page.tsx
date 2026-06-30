@@ -25,7 +25,7 @@ export default async function TemplatesPage() {
           Create reusable, allergen-disclosed BAM Bag templates for approved restaurants before publishing drops.
         </p>
         <div className="mt-6">
-          <TemplateForm templates={templates} />
+          <TemplateForm restaurantPk={restaurant.restaurantPk} templates={templates} />
         </div>
       </section>
     </PortalChrome>

@@ -11,7 +11,7 @@ have both been verified in the target environment.
 - A service-only `media_upload_session` authorization record.
 - Server-side byte verification and normalized WebP rendition generation.
 - Immutable files in `public-media`, with verified metadata in `storage_object`.
-- Restaurant hero/logo and drop-primary attachment controls in the restaurant portal.
+- Restaurant hero/logo, template-primary, and drop-primary attachment controls in the restaurant portal.
 - Public read models that return only `READY` media and resolve drop media before
   the template fallback.
 
@@ -70,6 +70,7 @@ Use a non-production restaurant first.
 | --- | --- |
 | OWNER uploads a valid restaurant hero | 1600 x 900 WebP appears in the portal and public profile |
 | ADMIN uploads a transparent logo | 512 x 512 WebP preserves transparency and containment |
+| OWNER uploads a template image | 1200 x 900 WebP appears on the template edit view and backs future drops |
 | OPERATIONS uploads a drop image | 1200 x 900 WebP becomes the drop PRIMARY image |
 | FINANCE attempts any media upload | request is denied |
 | PICKUP attempts any media upload | request is denied |
@@ -113,4 +114,3 @@ Before broad rollout, add and verify:
   attention crops are insufficient.
 
 These are deliberate rollout gates, not reasons to weaken the core trust boundary.
-

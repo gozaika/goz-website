@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
 import { publicStorageUrl, STORAGE_BUCKETS } from "@gozaika/supabase";
-import type { PortalBagTemplate, PortalDrop, PublicDropCard } from "@gozaika/types";
+import type { PortalBagTemplate, PortalDrop, PublicDropCard, PublicMediaAsset } from "@gozaika/types";
 
 // Cookie that persists the OWNER's chosen restaurant when they belong to more
 // than one (the RestaurantSwitcher in the portal chrome). It only ever resolves
@@ -223,6 +223,26 @@ type TemplateRow = {
   readonly catalog_bag_template_revision?: TemplateRevisionRelation | TemplateRevisionRelation[] | null;
 };
 
+type TemplatePrimaryMediaRow = {
+  readonly catalog_bag_template_revision_fk: string | null;
+  readonly storage_object?:
+    | {
+        readonly bucket_name: string | null;
+        readonly object_path: string | null;
+        readonly width_px: number | null;
+        readonly height_px: number | null;
+        readonly alt_text: string | null;
+      }
+    | readonly {
+        readonly bucket_name: string | null;
+        readonly object_path: string | null;
+        readonly width_px: number | null;
+        readonly height_px: number | null;
+        readonly alt_text: string | null;
+      }[]
+    | null;
+};
+
 export async function loadPortalTemplates(restaurantPk: string): Promise<PortalBagTemplate[]> {
   const service = createServiceRoleSupabaseClient();
   const { data: templates, error } = await service
@@ -244,6 +264,13 @@ export async function loadPortalTemplates(restaurantPk: string): Promise<PortalB
         .select("catalog_bag_template_revision_fk,master_allergen(allergen_code)")
         .in("catalog_bag_template_revision_fk", revisionPks)
     : { data: [] };
+  const { data: templateMedia } = revisionPks.length
+    ? await service
+        .from("catalog_bag_template_media")
+        .select("catalog_bag_template_revision_fk,storage_object(bucket_name,object_path,width_px,height_px,alt_text)")
+        .in("catalog_bag_template_revision_fk", revisionPks)
+        .eq("media_role_code", "PRIMARY")
+    : { data: [] };
 
   const allergensByRevision = new Map<string, string[]>();
   for (const row of allergens ?? []) {
@@ -255,6 +282,20 @@ export async function loadPortalTemplates(restaurantPk: string): Promise<PortalB
     ]);
   }
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const primaryImageByRevision = new Map<string, PublicMediaAsset>();
+  for (const row of (templateMedia ?? []) as TemplatePrimaryMediaRow[]) {
+    const object = Array.isArray(row.storage_object) ? row.storage_object[0] : row.storage_object;
+    if (!row.catalog_bag_template_revision_fk || !supabaseUrl || object?.bucket_name !== STORAGE_BUCKETS.publicMedia || !object.object_path) continue;
+    primaryImageByRevision.set(row.catalog_bag_template_revision_fk, {
+      url: publicStorageUrl(supabaseUrl, object.bucket_name, object.object_path),
+      width: object.width_px,
+      height: object.height_px,
+      alt: object.alt_text,
+      blurhash: null,
+    });
+  }
+
   return ((templates ?? []) as TemplateRow[]).map((template) => {
     const revision = Array.isArray(template.catalog_bag_template_revision)
       ? template.catalog_bag_template_revision[0]
@@ -264,6 +305,7 @@ export async function loadPortalTemplates(restaurantPk: string): Promise<PortalB
       templateName: template.template_name,
       templateStatusCode: template.template_status_code,
       activeRevisionPk: template.active_revision_fk,
+      primaryImage: template.active_revision_fk ? (primaryImageByRevision.get(template.active_revision_fk) ?? null) : null,
       defaultDropQuantity: Number(template.default_drop_quantity ?? 10),
       defaultPickupStartOffsetMinutes: Number(template.default_pickup_start_offset_minutes ?? 15),
       defaultPickupDurationMinutes: Number(template.default_pickup_duration_minutes ?? 90),
