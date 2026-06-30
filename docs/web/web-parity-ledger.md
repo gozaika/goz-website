@@ -1,6 +1,6 @@
 # goZaika Web Parity Ledger
 
-Status: **baseline established (Web Slice W0, 2026-06-29)**
+Status: **program complete W0–W7 (automated) 2026-06-30 — human a11y sign-off pending** (see [`web-parity-audit.md`](web-parity-audit.md))
 Source of truth: checked-in code. One row per customer + partner web surface.
 A web-parity slice cannot be marked complete until its rows here carry evidence.
 
@@ -59,7 +59,7 @@ Plan: [`../../project docs/gozaika_web_parity_implementation_plan_v1.md`](../../
 | Customer primitives (HeroBanner/CountdownChip/FilterChipRow/SegmentedToggle/StickyCTA/PeekBar/ProgressRing/LoyaltyCard) | U2C | W2 | **Done** — `@gozaika/ui` `CustomerPrimitives` (static) + `CustomerControls` (client); shared model in `@gozaika/utils` |
 | Partner primitives (MetricHero/ActionCard/QueueCard/SellThroughBar/Sparkline/DataTable/RoleAwareSection/RestaurantSwitcher) | U2R | W3 | **Done** — `@gozaika/ui` `PartnerPrimitives` (static) + `PartnerControls` (client); shared sell-through/sparkline model in `@gozaika/utils`. `RestaurantSwitcher` wired into the portal chrome in W5 (multi-membership only; app-level `loadSelectedRestaurant` cookie resolver, no shared-lib change) |
 | A11y/contrast/motion pass (kill white-on-saffron; focus; reduced-motion; reflow) | X1 | W6 | **Done (automated) — human sign-off pending** — global brand-hex flip (scan covers all `apps/*/app` + `packages/ui/src`, only `theme.css` exempt); all white-on-saffron / gold-as-text → AA companions; opacity-charcoal text → `text-muted`. **axe-playwright specs** added to both product apps + wired into `web-ci` (8/8): structural WCAG rules hard-gated green (switch label, landmark `<aside>`→`<div>`, ProgressBar role, mgmt `<title>`); `color-contrast` reported non-blocking (token contrast locked by `contrast.test.ts`; residual card-accent items → human pass). Reduced-motion already handled in primitives (`motion-reduce:animate-none`). **Human keyboard + screen-reader sign-off still required** (W7 audit doc). |
-| Perf/SEO + bundle secret scan + ledger closure | S17/S18 | W7 | Not started |
+| Perf/SEO + bundle secret scan + ledger closure | S17/S18 | W7 | **Done** — built-`.next` client-bundle secret-value scan + functional Playwright smoke per app wired into `web-ci` (9/9); metadata/title on both apps; tokenized `not-found` pages; global `prefers-reduced-motion`. Closure audit: [`web-parity-audit.md`](web-parity-audit.md). Lighthouse capture + per-route OG images noted as recommended residuals. |
 
 ---
 

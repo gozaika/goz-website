@@ -164,15 +164,57 @@ step("no brand-hex literals in web app + @gozaika/ui source (global)", () => {
   if (offenders.length) throw new Error(`Raw brand-hex literals (use tokens):\n${offenders.join("\n")}`);
 });
 
+// 4d. Built-bundle secret scan (W7): the source scan above forbids secret NAMES
+//     in client code; this scans the actually-built CLIENT bundles (`.next/static`)
+//     for accidental inlining of secret VALUES from the env. Reports filenames
+//     only, never the value. Needs `next build`, so it is skipped in --fast.
+if (!fast) {
+  step("no server-secret values in built client bundles (.next/static)", () => {
+    function envValues(appDir) {
+      const envFile = join(appDir, ".env.local");
+      const out = [];
+      if (!existsSync(envFile)) return out;
+      for (const line of readFileSync(envFile, "utf8").split(/\r?\n/)) {
+        const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.+?)\s*$/);
+        if (!m) continue;
+        const [, name, rawValue] = m;
+        const value = rawValue.replace(/^["']|["']$/g, "");
+        // Only secret-ish names, and only values long enough to be a real token
+        // (avoids false positives on short/placeholder demo values).
+        if (SECRET_NAMES.some((s) => name.includes(s)) && value.length >= 16) {
+          out.push({ name, value });
+        }
+      }
+      return out;
+    }
+    const leaks = [];
+    for (const app of webApps) {
+      const appDir = join(root, "apps", app);
+      const staticDir = join(appDir, ".next", "static");
+      if (!existsSync(staticDir)) continue;
+      const secrets = envValues(appDir);
+      if (!secrets.length) continue;
+      for (const file of walk(staticDir)) {
+        if (!file.endsWith(".js")) continue;
+        const text = readFileSync(file, "utf8");
+        for (const secret of secrets) {
+          if (text.includes(secret.value)) leaks.push(`${file.replace(root, ".")}: inlines ${secret.name} value`);
+        }
+      }
+    }
+    if (leaks.length) throw new Error(`Server-secret values found in client bundles:\n${leaks.join("\n")}`);
+  });
+}
+
 // 5. Accessibility (axe) — structural WCAG rules on the key public shells of both
 //    product web apps. Each app's playwright.config boots its own `next start`
 //    (reusing the build above). color-contrast is reported non-blocking (locked at
 //    the token layer by contrast.test.ts); authed portal axe is opt-in
 //    (RUN_AUTHED_A11Y). Needs the build, so it is skipped in --fast.
 if (!fast) {
-  step("a11y axe checks (consumer-web + restaurant-mgmt-web public shells)", () => {
-    sh("npm run a11y --workspace @gozaika/consumer-web");
-    sh("npm run a11y --workspace @gozaika/restaurant-mgmt-web");
+  step("a11y axe + functional smoke (consumer-web + restaurant-mgmt-web)", () => {
+    sh("npm run e2e --workspace @gozaika/consumer-web");
+    sh("npm run e2e --workspace @gozaika/restaurant-mgmt-web");
   });
 }
 

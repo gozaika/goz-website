@@ -1,7 +1,7 @@
 # goZaika Web Parity — Implementation Plan v1
 
-Status: **approved 2026-06-29 — full program (W0–W7), both web apps** · Next up: **W5** (partner portal recomposition)
-Progress: W0–W4 done; all 16 customer surfaces + 3 interactive client views tokenized, gate-enforced (web 7/7, mobile 7/7).
+Status: **W0–W7 complete (automated) 2026-06-30 — human a11y sign-off pending** (see `docs/web/web-parity-audit.md`)
+Progress: full program landed; web gate 9/9, mobile gate 7/7. Only the owner's keyboard + screen-reader sign-off remains.
 Spec: [`gozaika_web_parity_spec_v1.md`](gozaika_web_parity_spec_v1.md)
 
 Brings `apps/consumer-web` + `apps/restaurant-mgmt-web` up to the mobile UX
@@ -32,8 +32,8 @@ green, evidenced vertical at a time, committed + pushed per slice.
 | Web W3 | Partner primitives (web ports) | W1 | **Done 2026-06-29** — `@gozaika/ui` PartnerPrimitives + PartnerControls; shared ratio/sparkline model in `@gozaika/utils` (mobile gate 7/7); web gate 7/7. |
 | Web W4 | Customer surface recomposition + F1 home rail | W2 | **Done 2026-06-29** — all 16 customer surfaces tokenized + gate-enforced, incl. the 3 large interactive client views: `drop-discovery-client` (FilterChipRow + SegmentedToggle), `restaurant-directory-client` (FilterChipRow sort + tokenized sidebar/drawer/map), `restaurant-detail-client` (D1 art hero + Follow chip preserved, reviews sort → FilterChipRow). Home + F1 follow rail + all 3 clients browser-verified. Web gate 16 migrated files, 7/7; mobile 7/7. |
 | Web W5 | Partner surface recomposition + switcher | W3 | **Done 2026-06-30** — all 10 portal surfaces recomposed on W3 primitives + tokenized; partner label reconciled **"Zayka Pro" → "goZaika Partner"** (§9.4); `MetricHero` gained additive `titleAs`; **`RestaurantSwitcher` added to the portal chrome** (multi-membership only) via an app-level `loadSelectedRestaurant` cookie resolver wired into the single-restaurant pages + drops/templates mutation routes (no shared-lib/schema/BFF change; no-cookie path unchanged). All demo-OWNER browser-verified; web gate 35 files 7/7, mobile 7/7. Decisions: `docs/web/w5-w7-autonomous-decisions.md` (multi-membership switch flagged for human QA — needs 2-restaurant seed). |
-| Web W6 | Accessibility / contrast / motion gate | W4, W5 | Not started |
-| Web W7 | Release polish, perf/SEO & ledger closure | W6 | Not started |
+| Web W6 | Accessibility / contrast / motion gate | W4, W5 | **Done (automated) 2026-06-30 — human sign-off pending** — global brand-hex flip (scan covers all `apps/*/app` + `packages/ui/src`, only `theme.css` exempt); all white-on-saffron/gold-as-text → AA companions; opacity-charcoal text → `text-muted`; **axe-playwright** specs in both product apps wired into web-ci (8/8): structural WCAG rules hard-gated (switch label, landmark `<aside>`→`<div>`, ProgressBar role, mgmt `<title>`), `color-contrast` reported non-blocking (token contrast locked by `contrast.test.ts`; residual card-accent items → human pass). Keyboard + screen-reader sign-off staged in `web-parity-audit.md`. |
+| Web W7 | Release polish, perf/SEO & ledger closure | W6 | **Done (automated) 2026-06-30 — human sign-off pending** — built-`.next` client-bundle secret-value scan + functional Playwright smoke per app wired into web-ci (9/9); metadata/titles; tokenized `not-found` pages; global reduced-motion. Closure audit `docs/web/web-parity-audit.md` records results + the human keyboard/screen-reader sign-off checklist. |
 
 **Owner-approved scope (2026-06-29): the full program, W0→W7 in order, both web
 apps.** (For reference, a fast first pass would have been W0 + W1 + the contrast

@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "a11y": "playwright test tests/a11y.spec.ts --reporter=line"
+    "a11y": "playwright test tests/a11y.spec.ts --reporter=line",
+    "e2e": "playwright test tests/a11y.spec.ts tests/smoke.spec.ts --reporter=line"
   },
   "dependencies": {
     "@gozaika/config": "*",
