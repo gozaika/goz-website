@@ -134,64 +134,34 @@ step("no server secrets referenced in client code", () => {
   if (leaks.length) throw new Error(`Client secret leaks:\n${leaks.join("\n")}`);
 });
 
-// 4c. Brand-hex-literal drift, scoped to files already migrated to tokens.
-//     This list grows per slice; an empty list means nothing is enforced yet.
-//     Once a file is here, it must contain ZERO raw brand-hex literals.
-const MIGRATED_FILES = [
-  // W4 — customer surfaces migrated to tokens/primitives:
-  "apps/consumer-web/app/page.tsx",
-  "apps/consumer-web/app/drops/page.tsx",
-  "apps/consumer-web/app/drops/drop-discovery-client.tsx",
-  "apps/consumer-web/app/drops/[id]/page.tsx",
-  "apps/consumer-web/app/restaurants/page.tsx",
-  "apps/consumer-web/app/restaurants/restaurant-directory-client.tsx",
-  "apps/consumer-web/app/restaurants/[slug]/page.tsx",
-  "apps/consumer-web/app/restaurants/[slug]/restaurant-detail-client.tsx",
-  "apps/consumer-web/app/swaad-club/page.tsx",
-  "apps/consumer-web/app/checkout/[orderId]/page.tsx",
-  "apps/consumer-web/app/orders/[orderId]/page.tsx",
-  "apps/consumer-web/app/account/page.tsx",
-  "apps/consumer-web/app/account/passport/page.tsx",
-  "apps/consumer-web/app/account/discovery/page.tsx",
-  "apps/consumer-web/app/onboarding/consent/page.tsx",
-  "apps/consumer-web/app/cities/[city]/page.tsx",
-  // W5 — partner portal surfaces migrated to tokens/primitives:
-  "apps/restaurant-mgmt-web/app/portal/dashboard/page.tsx",
-  "apps/restaurant-mgmt-web/app/portal/orders/page.tsx",
-  "apps/restaurant-mgmt-web/app/portal/orders/orders-client.tsx",
-  "apps/restaurant-mgmt-web/app/portal/drops/page.tsx",
-  "apps/restaurant-mgmt-web/app/portal/drops/drops-list-client.tsx",
-  "apps/restaurant-mgmt-web/app/portal/drops/new/page.tsx",
-  "apps/restaurant-mgmt-web/app/portal/drops/new/drop-publishing-form.tsx",
-  "apps/restaurant-mgmt-web/app/portal/finance/page.tsx",
-  "apps/restaurant-mgmt-web/app/portal/reports/page.tsx",
-  "apps/restaurant-mgmt-web/app/portal/templates/page.tsx",
-  "apps/restaurant-mgmt-web/app/portal/templates/template-form.tsx",
-  "apps/restaurant-mgmt-web/app/portal/onboarding/page.tsx",
-  "apps/restaurant-mgmt-web/app/portal/onboarding/onboarding-client.tsx",
-  "apps/restaurant-mgmt-web/app/portal/compliance/page.tsx",
-  "apps/restaurant-mgmt-web/app/portal/profile/page.tsx",
-  "apps/restaurant-mgmt-web/app/portal/profile/profile-client.tsx",
-  "apps/restaurant-mgmt-web/app/portal/reviews/page.tsx",
-  "apps/restaurant-mgmt-web/app/portal/portal-nav.tsx",
-  "apps/restaurant-mgmt-web/app/portal/restaurant-switcher-island.tsx",
-];
+// 4c. Brand-hex-literal drift — GLOBAL (W6). Every source file under the two web
+//     apps' `app/` trees and `packages/ui/src` must reference tokens, not raw
+//     brand-hex. The W4/W5 per-file allowlist is retired now that the whole
+//     surface is migrated. The ONLY sanctioned brand-hex lives in
+//     `packages/ui/src/theme.css` — the Tailwind @theme mirror of the TS palette
+//     (drift-locked separately by theme.test.ts) — so it is excluded here.
 const BRAND_HEX = /#(?:FF6B35|1A5C38|D4A017|FFF8F0|2D2D2D)\b/i;
+const HEX_SCAN_ROOTS = [
+  join(root, "apps", "consumer-web", "app"),
+  join(root, "apps", "restaurant-mgmt-web", "app"),
+  join(root, "packages", "ui", "src"),
+];
+const HEX_SCAN_EXCLUDE = new Set([join(root, "packages", "ui", "src", "theme.css")]);
 
-step(`no brand-hex literals in migrated files (${MIGRATED_FILES.length})`, () => {
+step("no brand-hex literals in web app + @gozaika/ui source (global)", () => {
   const offenders = [];
-  for (const rel of MIGRATED_FILES) {
-    const p = join(root, rel);
-    if (!existsSync(p)) {
-      offenders.push(`${rel}: listed as migrated but missing`);
-      continue;
+  for (const scanRoot of HEX_SCAN_ROOTS) {
+    if (!existsSync(scanRoot)) continue;
+    for (const file of walk(scanRoot)) {
+      if (HEX_SCAN_EXCLUDE.has(file)) continue;
+      if (!/\.(tsx?|css)$/.test(file)) continue;
+      const lines = readFileSync(file, "utf8").split(/\r?\n/);
+      lines.forEach((line, i) => {
+        if (BRAND_HEX.test(line)) offenders.push(`${file.replace(root, ".")}:${i + 1}: ${line.trim().slice(0, 80)}`);
+      });
     }
-    const lines = readFileSync(p, "utf8").split(/\r?\n/);
-    lines.forEach((line, i) => {
-      if (BRAND_HEX.test(line)) offenders.push(`${rel}:${i + 1}: ${line.trim().slice(0, 80)}`);
-    });
   }
-  if (offenders.length) throw new Error(`Raw brand-hex literals in migrated files:\n${offenders.join("\n")}`);
+  if (offenders.length) throw new Error(`Raw brand-hex literals (use tokens):\n${offenders.join("\n")}`);
 });
 
 // Summary

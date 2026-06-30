@@ -131,10 +131,10 @@ export function ConsentForm({ nextPath = "/account" }: { readonly nextPath?: str
       <div className="rounded-lg border border-black/10 bg-white p-5 shadow-sm md:p-8">
         <GoZaikaLogo className="h-11" />
         <div className="mt-6 flex items-start gap-3">
-          <ShieldCheck className="mt-1 text-[#1A5C38]" aria-hidden="true" />
+          <ShieldCheck className="mt-1 text-forest" aria-hidden="true" />
           <div>
-            <h1 className="text-3xl font-bold text-[#2D2D2D]">Your DPDP consent</h1>
-            <p className="mt-2 text-sm leading-6 text-[#2D2D2D]/70">
+            <h1 className="text-3xl font-bold text-charcoal">Your DPDP consent</h1>
+            <p className="mt-2 text-sm leading-6 text-charcoal/70">
               goZaika records consent purpose-by-purpose. Operational service messages support orders and pickup; marketing
               consent is separate and is not used for transactional pickup updates.
             </p>
@@ -163,13 +163,13 @@ export function ConsentForm({ nextPath = "/account" }: { readonly nextPath?: str
                   className="flex min-h-20 items-start justify-between gap-4 rounded-lg border border-black/10 p-4"
                 >
                   <span>
-                    <span className="block font-semibold text-[#2D2D2D]">
+                    <span className="block font-semibold text-charcoal">
                       {purpose.purpose_name}
                       {purpose.is_required_for_service ? " (required)" : ""}
                     </span>
-                    <span className="mt-1 block text-sm leading-5 text-[#2D2D2D]/70">{purpose.description}</span>
+                    <span className="mt-1 block text-sm leading-5 text-charcoal/70">{purpose.description}</span>
                     {latestEvent?.recorded_at ? (
-                      <span className="mt-2 block text-xs text-[#2D2D2D]/55">
+                      <span className="mt-2 block text-xs text-charcoal/55">
                         Latest: {latestEvent.consent_state_code?.toLowerCase()} on{" "}
                         {new Date(latestEvent.recorded_at).toLocaleString("en-IN")}
                       </span>
@@ -177,7 +177,7 @@ export function ConsentForm({ nextPath = "/account" }: { readonly nextPath?: str
                   </span>
                   <input
                     type="checkbox"
-                    className="mt-1 h-6 w-6 accent-[#1A5C38]"
+                    className="mt-1 h-6 w-6 accent-forest"
                     checked={checked}
                     disabled={purpose.is_required_for_service}
                     onChange={(event) =>

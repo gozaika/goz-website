@@ -144,47 +144,47 @@ export function AccountClient({
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <GoZaikaLogo className="h-10" />
-          <h1 className="mt-5 text-4xl font-bold text-[#2D2D2D]">Account</h1>
-          <p className="mt-2 text-sm text-[#2D2D2D]/70">Your BAM Bag profile, referral code and DPDP consent settings.</p>
+          <h1 className="mt-5 text-4xl font-bold text-charcoal">Account</h1>
+          <p className="mt-2 text-sm text-charcoal/70">Your BAM Bag profile, referral code and DPDP consent settings.</p>
         </div>
-        <Button type="button" className="bg-[#1A5C38] hover:bg-[#154b2e]" onClick={signOut}>
+        <Button type="button" className="bg-forest hover:bg-[#154b2e]" onClick={signOut}>
           <LogOut size={18} aria-hidden="true" />
           <span className="ml-2">Sign out</span>
         </Button>
       </div>
 
       {status ? (
-        <p className="mt-6 rounded-lg border border-[#D4A017]/40 bg-white px-3 py-2 text-sm text-[#2D2D2D]">{status}</p>
+        <p className="mt-6 rounded-lg border border-gold/40 bg-white px-3 py-2 text-sm text-charcoal">{status}</p>
       ) : null}
 
       <section className="mt-6 grid gap-4 md:grid-cols-3">
-        <article className="rounded-lg border border-[#D4A017]/35 bg-[#FFF8F0] p-4">
+        <article className="rounded-lg border border-gold/35 bg-cream p-4">
           <div className="flex items-center gap-2">
-            <Crown className="h-5 w-5 text-[#D4A017]" aria-hidden="true" />
-            <h2 className="font-bold text-[#2D2D2D]">Swaad Club</h2>
+            <Crown className="h-5 w-5 text-gold-text" aria-hidden="true" />
+            <h2 className="font-bold text-charcoal">Swaad Club</h2>
           </div>
-          <p className="mt-2 text-sm text-[#2D2D2D]/70">Subscription billing is not active yet. Join the launch list for priority-access updates.</p>
-          <Link className="mt-3 inline-flex min-h-10 items-center rounded-lg border border-[#1A5C38]/25 px-3 text-sm font-semibold text-[#1A5C38]" href="/swaad-club">
+          <p className="mt-2 text-sm text-charcoal/70">Subscription billing is not active yet. Join the launch list for priority-access updates.</p>
+          <Link className="mt-3 inline-flex min-h-10 items-center rounded-lg border border-forest/25 px-3 text-sm font-semibold text-forest" href="/swaad-club">
             View benefits
           </Link>
         </article>
         <article className="rounded-lg border border-black/10 bg-white p-4">
-          <p className="text-sm font-semibold text-[#2D2D2D]/55">Profile completeness</p>
-          <p className="mt-2 text-3xl font-bold text-[#2D2D2D]">
+          <p className="text-sm font-semibold text-charcoal/55">Profile completeness</p>
+          <p className="mt-2 text-3xl font-bold text-charcoal">
             {[profile.fullName, profile.phone, profile.email].filter(Boolean).length}/3
           </p>
-          <p className="mt-1 text-sm text-[#2D2D2D]/65">Name, phone, and email help support identify your account safely.</p>
+          <p className="mt-1 text-sm text-charcoal/65">Name, phone, and email help support identify your account safely.</p>
         </article>
         <article className="rounded-lg border border-black/10 bg-white p-4">
-          <p className="text-sm font-semibold text-[#2D2D2D]/55">Order affordance</p>
-          <p className="mt-2 text-3xl font-bold text-[#2D2D2D]">{initialOrders.length}</p>
-          <p className="mt-1 text-sm text-[#2D2D2D]/65">Paid orders stay below with pickup proof and notification status.</p>
+          <p className="text-sm font-semibold text-charcoal/55">Order affordance</p>
+          <p className="mt-2 text-3xl font-bold text-charcoal">{initialOrders.length}</p>
+          <p className="mt-1 text-sm text-charcoal/65">Paid orders stay below with pickup proof and notification status.</p>
         </article>
       </section>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-          <h2 className="text-xl font-bold text-[#2D2D2D]">Profile</h2>
+          <h2 className="text-xl font-bold text-charcoal">Profile</h2>
           <div className="mt-5 grid gap-4">
             <label className="grid gap-2 text-sm font-semibold">
               Name
@@ -224,9 +224,9 @@ export function AccountClient({
                 <option value="te">Telugu</option>
               </select>
             </label>
-            <div className="rounded-lg bg-[#FFF8F0] p-3 text-sm">
-              <p className="font-semibold text-[#2D2D2D]">Referral code</p>
-              <p className="mt-1 text-[#2D2D2D]/70">{profile.referralCode ?? "Generating after first login"}</p>
+            <div className="rounded-lg bg-cream p-3 text-sm">
+              <p className="font-semibold text-charcoal">Referral code</p>
+              <p className="mt-1 text-charcoal/70">{profile.referralCode ?? "Generating after first login"}</p>
             </div>
             <Button type="button" onClick={saveProfile} disabled={saving}>
               {saving ? "Saving..." : "Save profile"}
@@ -236,10 +236,10 @@ export function AccountClient({
 
         <div className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <ShieldCheck className="text-[#1A5C38]" aria-hidden="true" />
-            <h2 className="text-xl font-bold text-[#2D2D2D]">Consent settings</h2>
+            <ShieldCheck className="text-forest" aria-hidden="true" />
+            <h2 className="text-xl font-bold text-charcoal">Consent settings</h2>
           </div>
-          <p className="mt-2 text-sm text-[#2D2D2D]/65">
+          <p className="mt-2 text-sm text-charcoal/65">
             Operational service messages cover orders and pickup. Marketing purposes stay separate and are not used for this pickup loop.
           </p>
           <div className="mt-5 grid gap-3">
@@ -252,11 +252,11 @@ export function AccountClient({
                   className="flex min-h-20 items-start justify-between gap-4 rounded-lg border border-black/10 p-4"
                 >
                   <span>
-                    <span className="block font-semibold text-[#2D2D2D]">
+                    <span className="block font-semibold text-charcoal">
                       {consent.purpose_name}
                       {consent.is_required_for_service ? " (required)" : ""}
                     </span>
-                    <span className="mt-1 block text-xs text-[#2D2D2D]/60">
+                    <span className="mt-1 block text-xs text-charcoal/60">
                       {consent.recorded_at
                         ? `Latest ${consent.consent_state_code?.toLowerCase()} on ${new Date(
                             consent.recorded_at,
@@ -266,7 +266,7 @@ export function AccountClient({
                   </span>
                   <input
                     type="checkbox"
-                    className="mt-1 h-6 w-6 accent-[#1A5C38]"
+                    className="mt-1 h-6 w-6 accent-forest"
                     checked={checked}
                     disabled={consent.is_required_for_service}
                     onChange={(event) => toggleConsent(consent.purpose_code, event.target.checked)}
@@ -276,7 +276,7 @@ export function AccountClient({
             })}
             {consents.length === 0
               ? consentPurposeCodes.map((purpose) => (
-                  <div key={purpose} className="rounded-lg border border-black/10 p-4 text-sm text-[#2D2D2D]/70">
+                  <div key={purpose} className="rounded-lg border border-black/10 p-4 text-sm text-charcoal/70">
                     {purpose.replaceAll("_", " ")} is not configured yet.
                   </div>
                 ))
@@ -286,11 +286,11 @@ export function AccountClient({
       </div>
 
       <section className="mt-6 rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-        <h2 className="text-xl font-bold text-[#2D2D2D]">Paid orders</h2>
-        <p className="mt-1 text-sm text-[#2D2D2D]/65">Confirmed BAM Bag pickups paid through Razorpay.</p>
+        <h2 className="text-xl font-bold text-charcoal">Paid orders</h2>
+        <p className="mt-1 text-sm text-charcoal/65">Confirmed BAM Bag pickups paid through Razorpay.</p>
         <div className="mt-4 grid gap-3">
           {initialOrders.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-[#2D2D2D]/60">
+            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-charcoal/60">
               You do not have paid orders yet.
             </p>
           ) : (
@@ -298,28 +298,28 @@ export function AccountClient({
               <article key={order.orderPk} className="rounded-lg border border-black/10 p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-[#1A5C38]">{order.restaurantName}</p>
-                    <h3 className="mt-1 font-bold text-[#2D2D2D]">{order.bagDisplayName}</h3>
-                    <p className="mt-1 text-xs text-[#2D2D2D]/60">
+                    <p className="text-sm font-semibold text-forest">{order.restaurantName}</p>
+                    <h3 className="mt-1 font-bold text-charcoal">{order.bagDisplayName}</h3>
+                    <p className="mt-1 text-xs text-charcoal/60">
                       {order.orderNumber} - {formatPickupWindow(order.pickupWindowStartAt, order.pickupWindowEndAt)}
                     </p>
                   </div>
-                  <span className="rounded-full border border-[#1A5C38]/25 px-3 py-1 text-xs font-semibold text-[#1A5C38]">
+                  <span className="rounded-full border border-forest/25 px-3 py-1 text-xs font-semibold text-forest">
                     {order.orderStatusCode.replaceAll("_", " ")}
                   </span>
                 </div>
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-[#2D2D2D]/70">
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-charcoal/70">
                   <span>{formatPaise(order.paidAmountPaise)}</span>
                   <span>{order.quantity} bag</span>
                   {order.collectedAt ? <span>Collected {new Date(order.collectedAt).toLocaleString("en-IN")}</span> : null}
-                  <Link className="font-semibold text-[#1A5C38]" href={`/orders/${order.orderPk}`}>
+                  <Link className="font-semibold text-forest" href={`/orders/${order.orderPk}`}>
                     View order
                   </Link>
                 </div>
                 {notificationsByOrder.get(order.orderPk)?.length ? (
                   <div className="mt-3 flex flex-wrap gap-2">
                     {notificationsByOrder.get(order.orderPk)!.slice(0, 3).map((notification) => (
-                      <span key={notification.notificationOutboxPk} className="rounded-full border border-black/10 px-2.5 py-1 text-xs font-semibold text-[#2D2D2D]/70">
+                      <span key={notification.notificationOutboxPk} className="rounded-full border border-black/10 px-2.5 py-1 text-xs font-semibold text-charcoal/70">
                         {notification.templateCode.replaceAll("_", " ").toLowerCase()}:{" "}
                         {notificationStatusLabel(notification.sendStatusCode, notification.deliveryReasonCode)}
                       </span>
@@ -333,33 +333,33 @@ export function AccountClient({
       </section>
 
       <section className="mt-6 rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-        <h2 className="text-xl font-bold text-[#2D2D2D]">Current holds</h2>
-        <p className="mt-1 text-sm text-[#2D2D2D]/65">Active payment-pending holds that still reserve availability.</p>
+        <h2 className="text-xl font-bold text-charcoal">Current holds</h2>
+        <p className="mt-1 text-sm text-charcoal/65">Active payment-pending holds that still reserve availability.</p>
         <div className="mt-4 grid gap-3">
           {activeClaims.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-[#2D2D2D]/60">
+            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-charcoal/60">
               You do not have active claim holds right now.
             </p>
           ) : (
             activeClaims.map((claim) => (
-              <article key={claim.holdPk} className="rounded-lg border border-[#1A5C38]/25 bg-[#F2F8EF] p-4">
+              <article key={claim.holdPk} className="rounded-lg border border-forest/25 bg-success-soft p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-[#1A5C38]">{claim.restaurantName}</p>
-                    <h3 className="mt-1 font-bold text-[#2D2D2D]">{claim.bagDisplayName}</h3>
-                    <p className="mt-1 text-xs text-[#2D2D2D]/60">
+                    <p className="text-sm font-semibold text-forest">{claim.restaurantName}</p>
+                    <h3 className="mt-1 font-bold text-charcoal">{claim.bagDisplayName}</h3>
+                    <p className="mt-1 text-xs text-charcoal/60">
                       {claim.statusCode === "ACTIVE" ? "Active hold" : claim.statusCode.toLowerCase()} -{" "}
                       {formatPickupWindow(claim.pickupStartAt, claim.pickupEndAt)}
                     </p>
                   </div>
-                  <span className="rounded-full border border-[#1A5C38]/25 px-3 py-1 text-xs font-semibold text-[#1A5C38]">
+                  <span className="rounded-full border border-forest/25 px-3 py-1 text-xs font-semibold text-forest">
                     {claim.quantityHeld} held
                   </span>
                 </div>
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-[#2D2D2D]/70">
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-charcoal/70">
                   <span>{formatPaise(claim.pricePaise)}</span>
                   <span>Expires {new Date(claim.expiresAt).toLocaleString("en-IN")}</span>
-                  <Link className="font-semibold text-[#1A5C38]" href={`/checkout/${claim.holdPk}`}>
+                  <Link className="font-semibold text-forest" href={`/checkout/${claim.holdPk}`}>
                     View hold
                   </Link>
                 </div>
@@ -370,11 +370,11 @@ export function AccountClient({
       </section>
 
       <section className="mt-6 rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-        <h2 className="text-xl font-bold text-[#2D2D2D]">Hold history</h2>
-        <p className="mt-1 text-sm text-[#2D2D2D]/65">Expired, released, or converted holds are kept here so active holds stay easy to find.</p>
+        <h2 className="text-xl font-bold text-charcoal">Hold history</h2>
+        <p className="mt-1 text-sm text-charcoal/65">Expired, released, or converted holds are kept here so active holds stay easy to find.</p>
         <div className="mt-4 grid gap-3">
           {holdHistory.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-[#2D2D2D]/60">
+            <p className="rounded-lg border border-dashed border-black/15 p-4 text-sm text-charcoal/60">
               No older holds yet.
             </p>
           ) : (
@@ -382,17 +382,17 @@ export function AccountClient({
               <article key={claim.holdPk} className="rounded-lg border border-black/10 bg-black/[0.02] p-4 opacity-85">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-[#2D2D2D]/70">{claim.restaurantName}</p>
-                    <h3 className="mt-1 font-bold text-[#2D2D2D]">{claim.bagDisplayName}</h3>
-                    <p className="mt-1 text-xs text-[#2D2D2D]/60">
+                    <p className="text-sm font-semibold text-charcoal/70">{claim.restaurantName}</p>
+                    <h3 className="mt-1 font-bold text-charcoal">{claim.bagDisplayName}</h3>
+                    <p className="mt-1 text-xs text-charcoal/60">
                       {claim.statusCode.toLowerCase()} - {formatPickupWindow(claim.pickupStartAt, claim.pickupEndAt)}
                     </p>
                   </div>
-                  <span className="rounded-full border border-black/15 px-3 py-1 text-xs font-semibold text-[#2D2D2D]/70">
+                  <span className="rounded-full border border-black/15 px-3 py-1 text-xs font-semibold text-charcoal/70">
                     {claim.statusCode}
                   </span>
                 </div>
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-[#2D2D2D]/60">
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-charcoal/60">
                   <span>{formatPaise(claim.pricePaise)}</span>
                   <span>Expired {new Date(claim.expiresAt).toLocaleString("en-IN")}</span>
                 </div>

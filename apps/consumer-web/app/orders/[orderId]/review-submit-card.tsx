@@ -29,12 +29,12 @@ export function ReviewSubmitCard({
 
   if (submitted) {
     return (
-      <section className="rounded-xl border border-[#1A5C38]/25 bg-[#F0F9F4] p-5">
-        <p className="text-sm font-bold text-[#1A5C38]">Review submitted</p>
-        <p className="mt-1 text-xs text-[#2D2D2D]/60">
+      <section className="rounded-xl border border-forest/25 bg-[#F0F9F4] p-5">
+        <p className="text-sm font-bold text-forest">Review submitted</p>
+        <p className="mt-1 text-xs text-charcoal/60">
           Thank you! Your review is awaiting moderation and will appear publicly once approved.
         </p>
-        <a href="/account/discovery" className="mt-3 inline-block text-xs font-semibold text-[#1A5C38] hover:underline">
+        <a href="/account/discovery" className="mt-3 inline-block text-xs font-semibold text-forest hover:underline">
           Add to your Passport →
         </a>
       </section>
@@ -70,10 +70,10 @@ export function ReviewSubmitCard({
   }
 
   return (
-    <section className="rounded-xl border border-[#D4A017]/30 bg-[#FFFDF5] p-5">
-      <p className="text-xs font-bold uppercase tracking-wide text-[#D4A017]">How was it?</p>
-      <h2 className="mt-1 text-base font-bold text-[#2D2D2D]">Rate your BAM Bag from {restaurantName}</h2>
-      <p className="mt-1 text-xs text-[#2D2D2D]/60">
+    <section className="rounded-xl border border-gold/30 bg-[#FFFDF5] p-5">
+      <p className="text-xs font-bold uppercase tracking-wide text-gold-text">How was it?</p>
+      <h2 className="mt-1 text-base font-bold text-charcoal">Rate your BAM Bag from {restaurantName}</h2>
+      <p className="mt-1 text-xs text-charcoal/60">
         Only verified BAM Bag orders can leave reviews. Your name will be masked (e.g. &ldquo;Priya K.&rdquo;).
       </p>
 
@@ -87,9 +87,9 @@ export function ReviewSubmitCard({
             onClick={() => setRating(n)}
             onMouseEnter={() => setHover(n)}
             onMouseLeave={() => setHover(0)}
-            className="text-3xl transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A017]"
+            className="text-3xl transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
           >
-            <span className={(hover || rating) >= n ? "text-[#D4A017]" : "text-black/20"}>★</span>
+            <span className={(hover || rating) >= n ? "text-gold-text" : "text-black/20"}>★</span>
           </button>
         ))}
       </div>
@@ -98,15 +98,15 @@ export function ReviewSubmitCard({
         <>
           {/* Text field */}
           <label className="mt-4 block">
-            <span className="text-xs font-semibold text-[#2D2D2D]/70">Your review (optional)</span>
+            <span className="text-xs font-semibold text-charcoal/70">Your review (optional)</span>
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value.slice(0, 500))}
               placeholder="Tell others what you enjoyed — the flavours, portion, freshness, pickup speed…"
               rows={3}
-              className="mt-1.5 w-full rounded-lg border border-black/15 p-3 text-sm outline-none focus:border-[#1A5C38] resize-none"
+              className="mt-1.5 w-full rounded-lg border border-black/15 p-3 text-sm outline-none focus:border-forest resize-none"
             />
-            <span className="mt-0.5 block text-right text-[10px] text-[#2D2D2D]/40">{text.length}/500</span>
+            <span className="mt-0.5 block text-right text-[10px] text-charcoal/40">{text.length}/500</span>
           </label>
 
           {/* Category sliders */}
@@ -114,8 +114,8 @@ export function ReviewSubmitCard({
             {CATEGORY_LABELS.map(({ key, label }) => (
               <label key={key} className="grid gap-1">
                 <div className="flex justify-between text-xs">
-                  <span className="font-semibold text-[#2D2D2D]/70">{label}</span>
-                  <span className="font-bold text-[#2D2D2D]">{categories[key] != null ? `${categories[key]}/5` : "—"}</span>
+                  <span className="font-semibold text-charcoal/70">{label}</span>
+                  <span className="font-bold text-charcoal">{categories[key] != null ? `${categories[key]}/5` : "—"}</span>
                 </div>
                 <input
                   type="range"
@@ -126,7 +126,7 @@ export function ReviewSubmitCard({
                   onChange={(e) =>
                     setCategories((prev) => ({ ...prev, [key]: Number(e.target.value) }))
                   }
-                  className="w-full accent-[#1A5C38]"
+                  className="w-full accent-forest"
                 />
               </label>
             ))}
@@ -143,14 +143,14 @@ export function ReviewSubmitCard({
           type="button"
           disabled={rating === 0 || pending}
           onClick={handleSubmit}
-          className="min-h-10 flex-1 rounded-lg bg-[#FF6B35] px-4 text-sm font-bold text-white disabled:opacity-50 transition hover:bg-[#e85f2f]"
+          className="min-h-10 flex-1 rounded-lg bg-saffron px-4 text-sm font-bold text-charcoal disabled:opacity-50 transition hover:bg-[#e85f2f]"
         >
           {pending ? "Submitting…" : "Submit review"}
         </button>
         <button
           type="button"
           onClick={() => setSkipped(true)}
-          className="min-h-10 rounded-lg border border-black/15 px-4 text-sm font-semibold text-[#2D2D2D]/60 hover:border-black/30"
+          className="min-h-10 rounded-lg border border-black/15 px-4 text-sm font-semibold text-charcoal/60 hover:border-black/30"
         >
           Skip
         </button>

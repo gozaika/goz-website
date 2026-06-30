@@ -37,6 +37,21 @@ Ledger: [`web-parity-ledger.md`](web-parity-ledger.md)
   loyalty/pickup/QR/OTP/order/payment/rating/revenue state; banned-copy list applies; no
   new features beyond the already-shipped F1 rail.
 
+## W6 notes
+
+### W6(1/n) Global brand-hex flip
+- Swept every remaining file under `apps/*/app` + `packages/ui/src` to tokens and
+  retired the `MIGRATED_FILES` allowlist — the hex scan is now **global**.
+- **Excluded `packages/ui/src/theme.css`** from the scan: it is the sanctioned Tailwind
+  `@theme` mirror of the TS palette (literal hex required; drift-locked by `theme.test.ts`).
+- **Non-className hex → `palette.*` constants** (not a className, so the className sweep
+  missed them): `CuisinePassport` cuisine-accent map, `ZaykaPassportCard` tier styles,
+  `AdventureDropCard` gradient, `razorpay-checkout-panel` widget theme color, and the
+  `discovery/share-card` OG-image SVG fills. Non-brand accent hexes (e.g. `#E0652B`,
+  `#0F3D25`, `#7C5C00`) are intentionally kept — they have no token and aren't brand colors.
+- **AA fixes applied during the sweep:** every white-on-saffron CTA → `text-charcoal`;
+  saffron-as-text → `text-saffron-text`; gold-as-text on light → `text-gold-text`.
+
 ## Per-surface / per-slice notes
 
 ### W5(3/n) `/portal/drops` (+ `/new`)

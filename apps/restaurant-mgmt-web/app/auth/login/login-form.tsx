@@ -102,11 +102,11 @@ export function LoginForm() {
     <section className="mx-auto grid min-h-[calc(100vh-72px)] w-full max-w-6xl items-center gap-8 px-4 py-8 md:grid-cols-[1fr_0.9fr]">
       <div className="order-2 md:order-1">
         <GoZaikaLogo className="h-12" />
-        <p className="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-[#1A5C38]">goZaika Partner</p>
-        <h1 className="mt-3 text-4xl font-bold leading-tight text-[#2D2D2D] md:text-5xl">
+        <p className="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-forest">goZaika Partner</p>
+        <h1 className="mt-3 text-4xl font-bold leading-tight text-charcoal md:text-5xl">
           Restaurant dignity first.
         </h1>
-        <p className="mt-4 max-w-xl text-base leading-7 text-[#2D2D2D]/75">
+        <p className="mt-4 max-w-xl text-base leading-7 text-charcoal/75">
           Set up your pickup-only BAM Bag channel, upload compliance docs privately, and keep your restaurant brand front
           and center.
         </p>
@@ -115,10 +115,10 @@ export function LoginForm() {
 
       <div className="order-1 rounded-lg border border-black/10 bg-white p-5 shadow-sm md:order-2 md:p-6">
         <div className="flex items-center gap-3">
-          <Phone className="text-[#FF6B35]" aria-hidden="true" />
+          <Phone className="text-saffron-text" aria-hidden="true" />
           <div>
-            <h2 className="text-2xl font-bold text-[#2D2D2D]">Restaurant owner login</h2>
-            <p className="text-sm text-[#2D2D2D]/65">Phone OTP first, demo account locally.</p>
+            <h2 className="text-2xl font-bold text-charcoal">Restaurant owner login</h2>
+            <p className="text-sm text-charcoal/65">Phone OTP first, demo account locally.</p>
           </div>
         </div>
 
@@ -127,10 +127,10 @@ export function LoginForm() {
         <div className="mt-6 grid gap-4">
           {step === "phone" ? (
             <>
-              <label className="grid gap-2 text-sm font-semibold text-[#2D2D2D]">
+              <label className="grid gap-2 text-sm font-semibold text-charcoal">
                 Mobile number
                 <input
-                  className="min-h-11 rounded-lg border border-black/20 px-3 text-base outline-none focus:border-[#1A5C38]"
+                  className="min-h-11 rounded-lg border border-black/20 px-3 text-base outline-none focus:border-forest"
                   inputMode="tel"
                   autoComplete="tel"
                   placeholder="+91 98765 43210"
@@ -144,10 +144,10 @@ export function LoginForm() {
             </>
           ) : (
             <>
-              <label className="grid gap-2 text-sm font-semibold text-[#2D2D2D]">
+              <label className="grid gap-2 text-sm font-semibold text-charcoal">
                 6-digit OTP
                 <input
-                  className="min-h-11 rounded-lg border border-black/20 px-3 text-base tracking-[0.25em] outline-none focus:border-[#1A5C38]"
+                  className="min-h-11 rounded-lg border border-black/20 px-3 text-base tracking-[0.25em] outline-none focus:border-forest"
                   inputMode="numeric"
                   autoComplete="one-time-code"
                   maxLength={6}
@@ -163,14 +163,14 @@ export function LoginForm() {
         </div>
 
         <div className="my-6 h-px bg-black/10" />
-        <Button type="button" className="w-full bg-[#1A5C38] hover:bg-[#154b2e]" onClick={googleLogin} disabled={loading}>
+        <Button type="button" className="w-full bg-forest hover:bg-[#154b2e]" onClick={googleLogin} disabled={loading}>
           <Mail size={18} aria-hidden="true" />
           <span className="ml-2">Continue with Google</span>
         </Button>
 
         {demoEnabled ? (
-          <div className="mt-6 rounded-lg border border-dashed border-[#D4A017]/60 bg-[#FFF8F0] p-4">
-            <p className="text-sm font-bold text-[#2D2D2D]">Local demo restaurant</p>
+          <div className="mt-6 rounded-lg border border-dashed border-gold/60 bg-cream p-4">
+            <p className="text-sm font-bold text-charcoal">Local demo restaurant</p>
             <div className="mt-3 grid gap-3">
               <input className="min-h-11 rounded-lg border border-black/20 px-3 text-sm" value={demoEmail} onChange={(event) => setDemoEmail(event.target.value)} aria-label="Demo email" />
               <input className="min-h-11 rounded-lg border border-black/20 px-3 text-sm" value={demoPassword} onChange={(event) => setDemoPassword(event.target.value)} aria-label="Demo password" type="password" />

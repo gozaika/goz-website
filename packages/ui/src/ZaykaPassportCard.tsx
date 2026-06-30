@@ -1,11 +1,12 @@
 import type { ZaykaPassportPayload } from "@gozaika/types";
+import { palette } from "@gozaika/design-tokens";
 import { bagsToNextTier, tierLabel, tierProgressPercent } from "@gozaika/utils";
 
 const TIER_STYLES: Record<string, { bg: string; border: string; badge: string; text: string }> = {
   BRONZE:   { bg: "#FDF6EC", border: "#CD7F32", badge: "#CD7F32", text: "#7C4A1A" },
   SILVER:   { bg: "#F8F8F8", border: "#A8A9AD", badge: "#A8A9AD", text: "#4A4A4A" },
-  GOLD:     { bg: "#FFFBEB", border: "#D4A017", badge: "#D4A017", text: "#7C5C00" },
-  PLATINUM: { bg: "#F0F9F4", border: "#1A5C38", badge: "#1A5C38", text: "#0F3D25" },
+  GOLD:     { bg: "#FFFBEB", border: palette.gold, badge: palette.gold, text: "#7C5C00" },
+  PLATINUM: { bg: "#F0F9F4", border: palette.forest, badge: palette.forest, text: "#0F3D25" },
 };
 
 export interface ZaykaPassportCardProps {
@@ -29,7 +30,7 @@ export function ZaykaPassportCard({ passport, compact = false }: ZaykaPassportCa
           <p className="text-xs font-bold uppercase tracking-widest" style={{ color: styles.text }}>
             Zayka Passport · Hyderabad
           </p>
-          <p className="mt-1 text-xs text-[#2D2D2D]/55">goZaika</p>
+          <p className="mt-1 text-xs text-charcoal/55">goZaika</p>
         </div>
         <span
           className="rounded-full px-3 py-1 text-xs font-black tracking-wider"
@@ -53,8 +54,8 @@ export function ZaykaPassportCard({ passport, compact = false }: ZaykaPassportCa
             { label: "Reviews", value: stat.reviewCount },
           ].map((s) => (
             <div key={s.label} className="rounded-lg bg-white/70 p-2">
-              <p className="text-lg font-black text-[#2D2D2D]">{s.value}</p>
-              <p className="text-[10px] text-[#2D2D2D]/55">{s.label}</p>
+              <p className="text-lg font-black text-charcoal">{s.value}</p>
+              <p className="text-[10px] text-charcoal/55">{s.label}</p>
             </div>
           ))}
         </div>
@@ -68,7 +69,7 @@ export function ZaykaPassportCard({ passport, compact = false }: ZaykaPassportCa
           </p>
         ) : (
           <>
-            <div className="flex items-center justify-between text-xs text-[#2D2D2D]/60">
+            <div className="flex items-center justify-between text-xs text-charcoal/60">
               <span>{bNext} more bags to {nextTierCode}</span>
               <span>{progressPercent}%</span>
             </div>
@@ -85,7 +86,7 @@ export function ZaykaPassportCard({ passport, compact = false }: ZaykaPassportCa
       {/* Badges row (compact shows first 4) */}
       {!compact && badges.length > 0 && (
         <div className="mt-4">
-          <p className="text-xs font-bold uppercase tracking-wide text-[#2D2D2D]/50">Stamps</p>
+          <p className="text-xs font-bold uppercase tracking-wide text-charcoal/50">Stamps</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {badges.slice(0, 6).map((badge) => (
               <div

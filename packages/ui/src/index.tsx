@@ -138,9 +138,9 @@ export function EmptyState({
   readonly action?: ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-dashed border-[#1A5C38]/30 bg-white p-8 text-center">
-      <p className="text-lg font-semibold text-[#2D2D2D]">{title}</p>
-      <p className="mx-auto mt-2 max-w-md text-sm text-[#2D2D2D]/70">{body}</p>
+    <section className="rounded-lg border border-dashed border-forest/30 bg-white p-8 text-center">
+      <p className="text-lg font-semibold text-charcoal">{title}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-charcoal/70">{body}</p>
       {action ? <div className="mt-5">{action}</div> : null}
     </section>
   );
@@ -182,7 +182,7 @@ export function ProgressBar({ available, total }: { readonly available: number; 
   return (
     <div className="h-2 w-full rounded-full bg-black/10" aria-label={`${available} of ${total} bags available`}>
       <div
-        className={cn("h-2 rounded-full", urgent ? "bg-red-600" : "bg-[#1A5C38]")}
+        className={cn("h-2 rounded-full", urgent ? "bg-red-600" : "bg-forest")}
         style={{ width: `${percentage}%` }}
       />
     </div>
@@ -223,9 +223,9 @@ export function DropCard({
   const isNew = nowDate.getTime() - pickupStartMs < 30 * 60 * 1000 && pickupStartMs <= nowDate.getTime();
 
   const borderClass = goingFast && !soldOut
-    ? "border-[#FF6B35]/60 animate-pulse"
+    ? "border-saffron/60 animate-pulse"
     : isBlindAdventure
-      ? "border-[#D4A017]/60"
+      ? "border-gold/60"
       : "border-black/10";
 
   return (
@@ -253,7 +253,7 @@ export function DropCard({
           className="h-28 w-full object-cover"
         />
         {dropTypeRibbon(drop.dropTypeCode) ? (
-          <span className="absolute left-3 top-3 rounded-full bg-[#D4A017] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#2D2D2D] shadow-sm">
+          <span className="absolute left-3 top-3 rounded-full bg-gold px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-charcoal shadow-sm">
             ★ {dropTypeRibbon(drop.dropTypeCode)}
           </span>
         ) : null}
@@ -262,17 +262,17 @@ export function DropCard({
       {/* Badges row */}
       <div className="mb-2 flex flex-wrap gap-1.5">
         {isNew && (
-          <span className="rounded-full bg-[#1A5C38] px-2 py-0.5 text-[10px] font-bold uppercase text-white tracking-wide">
+          <span className="rounded-full bg-forest px-2 py-0.5 text-[10px] font-bold uppercase text-white tracking-wide">
             New
           </span>
         )}
         {isBlindAdventure && (
-          <span className="rounded-full border border-[#D4A017]/60 bg-[#D4A017]/10 px-2 py-0.5 text-[10px] font-bold text-[#7C5C00] tracking-wide">
+          <span className="rounded-full border border-gold/60 bg-gold/10 px-2 py-0.5 text-[10px] font-bold text-[#7C5C00] tracking-wide">
             Blind Adventure
           </span>
         )}
         {almostGone && !soldOut && (
-          <span className="rounded-full bg-[#FF6B35] px-2 py-0.5 text-[10px] font-bold text-white tracking-wide">
+          <span className="rounded-full bg-saffron px-2 py-0.5 text-[10px] font-bold text-charcoal tracking-wide">
             Only {drop.quantityAvailable} left!
           </span>
         )}
@@ -280,19 +280,19 @@ export function DropCard({
 
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-[#1A5C38]">{drop.restaurantName}</p>
-          <h3 className="mt-1 text-xl font-semibold text-[#2D2D2D]">
+          <p className="text-sm font-medium text-forest">{drop.restaurantName}</p>
+          <h3 className="mt-1 text-xl font-semibold text-charcoal">
             {isBlindAdventure ? (
-              <span className="text-[#D4A017]">Mystery Cuisine</span>
+              <span className="text-gold-text">Mystery Cuisine</span>
             ) : (
               drop.bagDisplayName
             )}
           </h3>
           {!isBlindAdventure && drop.bagShortDescription ? (
-            <p className="mt-1 line-clamp-2 text-sm text-[#2D2D2D]/70">{drop.bagShortDescription}</p>
+            <p className="mt-1 line-clamp-2 text-sm text-charcoal/70">{drop.bagShortDescription}</p>
           ) : null}
           {isBlindAdventure && (
-            <p className="mt-1 text-xs text-[#2D2D2D]/55">
+            <p className="mt-1 text-xs text-charcoal/55">
               Cuisine revealed after pickup. Allergens always disclosed.
             </p>
           )}
@@ -302,12 +302,12 @@ export function DropCard({
       <div className="mt-4">
         <AllergenChips codes={drop.allergenCodes} />
       </div>
-      <div className="mt-4 grid gap-2 text-sm text-[#2D2D2D]/75">
+      <div className="mt-4 grid gap-2 text-sm text-charcoal/75">
         <div className="flex items-center gap-2">
           <Clock size={16} aria-hidden="true" />
           {closingSoon ? (
             <span aria-live="polite">
-              <span className={cn("font-semibold tabular-nums", closingVeryUrgent ? "text-red-600" : "text-[#FF6B35]")}>
+              <span className={cn("font-semibold tabular-nums", closingVeryUrgent ? "text-red-600" : "text-saffron-text")}>
                 Closes in {formatCountdown(drop.pickupEndAt, nowDate)}
               </span>
             </span>
@@ -326,18 +326,18 @@ export function DropCard({
       </div>
       <div className="mt-4">
         <ProgressBar available={drop.quantityAvailable} total={drop.quantityTotal} />
-        <p className="mt-2 text-xs font-semibold text-[#2D2D2D]/65">
+        <p className="mt-2 text-xs font-semibold text-charcoal/65">
           {drop.quantityAvailable} of {drop.quantityTotal} bags remaining
           {goingFast && !almostGone ? (
-            <span className="ml-2 text-[#FF6B35]">· Going fast</span>
+            <span className="ml-2 text-saffron-text">· Going fast</span>
           ) : null}
         </p>
       </div>
       <div className="mt-4 flex items-center justify-between">
-        <span className="text-2xl font-bold text-[#2D2D2D]">{formatPaise(drop.pricePaise)}</span>
+        <span className="text-2xl font-bold text-charcoal">{formatPaise(drop.pricePaise)}</span>
         <a
           href={`/drops/${drop.dropPk}`}
-          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[#1A5C38]/25 px-4 py-2 text-sm font-semibold text-[#1A5C38] transition hover:border-[#1A5C38]"
+          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-forest/25 px-4 py-2 text-sm font-semibold text-forest transition hover:border-forest"
         >
           View
         </a>
@@ -346,7 +346,7 @@ export function DropCard({
         {claimAvailability.canClaim ? (
           <a
             href={`/drops/${drop.dropPk}?claim=1`}
-            className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[#FF6B35] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e85f2f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A5C38]"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-saffron px-4 py-2 text-sm font-semibold text-charcoal shadow-sm transition hover:bg-[#e85f2f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest"
           >
             Hold this BAM Bag
           </a>
@@ -370,24 +370,24 @@ export function RestaurantCard({
 }) {
   return (
     <article className={cn("overflow-hidden rounded-lg border border-black/10 bg-white shadow-sm", className)}>
-      <div className="flex min-h-28 items-start justify-between gap-3 bg-[#FFF8F0] p-4">
+      <div className="flex min-h-28 items-start justify-between gap-3 bg-cream p-4">
         <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-[#1A5C38]">
+          <p className="text-xs font-bold uppercase tracking-wide text-forest">
             {restaurant.neighborhoodName ? `${restaurant.neighborhoodName} pickup` : restaurant.cityName ?? "Pickup partner"}
           </p>
-          <h3 className="mt-2 text-2xl font-bold text-[#2D2D2D]">{restaurant.restaurantName}</h3>
-          <p className="mt-2 line-clamp-2 text-sm text-[#2D2D2D]/70">
+          <h3 className="mt-2 text-2xl font-bold text-charcoal">{restaurant.restaurantName}</h3>
+          <p className="mt-2 line-clamp-2 text-sm text-charcoal/70">
             {restaurant.headline ?? "Chef-led BAM Bags with published dietary, allergen, and pickup details."}
           </p>
         </div>
-        <div className="grid h-14 w-14 shrink-0 place-items-center rounded-lg bg-white text-[#FF6B35] shadow-sm">
+        <div className="grid h-14 w-14 shrink-0 place-items-center rounded-lg bg-white text-saffron-text shadow-sm">
           <Store aria-hidden="true" />
         </div>
       </div>
       <div className="grid gap-4 p-4">
         <div className="flex flex-wrap gap-2">
           {restaurant.cuisineTags.slice(0, 4).map((tag) => (
-            <span key={tag} className="rounded-full bg-[#F2F8EF] px-2.5 py-1 text-xs font-semibold text-[#1A5C38]">
+            <span key={tag} className="rounded-full bg-success-soft px-2.5 py-1 text-xs font-semibold text-forest">
               {tag}
             </span>
           ))}
@@ -395,23 +395,23 @@ export function RestaurantCard({
             <DietaryBadge key={tag} code={tag} />
           ))}
         </div>
-        <dl className="grid grid-cols-3 gap-2 text-sm text-[#2D2D2D]/70">
+        <dl className="grid grid-cols-3 gap-2 text-sm text-charcoal/70">
           <div>
-            <dt className="text-xs font-semibold uppercase text-[#2D2D2D]/45">Active</dt>
-            <dd className="mt-1 font-bold text-[#2D2D2D]">{restaurant.activeDropCount}</dd>
+            <dt className="text-xs font-semibold uppercase text-charcoal/45">Active</dt>
+            <dd className="mt-1 font-bold text-charcoal">{restaurant.activeDropCount}</dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase text-[#2D2D2D]/45">History</dt>
-            <dd className="mt-1 font-bold text-[#2D2D2D]">{restaurant.totalDropCount}</dd>
+            <dt className="text-xs font-semibold uppercase text-charcoal/45">History</dt>
+            <dd className="mt-1 font-bold text-charcoal">{restaurant.totalDropCount}</dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase text-[#2D2D2D]/45">Trust</dt>
-            <dd className="mt-1 font-bold text-[#2D2D2D]">Disclosed</dd>
+            <dt className="text-xs font-semibold uppercase text-charcoal/45">Trust</dt>
+            <dd className="mt-1 font-bold text-charcoal">Disclosed</dd>
           </div>
         </dl>
         <a
           href={`/restaurants/${restaurant.restaurantSlug}`}
-          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[#1A5C38]/25 px-4 py-2 text-sm font-semibold text-[#1A5C38] transition hover:border-[#1A5C38] hover:bg-[#F2F8EF]"
+          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-forest/25 px-4 py-2 text-sm font-semibold text-forest transition hover:border-forest hover:bg-success-soft"
         >
           View profile
         </a>

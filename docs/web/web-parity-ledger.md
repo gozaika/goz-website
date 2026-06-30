@@ -58,7 +58,7 @@ Plan: [`../../project docs/gozaika_web_parity_implementation_plan_v1.md`](../../
 | Base primitives (Button/Card/Text/Badge/EmptyState/ErrorState/Skeleton) | `mobile-ui` components | W1 | **Done** — `@gozaika/ui` primitives + AA-safe `Button` (charcoal-on-saffron) |
 | Customer primitives (HeroBanner/CountdownChip/FilterChipRow/SegmentedToggle/StickyCTA/PeekBar/ProgressRing/LoyaltyCard) | U2C | W2 | **Done** — `@gozaika/ui` `CustomerPrimitives` (static) + `CustomerControls` (client); shared model in `@gozaika/utils` |
 | Partner primitives (MetricHero/ActionCard/QueueCard/SellThroughBar/Sparkline/DataTable/RoleAwareSection/RestaurantSwitcher) | U2R | W3 | **Done** — `@gozaika/ui` `PartnerPrimitives` (static) + `PartnerControls` (client); shared sell-through/sparkline model in `@gozaika/utils`. `RestaurantSwitcher` wired into the portal chrome in W5 (multi-membership only; app-level `loadSelectedRestaurant` cookie resolver, no shared-lib change) |
-| A11y/contrast/motion pass (kill white-on-saffron; focus; reduced-motion; reflow) | X1 | W6 | Not started |
+| A11y/contrast/motion pass (kill white-on-saffron; focus; reduced-motion; reflow) | X1 | W6 | **In progress** — global brand-hex flip done (scan now covers all `apps/*/app` + `packages/ui/src`, only `theme.css` exempt); every white-on-saffron / gold-as-text occurrence fixed to AA companions during the sweep. Remaining: skip-link/focus/landmark/reduced-motion audit + axe-playwright specs |
 | Perf/SEO + bundle secret scan + ledger closure | S17/S18 | W7 | Not started |
 
 ---

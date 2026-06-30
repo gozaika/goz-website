@@ -93,23 +93,23 @@ export function ProductMediaUploader({
 
   return (
     <section className="rounded-lg border border-black/10 bg-white p-5">
-      <h3 className="text-lg font-bold text-[#2D2D2D]">{label}</h3>
-      <p className="mt-1 text-sm text-[#2D2D2D]/65">{guidance}</p>
+      <h3 className="text-lg font-bold text-charcoal">{label}</h3>
+      <p className="mt-1 text-sm text-charcoal/65">{guidance}</p>
 
       {media ? (
-        <div className="mt-4 overflow-hidden rounded-lg border border-black/10 bg-[#FFF8F0]">
+        <div className="mt-4 overflow-hidden rounded-lg border border-black/10 bg-cream">
           {/* The URL is an immutable verified public-media rendition. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={media.url} alt={media.alt ?? ""} className="h-48 w-full object-contain" />
         </div>
       ) : (
-        <div className="mt-4 grid h-32 place-items-center rounded-lg border border-dashed border-black/20 bg-[#FFF8F0] text-sm text-[#2D2D2D]/55">
+        <div className="mt-4 grid h-32 place-items-center rounded-lg border border-dashed border-black/20 bg-cream text-sm text-charcoal/55">
           No verified image yet
         </div>
       )}
 
       <div className="mt-4 grid gap-3">
-        <label htmlFor={inputId} className="grid gap-1 text-sm font-semibold text-[#2D2D2D]">
+        <label htmlFor={inputId} className="grid gap-1 text-sm font-semibold text-charcoal">
           Image file
           <input
             id={inputId}
@@ -120,7 +120,7 @@ export function ProductMediaUploader({
             className="min-h-11 rounded-lg border border-black/15 bg-white px-3 py-2 text-sm font-normal"
           />
         </label>
-        <label className="grid gap-1 text-sm font-semibold text-[#2D2D2D]">
+        <label className="grid gap-1 text-sm font-semibold text-charcoal">
           Visual description
           <input
             value={altText}
@@ -135,13 +135,13 @@ export function ProductMediaUploader({
           type="button"
           onClick={upload}
           disabled={busy || !file}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#1A5C38] px-4 font-semibold text-white disabled:opacity-50"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-forest px-4 font-semibold text-white disabled:opacity-50"
         >
           {busy ? <LoaderCircle className="animate-spin" size={18} aria-hidden="true" /> : <ImageUp size={18} aria-hidden="true" />}
           {busy ? "Processing..." : media ? "Replace image" : "Upload image"}
         </button>
       </div>
-      {status ? <p aria-live="polite" className="mt-3 text-sm text-[#2D2D2D]/75">{status}</p> : null}
+      {status ? <p aria-live="polite" className="mt-3 text-sm text-charcoal/75">{status}</p> : null}
     </section>
   );
 }

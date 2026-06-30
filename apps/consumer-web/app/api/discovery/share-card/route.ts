@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { palette } from "@gozaika/design-tokens";
 import { createClient } from "@/lib/supabase/server";
 import { flavourPersonalityLabel } from "@gozaika/utils";
 
@@ -55,14 +56,14 @@ export async function GET() {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1A5C38"/>
+      <stop offset="0%" stop-color="${palette.forest}"/>
       <stop offset="100%" stop-color="#0F3D25"/>
     </linearGradient>
   </defs>
   <rect width="1080" height="1080" fill="url(#bg)"/>
-  <text x="540" y="140" font-family="sans-serif" font-size="32" fill="#D4A017" text-anchor="middle" font-weight="bold" letter-spacing="6">FLAVOUR PASSPORT · GOZAIKA · HYDERABAD</text>
+  <text x="540" y="140" font-family="sans-serif" font-size="32" fill="${palette.gold}" text-anchor="middle" font-weight="bold" letter-spacing="6">FLAVOUR PASSPORT · GOZAIKA · HYDERABAD</text>
   <text x="540" y="420" font-family="sans-serif" font-size="220" fill="white" text-anchor="middle" font-weight="900">${score}</text>
-  <text x="540" y="520" font-family="sans-serif" font-size="48" fill="#D4A017" text-anchor="middle" font-weight="bold">${label}</text>
+  <text x="540" y="520" font-family="sans-serif" font-size="48" fill="${palette.gold}" text-anchor="middle" font-weight="bold">${label}</text>
   <text x="540" y="620" font-family="sans-serif" font-size="36" fill="rgba(255,255,255,0.7)" text-anchor="middle">${firstName}'s cuisine journey</text>
   <text x="540" y="700" font-family="sans-serif" font-size="40" fill="white" text-anchor="middle" font-weight="700">${bags} BAM Bags claimed</text>
   <text x="540" y="980" font-family="sans-serif" font-size="28" fill="rgba(255,255,255,0.5)" text-anchor="middle">Discover yours at gozaika.in</text>

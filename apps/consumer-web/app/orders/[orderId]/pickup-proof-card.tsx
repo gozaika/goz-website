@@ -36,8 +36,8 @@ export function PickupProofCard({ proof }: { readonly proof: PickupProof }) {
   const cells = qrCells(proof.qrPayload);
 
   return (
-    <section className="rounded-lg border border-[#1A5C38]/20 bg-white p-5 shadow-sm">
-      <p className="text-sm font-semibold text-[#1A5C38]">Pickup proof</p>
+    <section className="rounded-lg border border-forest/20 bg-white p-5 shadow-sm">
+      <p className="text-sm font-semibold text-forest">Pickup proof</p>
       <div className="mt-4 grid gap-5 sm:grid-cols-[220px_1fr]">
         <div className="aspect-square w-full max-w-[220px] rounded-lg border border-black/10 bg-white p-3">
           <div className="grid h-full w-full grid-cols-[repeat(29,1fr)] grid-rows-[repeat(29,1fr)] gap-px">
@@ -47,13 +47,13 @@ export function PickupProofCard({ proof }: { readonly proof: PickupProof }) {
           </div>
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#2D2D2D]/55">OTP fallback</p>
-          <p className="mt-2 font-mono text-5xl font-bold tracking-[0.18em] text-[#2D2D2D]">{proof.otp}</p>
-          <p className="mt-4 text-sm leading-6 text-[#2D2D2D]/70">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-charcoal/55">OTP fallback</p>
+          <p className="mt-2 font-mono text-5xl font-bold tracking-[0.18em] text-charcoal">{proof.otp}</p>
+          <p className="mt-4 text-sm leading-6 text-charcoal/70">
             Show this proof at the restaurant counter during the pickup window. The QR nonce and OTP are shown here only for
             you; goZaika stores hashes for future verification.
           </p>
-          <p className="mt-3 text-xs text-[#2D2D2D]/55">Issued {new Date(proof.issuedAt).toLocaleString("en-IN")}.</p>
+          <p className="mt-3 text-xs text-charcoal/55">Issued {new Date(proof.issuedAt).toLocaleString("en-IN")}.</p>
         </div>
       </div>
     </section>

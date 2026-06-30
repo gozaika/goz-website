@@ -26,5 +26,5 @@ export function HoldCountdown({ expiresAt }: { readonly expiresAt: string }) {
     return <span className="font-semibold text-red-700">Expired - availability returns after the release job runs.</span>;
   }
 
-  return <span className="font-semibold text-[#1A5C38]">Expires in {formatRemaining(remainingMs)}</span>;
+  return <span className="font-semibold text-forest">Expires in {formatRemaining(remainingMs)}</span>;
 }

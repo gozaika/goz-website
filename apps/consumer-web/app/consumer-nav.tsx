@@ -24,8 +24,8 @@ export function ConsumerNavLinks() {
             aria-current={active ? "page" : undefined}
             className={`inline-flex min-h-9 items-center whitespace-nowrap rounded-md px-3 transition-colors ${
               active
-                ? "bg-[#1A5C38]/10 text-[#1A5C38]"
-                : "text-[#2D2D2D]/65 hover:bg-black/5 hover:text-[#2D2D2D]"
+                ? "bg-forest/10 text-forest"
+                : "text-charcoal/65 hover:bg-black/5 hover:text-charcoal"
             }`}
           >
             {label}

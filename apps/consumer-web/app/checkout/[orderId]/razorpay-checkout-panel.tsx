@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@gozaika/ui";
+import { palette } from "@gozaika/design-tokens";
 import type { ApiResponse, CheckoutStatus, RazorpayCheckoutPayload } from "@gozaika/types";
 import { formatPaise, safeErrorMessage } from "@gozaika/utils";
 import { CreditCard, RefreshCw } from "lucide-react";
@@ -151,7 +152,7 @@ export function RazorpayCheckoutPanel({
         description: payload.data.description,
         order_id: payload.data.providerOrderRef,
         prefill: payload.data.prefill,
-        theme: { color: "#FF6B35" },
+        theme: { color: palette.saffron },
         handler: () => {
           startPolling();
         },
@@ -192,16 +193,16 @@ export function RazorpayCheckoutPanel({
       </Button>
       <button
         type="button"
-        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[#1A5C38]/25 px-4 text-sm font-semibold text-[#1A5C38]"
+        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-forest/25 px-4 text-sm font-semibold text-forest"
         disabled={busy}
         onClick={refreshStatus}
       >
         <RefreshCw size={16} aria-hidden="true" />
         Refresh payment status
       </button>
-      <div className="rounded-lg border border-[#1A5C38]/20 bg-[#F2F8EF] p-3 text-sm text-[#2D2D2D]/75">
+      <div className="rounded-lg border border-forest/20 bg-success-soft p-3 text-sm text-charcoal/75">
         <p>
-          Pay <span className="font-semibold text-[#2D2D2D]">{formatPaise(amountPaise)}</span> through Razorpay. We confirm
+          Pay <span className="font-semibold text-charcoal">{formatPaise(amountPaise)}</span> through Razorpay. We confirm
           the order only after the verified Razorpay webhook is processed.
         </p>
         {disabledReason ? <p className="mt-2 font-semibold text-red-700">{disabledReason}</p> : null}
@@ -210,7 +211,7 @@ export function RazorpayCheckoutPanel({
         ) : null}
       </div>
       {message ? (
-        <p className="rounded-lg border border-[#D4A017]/40 bg-white px-3 py-2 text-sm font-medium text-[#2D2D2D]">
+        <p className="rounded-lg border border-gold/40 bg-white px-3 py-2 text-sm font-medium text-charcoal">
           {message}
         </p>
       ) : null}

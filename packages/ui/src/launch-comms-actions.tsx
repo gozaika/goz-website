@@ -55,7 +55,7 @@ function CopyButton({
       type="button"
       onClick={onCopy}
       className={cn(
-        "inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-[#1A5C38]/25 px-3 text-sm font-semibold text-[#1A5C38] transition hover:border-[#1A5C38] hover:bg-[#EAF3DE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A5C38]",
+        "inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-forest/25 px-3 text-sm font-semibold text-forest transition hover:border-forest hover:bg-[#EAF3DE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest",
         className,
       )}
     >
@@ -97,7 +97,7 @@ export function DropShareActions({
       <button
         type="button"
         onClick={onShare}
-        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-[#1A5C38] px-3 text-sm font-semibold text-white transition hover:bg-[#13452A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FF6B35]"
+        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-forest px-3 text-sm font-semibold text-white transition hover:bg-[#13452A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-saffron"
       >
         <Share2 size={16} aria-hidden="true" />
         {shareState === "copied" ? "Link copied" : shareState === "error" ? "Share failed" : "Share"}
@@ -118,9 +118,9 @@ export function LaunchCommsPanel({
   readonly compact?: boolean;
 }) {
   return (
-    <section className={cn("rounded-md border border-[#1A5C38]/20 bg-[#F7FBF3] p-3", compact ? "text-xs" : "text-sm")}>
+    <section className={cn("rounded-md border border-forest/20 bg-[#F7FBF3] p-3", compact ? "text-xs" : "text-sm")}>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="font-semibold text-[#1A5C38]">{title}</h3>
+        <h3 className="font-semibold text-forest">{title}</h3>
         <div className="flex flex-wrap gap-2">
           <CopyButton text={publicUrl} label="Copy link" copiedLabel="Link copied" className="min-h-9 px-2 text-xs" />
           <CopyButton text={alertText} label="Copy alert" copiedLabel="Alert copied" className="min-h-9 px-2 text-xs" />
@@ -129,7 +129,7 @@ export function LaunchCommsPanel({
       <textarea
         readOnly
         value={alertText}
-        className="mt-3 min-h-40 w-full resize-y rounded-md border border-[#1A5C38]/20 bg-white p-3 font-mono text-xs leading-5 text-[#2D2D2D]"
+        className="mt-3 min-h-40 w-full resize-y rounded-md border border-forest/20 bg-white p-3 font-mono text-xs leading-5 text-charcoal"
         aria-label="Generated WhatsApp alert preview"
       />
     </section>
