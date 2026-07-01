@@ -31,6 +31,7 @@ The first active factory contract lives in:
 - `marketing-assets/manifests/asset-catalog.json` - planned asset IDs mapped back to scenarios.
 - `marketing-assets/src/scenarios/` - schema, loader, copy lint, and validation CLI.
 - `marketing-assets/src/capture/` - web capture target planning, Playwright capture, and Sharp normalization.
+- `marketing-assets/flows/maestro/` - scenario-linked mobile smoke flows for Maestro.
 
 Run:
 
@@ -69,6 +70,27 @@ Defaults:
 
 Partner portal captures require a real authenticated Playwright storage-state file. If a protected
 route redirects to auth, the capture command fails and tells you to provide `--storage-state`.
+
+## Mobile Capture Lane
+
+Mobile capture uses checked-in Maestro smoke flows plus an Android preflight script:
+
+```bash
+npm run assets:capture:mobile -- -App consumer-mobile -Flow consumer-map-discovery -PreflightOnly
+npm run assets:capture:mobile -- -App consumer-mobile -Flow consumer-map-discovery
+```
+
+The runner checks:
+
+- `adb` is available.
+- Exactly one Android device is connected.
+- The device is unlocked.
+- The real package ID is installed: `in.gozaika.customer` or `in.gozaika.restaurant`.
+- Maestro is available unless `-SkipMaestro` is passed.
+
+Raw mobile screenshots, Maestro logs, and JSON sidecars are written under ignored
+`marketing-assets/captures/raw/mobile/`. If the device is locked, the app is not installed, or the
+flow is missing, the command fails before writing evidence.
 
 ## Guardrails
 

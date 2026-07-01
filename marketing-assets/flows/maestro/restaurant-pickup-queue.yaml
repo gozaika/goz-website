@@ -1,0 +1,11 @@
+appId: in.gozaika.restaurant
+name: restaurant-pickup-queue
+tags:
+  - marketing-assets
+  - restaurant
+  - smoke
+---
+- launchApp:
+    clearState: false
+- waitForAnimationToEnd
+- takeScreenshot: restaurant-pickup-queue-launch

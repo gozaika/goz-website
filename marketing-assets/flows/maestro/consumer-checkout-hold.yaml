@@ -1,0 +1,11 @@
+appId: in.gozaika.customer
+name: consumer-checkout-hold
+tags:
+  - marketing-assets
+  - customer
+  - smoke
+---
+- launchApp:
+    clearState: false
+- waitForAnimationToEnd
+- takeScreenshot: consumer-checkout-hold-launch

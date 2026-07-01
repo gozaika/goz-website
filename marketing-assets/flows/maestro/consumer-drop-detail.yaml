@@ -1,0 +1,11 @@
+appId: in.gozaika.customer
+name: consumer-drop-detail
+tags:
+  - marketing-assets
+  - customer
+  - smoke
+---
+- launchApp:
+    clearState: false
+- waitForAnimationToEnd
+- takeScreenshot: consumer-drop-detail-launch

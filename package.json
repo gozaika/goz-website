@@ -29,6 +29,7 @@
     "assets:validate": "tsx marketing-assets/src/scenarios/validate-scenarios.ts",
     "assets:test": "vitest run marketing-assets",
     "assets:capture:web": "tsx marketing-assets/src/capture/web/capture-web.ts",
+    "assets:capture:mobile": "powershell -NoProfile -ExecutionPolicy Bypass -File marketing-assets/scripts/capture-mobile.ps1",
     "assets:normalize": "tsx marketing-assets/src/capture/normalize/normalize-all.ts",
     "demo:auth:create": "dotenv -e .env.local -- tsx scripts/demo/create-demo-auth-users.ts",
     "demo:admin:create": "dotenv -e .env.local -- tsx scripts/demo/create-demo-admin-user.ts",

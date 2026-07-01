@@ -1,0 +1,11 @@
+appId: in.gozaika.restaurant
+name: restaurant-zaikaiq-report
+tags:
+  - marketing-assets
+  - restaurant
+  - smoke
+---
+- launchApp:
+    clearState: false
+- waitForAnimationToEnd
+- takeScreenshot: restaurant-zaikaiq-report-launch

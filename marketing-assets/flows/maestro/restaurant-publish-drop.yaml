@@ -1,0 +1,11 @@
+appId: in.gozaika.restaurant
+name: restaurant-publish-drop
+tags:
+  - marketing-assets
+  - restaurant
+  - smoke
+---
+- launchApp:
+    clearState: false
+- waitForAnimationToEnd
+- takeScreenshot: restaurant-publish-drop-launch
