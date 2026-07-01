@@ -31,6 +31,7 @@
     "assets:capture:web": "tsx marketing-assets/src/capture/web/capture-web.ts",
     "assets:capture:mobile": "powershell -NoProfile -ExecutionPolicy Bypass -File marketing-assets/scripts/capture-mobile.ps1",
     "assets:normalize": "tsx marketing-assets/src/capture/normalize/normalize-all.ts",
+    "assets:compose:static": "tsx marketing-assets/src/compositor/render-static-assets.ts",
     "demo:auth:create": "dotenv -e .env.local -- tsx scripts/demo/create-demo-auth-users.ts",
     "demo:admin:create": "dotenv -e .env.local -- tsx scripts/demo/create-demo-admin-user.ts",
     "demo:auth:delete": "dotenv -e .env.local -- tsx scripts/demo/delete-demo-auth-users.ts",
@@ -55,12 +56,16 @@
   "devDependencies": {
     "dotenv-cli": "^11.0.0",
     "playwright": "^1.60.0",
-    "supabase": "^2.95.5",
     "sharp": "^0.34.5",
+    "supabase": "^2.95.5",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4",
     "yaml": "^2.8.3",
     "zod": "^4.3.6"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.484",
+    "remotion": "^4.0.484"
   }
 }

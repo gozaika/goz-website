@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "captureKind": "mobile-maestro-smoke",
+  "app": "consumer-mobile",
+  "packageId": "in.gozaika.customer",
+  "flow": "consumer-map-discovery",
+  "deviceId": "3A021JEHN02437",
+  "sourceCommit": "b3d0da30b7baa4ff8aeadd3e5314726008bba33a",
+  "capturedAt": "2026-07-01T00:21:32.2058645Z",
+  "sha256": "b0c625ce8280ab5dfb3bc4c2a02e860ed3c5722763838d2427905785131815c7",
+  "file": "marketing-assets/captures/curated/mobile/consumer-map-discovery/consumer-map-discovery-20260701T002106Z.png",
+  "maestroFlow": "marketing-assets/flows/maestro/consumer-map-discovery.yaml",
+  "maestroLog": "marketing-assets/captures/raw/mobile/consumer-map-discovery/consumer-map-discovery-20260701T002106Z-maestro.log",
+  "protectedRegions": [],
+  "truthGuard": "Curated copy of raw Android screenshot. Do not alter UI, claims, prices, QR, OTP, order state, or restaurant identity."
+}

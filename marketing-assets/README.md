@@ -31,6 +31,7 @@ The first active factory contract lives in:
 - `marketing-assets/manifests/asset-catalog.json` - planned asset IDs mapped back to scenarios.
 - `marketing-assets/src/scenarios/` - schema, loader, copy lint, and validation CLI.
 - `marketing-assets/src/capture/` - web capture target planning, Playwright capture, and Sharp normalization.
+- `marketing-assets/src/compositor/` - deterministic static composition with protected UI regions.
 - `marketing-assets/flows/maestro/` - scenario-linked mobile smoke flows for Maestro.
 
 Run:
@@ -91,6 +92,24 @@ The runner checks:
 Raw mobile screenshots, Maestro logs, and JSON sidecars are written under ignored
 `marketing-assets/captures/raw/mobile/`. If the device is locked, the app is not installed, or the
 flow is missing, the command fails before writing evidence.
+
+## Static Compositor Lane
+
+Compose a v1 functional still only after a real source screenshot exists:
+
+```bash
+npm run assets:compose:static -- --asset app-store-map-card --pass v1-functional
+```
+
+Outputs:
+
+- PNG and metadata under `marketing-assets/composites/`.
+- Creative review records under `marketing-assets/creative-reviews/`.
+- AI background briefs in output metadata. These are prompt contracts only; no external image
+  generation is run by this command.
+
+The compositor preserves the screenshot as a protected UI region and records a blocker whenever the
+source proof should not be promoted to launch-grade.
 
 ## Guardrails
 

@@ -8,4 +8,6 @@ tags:
 - launchApp:
     clearState: false
 - waitForAnimationToEnd
+- tapOn: Drops
+- waitForAnimationToEnd
 - takeScreenshot: consumer-map-discovery-launch
