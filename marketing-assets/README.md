@@ -40,6 +40,7 @@ Run:
 ```bash
 npm run assets:validate
 npm run assets:review
+npm run assets:qa
 npm run assets:test
 ```
 
@@ -125,6 +126,18 @@ The gate validates source/output path traceability, required Codex scores, owner
 AI background protection metadata, and v2/v3 promotion rules. Planned assets may remain blocked or
 unrendered, but an asset cannot be treated as `v2-polished` or `v3-launch-grade` while carrying an
 open blocker or weak score.
+
+## QA Reports
+
+Run:
+
+```bash
+npm run assets:qa
+```
+
+The QA gate checks composite PNG existence, dimensions, file size, source sidecar/screenshot
+traceability, and creative-review validity. It writes a Markdown report to
+`marketing-assets/qa-reports/latest.md`.
 
 ## Guardrails
 

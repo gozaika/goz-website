@@ -12,8 +12,8 @@
       "id": "app-store-map-card",
       "scenarioId": "consumer-map-discovery",
       "outputId": "app-store-map-card",
-      "status": "planned",
-      "reviewPath": "marketing-assets/creative-review.md"
+      "status": "v1-functional",
+      "reviewPath": "marketing-assets/creative-reviews/app-store-map-card-v1-functional.md"
     },
     {
       "id": "app-store-trust-card",

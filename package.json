@@ -29,6 +29,7 @@
     "assets:prepare-demo": "dotenv -e .env.local -- tsx marketing-assets/src/capture/prepare-demo.ts",
     "assets:validate": "tsx marketing-assets/src/scenarios/validate-scenarios.ts && tsx marketing-assets/src/review/validate-creative-reviews.ts",
     "assets:review": "tsx marketing-assets/src/review/validate-creative-reviews.ts",
+    "assets:qa": "tsx marketing-assets/src/qa/run-assets-qa.ts",
     "assets:test": "vitest run marketing-assets",
     "assets:capture:web": "tsx marketing-assets/src/capture/web/capture-web.ts",
     "assets:capture:mobile": "powershell -NoProfile -ExecutionPolicy Bypass -File marketing-assets/scripts/capture-mobile.ps1",
