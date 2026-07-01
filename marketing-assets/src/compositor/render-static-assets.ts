@@ -87,8 +87,20 @@ function templateForPreset(presetId: string): StaticCardTemplate {
 }
 
 function reviewMarkdown(input: StaticCardInput, outputPath: string, blocker: string | null): string {
-  const verdict = blocker ? "Needs next pass - source proof blocker remains." : "v1 functional compositor proof; ready for visual polish review.";
-  const score = blocker ? 2 : 3;
+  const isV2 = input.pass === "v2-polished";
+  const isV3 = input.pass === "v3-launch-grade";
+  const verdict = blocker
+    ? "Needs next pass - source proof blocker remains."
+    : isV2
+      ? "v2 polished still proof; ready for owner review before launch-grade tuning."
+      : isV3
+        ? "v3 launch-grade candidate pending owner acceptance."
+        : "v1 functional compositor proof; ready for visual polish review.";
+  const premiumScore = blocker ? 2 : isV2 || isV3 ? 4 : 3;
+  const proofScore = blocker ? 2 : isV2 || isV3 ? 4 : 3;
+  const shadowScore = isV2 || isV3 ? 4 : 3;
+  const peerScore = blocker ? 2 : isV2 || isV3 ? 4 : 3;
+  const nextPass = blocker ? "Capture matching route/state, then rerender v1." : isV2 ? "Owner review, then v3-launch-grade" : isV3 ? "Owner acceptance or waiver" : "v2-polished";
   return `# Creative Review: ${input.assetId}
 
 - Surface: ${input.surface}
@@ -97,20 +109,20 @@ function reviewMarkdown(input: StaticCardInput, outputPath: string, blocker: str
 - Output path: ${outputPath}
 - Codex verdict: ${verdict}
 - Owner verdict: TBD
-- Required next pass: ${blocker ? "Capture matching route/state, then rerender v1." : "v2-polished"}
+- Required next pass: ${nextPass}
 
 ${blocker ? `Blocker: ${blocker}\n` : ""}
 | Criterion | Codex score | Owner score | Notes / blocker |
 | --- | ---: | ---: | --- |
-| Premium within 2 seconds | ${score} | TBD | Functional composition only; not launch-grade. |
-| Product proof understandable | ${blocker ? 2 : 3} | TBD | Real screenshot is preserved. |
+| Premium within 2 seconds | ${premiumScore} | TBD | ${isV2 || isV3 ? "Polished hierarchy and calmer launch-style framing." : "Functional composition only; not launch-grade."} |
+| Product proof understandable | ${proofScore} | TBD | Real screenshot is preserved. |
 | Screen readability | 4 | TBD | Device region is large and unaltered. |
 | Copy density | 4 | TBD | Restrained headline, subhead, and three labels. |
 | Motion smooth, restrained, expensive | N/A | TBD | Still asset. |
-| Shadows/glows tasteful | 3 | TBD | Deterministic v1 shadow treatment. |
+| Shadows/glows tasteful | ${shadowScore} | TBD | ${isV2 || isV3 ? "Refined deterministic shadow and backing panel treatment." : "Deterministic v1 shadow treatment."} |
 | Avoids discount-app vibes | 4 | TBD | No sale, coupon, or distress language. |
-| Avoids AI artifacts | 5 | TBD | No generated background applied in v1. |
-| Peer benchmark credibility | ${score} | TBD | Needs v2/v3 polish before benchmark claim. |
+| Avoids AI artifacts | 5 | TBD | No generated background applied in this pass. |
+| Peer benchmark credibility | ${peerScore} | TBD | ${isV2 || isV3 ? "Credible v2 still; owner should judge before v3." : "Needs v2/v3 polish before benchmark claim."} |
 | Surface copy separation | 4 | TBD | Scenario language boundary respected. |
 `;
 }

@@ -76,28 +76,31 @@ export function renderStaticCardSvg(input: StaticCardInput): string {
   const accentText = input.surface === "restaurant" ? palette.forest : palette.saffronText;
   const screenshot = screenshotImage(input.screenshotPath);
   const isPortrait = input.height > input.width;
-  const deviceWidth = isPortrait ? Math.round(input.width * 0.58) : Math.round(input.width * 0.32);
+  const isPolished = input.pass !== "v1-functional";
+  const deviceWidth = isPortrait ? Math.round(input.width * (isPolished ? 0.64 : 0.58)) : Math.round(input.width * 0.34);
   const deviceHeight = Math.round(deviceWidth * 2.05);
   const deviceX = isPortrait ? Math.round((input.width - deviceWidth) / 2) : Math.round(input.width * 0.61);
-  const deviceY = isPortrait ? Math.round(input.height * 0.27) : Math.round((input.height - deviceHeight) / 2);
+  const deviceY = isPortrait ? Math.round(input.height * (isPolished ? 0.245 : 0.27)) : Math.round((input.height - deviceHeight) / 2);
   const textX = input.safeMarginPx;
-  const textY = input.safeMarginPx + (isPortrait ? 90 : 40);
-  const titleSize = isPortrait ? 76 : 58;
-  const subSize = isPortrait ? 34 : 30;
-  const headlineLines = wrapText(input.headline, isPortrait ? 18 : 20);
-  const subLines = wrapText(input.subhead ?? "Real app proof, composed without altering UI.", isPortrait ? 34 : 42);
+  const textY = input.safeMarginPx + (isPortrait ? (isPolished ? 78 : 90) : 40);
+  const titleSize = isPortrait ? (isPolished ? 72 : 76) : 58;
+  const subSize = isPortrait ? (isPolished ? 32 : 34) : 30;
+  const headlineLines = wrapText(input.headline, isPortrait ? (isPolished ? 20 : 18) : 20);
+  const subLines = wrapText(input.subhead ?? "Real app proof, composed without altering UI.", isPortrait ? 36 : 42);
   const protectedX = deviceX + 28;
   const protectedY = deviceY + 34;
   const protectedWidth = deviceWidth - 56;
   const protectedHeight = deviceHeight - 68;
+  const eyebrow = isPolished ? (input.surface === "restaurant" ? "PARTNER PROOF" : "LIVE DROP PROOF") : input.pass.replaceAll("-", " ").toUpperCase();
+  const bgTail = input.surface === "restaurant" ? palette.successBg : palette.warningBg;
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="${input.width}" height="${input.height}" viewBox="0 0 ${input.width} ${input.height}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
       <stop offset="0%" stop-color="${palette.cream}"/>
-      <stop offset="54%" stop-color="${palette.white}"/>
-      <stop offset="100%" stop-color="${input.surface === "restaurant" ? palette.successBg : palette.warningBg}"/>
+      <stop offset="${isPolished ? "46%" : "54%"}" stop-color="${palette.white}"/>
+      <stop offset="100%" stop-color="${bgTail}"/>
     </linearGradient>
     <radialGradient id="halo" cx="72%" cy="22%" r="62%">
       <stop offset="0%" stop-color="${accent}" stop-opacity="0.22"/>
@@ -111,8 +114,13 @@ export function renderStaticCardSvg(input: StaticCardInput): string {
   </defs>
   <rect width="${input.width}" height="${input.height}" fill="url(#bg)"/>
   <rect width="${input.width}" height="${input.height}" fill="url(#halo)"/>
-  <circle cx="${input.width - input.safeMarginPx}" cy="${input.safeMarginPx}" r="${Math.round(input.width * 0.18)}" fill="${accent}" opacity="0.08"/>
-  <text x="${textX}" y="${textY - 62}" fill="${accentText}" font-family="Inter, Arial, sans-serif" font-size="${isPortrait ? 28 : 24}" font-weight="800" letter-spacing="3">${escapeXml(input.pass.replaceAll("-", " ").toUpperCase())}</text>
+  ${
+    isPolished
+      ? `<rect x="${input.safeMarginPx}" y="${deviceY - 52}" width="${input.width - input.safeMarginPx * 2}" height="1" fill="${accent}" opacity="0.18"/>
+  <rect x="${deviceX - 34}" y="${deviceY - 28}" width="${deviceWidth + 68}" height="${deviceHeight + 56}" rx="${Math.round(deviceWidth * 0.13)}" fill="${palette.white}" opacity="0.28"/>`
+      : `<circle cx="${input.width - input.safeMarginPx}" cy="${input.safeMarginPx}" r="${Math.round(input.width * 0.18)}" fill="${accent}" opacity="0.08"/>`
+  }
+  <text x="${textX}" y="${textY - 62}" fill="${accentText}" font-family="Inter, Arial, sans-serif" font-size="${isPortrait ? 28 : 24}" font-weight="800">${escapeXml(eyebrow)}</text>
   ${textLines(headlineLines, textX, textY, titleSize, palette.charcoal, 800, 1.08)}
   ${textLines(subLines, textX, textY + headlineLines.length * titleSize * 1.16 + 38, subSize, palette.muted, 500, 1.25)}
   ${labelPills(input.labels, textX, input.height - input.safeMarginPx - 82, accent, accentText)}
@@ -128,10 +136,11 @@ export function renderStaticCardSvg(input: StaticCardInput): string {
 
 export function protectedScreenRegion(input: StaticCardInput) {
   const isPortrait = input.height > input.width;
-  const deviceWidth = isPortrait ? Math.round(input.width * 0.58) : Math.round(input.width * 0.32);
+  const isPolished = input.pass !== "v1-functional";
+  const deviceWidth = isPortrait ? Math.round(input.width * (isPolished ? 0.64 : 0.58)) : Math.round(input.width * 0.34);
   const deviceHeight = Math.round(deviceWidth * 2.05);
   const deviceX = isPortrait ? Math.round((input.width - deviceWidth) / 2) : Math.round(input.width * 0.61);
-  const deviceY = isPortrait ? Math.round(input.height * 0.27) : Math.round((input.height - deviceHeight) / 2);
+  const deviceY = isPortrait ? Math.round(input.height * (isPolished ? 0.245 : 0.27)) : Math.round((input.height - deviceHeight) / 2);
   return {
     x: deviceX + 28,
     y: deviceY + 34,

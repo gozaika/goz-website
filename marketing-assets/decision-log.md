@@ -47,3 +47,26 @@ Open follow-ups:
 - Creative: v1 is functional proof only. v2 should improve composition, premium background
   treatment, device staging, and typography while preserving the screenshot pixels.
 - Motion: Remotion work should still wait until still v2/v3 direction is accepted.
+
+## 2026-07-01 - v2 Polished Still Without External AI
+
+Context: owner asked Codex to continue remaining unblocked slices in autonomous mode.
+
+Decisions:
+
+- Produced `app-store-map-card-v2-polished` from the same curated real Android screenshot used for
+  v1. Rationale: the source proof was clean, live, and already passed traceability checks.
+- Improved the deterministic static template before rendering v2: larger protected device proof,
+  calmer background treatment, launch-style eyebrow, refined backing panel, and v2-specific review
+  scoring. Rationale: v2 should be visibly more polished than v1 while preserving real UI pixels.
+- Did not call external AI image generation. Rationale: the plan still treats external AI generation
+  as a stop condition unless owner explicitly requests a paid/generative run in that moment; the
+  v2 slice remains deterministic and reviewable.
+- Marked only the current app-store map/discovery card as `v2-polished` in the catalog. Rationale:
+  other planned assets still need real captures before promotion.
+
+Open follow-ups:
+
+- Owner should review the v2 visual direction before v3 launch-grade tuning.
+- AI-enhanced backgrounds can be added as a controlled background-only v2/v3 variant once owner
+  approves the deterministic direction and explicitly clears a generation run.

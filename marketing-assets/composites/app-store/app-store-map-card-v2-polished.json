@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "assetId": "app-store-map-card",
+  "scenarioId": "consumer-map-discovery",
+  "pass": "v2-polished",
+  "outputPath": "marketing-assets/composites/app-store/app-store-map-card-v2-polished.png",
+  "sha256": "7ea6024d8cd45c93b1e6785c21c9ad73af18adf8fb6092d0e4aef925d54f8d1a",
+  "dimensions": {
+    "width": 1290,
+    "height": 2796
+  },
+  "sourceSidecar": "marketing-assets/captures/curated/mobile/consumer-map-discovery/consumer-map-discovery-20260701T054041Z.json",
+  "sourceScreenshot": "marketing-assets/captures/curated/mobile/consumer-map-discovery/consumer-map-discovery-20260701T054041Z.png",
+  "sourceSha256": "9396a4fe1538fc9a532344c27217ece450eaf42cadb152640a7902e7cc315d7d",
+  "protectedRegions": [
+    {
+      "x": 260,
+      "y": 719,
+      "width": 770,
+      "height": 1625
+    }
+  ],
+  "aiBackgroundBrief": {
+    "assetId": "app-store-map-card",
+    "allowedUse": "background-only",
+    "prompt": "Create a refined premium Hyderabad pickup discovery atmospheric background with warm studio lighting, subtle depth, natural materials, and quiet premium energy. Leave the protected phone UI region untouched and empty of generated text.",
+    "negativePrompt": "No generated UI, no fake app screens, no logos, no readable text, no QR codes, no OTP, no prices, no restaurant names, no ratings, no sale stickers, no discount cues, no clutter, no plastic, no malformed hands.",
+    "protectedRegions": [
+      {
+        "x": 260,
+        "y": 719,
+        "width": 770,
+        "height": 1625
+      }
+    ],
+    "sourceSha256": "9396a4fe1538fc9a532344c27217ece450eaf42cadb152640a7902e7cc315d7d"
+  },
+  "blocker": null
+}
