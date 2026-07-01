@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "captureKind": "mobile-maestro-curated-proof",
+  "app": "consumer-mobile",
+  "packageId": "in.gozaika.customer",
+  "flow": "consumer-map-discovery",
+  "deviceId": "3A021JEHN02437",
+  "sourceCommit": "49f2b6ef865b79f81faaf755a156becd4e040b09",
+  "capturedAt": "2026-07-01T05:41:09.6659307Z",
+  "sha256": "9396a4fe1538fc9a532344c27217ece450eaf42cadb152640a7902e7cc315d7d",
+  "file": "marketing-assets/captures/curated/mobile/consumer-map-discovery/consumer-map-discovery-20260701T054041Z.png",
+  "maestroFlow": "C:/venkat/limca/gozaika/sourcecode/marketing-assets/flows/maestro/consumer-map-discovery.yaml",
+  "maestroLog": "C:/venkat/limca/gozaika/sourcecode/marketing-assets/captures/raw/mobile/consumer-map-discovery/consumer-map-discovery-20260701T054041Z-maestro.log",
+  "protectedRegions": [],
+  "truthGuard": "Raw Android screenshot only. Do not alter UI, claims, prices, QR, OTP, order state, or restaurant identity.",
+  "rawFile": "C:/venkat/limca/gozaika/sourcecode/marketing-assets/captures/raw/mobile/consumer-map-discovery/consumer-map-discovery-20260701T054041Z.png",
+  "rawSidecar": "C:/venkat/limca/gozaika/sourcecode/marketing-assets/captures/raw/mobile/consumer-map-discovery/consumer-map-discovery-20260701T054041Z.json",
+  "curatedAt": "2026-07-01T05:41:37.000Z",
+  "reviewNote": "Owner-authorized autonomous capture after remote demo_prepare_for_demo cleanup/create=true. Shows real Drops surface with live BAM Bags; no UI pixels altered."
+}

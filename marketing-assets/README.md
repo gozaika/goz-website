@@ -8,6 +8,7 @@ Use this workspace together with:
 
 - `docs/planning/launch-asset-factory-implementation-plan.md`
 - `marketing-assets/creative-review.md`
+- `marketing-assets/decision-log.md`
 - The external owner-approved launch asset strategy document at the repo parent.
 
 The old store/video plans, first-cut cards, ffmpeg video scripts, and legacy generated artifacts are
@@ -38,6 +39,7 @@ Run:
 
 ```bash
 npm run assets:validate
+npm run assets:review
 npm run assets:test
 ```
 
@@ -110,6 +112,19 @@ Outputs:
 
 The compositor preserves the screenshot as a protected UI region and records a blocker whenever the
 source proof should not be promoted to launch-grade.
+
+## Creative Review Gate
+
+Every generated composite metadata file must have a matching review record:
+
+```bash
+npm run assets:review
+```
+
+The gate validates source/output path traceability, required Codex scores, owner-score placeholders,
+AI background protection metadata, and v2/v3 promotion rules. Planned assets may remain blocked or
+unrendered, but an asset cannot be treated as `v2-polished` or `v3-launch-grade` while carrying an
+open blocker or weak score.
 
 ## Guardrails
 

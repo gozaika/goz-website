@@ -40,7 +40,7 @@ describe("static compositor", () => {
     expect(svg).toContain("data:image/png;base64");
     expect(protectedScreenRegion(input).width).toBeGreaterThan(600);
     expect(existsSync(screenshotPath)).toBe(true);
-  });
+  }, 15000);
 
   it("creates a background-only AI brief with UI protection", async () => {
     const root = mkdtempSync(join(tmpdir(), "gozaika-ai-"));

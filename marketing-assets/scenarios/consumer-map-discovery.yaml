@@ -30,11 +30,11 @@ captures:
     sourceOfTruth: Real consumer web drops route with Hyderabad map proof
 copy:
   headline: Find pickup drops nearby
-  subhead: Map-first discovery for real local restaurant drops.
+  subhead: Live nearby discovery for real local restaurant drops.
   labels:
     - Nearby
     - Pickup windows
-    - Real app map
+    - Live drop proof
   languageBoundary: customer-only
 plannedOutputs:
   - id: app-store-map-card

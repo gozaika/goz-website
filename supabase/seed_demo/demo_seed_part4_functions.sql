@@ -556,7 +556,7 @@ begin
     select rev.* into v_rev
     from catalog_bag_template_revision rev
     join catalog_bag_template t
-      on t.catalog_bag_template_pk = rev.catalog_bag_template_pk
+      on t.catalog_bag_template_pk = rev.catalog_bag_template_fk
     where t.restaurant_fk = v_rst_pk
       and t.template_status_code = 'ACTIVE'
       and rev.revision_status_code = 'PUBLISHED'
@@ -590,20 +590,22 @@ begin
     -- ── Insert ACTIVE drop ────────────────────────────────────────────────────
     insert into drop_drop (
       drop_drop_pk, restaurant_fk, catalog_bag_template_revision_fk,
+      geo_city_fk, geo_neighborhood_fk,
       drop_title, drop_type_code, drop_status_code,
       quantity_total, quantity_reserved, quantity_sold, quantity_collected,
       COMPUTED_sell_through_bps,
       price_paise, currency_code,
       pickup_start_at, pickup_end_at,
-      hold_duration_minutes, max_holds_per_consumer
+      hold_duration_minutes
     ) values (
       v_drop_pk, v_rst_pk, v_rev.catalog_bag_template_revision_pk,
+      v_rst.geo_city_fk, v_rst.geo_neighborhood_fk,
       v_drop_title, v_drop_type_code, 'ACTIVE',
       v_qty_total, v_qty_reserved + v_qty_sold, v_qty_sold, 0,
       v_sell_through,
       v_rev.suggested_price_paise, 'INR',
       v_pickup_start, v_pickup_end,
-      15, 1
+      15
     );
 
     -- ── Register drop in seed registry ───────────────────────────────────────
@@ -615,7 +617,7 @@ begin
     insert into drop_inventory_event
       (drop_fk, event_type_code, quantity_delta, reason_text)
     values
-      (v_drop_pk, 'DROP_PUBLISHED', v_qty_total, 'demo_create_live_drops batch');
+      (v_drop_pk, 'MANUAL_ADJUSTMENT', v_qty_total, 'demo_create_live_drops batch');
 
     -- ── CONVERTED holds → CONFIRMED orders (2 per drop) ──────────────────────
     -- Consumer A: position (con_offset + 0) mod 8
@@ -634,35 +636,25 @@ begin
     insert into drop_inventory_hold
       (drop_inventory_hold_pk, drop_fk, consumer_profile_fk,
        hold_status_code, quantity, idempotency_key,
-       expires_at, converted_order_fk)
+       expires_at)
     values
       (v_hold_a_pk, v_drop_pk,
        v_consumers[((v_con_offset + 0) % 8) + 1],
        'CONVERTED', 1,
        'live_hA_' || v_idem_suffix,
-       now() + interval '15 minutes',
-       v_order_a_pk);
+       now() + interval '15 minutes');
 
     -- Hold B (CONVERTED, 25 min ago)
     insert into drop_inventory_hold
       (drop_inventory_hold_pk, drop_fk, consumer_profile_fk,
        hold_status_code, quantity, idempotency_key,
-       expires_at, converted_order_fk)
+       expires_at)
     values
       (v_hold_b_pk, v_drop_pk,
        v_consumers[((v_con_offset + 1) % 8) + 1],
        'CONVERTED', 1,
        'live_hB_' || v_idem_suffix,
-       now() + interval '15 minutes',
-       v_order_b_pk);
-
-    -- Inventory events for converted holds
-    insert into drop_inventory_event
-      (drop_fk, drop_inventory_hold_fk, order_fk,
-       event_type_code, quantity_delta, reason_text)
-    values
-      (v_drop_pk, v_hold_a_pk, v_order_a_pk, 'HOLD_CONVERTED', 0, 'live drop demo order A'),
-      (v_drop_pk, v_hold_b_pk, v_order_b_pk, 'HOLD_CONVERTED', 0, 'live drop demo order B');
+       now() + interval '15 minutes');
 
     -- Order A
     v_order_seq := nextval('public.order_order_number_seq');
@@ -739,6 +731,22 @@ begin
       v_rst.pickup_instructions,
       v_rev.dietary_category_code
     );
+
+    update drop_inventory_hold
+    set converted_order_fk = case
+          when drop_inventory_hold_pk = v_hold_a_pk then v_order_a_pk
+          when drop_inventory_hold_pk = v_hold_b_pk then v_order_b_pk
+          else converted_order_fk
+        end
+    where drop_inventory_hold_pk in (v_hold_a_pk, v_hold_b_pk);
+
+    -- Inventory events for converted holds
+    insert into drop_inventory_event
+      (drop_fk, drop_inventory_hold_fk, order_fk,
+       event_type_code, quantity_delta, reason_text)
+    values
+      (v_drop_pk, v_hold_a_pk, v_order_a_pk, 'HOLD_CONVERTED', 0, 'live drop demo order A'),
+      (v_drop_pk, v_hold_b_pk, v_order_b_pk, 'HOLD_CONVERTED', 0, 'live drop demo order B');
 
     -- Order items
     insert into order_item
@@ -828,8 +836,8 @@ begin
     insert into drop_inventory_event
       (drop_fk, drop_inventory_hold_fk, event_type_code, quantity_delta, reason_text)
     values
-      (v_drop_pk, v_hold_c_pk, 'HOLD_PLACED', 1, 'live drop demo active hold C'),
-      (v_drop_pk, v_hold_d_pk, 'HOLD_PLACED', 1, 'live drop demo active hold D');
+      (v_drop_pk, v_hold_c_pk, 'HOLD_CREATED', 1, 'live drop demo active hold C'),
+      (v_drop_pk, v_hold_d_pk, 'HOLD_CREATED', 1, 'live drop demo active hold D');
 
     -- Register orders and holds in seed registry (enables targeted cleanup)
     insert into dev_demo_seed_registry (seed_key, entity_table, entity_id, slice)

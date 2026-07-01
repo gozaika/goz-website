@@ -17,6 +17,7 @@ type CliArgs = {
 };
 
 type SourceSidecar = {
+  readonly captureKind?: string;
   readonly app?: string;
   readonly flow?: string;
   readonly file: string;
@@ -135,7 +136,9 @@ async function renderAsset(args: CliArgs, assetId: string) {
   if (!existsSync(sidecar.file)) throw new Error(`Source screenshot is missing: ${sidecar.file}`);
 
   const blocker =
-    scenario.id === "consumer-map-discovery" && sidecar.flow === "consumer-map-discovery"
+    scenario.id === "consumer-map-discovery" &&
+    sidecar.flow === "consumer-map-discovery" &&
+    sidecar.captureKind !== "mobile-maestro-curated-proof"
       ? "Current source is a smoke capture. Confirm the screenshot shows the Drops/map surface before promoting this asset."
       : null;
   const input: StaticCardInput = {

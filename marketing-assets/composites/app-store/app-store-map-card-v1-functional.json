@@ -4,14 +4,14 @@
   "scenarioId": "consumer-map-discovery",
   "pass": "v1-functional",
   "outputPath": "marketing-assets/composites/app-store/app-store-map-card-v1-functional.png",
-  "sha256": "2b6aae7f2d4c0ee78af2659579f115bbfd9ab0daf6d4c8eaf2b20b00f12aec20",
+  "sha256": "d9c6c27ac5909938714dbbf24715a46fc8a219166fad02042c34369c5edbce62",
   "dimensions": {
     "width": 1290,
     "height": 2796
   },
-  "sourceSidecar": "marketing-assets/captures/curated/mobile/consumer-map-discovery/consumer-map-discovery-20260701T002106Z.json",
-  "sourceScreenshot": "marketing-assets/captures/curated/mobile/consumer-map-discovery/consumer-map-discovery-20260701T002106Z.png",
-  "sourceSha256": "b0c625ce8280ab5dfb3bc4c2a02e860ed3c5722763838d2427905785131815c7",
+  "sourceSidecar": "marketing-assets/captures/curated/mobile/consumer-map-discovery/consumer-map-discovery-20260701T054041Z.json",
+  "sourceScreenshot": "marketing-assets/captures/curated/mobile/consumer-map-discovery/consumer-map-discovery-20260701T054041Z.png",
+  "sourceSha256": "9396a4fe1538fc9a532344c27217ece450eaf42cadb152640a7902e7cc315d7d",
   "protectedRegions": [
     {
       "x": 299,
@@ -33,7 +33,7 @@
         "height": 1465
       }
     ],
-    "sourceSha256": "b0c625ce8280ab5dfb3bc4c2a02e860ed3c5722763838d2427905785131815c7"
+    "sourceSha256": "9396a4fe1538fc9a532344c27217ece450eaf42cadb152640a7902e7cc315d7d"
   },
-  "blocker": "Current source is a smoke capture. Confirm the screenshot shows the Drops/map surface before promoting this asset."
+  "blocker": null
 }
