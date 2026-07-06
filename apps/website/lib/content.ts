@@ -278,6 +278,13 @@ export const forRestaurantsContent = {
       },
     ],
   },
+  calculator: {
+    eyebrow: 'Run your numbers',
+    heading: 'What could a drop do for your kitchen?',
+    body: "Model a drop for your own situation — the fill you'd use, the price you'd set, and how many first-timers come back. It's an estimate, not a promise: the conversion rate is a planning assumption until your own drops replace it with real data.",
+    disclaimer:
+      'Illustrative model with editable assumptions. Conversion is an estimate until your drops generate real repeat-order data. Commission shown at the 15% standard rate.',
+  },
   operationalNotes: [
     {
       title: 'Settlement timing',

@@ -5,6 +5,10 @@ import { twMerge } from "tailwind-merge";
 // @gozaika/mobile-ui and @gozaika/ui so the two surfaces never drift.
 export * from "./primitives-model";
 
+// Restaurant economics calculator model (business-model-audit §11.2) — shared by
+// the gozaika.in fill-the-gap tool and the restaurant web app decision-support tab.
+export * from "./economics";
+
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }

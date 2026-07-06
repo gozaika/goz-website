@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CheckCircle, MessageCircle, PackageCheck, ShieldCheck, Users } from 'lucide-react';
 
+import { RestaurantEconomicsCalculator } from '@/components/calculator/RestaurantEconomicsCalculator';
 import { PartnerInterestForm } from '@/components/forms/PartnerInterestForm';
 import { Reveal } from '@/components/ui/Reveal';
 import { SectionIntro } from '@/components/ui/SectionIntro';
@@ -104,6 +105,20 @@ export default function ForRestaurantsPage(): React.ReactElement {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="calculator" className="bg-white">
+        <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:px-8">
+          <SectionIntro
+            eyebrow={forRestaurantsContent.calculator.eyebrow}
+            title={forRestaurantsContent.calculator.heading}
+            body={forRestaurantsContent.calculator.body}
+            className="max-w-3xl"
+          />
+          <div className="mt-10">
+            <RestaurantEconomicsCalculator disclaimer={forRestaurantsContent.calculator.disclaimer} />
           </div>
         </div>
       </section>
