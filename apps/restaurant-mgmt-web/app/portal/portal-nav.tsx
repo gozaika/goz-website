@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, ClipboardList, FileCheck2, HelpCircle, Home, Landmark, LayoutDashboard, PackagePlus, ReceiptText, ShieldCheck, Star, Store, Utensils } from "lucide-react";
+import { BarChart3, Calculator, ClipboardList, FileCheck2, HelpCircle, Home, Landmark, LayoutDashboard, PackagePlus, ReceiptText, ShieldCheck, Star, Store, Utensils } from "lucide-react";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { RestaurantSwitcherIsland, type PortalSwitcherRestaurant } from "./restaurant-switcher-island";
@@ -19,6 +19,7 @@ const groups = [
     label: "Build",
     links: [
       ["Templates", "/portal/templates", Utensils],
+      ["Planner", "/portal/planner", Calculator],
       ["Reports", "/portal/reports", BarChart3],
       ["Finance", "/portal/finance", Landmark],
     ],

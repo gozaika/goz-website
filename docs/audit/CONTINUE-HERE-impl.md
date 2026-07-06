@@ -12,8 +12,15 @@
 - Brand palette: `packages/design-tokens/src/colors.ts` — saffron `#FF6B35` (customer), forest `#1A5C38` (restaurant), gold `#D4A017`, cream `#FFF8F0`, charcoal `#2D2D2D`; AA text companions saffronText `#B23C0E`, goldText `#7A5C00`.
 
 ## In progress
-- Phase 1 banners + explainer + gozaika.in copy pass are DONE + QA'd (see below). Next up: the restaurant economics calculator (§11.2) — the one larger build in Phase 1.
+- Phase 1 is COMPLETE (banners + explainer + gozaika.in copy pass + the restaurant economics calculator on both site and portal). Next up: Phase 2 — consumer surfaces (web + mobile).
 - Owner decisions logged: files under `marketing/` (per §13); A4 = 3 separate language pages.
+- Login for hands-on portal/consumer verification (remote Supabase): dev servers target remote (nxvthewcwimrpjbzbcvx). The prefilled `.example` demo login does NOT exist on remote — use the real seed creds from `supabase/seed_demo/README.md` "## Login credentials" via the demo email/password fields (e.g. bawarchi.owner@gozaika.dev / DemoPass@2026) or phone+OTP (+919876520001 / 200001). Preview screenshots can hang on the Next dev overlay — remove it first: `document.querySelector('nextjs-portal')?.remove()`.
+
+## Done + verified (restaurant economics calculator — §11.2)
+- Shared math: `packages/utils/src/economics.ts` (`computeEconomics`, `DEFAULT_ECONOMICS_INPUTS`, `normaliseFillMix`), exported from utils index. ONE source of truth for site + portal so the numbers can't drift. `economics.test.ts` — 24 tests; the §5 worked example ties out exactly (₹90 food, ₹23 commission, ₹1.75 thin per-bag contribution); CAC/break-even semantics + degenerate-input robustness covered. Money in paise, rates as fractions 0–1.
+- Site tool: `apps/website/components/calculator/RestaurantEconomicsCalculator.tsx` — sales-oriented two-panel "your drop / your economics" (§14), cost assumptions hidden at defaults, on `/for-restaurants` (#calculator) after the fill-spectrum section. Content in `forRestaurantsContent.calculator`. `tests/calculator.spec.ts` (renders + recomputes) 2/2 pass. QA'd desktop 1280 + 375, live recompute verified.
+- Portal tab: `apps/restaurant-mgmt-web/app/portal/planner/{page.tsx,planner-client.tsx}` — fuller decision-support version exposing all cost assumptions; "Planner" nav item added to the Build group in `app/portal/portal-nav.tsx` (Calculator icon). Auth-guarded like other portal pages. Browser-verified logged in as Bawarchi owner (all 6 result cards correct, headline correct, live recompute, no overflow at 1280+375, no console errors). Added `/portal/planner` to the opt-in authed a11y suite (RUN_AUTHED_A11Y=1). Portal typecheck+lint+build green; smoke 1/1 (authed skip by design).
+- Gate status: utils tests 57/57; website typecheck/lint/build clean, smoke 5/5, a11y 6/6, calculator e2e 2/2; portal typecheck/lint/build clean, /auth/login a11y pass. apps/website is NOT in web-ci.mjs (only consumer-web + restaurant-mgmt-web are).
 - Owner-provided canonical brand assets (already wired into the site, confirmed no changes needed): `icons/flame.svg`, `icons/gozaika-logo.svg`, and the webp images in `apps/website/public/images/` (hero-bam-bag-v3, hero-bam-bag-portrait-v3, about-illustration-v3, restaurant-hero-v3). Reuse these — do not source new stock images for goZaika-branded surfaces without checking these first.
 
 ## Done + verified (Phase 1 marketing collateral)
@@ -31,9 +38,15 @@
 - Verified: `npm run typecheck` clean, `npm run lint` clean (1 pre-existing unrelated warning in layout.tsx), `npm run build` clean, `npx playwright test tests/smoke.spec.ts` 5/5 pass, `npx playwright test tests/a11y.spec.ts` 6/6 pass (zero violations, including the new fill-spectrum section). Note: apps/website is NOT part of the `web-ci.mjs` gate (that only covers consumer-web + restaurant-mgmt-web) — validated directly instead.
 - Visually QA'd in Chrome preview: hero, restaurant-teaser (now 2nd section), BamBag section, for-restaurants fill-spectrum section, operationalNotes section — desktop + 375, zero console errors, zero horizontal overflow.
 
-## Next step
-1. Restaurant economics calculator (§11.2) — site (`/for-restaurants`, near the new fillSpectrum section) + restaurant web app (dedicated tab, per §14 "prominent but not the hero"). This is the one larger build in Phase 1 — good candidate for Opus 4.8/high-effort per the model guidance.
-2. Then Phase 2 (consumer surfaces).
+## Next step — Phase 2 (consumer surfaces, web + mobile), Opus 4.8/high-effort
+Per §0 build sequence step 2:
+1. Thali/variety framing on drops/detail; surface SKU count/variety; "know one, discover two" for reveal (BLIND_ADVENTURE) drops.
+2. CW-1 passport-cuisines fix.
+3. CM-1 mobile checkout via simulator (PAYMENTS_SIMULATOR_ENABLED — verify effective after deploy).
+4. CM-2 in-app mobile pickup code (also de-risks SMS testing).
+5. CM-3 holds/toast polish.
+6. §16 allergen-conflict gate (wire customer dietary/allergen prefs to the claim flow).
+Read the launch-readiness audit CW-*/CM-* findings before starting. Refresh seed (`demo_prepare_for_demo(p_create_live_drops => true)`) before hands-on device testing.
 Note: an existing `marketing-source/restaurant-sales-kit/` (copy/en-v1.json) exists — reconcile/reuse rather than duplicate if it overlaps when touched.
 
 ## Gotchas / conventions
