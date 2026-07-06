@@ -12,6 +12,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--workspace", "@gozaika/restaurant-mgmt-web", "run", "dev"],
       "port": 3001
+    },
+    {
+      "name": "marketing-static",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "4599"],
+      "port": 4599
     }
   ]
 }
