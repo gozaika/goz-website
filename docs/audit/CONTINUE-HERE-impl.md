@@ -3,8 +3,15 @@
 **If you are a fresh session, read this first, then `IMPLEMENTATION-PLAN.md`, then the §0 build sequence in `business-model-audit.md`.**
 
 ## Current state (updated 2026-07-06)
-- **Branch:** `claude-feature-parity`, based on current `origin/main` (`2813a67` Marketing-v2-polished-still — includes handoff doc + marketing pipeline). Docs commit `afd629b` brought `docs/audit/` across.
-- **Phase:** 1 (Marketing) — building the three HTML deliverables.
+- **Branch:** `claude-feature-parity`, based on current `origin/main` (`2813a67` Marketing-v2-polished-still — includes handoff doc + marketing pipeline). Docs commit `afd629b` brought `docs/audit/` across. Pushed to remote; Vercel PREVIEW deployments confirmed (gozaika/consumer/restaurant green; SSO-protected). `main` untouched.
+- **Phase:** 1 COMPLETE (marketing + gozaika.in copy + calculator both surfaces). Phase 2 (consumer surfaces) is next.
+
+## Owner correction pass (2026-07-06, post-preview-review) — DONE + verified
+- Terminology: "chef's tasting thali" → "chef's thali" everywhere (content.ts, navigation.ts, page.tsx, layout.tsx, explainer, both banners). Home H1 now "A generous chef's thali. No menu. No algorithm." — fits exactly 3 lines (verified).
+- Removed hard dish counts from consumer copy (owner: the count is only restaurant guidance, not a promise): "three dishes" → "dishes" (home hero + BamBag), "keep two a surprise" → "keep the rest a surprise"; explainer "Three dishes"→"A spread of dishes", reveal knob "…discover two"→"…discover the rest". Tier ladder ranges (House ~3 / Chef's 3–4) LEFT hedged — they differentiate the §22 tiers on purpose.
+- HowItWorksFlow dashed connector was mis-centred (top-10 vs circle centre 64px) → `top-16`; verified diff=0 for both the 3-step home flow and 4-step /how-it-works flow.
+- Calculator (BOTH site + portal): (1) fill-mix now shows a segmented proportion bar (forest/gold/saffron) + legend + "fills the rest" note, so semi-prep salvage is clearly visible; (2) the green results headline was a dense sentence → replaced with a scannable visual hero ("THIS DROP CREATES / {N} new regulars a week" + surplus/fresh chips + one quiet aggregator-contrast line). Kept the 4/6 metric cards (owner liked them).
+- Gates re-green: website lint/typecheck/build clean, a11y 6/6, smoke 5/5, calculator e2e 2/2 (fixed a strict-mode selector: the new bar's aria-label contains "surplus", so the test now uses getByRole('slider',{name:/^Surplus/})). Portal lint/typecheck/build clean; planner browser-verified logged-in at 1280, bar+hero render, no overflow.
 
 ## Done + verified
 - Git setup complete (branch + docs carried across).

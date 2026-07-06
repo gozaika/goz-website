@@ -225,13 +225,36 @@ export function DropEconomicsPlanner() {
 
         <div>
           <h2 className="font-bold text-charcoal">How you fill it</h2>
-          <div className="mt-3 grid gap-4">
+
+          {/* Proportion bar — surplus / semi-prep / fresh; makes the remainder visible. */}
+          <div
+            className="mt-3 flex h-3 w-full overflow-hidden rounded-full"
+            role="img"
+            aria-label={`Fill mix: ${surplusPct}% surplus, ${semiPrepPct}% semi-prepared salvage, ${freshPct}% freshly made`}
+          >
+            <div style={{ width: `${surplusPct}%`, backgroundColor: "var(--color-forest)" }} />
+            <div style={{ width: `${semiPrepPct}%`, backgroundColor: "var(--color-gold)" }} />
+            <div style={{ width: `${freshPct}%`, backgroundColor: "var(--color-saffron)" }} />
+          </div>
+          <div className="mt-3 grid grid-cols-3 gap-2 text-xs text-charcoal">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: "var(--color-forest)" }} />
+              Surplus {surplusPct}%
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: "var(--color-gold)" }} />
+              Semi-prep {semiPrepPct}%
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: "var(--color-saffron)" }} />
+              Fresh {freshPct}%
+            </span>
+          </div>
+
+          <div className="mt-4 grid gap-4">
             <PercentSlider label="Surplus" value={surplusPct} onChange={handleSurplus} hint="Near-zero marginal cost" />
             <PercentSlider label="Freshly made" value={freshPct} onChange={handleFresh} hint="Full food cost — acquisition spend" />
-            <div className="flex items-center justify-between rounded-md bg-cream px-3 py-2 text-sm">
-              <span className="font-semibold text-charcoal">Semi-prepared salvage</span>
-              <span className="font-bold tabular-nums text-forest">{semiPrepPct}%</span>
-            </div>
+            <p className="text-xs text-muted">Semi-prepared salvage fills the rest ({semiPrepPct}%).</p>
           </div>
         </div>
 
@@ -284,21 +307,29 @@ export function DropEconomicsPlanner() {
       {/* ── Results ── */}
       <div className="grid content-start gap-4">
         <div className="rounded-lg border border-forest/20 bg-forest p-5 text-white">
-          <p className="text-sm leading-relaxed text-white/90">
-            This drop turns <strong>{formatPaise(result.surplusValuePerBagPaise * bagsPerDrop)}</strong> of surplus
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/70">This drop creates</p>
+          <p className="mt-1 flex items-baseline gap-2">
+            <span className="text-4xl font-extrabold tabular-nums">{regularsWeek}</span>
+            <span className="text-base font-medium">new regular{regularsWeek === 1 ? "" : "s"} a week</span>
+          </p>
+          <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm text-white/80">
+            <span>from</span>
+            <span className="rounded-md bg-white/10 px-2 py-0.5 font-semibold text-white">
+              {formatPaise(result.surplusValuePerBagPaise * bagsPerDrop)} surplus
+            </span>
             {result.acquisitionSpendPerBagPaise > 0 ? (
               <>
-                {" "}
-                and <strong>{formatPaise(result.acquisitionSpendPerBagPaise * bagsPerDrop)}</strong> of fresh-food
-                acquisition
+                <span aria-hidden="true">+</span>
+                <span className="rounded-md bg-white/10 px-2 py-0.5 font-semibold text-white">
+                  {formatPaise(result.acquisitionSpendPerBagPaise * bagsPerDrop)} fresh
+                </span>
               </>
-            ) : null}{" "}
-            into{" "}
-            <strong>
-              {regularsWeek} new regular{regularsWeek === 1 ? "" : "s"}
-            </strong>{" "}
-            a week — versus the <strong>{formatPaise(result.aggregatorCommissionPerOrderPaise)}</strong> a 30%
-            aggregator takes for one cold, un-owned order.
+            ) : null}
+          </p>
+          <p className="mt-3 border-t border-white/15 pt-3 text-xs text-white/75">
+            One cold aggregator order costs you{" "}
+            <strong className="text-white">{formatPaise(result.aggregatorCommissionPerOrderPaise)}</strong> in
+            commission — and you never own the customer.
           </p>
         </div>
 

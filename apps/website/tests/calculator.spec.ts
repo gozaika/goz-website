@@ -20,7 +20,7 @@ test('economics calculator recomputes when the fill mix changes', async ({ page 
   expect(before).toMatch(/₹/);
 
   // Drop surplus to 0 → more paid food fill → thinner weekly contribution.
-  await calc.getByLabel('Surplus').fill('0');
+  await calc.getByRole('slider', { name: /^Surplus/ }).fill('0');
 
   await expect(perWeek).not.toHaveText(before);
 });

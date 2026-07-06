@@ -6,10 +6,10 @@
 export const homeContent = {
   hero: {
     eyebrow: 'LAUNCHING IN HYDERABAD',
-    headline: 'A generous chef’s tasting thali. No menu. No algorithm.',
+    headline: 'A generous chef’s thali. No menu. No algorithm.',
     supportLine: 'BAM! बड़ा ज़ायका, आएगा मज़ा',
     founderLine: "India's first chef's-thali discovery marketplace. Starting in Hyderabad.",
-    body: "Every BAM Bag is a chef-curated thali — three dishes from Hyderabad's finest kitchens, generously portioned, allergen-disclosed, picked up fresh from the source.",
+    body: "Every BAM Bag is a chef-curated thali — dishes from Hyderabad's finest kitchens, generously portioned, allergen-disclosed, picked up fresh from the source.",
     helper: 'Join the waitlist · Free · No spam',
     socialProof: 'Be among the first in Hyderabad',
     waitlistCount: 47,
@@ -50,16 +50,16 @@ export const homeContent = {
     {
       title: 'Pickup',
       description:
-        'Collect during the pickup window and enjoy your chef’s tasting thali.',
+        'Collect during the pickup window and enjoy your chef’s thali.',
       icon: '/images/step-pickup-v2.svg',
     },
   ],
   bamBag: {
     eyebrow: 'What is a BAM Bag?',
     heading: 'Not a deal. A discovery.',
-    body: "Every BAM Bag is a chef-curated thali — three dishes from a partner restaurant's best, generously portioned so you get more to try, not less. The full lineup is a surprise, but every allergen, dietary category, spice level, and pickup window is disclosed before you buy. Want less risk? Some drops reveal one dish and keep two a surprise.",
+    body: "Every BAM Bag is a chef-curated thali — dishes from a partner restaurant's best, generously portioned so you get more to try, not less. The full lineup is a surprise, but every allergen, dietary category, spice level, and pickup window is disclosed before you buy. Want less risk? Some drops reveal one dish and keep the rest a surprise.",
     callout:
-      "goZaika is a controlled-access discovery layer for people who want great food without the algorithm — a chef's tasting thali, not a price-led deal and not a random grab bag. Designed by the chef. Discovered by you.",
+      "goZaika is a controlled-access discovery layer for people who want great food without the algorithm — a chef's thali, not a price-led deal and not a random grab bag. Designed by the chef. Discovered by you.",
   },
   restaurantTeaser: {
     eyebrow: 'For Restaurants',
@@ -127,7 +127,7 @@ export const homeContent = {
 
 export const howItWorksContent = {
   title: 'How a BAM Bag works',
-  subtitle: 'A chef’s tasting thali. Curated by chefs. Claimed by you.',
+  subtitle: 'A chef’s thali. Curated by chefs. Claimed by you.',
   steps: [
     {
       heading: 'Browse',
@@ -262,7 +262,7 @@ export const forRestaurantsContent = {
   fillSpectrum: {
     eyebrow: 'How you fill it',
     heading: 'You decide how each thali gets filled.',
-    body: "The guest experience never changes — a generous chef's tasting thali, every time. Underneath, you choose the blend: surplus, semi-prepared, or freshly made — whatever makes sense for your kitchen, your neighbourhood, and the season.",
+    body: "The guest experience never changes — a generous chef's thali, every time. Underneath, you choose the blend: surplus, semi-prepared, or freshly made — whatever makes sense for your kitchen, your neighbourhood, and the season.",
     spectrum: [
       {
         label: '100% surplus',

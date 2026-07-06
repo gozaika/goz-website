@@ -20,12 +20,12 @@ export const metadata: Metadata = {
   openGraph: openGraphFor(
     '/',
     'goZaika — Discover. Pickup. Devour.',
-    'A generous chef’s tasting thali from trusted restaurants, premium and pickup-only.',
+    'A generous chef’s thali from trusted restaurants, premium and pickup-only.',
     '/images/social/og-home-v3.png',
   ),
   twitter: twitterFor(
     'goZaika — Discover. Pickup. Devour.',
-    'A generous chef’s tasting thali from trusted restaurants, premium and pickup-only.',
+    'A generous chef’s thali from trusted restaurants, premium and pickup-only.',
     '/images/social/og-home-v3.png',
   ),
 };

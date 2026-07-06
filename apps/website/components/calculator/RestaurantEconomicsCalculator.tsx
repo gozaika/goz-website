@@ -148,13 +148,37 @@ export function RestaurantEconomicsCalculator({
 
             <div className="rounded-2xl bg-cream p-4">
               <p className="text-sm font-semibold text-gray900">How you fill it</p>
-              <div className="mt-3 space-y-4">
+
+              {/* Proportion bar — surplus / semi-prep / fresh, same colours as the
+                  fill-spectrum section above. Makes the semi-prep remainder visible. */}
+              <div
+                className="mt-3 flex h-3 w-full overflow-hidden rounded-full"
+                role="img"
+                aria-label={`Fill mix: ${surplusPct}% surplus, ${semiPrepPct}% semi-prepared salvage, ${freshPct}% freshly made`}
+              >
+                <div style={{ width: `${surplusPct}%`, backgroundColor: 'var(--color-forest)' }} />
+                <div style={{ width: `${semiPrepPct}%`, backgroundColor: 'var(--color-gold)' }} />
+                <div style={{ width: `${freshPct}%`, backgroundColor: 'var(--color-saffron)' }} />
+              </div>
+              <div className="mt-3 grid grid-cols-3 gap-2 text-xs text-gray700">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: 'var(--color-forest)' }} />
+                  Surplus {surplusPct}%
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: 'var(--color-gold)' }} />
+                  Semi-prep {semiPrepPct}%
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: 'var(--color-saffron)' }} />
+                  Fresh {freshPct}%
+                </span>
+              </div>
+
+              <div className="mt-4 space-y-4">
                 <Slider label="Surplus" value={surplusPct} min={0} max={100} suffix="%" onChange={handleSurplus} />
                 <Slider label="Freshly made" value={freshPct} min={0} max={100} suffix="%" onChange={handleFresh} />
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-gray700">Semi-prepared salvage</span>
-                  <span className="font-bold text-forest tabular-nums">{semiPrepPct}%</span>
-                </div>
+                <p className="text-xs text-gray500">Semi-prepared salvage fills the rest ({semiPrepPct}%).</p>
               </div>
             </div>
 
@@ -177,23 +201,35 @@ export function RestaurantEconomicsCalculator({
 
         {/* ── Results ── */}
         <div className="bg-forest p-6 text-cream sm:p-8">
-          <p className="text-sm leading-relaxed text-forest-light">
-            This drop turns{' '}
-            <strong className="text-white">{formatPaise(surplusPerDrop)}</strong> of surplus
-            {acquisitionPerDrop > 0 ? (
-              <>
-                {' '}
-                and <strong className="text-white">{formatPaise(acquisitionPerDrop)}</strong> of fresh-food
-                acquisition
-              </>
-            ) : null}{' '}
-            into{' '}
-            <strong className="text-white">
-              {regularsPerWeekRounded} new regular{regularsPerWeekRounded === 1 ? '' : 's'}
-            </strong>{' '}
-            a week — versus the{' '}
-            <strong className="text-white">{formatPaise(result.aggregatorCommissionPerOrderPaise)}</strong> a 30%
-            aggregator takes for one cold, un-owned order.
+          {/* Headline as a scannable visual: the payoff up top, what it's made
+              from as chips, the aggregator contrast as one quiet line. */}
+          <div className="rounded-2xl bg-white/[0.08] p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-forest-light">This drop creates</p>
+            <p className="mt-1 flex items-baseline gap-2">
+              <span className="text-4xl font-extrabold tabular-nums text-white">{regularsPerWeekRounded}</span>
+              <span className="text-base font-medium text-white">
+                new regular{regularsPerWeekRounded === 1 ? '' : 's'} a week
+              </span>
+            </p>
+            <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm text-forest-light">
+              <span>from</span>
+              <span className="rounded-md bg-white/10 px-2 py-0.5 font-semibold text-white">
+                {formatPaise(surplusPerDrop)} surplus
+              </span>
+              {acquisitionPerDrop > 0 ? (
+                <>
+                  <span aria-hidden="true">+</span>
+                  <span className="rounded-md bg-white/10 px-2 py-0.5 font-semibold text-white">
+                    {formatPaise(acquisitionPerDrop)} fresh
+                  </span>
+                </>
+              ) : null}
+            </p>
+          </div>
+          <p className="mt-3 text-xs leading-relaxed text-forest-light/85">
+            One cold aggregator order costs you{' '}
+            <strong className="text-white">{formatPaise(result.aggregatorCommissionPerOrderPaise)}</strong> in
+            commission — and you never own the customer.
           </p>
 
           <div className="mt-6 grid grid-cols-2 gap-3">

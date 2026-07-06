@@ -19,7 +19,7 @@ export const siteRoutes: ReadonlyArray<SiteRoute> = [
     label: 'How It Works',
     title: 'How a BAM Bag Works | goZaika',
     description:
-      'Browse chef’s tasting thalis, pay once, and pickup at the restaurant with trust-first details.',
+      'Browse chef’s thalis, pay once, and pickup at the restaurant with trust-first details.',
     indexable: true,
   },
   {

@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     google: process.env.GOOGLE_SITE_VERIFICATION ?? '',
   },
   keywords: [
-    "chef's tasting thali",
+    "chef's thali",
     'BAM Bag',
     'food discovery Hyderabad',
     'restaurant pickup Hyderabad',
