@@ -18,6 +18,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "4599"],
       "port": 4599
+    },
+    {
+      "name": "website",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--workspace", "@gozaika/website", "run", "dev", "--", "-p", "3002"],
+      "port": 3002
     }
   ]
 }

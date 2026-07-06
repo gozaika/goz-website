@@ -20,12 +20,12 @@ export const metadata: Metadata = {
   openGraph: openGraphFor(
     '/',
     'goZaika — Discover. Pickup. Devour.',
-    'Premium-access mystery meal drops from trusted restaurants.',
+    'A generous chef’s tasting thali from trusted restaurants, premium and pickup-only.',
     '/images/social/og-home-v3.png',
   ),
   twitter: twitterFor(
     'goZaika — Discover. Pickup. Devour.',
-    'Premium-access mystery meal drops from trusted restaurants.',
+    'A generous chef’s tasting thali from trusted restaurants, premium and pickup-only.',
     '/images/social/og-home-v3.png',
   ),
 };
@@ -35,6 +35,7 @@ export default function HomePage(): React.ReactElement {
     <>
       <HeroSection {...homeContent.hero} />
       <TrustBadgesSection badges={homeContent.trustBadges} />
+      <RestaurantTeaserSection {...homeContent.restaurantTeaser} />
       <HowItWorksFlow
         id="steps"
         className="bg-white"
@@ -43,7 +44,6 @@ export default function HomePage(): React.ReactElement {
       />
       <BamBagSection {...homeContent.bamBag} />
       <ImpactCounterSection />
-      <RestaurantTeaserSection {...homeContent.restaurantTeaser} />
       <InsiderCTASection />
       <TestimonialsSection />
       <HomeWaitlistSection

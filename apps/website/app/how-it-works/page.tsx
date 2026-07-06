@@ -8,7 +8,7 @@ import { canonical, openGraphFor, twitterFor } from '@/lib/metadata';
 export const metadata: Metadata = {
   title: 'How a BAM Bag Works | goZaika',
   description:
-    'Enough detail to trust it, enough mystery to love it. Browse, claim, and pickup with confidence.',
+    'Enough detail to trust it, enough surprise to savour it. Browse, claim, and pickup with confidence.',
   ...canonical('/how-it-works'),
   openGraph: openGraphFor(
     '/how-it-works',

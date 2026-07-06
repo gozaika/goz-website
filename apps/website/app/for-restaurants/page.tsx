@@ -79,6 +79,35 @@ export default function ForRestaurantsPage(): React.ReactElement {
         </div>
       </section>
 
+      <section className="bg-forest-light">
+        <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:px-8">
+          <SectionIntro
+            eyebrow={forRestaurantsContent.fillSpectrum.eyebrow}
+            title={forRestaurantsContent.fillSpectrum.heading}
+            body={forRestaurantsContent.fillSpectrum.body}
+            className="max-w-3xl"
+          />
+          <div className="premium-card mt-10 rounded-3xl bg-white p-8">
+            <div
+              className="h-3 w-full rounded-full"
+              style={{
+                background:
+                  'linear-gradient(90deg, var(--color-forest) 0%, var(--color-gold) 55%, var(--color-saffron) 100%)',
+              }}
+              aria-hidden="true"
+            />
+            <div className="mt-6 grid gap-6 sm:grid-cols-3">
+              {forRestaurantsContent.fillSpectrum.spectrum.map((item) => (
+                <div key={item.label}>
+                  <p className="text-base font-semibold text-gray900">{item.label}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-gray600">{item.detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="bg-white">
         <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:px-8">
           <SectionIntro title="Operationally, this is how it runs" />

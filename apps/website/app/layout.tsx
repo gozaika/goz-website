@@ -15,19 +15,19 @@ export const metadata: Metadata = {
     template: '%s | goZaika',
   },
   description:
-    "India's first mystery meal-drop marketplace. Chef-curated BAM Bags from Hyderabad's finest kitchens — allergen-disclosed, pickup-only, always a surprise.",
+    "India's first chef's-thali discovery marketplace. Chef-curated BAM Bags from Hyderabad's finest kitchens — allergen-disclosed, pickup-only, generously portioned.",
   metadataBase: new URL(BASE_URL),
   ...canonical('/'),
   openGraph: openGraphFor(
     '/',
     'goZaika — Discover. Pickup. Devour.',
-    "India's first mystery meal-drop marketplace. Chef-curated BAM Bags from Hyderabad's finest kitchens.",
+    "India's first chef's-thali discovery marketplace. Chef-curated BAM Bags from Hyderabad's finest kitchens.",
   ),
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION ?? '',
   },
   keywords: [
-    'mystery meal',
+    "chef's tasting thali",
     'BAM Bag',
     'food discovery Hyderabad',
     'restaurant pickup Hyderabad',
@@ -45,7 +45,7 @@ const localBusinessSchema = {
   '@type': 'OnlineStore',
   name: 'goZaika',
   description:
-    "India's first mystery meal-drop marketplace. Chef-curated BAM Bags from Hyderabad's finest kitchens, pickup-only.",
+    "India's first chef's-thali discovery marketplace. Chef-curated BAM Bags from Hyderabad's finest kitchens, pickup-only.",
   url: BASE_URL,
   logo: `${BASE_URL}/logos/gozaika-logo-horizontal.svg`,
   image: `${BASE_URL}/images/social/og-home-v3.png`,
