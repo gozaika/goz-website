@@ -39,14 +39,24 @@ The `20260425000000_gozaika_consolidated_schema.sql` migration is significantly 
 
 ### Current App Readiness (honest audit)
 
-| App | Real Readiness | Key Gaps |
+> **Parity note (2026-07-07):** the table below is the **v4-authoring baseline** and is
+> now superseded by later work. Since it was written, the web-parity program (W0–W7) and
+> Phase 1–2 landed: website copy/SEO + restaurant economics calculator; consumer web+mobile
+> thali/variety framing, §16 allergen-conflict gate, CW-1 passport cuisines, and mobile
+> checkout/pickup-proof/PeekBar (CM-1/2/3); consumer-mobile is now feature-built (Slices 0–18),
+> not a shell. For the live per-surface state, treat these as source of truth:
+> `docs/audit/IMPLEMENTATION-PLAN.md`, `docs/audit/CONTINUE-HERE-impl.md`, and
+> `docs/audit/launch-readiness-audit-2026-07-05.md`. The percentages below are retained only
+> as the historical starting point for the v4 slices.
+
+| App | Real Readiness (v4 baseline) | Key Gaps (as of authoring — many since addressed) |
 |---|---|---|
-| consumer-web | ~35% | Home is a 2-column grid, Swaad Club is a 4-line shell, /restaurants returns EmptyState, no map |
-| restaurant-mgmt-web | ~55% | Dashboard has 3 integer KPIs; no analytics tab; no sidebar; finance/orders/templates done |
+| consumer-web | ~35% → Phase 2 done | Home grid, Swaad Club shell, /restaurants EmptyState — thali framing + §16 gate + passport since built |
+| restaurant-mgmt-web | ~55% → +calculator/planner | No analytics tab (→ ZaikaIQ, Slice 3.1/3.2); RP-1/RP-2 open (Phase 3) |
 | admin-web | ~60% | 7 tabs functional; no user management tab; no monitoring |
-| consumer-mobile | ~5% | App.tsx shell only |
-| restaurant-staff-mobile | ~3% | App.tsx shell only |
-| website | ~70% | Most pages exist; testimonials commented out; SEO meta absent |
+| consumer-mobile | ~5% → feature-built | Was App.tsx shell; now Slices 0–18 (thali, §16 gate, CM-1/2/3, pickup proof) |
+| restaurant-staff-mobile | ~3% | App.tsx shell only — RM-1 ROI parity open (Phase 3) |
+| website | ~70% → copy/SEO/calculator done | Testimonials + full SEO architecture (Slice 3.7C) still pending |
 
 ---
 
@@ -995,7 +1005,7 @@ Incoming message: "PARTNER" (case-insensitive) from unknown phone
 → Check: is this phone already a restaurant team member? If yes: reply "You're already on goZaika! Login at restaurant.gozaika.in"
 
 → Create whatsapp_onboarding_session (step=WELCOME)
-→ Reply: "Welcome to goZaika! 🎉 We're Hyderabad's premium mystery meal platform. 
+→ Reply: "Welcome to goZaika! 🎉 We're Hyderabad's premium chef's-thali discovery platform — a brand-safe way to win new regulars.
    I'll set up your kitchen in 3 quick questions. What's your restaurant's name?"
 
 [step=RESTAURANT_NAME]
@@ -1406,14 +1416,22 @@ group by a.amb_pk, a.campus_name, p.display_name, p.phone_e164, a.monthly_base_p
 // packages/eslint-plugin-gozaika/src/rules/no-banned-words.ts
 // Custom ESLint rule that scans JSX text nodes and string literals
 
+// Canonical consumer banned-copy list (business doc §6.5). Consumer copy is
+// premium/dignity — waste-economics ("surplus", "food rescue") is B2B/restaurant-
+// ONLY (§15), so this rule must be scoped to the CONSUMER surfaces (consumer-web,
+// consumer-mobile, website consumer sections), NOT restaurant-mgmt-web/mobile.
+// Also retire "mystery = you can't choose" — keep the surprise/discovery.
 const BANNED_WORDS: Array<{ pattern: RegExp; replacement: string }> = [
-  { pattern: /\b(discount|discounted|discounting)\b/i, replacement: '"savings" or "value"' },
-  { pattern: /\b(leftover|leftovers)\b/i, replacement: '"chef\'s pick" or "Fresh Drop"' },
-  { pattern: /\b(surplus food|food waste|unsold)\b/i, replacement: '"recovered meal" or "rescued"' },
-  { pattern: /\b(stale|expired food|near-expiry)\b/i, replacement: 'remove or rephrase' },
+  { pattern: /\b(leftover|leftovers)\b/i, replacement: '"chef\'s pick" or "today\'s selection"' },
+  { pattern: /\b(stale|expired|near-expiry)\b/i, replacement: 'remove or rephrase' },
   { pattern: /\b(cheap|cheapest)\b/i, replacement: '"value" or "accessible"' },
-  { pattern: /\bclearance\b/i, replacement: '"Fresh Drop" or "last bags"' },
-  { pattern: /\bleftover food\b/i, replacement: '"chef\'s pick" or "surplus"' },
+  { pattern: /\bclearance\b/i, replacement: '"last bags" or "closing soon"' },
+  { pattern: /\bliquidation\b/i, replacement: 'remove — never in consumer copy' },
+  { pattern: /\b(food rescue|rescued|rescue)\b/i, replacement: 'remove — waste framing is banned consumer-side' },
+  { pattern: /\bsample\b/i, replacement: '"a taste" / "discover" — never "sample bag"' },
+  { pattern: /\bsurplus\b/i, replacement: 'B2B/restaurant copy ONLY — never consumer-facing (§15)' },
+  { pattern: /\bmystery\b/i, replacement: '"a surprise" / "discovery" — retire "mystery = can\'t choose" (§6)' },
+  { pattern: /\b(discount|discounted|discounting)\b/i, replacement: '"savings" or "value"' },
 ]
 
 // Rule checks:
@@ -1473,7 +1491,7 @@ export function generateDropOfferSchema(drop: PublicDrop, restaurant: Restaurant
 **City Landing Pages** — `apps/website/app/cities/[city-slug]/page.tsx`
 
 Dynamic city page with:
-- City-specific headline: "Hyderabad's First Premium Mystery Meal Platform"
+- City-specific headline: "Hyderabad's First Premium Chef's-Thali Discovery Platform" (retire "mystery" — keep the surprise; §Brand Language)
 - Active drop count from API (live data)
 - Restaurant neighbourhood grid (Banjara Hills, Kondapur, Jubilee Hills, HITEC City)
 - Local SEO copy mentioning city and neighbourhood names
@@ -1555,7 +1573,7 @@ TASK — Slice 3.7: Growth Infrastructure
 9. DYNAMIC CITY PAGES
    File: apps/website/app/cities/[city-slug]/page.tsx
    - generateStaticParams: returns active city slugs from geo_city
-   - generateMetadata: title="{city_name}'s First Premium Mystery Meal Platform | goZaika"
+   - generateMetadata: title="{city_name}'s First Premium Chef's-Thali Discovery Platform | goZaika"
    - Page content: city hero, neighbourhood grid, active drop count, restaurant count, how-it-works summary
    - LocalBusiness schema with areaServed
 
@@ -1571,7 +1589,7 @@ TASK — Slice 3.7: Growth Infrastructure
 11. OG TAGS ON DROP PAGES
     File: apps/consumer-web/app/drops/[id]/page.tsx (update generateMetadata)
     - og:title: "BAM Bag from {restaurant} — ₹{price} | goZaika"
-    - og:description: "Chef-curated mystery bag from {restaurant}. Allergens: {allergens}. Pickup {time}."
+    - og:description: "Chef-curated thali from {restaurant} — a generous spread, the lineup a surprise. Allergens: {allergens}. Pickup {time}."
     - og:image: restaurant's cover image from storage_object
     - twitter:card: summary_large_image
 ```
@@ -1616,6 +1634,7 @@ These standards complement the existing v3 system context and must be consistent
 - Food safety: any function that creates a drop must call `validateFreshnessWindow()` — this is non-optional
 - Price updates: any price change on an active drop must create a `drop_price_event` row — never update `current_price_paise` without a corresponding audit event
 - Brand lint: the ESLint `no-banned-words` rule runs as an error in CI — PRs with banned words do not merge
+- Product framing (consumer copy, business doc Part VI): a BAM Bag is a **generous chef's thali** — composition, the "how" — never "mystery"/"sample"/"surplus"; **never promise a dish or serving count** (signal abundance, not a contract); keep the surprise/discovery. Brand = **BAM / Zayka / Swaad** (BAM = "Bada Zayka Ayega Maza"). Waste-economics language is **B2B/restaurant-only**
 
 ---
 
