@@ -5,8 +5,9 @@ import { formatPaise } from "@gozaika/utils";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
-import { useOrder, useResendPickup } from "@/api/orders";
+import { useOrder, usePickupProof, useResendPickup } from "@/api/orders";
 import { useOrderReview, useSubmitReview } from "@/api/reviews";
+import { PickupProofCard } from "@/ui/PickupProofCard";
 
 const PRE_PICKUP = ["PAID", "CONFIRMED", "READY_FOR_PICKUP"];
 
@@ -172,6 +173,8 @@ export default function OrderDetailScreen() {
   const { orderPk } = useLocalSearchParams<{ orderPk: string }>();
   const { data: order, isLoading, isError, error, refetch } = useOrder(orderPk ?? null);
   const resend = useResendPickup(orderPk ?? null);
+  const awaitingPickup = order ? PRE_PICKUP.includes(order.orderStatusCode) : false;
+  const pickupProof = usePickupProof(orderPk ?? null, awaitingPickup);
 
   if (isLoading) {
     return (
@@ -190,7 +193,6 @@ export default function OrderDetailScreen() {
   }
 
   const collected = order.orderStatusCode === "COLLECTED";
-  const awaitingPickup = PRE_PICKUP.includes(order.orderStatusCode);
 
   return (
     <Screen contentStyle={{ gap: spacing.md }}>
@@ -202,34 +204,50 @@ export default function OrderDetailScreen() {
         {order.restaurantName} · {order.orderNumber}
       </Text>
 
-      {/* Pickup proof — delivered by SMS so it can be forwarded to whoever collects. */}
+      {/* Pickup proof — shown in-app (QR + OTP), parity with web (CM-2). SMS is the
+          secondary channel so the code can still be forwarded to whoever collects. */}
       {awaitingPickup ? (
-        <Card>
-          <Text variant="heading">Show your pickup code</Text>
-          <Text variant="body" color={palette.muted}>
-            We've texted your 6-digit pickup code to your phone. Show it at {order.restaurantName} during the pickup
-            window — or forward the text to whoever is collecting your bag.
-          </Text>
-          <Button
-            label="Resend pickup code"
-            variant="secondary"
-            accent={palette.saffron}
-            loading={resend.isPending}
-            onPress={() => resend.mutate()}
-          />
-          {resend.isSuccess ? (
-            <View style={{ backgroundColor: toneColors("success").bg, borderRadius: 10, padding: 10 }}>
-              <Text variant="caption" color={toneColors("success").fg}>
-                {resend.data.message}
+        <View style={{ gap: spacing.md }}>
+          {pickupProof.isLoading ? (
+            <Card>
+              <Skeleton height={160} />
+            </Card>
+          ) : pickupProof.data ? (
+            <PickupProofCard proof={pickupProof.data} />
+          ) : (
+            <Card>
+              <Text variant="heading">Show your pickup code</Text>
+              <Text variant="body" color={palette.muted}>
+                We couldn&apos;t load your in-app code just now. Resend it by SMS and show that at {order.restaurantName} during the pickup
+                window.
               </Text>
-            </View>
-          ) : null}
-          {resend.isError ? (
-            <Text variant="caption" color={palette.dangerFg}>
-              {resend.error instanceof ApiError ? resend.error.message : "Could not resend. Please try again."}
+            </Card>
+          )}
+          <Card>
+            <Text variant="caption" color={palette.muted}>
+              Prefer a text? We can SMS the code to forward to whoever is collecting your bag.
             </Text>
-          ) : null}
-        </Card>
+            <Button
+              label="Resend by SMS"
+              variant="secondary"
+              accent={palette.saffron}
+              loading={resend.isPending}
+              onPress={() => resend.mutate()}
+            />
+            {resend.isSuccess ? (
+              <View style={{ backgroundColor: toneColors("success").bg, borderRadius: 10, padding: 10 }}>
+                <Text variant="caption" color={toneColors("success").fg}>
+                  {resend.data.message}
+                </Text>
+              </View>
+            ) : null}
+            {resend.isError ? (
+              <Text variant="caption" color={palette.dangerFg}>
+                {resend.error instanceof ApiError ? resend.error.message : "Could not resend. Please try again."}
+              </Text>
+            ) : null}
+          </Card>
+        </View>
       ) : collected ? (
         <Card>
           <Text variant="heading" color={toneColors("success").fg}>

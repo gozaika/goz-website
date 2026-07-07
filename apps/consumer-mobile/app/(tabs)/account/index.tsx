@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { usePassport } from "@/api/account";
 import { useAuth } from "@/auth/useAuth";
+import { usePeekBarInset } from "@/ui/peekBarInset";
 
 function AccountAction({
   title,
@@ -29,9 +30,10 @@ export default function AccountScreen() {
   const router = useRouter();
   const { session, signOut } = useAuth();
   const passport = usePassport();
+  const peekInset = usePeekBarInset();
 
   return (
-    <Screen contentStyle={{ gap: spacing.md }}>
+    <Screen contentStyle={{ gap: spacing.md, paddingBottom: spacing.xl + peekInset }}>
       <Text variant="title">Account</Text>
       <Text variant="body" color={palette.muted}>
         Your loyalty, flavour profile and privacy controls. Reviews and profile editing arrive next.

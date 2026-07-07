@@ -25,6 +25,7 @@ import { useClaim } from "@/api/checkout";
 import { useDrop } from "@/api/discovery";
 import { useAuth } from "@/auth/useAuth";
 import { mediaFallbacks } from "@/ui/mediaFallbacks";
+import { usePeekBarInset } from "@/ui/peekBarInset";
 
 function pickupWindowLabel(drop: MobilePublicDropCard): string {
   const time = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -77,6 +78,7 @@ export default function DropDetailScreen() {
   const { session } = useAuth();
   const router = useRouter();
   const claim = useClaim();
+  const peekInset = usePeekBarInset();
   const safetyPrefs = useSafetyPrefs(Boolean(session));
   const [showConflict, setShowConflict] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
@@ -202,6 +204,7 @@ export default function DropDetailScreen() {
         primaryLabel={primaryLabel}
         disabled={session ? disabled || claim.isPending : false}
         accent={palette.forest}
+        style={{ marginBottom: peekInset }}
         helperText={`${formatPaise(drop.pricePaise)} · pickup ${pickupWindowLabel(drop)}`}
         onPrimaryPress={() => {
           if (!session) {
