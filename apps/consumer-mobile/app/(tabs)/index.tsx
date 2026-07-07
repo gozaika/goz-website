@@ -24,6 +24,7 @@ import { useDrops } from "@/api/discovery";
 import { useFollows } from "@/api/follows";
 import { useAuth } from "@/auth/useAuth";
 import { mediaFallbacks } from "@/ui/mediaFallbacks";
+import { usePeekBarInset } from "@/ui/peekBarInset";
 
 function isActiveDrop(drop: MobilePublicDropCard): boolean {
   return drop.statusCode === "ACTIVE" && drop.quantityAvailable > 0 && new Date(drop.pickupEndAt).getTime() > Date.now();
@@ -128,6 +129,7 @@ export default function HomeScreen() {
   const followedRestaurants = follows.data?.restaurants ?? [];
   const { data, isLoading, isError, error, refetch } = useDrops();
   const offline = isError && error instanceof ApiError && error.code === "NETWORK";
+  const peekInset = usePeekBarInset();
   const hasCached = Boolean(data && data.length);
   const activeCount = data?.filter((drop) => drop.statusCode === "ACTIVE").length ?? 0;
   const liveDrops = (data ?? []).filter(isActiveDrop);
@@ -139,7 +141,7 @@ export default function HomeScreen() {
   const chipLabels = [...dietaryLabels, ...neighborhoodLabels].slice(0, 6);
 
   return (
-    <Screen contentStyle={{ gap: spacing.lg }}>
+    <Screen contentStyle={{ gap: spacing.lg, paddingBottom: spacing.xl + peekInset }}>
       <HeroBanner
         eyebrow="Hyderabad pickup discovery"
         title="goZaika"

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CheckCircle, MessageCircle, PackageCheck, ShieldCheck, Users } from 'lucide-react';
 
+import { RestaurantEconomicsCalculator } from '@/components/calculator/RestaurantEconomicsCalculator';
 import { PartnerInterestForm } from '@/components/forms/PartnerInterestForm';
 import { Reveal } from '@/components/ui/Reveal';
 import { SectionIntro } from '@/components/ui/SectionIntro';
@@ -75,6 +76,49 @@ export default function ForRestaurantsPage(): React.ReactElement {
                 <p className="mt-3 text-base leading-relaxed text-gray700">{item.body}</p>
               </Reveal>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-forest-light">
+        <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:px-8">
+          <SectionIntro
+            eyebrow={forRestaurantsContent.fillSpectrum.eyebrow}
+            title={forRestaurantsContent.fillSpectrum.heading}
+            body={forRestaurantsContent.fillSpectrum.body}
+            className="max-w-3xl"
+          />
+          <div className="premium-card mt-10 rounded-3xl bg-white p-8">
+            <div
+              className="h-3 w-full rounded-full"
+              style={{
+                background:
+                  'linear-gradient(90deg, var(--color-forest) 0%, var(--color-gold) 55%, var(--color-saffron) 100%)',
+              }}
+              aria-hidden="true"
+            />
+            <div className="mt-6 grid gap-6 sm:grid-cols-3">
+              {forRestaurantsContent.fillSpectrum.spectrum.map((item) => (
+                <div key={item.label}>
+                  <p className="text-base font-semibold text-gray900">{item.label}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-gray600">{item.detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="calculator" className="bg-white">
+        <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 lg:px-8">
+          <SectionIntro
+            eyebrow={forRestaurantsContent.calculator.eyebrow}
+            title={forRestaurantsContent.calculator.heading}
+            body={forRestaurantsContent.calculator.body}
+            className="max-w-3xl"
+          />
+          <div className="mt-10">
+            <RestaurantEconomicsCalculator disclaimer={forRestaurantsContent.calculator.disclaimer} />
           </div>
         </div>
       </section>

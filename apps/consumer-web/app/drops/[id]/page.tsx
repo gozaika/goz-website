@@ -2,6 +2,8 @@ import { AllergenChips, CountdownChip, DietaryBadge, DropShareActions, ProgressB
 import { createPublicDropUrl, formatPaise, formatPickupWindow, generateManualDropAlertText } from "@gozaika/utils";
 import { notFound } from "next/navigation";
 import { loadPublicDrop } from "@/lib/drops";
+import { getConsumerPkByUserId } from "@/lib/passport";
+import { EMPTY_SAFETY_PREFS, loadConsumerSafetyPrefs } from "@/lib/safety-prefs";
 import { createClient } from "@/lib/supabase/server";
 import { ClaimPanel } from "./claim-panel";
 import { ConsumerNavLinks } from "../../consumer-nav";
@@ -28,6 +30,16 @@ export default async function DropDetailPage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  // §16 allergen-conflict gate: load the signed-in customer's saved allergen/dietary
+  // preferences so the claim panel can warn on a conflict before a hold is created.
+  let safetyPrefs = EMPTY_SAFETY_PREFS;
+  if (user) {
+    const consumerPk = await getConsumerPkByUserId(supabase, user.id);
+    if (consumerPk) {
+      safetyPrefs = await loadConsumerSafetyPrefs(supabase, consumerPk);
+    }
+  }
+
   const serves =
     drop.servesMin && drop.servesMax
       ? drop.servesMin === drop.servesMax
@@ -36,6 +48,7 @@ export default async function DropDetailPage({
       : "Serving guidance pending";
   const publicDropUrl = createPublicDropUrl(drop.dropPk);
   const alertText = generateManualDropAlertText(drop, publicDropUrl);
+  const isBlindAdventure = drop.dropTypeCode === "BLIND_ADVENTURE";
 
   return (
     <main id="main-content">
@@ -47,6 +60,16 @@ export default async function DropDetailPage({
           <p className="text-sm font-bold uppercase text-forest">{drop.restaurantName}</p>
           <h1 className="mt-2 text-4xl font-bold text-charcoal">{drop.bagDisplayName}</h1>
           {drop.bagShortDescription ? <p className="mt-3 text-lg text-muted">{drop.bagShortDescription}</p> : null}
+
+          <div className="mt-5 rounded-lg border border-forest/15 bg-cream p-4">
+            <p className="text-xs font-bold uppercase tracking-wide text-forest">Not a deal. A discovery.</p>
+            <p className="mt-1.5 text-sm text-charcoal">
+              A chef-curated thali — {isBlindAdventure ? "a cuisine to discover" : `dishes from ${drop.restaurantName}'s best`}, generously
+              portioned so you get more to try, not less.{" "}
+              {isBlindAdventure ? "Know the kitchen; discover the cuisine." : "Know the kitchen; discover the dishes."} The full lineup is a
+              surprise — every allergen, dietary category, spice level, and pickup window is disclosed before you claim.
+            </p>
+          </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-2">
             <DietaryBadge code={drop.dietaryCategoryCode} />
@@ -107,7 +130,7 @@ export default async function DropDetailPage({
               {drop.quantityAvailable} of {drop.quantityTotal} bags remaining
             </p>
           </div>
-          <ClaimPanel drop={drop} isSignedIn={Boolean(user)} autoClaim={query?.claim === "1"} />
+          <ClaimPanel drop={drop} isSignedIn={Boolean(user)} autoClaim={query?.claim === "1"} safetyPrefs={safetyPrefs} />
           <DropShareActions publicUrl={publicDropUrl} shareText={alertText} className="mt-3" />
           <p className="mt-3 text-xs text-muted">
             Holds are temporary inventory reservations. Pay from checkout before the timer expires to confirm pickup.

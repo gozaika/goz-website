@@ -8,6 +8,7 @@ import type {
   RestaurantOrderSummary,
 } from "@gozaika/types";
 import { createPickupQrPayload } from "@gozaika/utils";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createHash, randomBytes, randomInt } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 
@@ -349,4 +350,22 @@ export async function issuePickupProof(order: ConsumerOrderSummary): Promise<Pic
   }
 
   return { qrPayload, otp, issuedAt };
+}
+
+/**
+ * Load an order through the caller's own RLS-scoped client (so ownership is
+ * enforced by the view) and issue its pickup proof. Shared by the mobile BFF
+ * (`/orders/[orderId]/pickup-proof`) so the consumer mobile order detail can show
+ * the same in-app QR + OTP the web order detail does (CM-2), instead of depending
+ * solely on the SMS channel. Returns null when the order isn't visible to the caller.
+ */
+export async function issuePickupProofForOrder(authed: SupabaseClient, orderPk: string): Promise<PickupProof | null> {
+  const { data, error } = await authed.from("api_consumer_order_summary").select("*").eq("order_pk", orderPk).maybeSingle();
+  if (error) {
+    throw new Error("Could not load this order.");
+  }
+  if (!data) {
+    return null;
+  }
+  return issuePickupProof(mapConsumerOrder(data as ConsumerOrderSummaryRow));
 }

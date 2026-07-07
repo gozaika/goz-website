@@ -873,7 +873,7 @@ comment on function public.demo_create_live_drops(uuid[], text) is
   'Each call is additive — call demo_cleanup_data(p_slice=>''demo_live_drops'') '
   'to remove all dynamically created batches. Requires service_role or postgres.';
 
-revoke all on function public.demo_create_live_drops(uuid[], text) from public;
+revoke all on function public.demo_create_live_drops(uuid[], text) from public, anon, authenticated;
 grant execute on function public.demo_create_live_drops(uuid[], text) to service_role;
 
 -- =============================================================================
@@ -912,11 +912,21 @@ declare
   v_del_count   bigint;
   v_drop_pks    uuid[];
   v_order_pks   uuid[];
+  v_hold_pks    uuid[];
   v_consumer_pks uuid[];
   v_rst_pks      uuid[];
   v_auth_pks     uuid[];
   v_iam_pks      uuid[];
 begin
+  -- Guarded carve-out for the append-only immutability triggers. This DEMO-ONLY,
+  -- service_role-only cleanup path must be able to DELETE historical event rows
+  -- (order_pickup_verification_event, order_status_transition, drop_inventory_event —
+  -- plus any that cascade from order/drop/profile deletes) so the demo dataset can be
+  -- fully rebuilt. The flag is transaction-local (is_local => true) and is read by
+  -- public.raise_immutable_error(). Real application paths never set it, so the
+  -- append-only guarantee on these tables is unchanged outside this function.
+  perform set_config('app.demo_cleanup_active', 'on', true);
+
   -- Resolve whether static seed is in scope
   v_include_static := (p_slice is null or upper(p_slice) = 'ALL'
                        or p_slice not like 'demo_live%');
@@ -956,6 +966,18 @@ begin
     and (p_after_at  is null or o.created_at > p_after_at);
 
   if v_order_pks is null then v_order_pks := array[]::uuid[]; end if;
+
+  -- ── Step 2b: Collect hold PKs reachable from those drops + static prefix ────
+  -- payment_order_intent.drop_inventory_hold_fk is ON DELETE RESTRICT, so any
+  -- intent on an in-scope hold — including order_fk-null abandoned/pending
+  -- checkouts that Steps 5/6 would otherwise miss — must be removed before
+  -- Step 12 deletes the hold. (drop_inventory_event / order_order references are
+  -- ON DELETE SET NULL and handled by the referential-update carve-out.)
+  select array_agg(distinct dih.drop_inventory_hold_pk) into v_hold_pks
+  from drop_inventory_hold dih
+  where (dih.drop_fk = any(v_drop_pks)
+         or (v_include_static and dih.drop_inventory_hold_pk::text like c_demo_prefix || '%'));
+  if v_hold_pks is null then v_hold_pks := array[]::uuid[]; end if;
 
   -- ── Step 3: Finance payout entries ─────────────────────────────────────────
   if p_dry_run then
@@ -999,6 +1021,7 @@ begin
     select count(*) into v_del_count from payment_transaction pt
     join payment_order_intent poi on poi.payment_order_intent_pk = pt.payment_order_intent_fk
     where (poi.order_fk = any(v_order_pks)
+           or poi.drop_inventory_hold_fk = any(v_hold_pks)
            or (v_include_static and poi.payment_order_intent_pk::text like c_demo_prefix || '%'));
     entity_table := 'payment_transaction';
     deleted_count := coalesce(v_del_count, 0);
@@ -1008,6 +1031,7 @@ begin
     using payment_order_intent poi
     where poi.payment_order_intent_pk = payment_transaction.payment_order_intent_fk
       and (poi.order_fk = any(v_order_pks)
+           or poi.drop_inventory_hold_fk = any(v_hold_pks)
            or (v_include_static and poi.payment_order_intent_pk::text like c_demo_prefix || '%'));
     get diagnostics v_del_count = row_count;
     entity_table := 'payment_transaction';
@@ -1019,6 +1043,7 @@ begin
   if p_dry_run then
     select count(*) into v_del_count from payment_order_intent poi
     where (poi.order_fk = any(v_order_pks)
+           or poi.drop_inventory_hold_fk = any(v_hold_pks)
            or (v_include_static and poi.payment_order_intent_pk::text like c_demo_prefix || '%'));
     entity_table := 'payment_order_intent';
     deleted_count := coalesce(v_del_count, 0);
@@ -1026,6 +1051,7 @@ begin
   else
     delete from payment_order_intent
     where (order_fk = any(v_order_pks)
+           or drop_inventory_hold_fk = any(v_hold_pks)
            or (v_include_static and payment_order_intent_pk::text like c_demo_prefix || '%'));
     get diagnostics v_del_count = row_count;
     entity_table := 'payment_order_intent';
@@ -1357,7 +1383,7 @@ comment on function public.demo_cleanup_data(timestamptz, timestamptz, text, boo
 
   Requires service_role or postgres.';
 
-revoke all on function public.demo_cleanup_data(timestamptz, timestamptz, text, boolean) from public;
+revoke all on function public.demo_cleanup_data(timestamptz, timestamptz, text, boolean) from public, anon, authenticated;
 grant execute on function public.demo_cleanup_data(timestamptz, timestamptz, text, boolean) to service_role;
 
 -- =============================================================================
@@ -1465,7 +1491,7 @@ comment on function public.demo_refresh_static_drops() is
   'and active holds H01–H03 to today/tomorrow. Call before each demo session. '
   'Re-running seed parts 2–3 will NOT refresh dates (ON CONFLICT DO NOTHING).';
 
-revoke all on function public.demo_refresh_static_drops() from public;
+revoke all on function public.demo_refresh_static_drops() from public, anon, authenticated;
 grant execute on function public.demo_refresh_static_drops() to service_role;
 
 -- =============================================================================
@@ -1533,7 +1559,7 @@ comment on function public.demo_prepare_for_demo(boolean, boolean) is
   'DEMO ONLY. Run before each demo: optionally remove prior demo_create_live_drops '
   'batches, refresh static D11–D17 dates, optionally add a fresh live-drop batch.';
 
-revoke all on function public.demo_prepare_for_demo(boolean, boolean) from public;
+revoke all on function public.demo_prepare_for_demo(boolean, boolean) from public, anon, authenticated;
 grant execute on function public.demo_prepare_for_demo(boolean, boolean) to service_role;
 
 commit;

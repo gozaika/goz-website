@@ -6,10 +6,10 @@
 export const homeContent = {
   hero: {
     eyebrow: 'LAUNCHING IN HYDERABAD',
-    headline: 'Great food. No menu. No algorithm.',
+    headline: 'A generous chef’s thali. No menu. No algorithm.',
     supportLine: 'BAM! बड़ा ज़ायका, आएगा मज़ा',
-    founderLine: "India's first mystery meal-drop marketplace. Starting in Hyderabad.",
-    body: "Chef-curated BAM Bags from Hyderabad's finest kitchens — allergen-disclosed, always a surprise, picked up fresh from the source.",
+    founderLine: "India's first chef's-thali discovery marketplace. Starting in Hyderabad.",
+    body: "Every BAM Bag is a chef-curated thali — dishes from Hyderabad's finest kitchens, generously portioned, allergen-disclosed, picked up fresh from the source.",
     helper: 'Join the waitlist · Free · No spam',
     socialProof: 'Be among the first in Hyderabad',
     waitlistCount: 47,
@@ -50,21 +50,21 @@ export const homeContent = {
     {
       title: 'Pickup',
       description:
-        'Collect during the pickup window and let the restaurant surprise you.',
+        'Collect during the pickup window and enjoy your chef’s thali.',
       icon: '/images/step-pickup-v2.svg',
     },
   ],
   bamBag: {
     eyebrow: 'What is a BAM Bag?',
     heading: 'Not a deal. A discovery.',
-    body: "Every BAM Bag is a chef-curated to-go selection from a partner restaurant. The dishes are a surprise — but every allergen, dietary category, spice level, and pickup window is disclosed before you buy. You don't know what's inside. You do see the key trust details before you decide.",
+    body: "Every BAM Bag is a chef-curated thali — dishes from a partner restaurant's best, generously portioned so you get more to try, not less. The full lineup is a surprise, but every allergen, dietary category, spice level, and pickup window is disclosed before you buy. Want less risk? Some drops reveal one dish and keep the rest a surprise.",
     callout:
-      "goZaika is a controlled-access, off-menu discovery layer for people who want great food without the algorithm. Not a price-led aggregator. Not a random grab bag. A premium experience designed by the chef, discovered by you.",
+      "goZaika is a controlled-access discovery layer for people who want great food without the algorithm — a chef's thali, not a price-led deal and not a random grab bag. Designed by the chef. Discovered by you.",
   },
   restaurantTeaser: {
     eyebrow: 'For Restaurants',
-    heading: 'Your kitchen. Your curation. New customers.',
-    body: "A direct pickup-demand channel for planned, chef-curated drops. You control the bag, the timing, and the story. goZaika surfaces it to the right people — without touching your regular menu or existing diners. New diners discover your kitchen, and the ones who love it come back on their own.",
+    heading: 'Fill your quiet hours. Win repeat regulars.',
+    body: "A direct pickup-demand channel for planned, chef-curated drops — without 30% aggregator commissions or delivery riders. You control the bag, the timing, and how you fill it. goZaika surfaces it to the right people; the ones who love it come back and reorder your dish at full price.",
     stats: [
       { value: '12%', label: 'Commission — lowest in category' },
       { value: '0%', label: 'For the first 30 days' },
@@ -127,7 +127,7 @@ export const homeContent = {
 
 export const howItWorksContent = {
   title: 'How a BAM Bag works',
-  subtitle: 'A mystery meal drop. Curated by chefs. Claimed by you.',
+  subtitle: 'A chef’s thali. Curated by chefs. Claimed by you.',
   steps: [
     {
       heading: 'Browse',
@@ -185,7 +185,7 @@ export const howItWorksContent = {
 export const forRestaurantsContent = {
   title: 'A customer-acquisition channel for premium kitchens.',
   subtitle:
-    "Planned, limited, chef-curated BAM Bag drops that create pickup demand without delivery riders, upfront ad spend, or public discounting.",
+    "Planned, limited, chef-curated BAM Bag drops that create pickup demand without 30% aggregator commissions, delivery riders, upfront ad spend, or public discounting.",
   kitchenFlow: [
     {
       title: 'You control the bag',
@@ -259,18 +259,44 @@ export const forRestaurantsContent = {
       body: 'No riders, no dispatch complexity, and no compromise on kitchen control.',
     },
   ],
+  fillSpectrum: {
+    eyebrow: 'How you fill it',
+    heading: 'You decide how each thali gets filled.',
+    body: "The guest experience never changes — a generous chef's thali, every time. Underneath, you choose the blend: surplus, semi-prepared, or freshly made — whatever makes sense for your kitchen, your neighbourhood, and the season.",
+    spectrum: [
+      {
+        label: '100% surplus',
+        detail: 'Near-zero marginal cost — pure additional revenue.',
+      },
+      {
+        label: 'Blended',
+        detail: 'Surplus + semi-prepared salvage + fresh, mixed to your call.',
+      },
+      {
+        label: 'Freshly made',
+        detail: 'Acquisition spend that wins repeat regulars at full price.',
+      },
+    ],
+  },
+  calculator: {
+    eyebrow: 'Run your numbers',
+    heading: 'What could a drop do for your kitchen?',
+    body: "Model a drop for your own situation — the fill you'd use, the price you'd set, and how many first-timers come back. It's an estimate, not a promise: the conversion rate is a planning assumption until your own drops replace it with real data.",
+    disclaimer:
+      'Illustrative model with editable assumptions. Conversion is an estimate until your drops generate real repeat-order data. Commission shown at the 15% standard rate.',
+  },
   operationalNotes: [
     {
       title: 'Settlement timing',
-      body: 'Settlements should be treated as a scheduled operating flow, not an ad-hoc reconciliation exercise. The page should communicate clear settlement windows tied to completed pickups.',
+      body: 'Settlements run on a defined period tied to completed pickups — never ad-hoc. Your finance dashboard shows exactly which pickups, orders, and fees each settlement covers, with full traceability.',
     },
     {
       title: 'Partner requirements',
-      body: 'Partners should be FSSAI compliant, operationally reliable during pickup windows, and able to maintain accurate disclosure standards.',
+      body: 'Partners must be FSSAI compliant, operationally reliable during pickup windows, and able to maintain accurate disclosure standards.',
     },
     {
-      title: 'Sample dashboard / portal',
-      body: 'Restaurants need a view of live releases, claimed bags, pickup status, customer-facing disclosures, and settlement visibility.',
+      title: 'Your restaurant dashboard',
+      body: 'See live releases, claimed bags, pickup status, customer-facing disclosures, and settlement visibility — all in one console built for your team, not a shared inbox.',
     },
     {
       title: 'Customer support ownership',
@@ -282,7 +308,7 @@ export const forRestaurantsContent = {
     },
     {
       title: 'No-shows and volume tier',
-      body: 'No-show handling should be explicit, and the volume tier should be explained as a meaningful threshold for recurring monthly release volume rather than a vague promise.',
+      body: "If a guest doesn't collect within the pickup window, the hold releases automatically and the bag returns to your available inventory — no manual chasing. The volume tier applies once you're releasing 200+ bags a month, rewarding consistent, recurring supply rather than one-off spikes.",
     },
   ],
   operationalFaqs: [
@@ -304,12 +330,12 @@ export const forRestaurantsContent = {
     {
       question: 'What happens on a no-show?',
       answer:
-        'BAM Bags are tied to a declared pickup window. If a customer does not arrive, the bag is not held indefinitely. The operator should have a clear closure rule and the platform should communicate that policy upfront.',
+        "BAM Bags are tied to a declared pickup window. If a guest doesn't arrive in time, the hold expires automatically and the bag returns to your available inventory — you're never left guessing.",
     },
     {
       question: 'What does the volume tier mean in practice?',
       answer:
-        'The volume tier is meant for partners releasing bags consistently enough to justify more favorable economics. It should be framed as recurring monthly release depth, not just sporadic spikes.',
+        "It rewards consistent supply, not one-off spikes: once you're releasing 200+ bags a month, you move to the 12% volume-tier commission automatically.",
     },
   ],
   brandProtection: [

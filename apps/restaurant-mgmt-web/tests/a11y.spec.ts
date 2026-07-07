@@ -45,5 +45,10 @@ test(
     test.skip(!page.url().includes("/portal/dashboard"), "demo session unavailable (no seed)");
     await audit(page, "/portal/dashboard");
     await expect(page.getByRole("main")).toBeVisible();
+
+    // Drop economics planner (decision-support tab, business-model-audit §11.2).
+    await page.goto("/portal/planner", { waitUntil: "domcontentloaded" });
+    await audit(page, "/portal/planner");
+    await expect(page.getByRole("heading", { name: /drop economics planner/i })).toBeVisible();
   },
 );

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>goZaika — Partner handbill (A6)</title>
+<!--
+  goZaika restaurant-acquisition handbill — A6 (105×148mm), counter/table drop.
+  Compact companion to banner-restaurant-A4.html. English-primary with a Telugu
+  support line (Hyderabad-first). B2B collateral — waste-economics allowed (§15).
+  Palette via CSS vars; forest accent (restaurant surface). QR is a placeholder.
+-->
+<style>
+  :root{
+    --forest:#1A5C38; --forest-deep:#123f26; --saffron:#FF6B35;
+    --gold:#D4A017; --gold-text:#7A5C00; --cream:#FFF8F0; --charcoal:#2D2D2D;
+    --white:#FFFFFF; --muted:#6B7280; --border:#E5E7EB;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;background:#d9d9d9;color:var(--charcoal);
+    font-family:"Segoe UI",Roboto,system-ui,-apple-system,sans-serif;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+  .card{
+    position:relative;width:105mm;height:148mm;margin:10mm auto;background:var(--cream);
+    overflow:hidden;display:flex;flex-direction:column;box-shadow:0 5px 22px rgba(0,0,0,.18);
+  }
+  .band{
+    background:linear-gradient(135deg,var(--forest) 0%,var(--forest-deep) 100%);
+    color:var(--cream);padding:7mm 8mm 6mm;
+  }
+  .brandrow{display:flex;align-items:baseline;gap:7px;}
+  .logo{font-size:19pt;font-weight:800;letter-spacing:-.3px;color:var(--white);}
+  .logo .z{color:var(--saffron);}
+  .tagline{font-size:8.5pt;font-weight:700;color:var(--gold);}
+  .eyebrow{
+    margin-top:4mm;display:inline-block;font-size:7.5pt;font-weight:700;
+    text-transform:uppercase;letter-spacing:1px;color:var(--cream);
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
+    padding:2px 8px;border-radius:999px;
+  }
+  .headline{margin:3mm 0 1.5mm;font-size:16pt;line-height:1.14;font-weight:800;color:var(--white);}
+  .subhead{font-size:8.5pt;line-height:1.4;color:#eef4ee;font-weight:500;}
+  .body{padding:5mm 8mm 0;flex:1;}
+  .benefit{display:flex;gap:8px;align-items:flex-start;margin-bottom:3.2mm;}
+  .benefit .num{
+    flex:none;width:19px;height:19px;border-radius:50%;background:var(--gold);
+    color:var(--forest-deep);font-size:9pt;font-weight:800;
+    display:inline-flex;align-items:center;justify-content:center;margin-top:1px;
+  }
+  .benefit .txt{font-size:9.5pt;line-height:1.32;}
+  .benefit .txt b{color:var(--forest);}
+  .benefit .txt .gold{color:var(--gold-text);}
+  .tiers{display:flex;gap:2mm;margin-top:1mm;}
+  .tier{flex:1;text-align:center;border:1px solid var(--gold);border-radius:6px;padding:2mm 1mm;background:var(--white);}
+  .tier .t{font-size:8.5pt;font-weight:800;color:var(--forest);}
+  .tier.hi{background:var(--forest);border-color:var(--forest);}
+  .tier.hi .t{color:var(--white);}
+  .foot{
+    margin-top:auto;display:flex;align-items:center;gap:5mm;
+    padding:5mm 8mm;border-top:2px solid var(--gold);
+  }
+  .cta{flex:1;}
+  .cta .big{font-size:10pt;font-weight:800;color:var(--forest);}
+  .cta .url{font-size:11pt;font-weight:800;color:var(--saffron);margin-top:1px;}
+  .cta .trust{font-size:6.8pt;color:var(--muted);margin-top:2.5mm;line-height:1.35;}
+  .qr{
+    flex:none;width:22mm;height:22mm;border-radius:7px;background-color:var(--white);
+    background-image:repeating-linear-gradient(90deg,var(--forest-deep) 0 2px,transparent 2px 4px),
+      repeating-linear-gradient(0deg,var(--forest-deep) 0 2px,transparent 2px 4px);
+    border:1.5px solid var(--forest);display:flex;align-items:center;justify-content:center;
+  }
+  .qr span{background:var(--white);color:var(--forest);font-size:5.5pt;font-weight:800;
+    padding:1px 4px;border-radius:3px;border:1px solid var(--forest);text-align:center;line-height:1.15;}
+  @page{size:A6;margin:0;}
+  @media print{
+    html,body{background:none;}
+    .card{margin:0;box-shadow:none;}
+    .screenhint{display:none;}
+  }
+  .screenhint{max-width:105mm;margin:8mm auto -4mm;color:#555;font-size:9pt;font-family:system-ui,sans-serif;}
+</style>
+</head>
+<body>
+<p class="screenhint">Preview — A6 handbill. Print to A6, 100% scale, backgrounds on. QR is a placeholder — swap the production partner-signup QR before printing.</p>
+
+<section class="card">
+  <div class="band">
+    <div class="brandrow">
+      <span class="logo">go<span class="z">Zaika</span></span>
+      <span class="tagline">Bada Zayka Ayega Maza</span>
+    </div>
+    <span class="eyebrow">For restaurants · రెస్టారెంట్ల కోసం</span>
+    <h1 class="headline">Fill your quiet hours. Win repeat regulars.</h1>
+    <p class="subhead">Turn surplus and slow hours into new customers — no 30% commission, no delivery riders.</p>
+  </div>
+
+  <div class="body">
+    <div class="benefit">
+      <span class="num">1</span>
+      <span class="txt"><b>15% commission, not 30%.</b> The customer is yours to keep.</span>
+    </div>
+    <div class="benefit">
+      <span class="num">2</span>
+      <span class="txt"><b>You choose how you fill each thali</b> — surplus, semi-prep or <span class="gold">freshly made</span>. Same great thali for the guest.</span>
+    </div>
+    <div class="benefit">
+      <span class="num">3</span>
+      <span class="txt">A chef's thali samples your best — guests <b>reorder the dish they loved at full price</b>.</span>
+    </div>
+
+    <div class="tiers">
+      <div class="tier"><div class="t">House</div></div>
+      <div class="tier hi"><div class="t">Chef's</div></div>
+      <div class="tier"><div class="t">Dawat</div></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="cta">
+      <div class="big">Partner with goZaika</div>
+      <div class="url">gozaika.in/partner</div>
+      <div class="trust">FSSAI-verified · allergens disclosed · pickup-only · Hyderabad</div>
+    </div>
+    <div class="qr"><span>Scan<br>partner</span></div>
+  </div>
+</section>
+
+</body>
+</html>

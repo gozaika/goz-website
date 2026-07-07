@@ -6,6 +6,7 @@ import { Link, useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
 import { useOrders } from "@/api/orders";
 import { useAuth } from "@/auth/useAuth";
+import { usePeekBarInset } from "@/ui/peekBarInset";
 
 function statusTone(code: string): StatusTone {
   switch (code) {
@@ -75,6 +76,7 @@ export default function OrdersScreen() {
   const { data, isLoading, isError, error, refetch } = useOrders({ enabled: Boolean(session) });
   const orders = data?.orders ?? [];
   const activeCount = orders.filter(isActiveOrder).length;
+  const peekInset = usePeekBarInset();
 
   if (!session) {
     return (
@@ -105,7 +107,7 @@ export default function OrdersScreen() {
   }
 
   return (
-    <Screen contentStyle={{ gap: spacing.md }}>
+    <Screen contentStyle={{ gap: spacing.md, paddingBottom: spacing.xl + peekInset }}>
       <View style={{ gap: spacing.xs }}>
         <Text variant="title">Your orders</Text>
         <Text color={palette.muted}>

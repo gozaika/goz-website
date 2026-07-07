@@ -25,7 +25,7 @@ export function AdventureDropCard({ drop, adventureReason, firstTimerCount }: Ad
       <p className="relative mt-2 text-sm font-medium text-white/70">{adventureReason}</p>
 
       <h3 className="relative mt-2 text-2xl font-black text-white">
-        {isBlindAdventure ? "Mystery Cuisine" : drop.restaurantName}
+        {isBlindAdventure ? "A cuisine to discover" : drop.restaurantName}
       </h3>
 
       <div className="relative mt-1 flex flex-wrap items-center gap-2 text-sm text-white/60">

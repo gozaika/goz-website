@@ -7,6 +7,7 @@ import { useActiveHolds } from "@/api/holds";
 import { useOrders } from "@/api/orders";
 import { useAuth } from "@/auth/useAuth";
 import { brand } from "@/theme/brand";
+import { PEEK_BAR_SLOT, PeekBarInsetProvider } from "@/ui/peekBarInset";
 
 const ACTIVE_ORDER_STATUSES = ["PAID", "CONFIRMED", "READY_FOR_PICKUP"];
 
@@ -38,8 +39,10 @@ export default function TabsLayout() {
   // Holds are unpaid and time-limited, so they take priority over the (paid)
   // pickup reminder for the single floating slot.
   const activeHolds = session ? holds ?? null : null;
+  const peekBarVisible = (activeHolds?.count ?? 0) > 0 || Boolean(order);
 
   return (
+    <PeekBarInsetProvider value={peekBarVisible ? PEEK_BAR_SLOT : 0}>
     <View style={{ flex: 1 }}>
       <Tabs
         screenOptions={{
@@ -96,5 +99,6 @@ export default function TabsLayout() {
         />
       ) : null}
     </View>
+    </PeekBarInsetProvider>
   );
 }

@@ -45,9 +45,11 @@ export function HowItWorksFlow({
             isFourStepFlow ? 'lg:grid-cols-4' : 'lg:grid-cols-3',
           )}
         >
+          {/* Connector runs through the vertical centre of the icon circles
+              (lg:p-6 padding 24px + half the 80px circle = 64px = top-16). */}
           <div
             className={cn(
-              'absolute top-10 hidden h-px border-t-2 border-dashed border-saffron/40 lg:block',
+              'absolute top-16 hidden h-px border-t-2 border-dashed border-saffron/40 lg:block',
               isFourStepFlow ? 'left-[12.5%] right-[12.5%]' : 'left-[16.66%] right-[16.66%]',
             )}
           />

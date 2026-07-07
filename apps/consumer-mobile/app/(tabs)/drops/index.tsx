@@ -19,6 +19,7 @@ import { useMemo, useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { useDrops } from "@/api/discovery";
 import { DropCard } from "@/ui/DropCard";
+import { usePeekBarInset } from "@/ui/peekBarInset";
 
 type ViewMode = "list" | "map";
 type SortMode = "closing" | "available";
@@ -177,6 +178,7 @@ function DropMapView({
 export default function DropsScreen() {
   const router = useRouter();
   const { data, isLoading, isError, error, refetch, isRefetching } = useDrops();
+  const peekInset = usePeekBarInset();
   const offline = isError && error instanceof ApiError && error.code === "NETWORK";
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [dietaryFilter, setDietaryFilter] = useState("All");
@@ -216,14 +218,14 @@ export default function DropsScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: palette.cream }}>
+    <View testID="screen:drops-list" style={{ flex: 1, backgroundColor: palette.cream }}>
       {offline ? <OfflineBanner offline /> : null}
       <View style={{ gap: spacing.md, padding: spacing.lg, paddingBottom: spacing.md }}>
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: spacing.md }}>
           <View style={{ flex: 1 }}>
             <Text variant="title">Drops near you</Text>
             <Text color={palette.muted}>
-              {visibleDrops.length} live BAM Bag{visibleDrops.length === 1 ? "" : "s"} from public pickup locations.
+              {visibleDrops.length} live chef-curated thali{visibleDrops.length === 1 ? "" : "s"} — a generous spread from one kitchen, the lineup a surprise.
             </Text>
           </View>
           <Badge label={`${liveDrops.length} live`} tone="success" />
@@ -258,14 +260,14 @@ export default function DropsScreen() {
           <EmptyState title="No matches" message="Try a different dietary filter." />
         </ScrollView>
       ) : viewMode === "map" ? (
-        <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingTop: 0, gap: spacing.md }}>
+        <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingTop: 0, paddingBottom: spacing.lg + peekInset, gap: spacing.md }}>
           <DropMapView drops={visibleDrops} onSelectDrop={(dropPk) => router.push(`/drops/${dropPk}`)} />
         </ScrollView>
       ) : (
         <FlatList
           data={visibleDrops}
           keyExtractor={(d) => d.dropPk}
-          contentContainerStyle={{ padding: spacing.lg, paddingTop: 0, gap: spacing.md }}
+          contentContainerStyle={{ padding: spacing.lg, paddingTop: 0, paddingBottom: spacing.lg + peekInset, gap: spacing.md }}
           refreshing={isRefetching}
           onRefresh={() => refetch()}
           renderItem={({ item }) => <DropCard drop={item} onPress={() => router.push(`/drops/${item.dropPk}`)} />}

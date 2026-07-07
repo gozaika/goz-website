@@ -6,6 +6,7 @@ import { mediaFallbacks } from "./mediaFallbacks";
 
 export function DropCard({ drop, onPress }: { readonly drop: MobilePublicDropCard; readonly onPress?: () => void }) {
   const soldOut = drop.quantityAvailable <= 0;
+  const isBlindAdventure = drop.dropTypeCode === "BLIND_ADVENTURE";
   return (
     <Pressable accessibilityRole="button" onPress={onPress}>
       <Card>
@@ -19,7 +20,12 @@ export function DropCard({ drop, onPress }: { readonly drop: MobilePublicDropCar
           {drop.restaurantName}
           {drop.neighborhoodName ? ` · ${drop.neighborhoodName}` : ""}
         </Text>
-        <Text variant="heading">{drop.bagDisplayName}</Text>
+        <Text variant="heading">{isBlindAdventure ? "A cuisine to discover" : drop.bagDisplayName}</Text>
+        <Text variant="caption" color={palette.muted}>
+          {isBlindAdventure
+            ? "Know the kitchen — discover the cuisine."
+            : (drop.bagShortDescription ?? "A chef-curated thali — generously portioned to try more.")}
+        </Text>
         <View style={{ flexDirection: "row", gap: spacing.xs, flexWrap: "wrap" }}>
           <Badge label={drop.dietaryCategoryCode} tone={drop.dietaryCategoryCode === "VEG" ? "success" : "neutral"} />
           {drop.allergenCodes.length > 0 ? <Badge label={`Allergens: ${drop.allergenCodes.join(", ")}`} tone="warning" /> : null}

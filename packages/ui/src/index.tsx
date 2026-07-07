@@ -251,7 +251,7 @@ export function DropCard({
       ) : null}
 
       {/* Cuisine cover art — appetizing banner; real uploaded media can replace this later.
-          Blind-bag drops use the cuisine-agnostic "mystery" cover; premium types get a ribbon. */}
+          Blind-adventure drops use the cuisine-agnostic surprise cover; premium types get a ribbon. */}
       <div className="relative -mx-4 -mt-4 mb-3">
         <img
           src={`/art/cover-${dropCoverKey(drop) ?? "biryani"}.svg`}
@@ -290,17 +290,19 @@ export function DropCard({
           <p className="text-sm font-medium text-forest">{drop.restaurantName}</p>
           <h2 className="mt-1 text-xl font-semibold text-charcoal">
             {isBlindAdventure ? (
-              <span className="text-gold-text">Mystery Cuisine</span>
+              <span className="text-gold-text">A cuisine to discover</span>
             ) : (
               drop.bagDisplayName
             )}
           </h2>
-          {!isBlindAdventure && drop.bagShortDescription ? (
-            <p className="mt-1 line-clamp-2 text-sm text-muted">{drop.bagShortDescription}</p>
+          {!isBlindAdventure ? (
+            <p className="mt-1 line-clamp-2 text-sm text-muted">
+              {drop.bagShortDescription ?? "A chef-curated thali — generously portioned so you get more to try."}
+            </p>
           ) : null}
           {isBlindAdventure && (
             <p className="mt-1 text-xs text-muted">
-              Cuisine revealed after pickup. Allergens always disclosed.
+              Know the kitchen — discover the cuisine. Allergens always disclosed.
             </p>
           )}
         </div>
