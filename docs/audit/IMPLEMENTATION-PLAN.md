@@ -23,13 +23,18 @@ Status key: ☐ todo · ◐ in progress · ☑ done+verified
   - Site: `RestaurantEconomicsCalculator` on `/for-restaurants` (#calculator) — simpler two-panel sales tool (§14), cost assumptions at defaults; calculator.spec.ts e2e (2 tests). QA'd desktop+375, live recompute confirmed.
   - Portal: `/portal/planner` decision-support tab + "Planner" nav item (Build group) — fuller version exposing every cost assumption. Browser-verified logged-in (Bawarchi owner) at 1280+375, no overflow, no console errors; added to opt-in authed a11y suite. Portal build + lint + typecheck green.
 
-## Phase 2 — Consumer surfaces (web + mobile)
-- ☐ Thali/variety framing on drops/detail; SKU count/variety surfaced; "know one, discover two" for reveal.
-- ☐ CW-1 passport-cuisines fix.
-- ☐ CM-1 mobile checkout via simulator (PAYMENTS_SIMULATOR_ENABLED).
-- ☐ CM-2 in-app mobile pickup code (removes SMS dependency).
-- ☐ CM-3 holds/toast polish.
-- ☐ §16 allergen-conflict gate (wire customer dietary/allergen prefs to claim flow).
+## Phase 2 — Consumer surfaces (web + mobile) — code COMPLETE; mobile device-verify + CW-1 remote-apply pending
+Commits on `claude-feature-parity`: `a1d3315` (thali + CW-1), `8c23916` (§16 + CM-1), `6a42dc7` (CM-2 + CM-3). Web gate 10/10 green; pushed for preview.
+- ◐ Thali/variety framing on drops/detail — **web done+verified** (list hero, active card, blind + non-blind detail, responsive 375/320, no console errors; Playwright `thali-framing.spec.ts` 2/2). **Mobile code done+typechecks** (DropCard, drops list header, drop detail) — device-verify pending. No SKU counts surfaced (no count field exists + §14 bans promises → variety framed qualitatively). "Know one, discover the rest" done honestly per drop type (restaurant always shown → standard: "discover the dishes"; BLIND_ADVENTURE: "discover the cuisine"). Retired "Mystery Cuisine" → "A cuisine to discover".
+- ◐ CW-1 passport-cuisines — **code done** (`supabase/migrations/20260706000000_cw1_consumer_tried_cuisines_rpc.sql`: SECURITY DEFINER RPC, in-function authz, correct two-hop join; join verified read-only on remote = Priya 3 orders → 7 cuisines). **BLOCKER: migration not yet applied to remote** (auto-mode classifier blocks ad-hoc prod migration). Needs owner authorization or apply. `discovery-profile.ts` already handles RPC-present path — no app change needed.
+- ◐ CM-1 — **code done**: razorpay stub dead-end replaced with honest fallback (hold-reserved msg + Back to drops). **Still to verify: PAYMENTS_SIMULATOR_ENABLED EFFECTIVE on deployed BFF** (mode=simulated) — part of device pass.
+- ◐ CM-2 in-app pickup code — **code done+typechecks**: BFF `/orders/[id]/pickup-proof` + `issuePickupProofForOrder` helper + `usePickupProof` + `PickupProofCard` (QR grid via RN Views + OTP; no native dep). Order detail leads with in-app proof, SMS secondary. Device-verify pending. Note: QR is a visual proof (OTP is verifiable credential); real scannable QR = follow-up needing react-native-svg + native rebuild.
+- ◐ CM-3 holds/toast polish — **code done+typechecks**: `PeekBarInset` context (tabs layout publishes footprint) consumed by Drops/Home/Account/Orders (bottom padding) + drop-detail StickyActionBar lift. Device-verify pending.
+- ◐ §16 allergen-conflict gate — **web done+verified** (Rahul VEG × NON_VEG drop → interstitial → Claim anyway → hold→checkout; screenshot evidence; no console errors). **Mobile code done+typechecks** (BFF `/account/safety-preferences` + `useSafetyPrefs` + Modal interstitial). Owner decision: warn + explicit ack. Shared model `@gozaika/utils/allergen-safety.ts` (15 unit tests). Loader `consumer-web/lib/safety-prefs.ts`.
+
+**Phase 2 remaining:** (1) apply CW-1 migration to remote [owner]; (2) verify simulator flag effective on preview BFF; (3) mobile on-device verification (adb Pixel 7a + emulator) of thali/allergen-gate/CM-1/CM-2/CM-3 with screenshots; (4) Playwright authed allergen-gate spec + Maestro specs; (5) seed-tooling bug (below).
+
+**Seed-tooling bug found:** `demo_prepare_for_demo(p_create_live_drops=>true)` fails — `demo_cleanup_data` does `delete from order_pickup_verification_event` which is append-only (immutability trigger). Workaround used: `demo_prepare_for_demo(p_cleanup_live_drops=>false, p_create_live_drops=>true)` (skips destructive cleanup, still creates live drops). Real fix belongs in the demo function (Phase 3/4 or owner).
 
 ## Phase 3 — Restaurant surfaces (portal + mobile)
 - ☐ §19 template archetype + allergen envelope + reusable copy.

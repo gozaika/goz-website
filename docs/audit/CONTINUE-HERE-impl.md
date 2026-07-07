@@ -2,6 +2,27 @@
 
 **If you are a fresh session, read this first, then `IMPLEMENTATION-PLAN.md`, then the §0 build sequence in `business-model-audit.md`.**
 
+## Phase 2 progress (updated 2026-07-06, session 2) — consumer surfaces
+Branch `claude-feature-parity` pushed (Vercel PREVIEW). Commits: `a1d3315` thali+CW-1, `8c23916` §16+CM-1, `6a42dc7` CM-2+CM-3. **Web gate 10/10 green.**
+
+**Done + web-verified (hands-on preview, screenshots):**
+- Thali/variety framing (web): drops list hero, active DropCard, blind + non-blind drop detail ("Not a deal. A discovery." block). No fabricated SKU counts (§14). Retired "Mystery Cuisine" → "A cuisine to discover". Responsive 375/320 clean. Playwright `thali-framing.spec.ts` 2/2.
+- §16 allergen-conflict gate (web): warn + explicit-ack interstitial. Verified logged in as Rahul (VEG, rahul.demo@gozaika.dev / DemoPass@2026) on a NON_VEG drop → interstitial → "Claim anyway" → hold → checkout. Shared model `@gozaika/utils/allergen-safety.ts` (15 tests). No console errors.
+
+**Done + typechecks (mobile code / BFF) — NEEDS on-device verification:**
+- Thali framing mobile (DropCard, drops list header, drop detail).
+- §16 gate mobile: BFF `/api/mobile/v1/account/safety-preferences` + `useSafetyPrefs` + Modal interstitial in drop detail.
+- CM-1: honest non-dead-end fallback for the razorpay stub.
+- CM-2: BFF `/api/mobile/v1/orders/[id]/pickup-proof` + `issuePickupProofForOrder` + `usePickupProof` + `PickupProofCard` (RN-Views QR + OTP). Order detail in-app proof primary, SMS secondary.
+- CM-3: `PeekBarInset` context → Drops/Home/Account/Orders bottom padding + drop-detail sticky-bar lift.
+
+**BLOCKERS needing owner / next session:**
+1. **CW-1 migration not applied to remote** — `20260706000000_cw1_consumer_tried_cuisines_rpc.sql`. Auto-mode classifier blocks ad-hoc prod migrations. Apply via: `docker run --rm -v ".../supabase/migrations":/mig postgres:16 psql "$CLOUD_SUPABASE_DB_URL" -f /mig/20260706000000_cw1_consumer_tried_cuisines_rpc.sql` (needs authorization). Until applied, passport cuisines stays 0 on preview.
+2. **Verify PAYMENTS_SIMULATOR_ENABLED effective on preview BFF** (CM-1) — hit the mobile checkout order endpoint, confirm mode=simulated.
+3. **Seed-tooling bug:** `demo_prepare_for_demo(p_create_live_drops=>true)` errors (deletes append-only `order_pickup_verification_event`). Use `demo_prepare_for_demo(p_cleanup_live_drops=>false, p_create_live_drops=>true)` to seed live drops. Real fix owed in the demo function.
+
+**Next session focus:** (a) apply CW-1 migration + verify passport on preview; (b) mobile on-device pass (adb Pixel 7a `3A021JEHN02437` + emulator; Metro from real source hot-reloads JS) — verify thali/allergen-gate/CM-1/CM-2/CM-3 with screenshots; (c) Playwright authed allergen-gate spec (opt-in, reuse Rahul login) + Maestro specs; (d) then Phase 3 (restaurant surfaces).
+
 ## Current state (updated 2026-07-06)
 - **Branch:** `claude-feature-parity`, based on current `origin/main` (`2813a67` Marketing-v2-polished-still — includes handoff doc + marketing pipeline). Docs commit `afd629b` brought `docs/audit/` across. Pushed to remote; Vercel PREVIEW deployments confirmed (gozaika/consumer/restaurant green; SSO-protected). `main` untouched.
 - **Phase:** 1 COMPLETE (marketing + gozaika.in copy + calculator both surfaces). Phase 2 (consumer surfaces) is next.
