@@ -4,6 +4,7 @@ import {
   financeSettlementStatusTone,
   formatPaise,
   formatSignedPaise,
+  IST_TIME_ZONE,
 } from "@gozaika/utils";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -16,7 +17,7 @@ import { PortalChrome } from "../portal-nav";
 export const dynamic = "force-dynamic";
 
 function periodLabel(startAt: string, endAt: string): string {
-  return `${new Date(startAt).toLocaleDateString("en-IN")} - ${new Date(endAt).toLocaleDateString("en-IN")}`;
+  return `${new Date(startAt).toLocaleDateString("en-IN", { timeZone: IST_TIME_ZONE })} - ${new Date(endAt).toLocaleDateString("en-IN", { timeZone: IST_TIME_ZONE })}`;
 }
 
 export default async function FinancePage({

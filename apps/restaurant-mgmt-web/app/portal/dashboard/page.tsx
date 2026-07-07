@@ -1,5 +1,5 @@
 import { ActionCard, Card, DataTable, MetricHero, SellThroughBar, Sparkline, Text } from "@gozaika/ui";
-import { formatBasisPoints, formatPaise, rateToBasisPoints } from "@gozaika/utils";
+import { formatBasisPoints, formatPaise, IST_TIME_ZONE, istDayKey, rateToBasisPoints } from "@gozaika/utils";
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
 import { loadActiveRestaurantsForProfile, loadPortalDrops, loadPortalTemplates, loadRestaurantOpsGuardrails, loadSelectedRestaurant } from "@/lib/slice3";
@@ -27,7 +27,7 @@ export default async function DashboardPage() {
   const listedBags = drops.reduce((total, drop) => total + drop.quantityTotal, 0);
   const soldBags = drops.reduce((total, drop) => total + Math.max(0, drop.quantityTotal - drop.quantityAvailable), 0);
   const todayRevenue = drops
-    .filter((drop) => new Date(drop.pickupStartAt).toDateString() === new Date().toDateString())
+    .filter((drop) => istDayKey(drop.pickupStartAt) === istDayKey(new Date()))
     .reduce((total, drop) => total + Math.max(0, drop.quantityTotal - drop.quantityAvailable) * drop.pricePaise, 0);
   const sellThroughBps = rateToBasisPoints(soldBags, listedBags);
   const aov = soldBags > 0 ? Math.round(todayRevenue / Math.max(1, soldBags)) : 0;
@@ -108,7 +108,7 @@ export default async function DashboardPage() {
             {nextDrop ? (
               <div className="mt-3">
                 <p className="font-semibold text-charcoal">{nextDrop.dropTitle}</p>
-                <p className="mt-1 text-sm text-muted">{new Date(nextDrop.pickupStartAt).toLocaleString("en-IN")}</p>
+                <p className="mt-1 text-sm text-muted">{new Date(nextDrop.pickupStartAt).toLocaleString("en-IN", { timeZone: IST_TIME_ZONE })}</p>
                 <p className="mt-3 text-sm font-semibold text-forest">{nextDrop.quantityAvailable}/{nextDrop.quantityTotal} bags available</p>
               </div>
             ) : (

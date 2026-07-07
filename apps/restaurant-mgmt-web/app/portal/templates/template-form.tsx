@@ -1,7 +1,7 @@
 "use client";
 
 import type { PortalBagTemplate } from "@gozaika/types";
-import { formatPaise } from "@gozaika/utils";
+import { formatPaise, IST_TIME_ZONE } from "@gozaika/utils";
 import { Archive, CheckCircle2, Copy, Pencil, Save, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
@@ -29,7 +29,7 @@ function rupees(value: number | null) {
 }
 
 function createdLabel(value: string) {
-  return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(new Date(value));
+  return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeZone: IST_TIME_ZONE }).format(new Date(value));
 }
 
 export function TemplateForm({

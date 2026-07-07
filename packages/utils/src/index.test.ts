@@ -12,6 +12,7 @@ import {
   formatBasisPoints,
   formatPickupWindow,
   formatSignedPaise,
+  istDayKey,
   generateManualDropAlertText,
   adminOpsStatusLabel,
   adminOpsStatusTone,
@@ -59,6 +60,18 @@ describe("consent resolution", () => {
 describe("pickup window formatting", () => {
   it("formats pickup windows in India time by default", () => {
     expect(formatPickupWindow("2026-04-25T12:30:00.000Z", "2026-04-25T13:30:00.000Z")).toContain("6:00");
+  });
+});
+
+describe("IST day key", () => {
+  it("resolves the calendar day in IST regardless of the runtime zone", () => {
+    // 2026-06-13T20:00Z is already 2026-06-14 01:30 IST — the day rolls over.
+    expect(istDayKey("2026-06-13T20:00:00.000Z")).toBe("2026-06-14");
+  });
+
+  it("is stable for a mid-IST-day instant", () => {
+    // 2026-06-13T06:00Z = 2026-06-13 11:30 IST.
+    expect(istDayKey("2026-06-13T06:00:00.000Z")).toBe("2026-06-13");
   });
 });
 

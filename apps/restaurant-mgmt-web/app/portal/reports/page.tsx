@@ -1,5 +1,5 @@
 import { Sparkline } from "@gozaika/ui";
-import { formatBasisPoints, formatPaise } from "@gozaika/utils";
+import { formatBasisPoints, formatPaise, IST_TIME_ZONE } from "@gozaika/utils";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getPortalActor } from "@/lib/portal-auth";
@@ -106,7 +106,7 @@ export default async function PortalReportsPage({
           <section className="mt-5 rounded-lg border border-hairline bg-white p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-lg font-bold">Drop performance</h2>
-              <p className="text-sm text-muted">Fresh {new Date(report.summary.dataFreshnessAt).toLocaleString("en-IN")}</p>
+              <p className="text-sm text-muted">Fresh {new Date(report.summary.dataFreshnessAt).toLocaleString("en-IN", { timeZone: IST_TIME_ZONE })}</p>
             </div>
             {report.dropRows.length > 1 ? (
               <div className="mt-3 grid gap-1">
@@ -142,7 +142,7 @@ export default async function PortalReportsPage({
                         <p className="font-semibold">{row.dropTitle || row.bagDisplayName}</p>
                         <p className="text-xs text-muted">{row.dropStatusCode}</p>
                       </td>
-                      <td className="py-3 pr-3">{new Date(row.pickupStartAt).toLocaleDateString("en-IN")}</td>
+                      <td className="py-3 pr-3">{new Date(row.pickupStartAt).toLocaleDateString("en-IN", { timeZone: IST_TIME_ZONE })}</td>
                       <td className="py-3 pr-3 text-right">{row.quantityListed}</td>
                       <td className="py-3 pr-3 text-right">{row.quantitySold}</td>
                       <td className="py-3 pr-3 text-right">{formatBasisPoints(row.sellThroughBps)}</td>

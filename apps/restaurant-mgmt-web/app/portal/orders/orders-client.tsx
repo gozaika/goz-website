@@ -3,7 +3,7 @@
 import { AllergenChips, Button, DietaryBadge, FilterChipRow, QueueCard, type StatusTone } from "@gozaika/ui";
 import { palette } from "@gozaika/design-tokens";
 import type { ApiResponse, NoShowResult, OrderIncidentSummary, PickupVerificationResult, RestaurantOrderSummary } from "@gozaika/types";
-import { formatPaise, formatPickupWindow, notificationStatusLabel, safeErrorMessage } from "@gozaika/utils";
+import { formatPaise, formatPickupWindow, IST_TIME_ZONE, notificationStatusLabel, safeErrorMessage } from "@gozaika/utils";
 import { AlertTriangle, CheckCircle2, ClipboardCheck, PackageX } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -250,7 +250,7 @@ export function OrdersClient({ initialOrders }: { readonly initialOrders: readon
                   <h3 className="font-semibold">Verify pickup</h3>
                 </div>
                 {order.orderStatusCode === "COLLECTED" ? (
-                  <p className="mt-3 text-sm text-forest">Collected {order.collectedAt ? new Date(order.collectedAt).toLocaleString("en-IN") : "successfully"}.</p>
+                  <p className="mt-3 text-sm text-forest">Collected {order.collectedAt ? new Date(order.collectedAt).toLocaleString("en-IN", { timeZone: IST_TIME_ZONE }) : "successfully"}.</p>
                 ) : order.orderStatusCode === "NO_SHOW" ? (
                   <p className="mt-3 text-sm text-danger">Marked no-show. Pickup proof is no longer usable.</p>
                 ) : (
