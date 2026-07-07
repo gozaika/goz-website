@@ -16,10 +16,11 @@ Branch `claude-feature-parity` pushed (Vercel PREVIEW). Commits: `a1d3315` thali
 - CM-2: BFF `/api/mobile/v1/orders/[id]/pickup-proof` + `issuePickupProofForOrder` + `usePickupProof` + `PickupProofCard` (RN-Views QR + OTP). Order detail in-app proof primary, SMS secondary.
 - CM-3: `PeekBarInset` context → Drops/Home/Account/Orders bottom padding + drop-detail sticky-bar lift.
 
-**BLOCKERS needing owner / next session:**
-1. **CW-1 migration not applied to remote** — `20260706000000_cw1_consumer_tried_cuisines_rpc.sql`. Auto-mode classifier blocks ad-hoc prod migrations. Apply via: `docker run --rm -v ".../supabase/migrations":/mig postgres:16 psql "$CLOUD_SUPABASE_DB_URL" -f /mig/20260706000000_cw1_consumer_tried_cuisines_rpc.sql` (needs authorization). Until applied, passport cuisines stays 0 on preview.
-2. **Verify PAYMENTS_SIMULATOR_ENABLED effective on preview BFF** (CM-1) — hit the mobile checkout order endpoint, confirm mode=simulated.
-3. **Seed-tooling bug:** `demo_prepare_for_demo(p_create_live_drops=>true)` errors (deletes append-only `order_pickup_verification_event`). Use `demo_prepare_for_demo(p_cleanup_live_drops=>false, p_create_live_drops=>true)` to seed live drops. Real fix owed in the demo function.
+**CW-1 — DONE + verified on remote/preview (owner-authorized apply 2026-07-06).** Migration applied to remote (`CREATE FUNCTION` + `GRANT`). Verified logged in as Priya: `/api/account/discovery-profile` now returns 7 tried cuisines and `/account/discovery` renders "score 41 · Spice Voyager · 7 of 13 cuisines explored" (was 0/score 20). Apply command for reference (needs `MSYS_NO_PATHCONV=1` on Git Bash): `MSYS_NO_PATHCONV=1 docker run --rm -v "<repo>/supabase/migrations:/mig" postgres:16 psql "$CLOUD_SUPABASE_DB_URL" -f /mig/20260706000000_cw1_consumer_tried_cuisines_rpc.sql`.
+
+**BLOCKERS / next session:**
+1. **Verify PAYMENTS_SIMULATOR_ENABLED effective on preview BFF** (CM-1) — hit the mobile checkout order endpoint, confirm mode=simulated.
+2. **Seed-tooling bug:** `demo_prepare_for_demo(p_create_live_drops=>true)` errors (deletes append-only `order_pickup_verification_event`). Use `demo_prepare_for_demo(p_cleanup_live_drops=>false, p_create_live_drops=>true)` to seed live drops. Real fix owed in the demo function.
 
 **Next session focus:** (a) apply CW-1 migration + verify passport on preview; (b) mobile on-device pass (adb Pixel 7a `3A021JEHN02437` + emulator; Metro from real source hot-reloads JS) — verify thali/allergen-gate/CM-1/CM-2/CM-3 with screenshots; (c) Playwright authed allergen-gate spec (opt-in, reuse Rahul login) + Maestro specs; (d) then Phase 3 (restaurant surfaces).
 
