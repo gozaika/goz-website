@@ -34,7 +34,7 @@ Commits on `claude-feature-parity`: `a1d3315` (thali + CW-1), `8c23916` (§16 + 
 
 **Phase 2 remaining:** (1) apply CW-1 migration to remote [owner]; (2) verify simulator flag effective on preview BFF; (3) mobile on-device verification (adb Pixel 7a + emulator) of thali/allergen-gate/CM-1/CM-2/CM-3 with screenshots; (4) Playwright authed allergen-gate spec + Maestro specs; (5) seed-tooling bug (below).
 
-**Seed-tooling bug found:** `demo_prepare_for_demo(p_create_live_drops=>true)` fails — `demo_cleanup_data` does `delete from order_pickup_verification_event` which is append-only (immutability trigger). Workaround used: `demo_prepare_for_demo(p_cleanup_live_drops=>false, p_create_live_drops=>true)` (skips destructive cleanup, still creates live drops). Real fix belongs in the demo function (Phase 3/4 or owner).
+**Seed-tooling bug — ☑ FIXED + applied to remote (2026-07-07).** Migration `supabase/migrations/20260706120000_demo_cleanup_appendonly_fix.sql` (seed source kept in sync): (a) `raise_immutable_error()` guarded carve-out — permits DELETE + referential UPDATE only under transaction-local flag `app.demo_cleanup_active='on'` set solely by service_role-only `demo_cleanup_data` (real paths still immutable — verified); (b) fixed a pre-existing FK RESTRICT bug (`payment_order_intent.drop_inventory_hold_fk`) — Step 2b + Steps 5/6 now remove order_fk-null hold intents before Step 12; (c) hardened all four `demo_*` fns to service_role-only (`revoke from anon, authenticated` — default privileges had left them open). `demo_prepare_for_demo(p_create_live_drops=>true)` now runs clean + idempotent (5 fresh live drops). Workaround retired.
 
 ## Phase 3 — Restaurant surfaces (portal + mobile)
 - ☐ §19 template archetype + allergen envelope + reusable copy.

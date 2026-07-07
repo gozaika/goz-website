@@ -2,6 +2,11 @@
 
 **If you are a fresh session, read this first, then `IMPLEMENTATION-PLAN.md`, then the §0 build sequence in `business-model-audit.md`.**
 
+## Session 3 progress (2026-07-07) — screenshot system + demo-fn fix
+- **TASK A (screenshot library) — infra DONE.** `docs/screenshots/` with 5 app subfolders + master `README.md` (screen-id system + filename nomenclature `<order>-<flow><step>__<screen-id>.png` + capture workflow) + per-app `INDEX.md` registries (every screen's id/route/planned filename pre-seeded). Screen-id system PROVEN: `data-screen-id="drops-list"` on consumer-web drops root reads back identically from SSR + live DOM via documented `preview_eval`. Confirmed zero pre-existing screen-id attrs (no collisions). Owner decisions: **web captures via a Playwright harness** (preview_screenshot can't write repo files — still to build); mobile via `adb exec-out screencap`.
+- **TASK B (demo cleanup fix) — DONE + applied to remote + verified.** See the "Seed-tooling bug — FIXED" block in IMPLEMENTATION-PLAN.md. `demo_prepare_for_demo(p_create_live_drops=>true)` runs clean + idempotent; 5 fresh live drops seeded on remote NOW (ready for Task C device pass). Memory `reference_remote_db_ops_gotchas` updated (workaround retired).
+- **NEXT:** build Playwright web-capture harness → Task C mobile on-device verification (testID additions + screenshots) → Task D tests + Phase 3.
+
 ## Phase 2 progress (updated 2026-07-06, session 2) — consumer surfaces
 Branch `claude-feature-parity` pushed (Vercel PREVIEW). Commits: `a1d3315` thali+CW-1, `8c23916` §16+CM-1, `6a42dc7` CM-2+CM-3. **Web gate 10/10 green.**
 
@@ -20,7 +25,7 @@ Branch `claude-feature-parity` pushed (Vercel PREVIEW). Commits: `a1d3315` thali
 
 **BLOCKERS / next session:**
 1. **Verify PAYMENTS_SIMULATOR_ENABLED effective on preview BFF** (CM-1) — hit the mobile checkout order endpoint, confirm mode=simulated.
-2. **Seed-tooling bug:** `demo_prepare_for_demo(p_create_live_drops=>true)` errors (deletes append-only `order_pickup_verification_event`). Use `demo_prepare_for_demo(p_cleanup_live_drops=>false, p_create_live_drops=>true)` to seed live drops. Real fix owed in the demo function.
+2. ~~Seed-tooling bug~~ **FIXED 2026-07-07** (session 3) — `demo_prepare_for_demo(p_create_live_drops=>true)` runs clean; migration applied to remote. Use the documented call directly now.
 
 **Next session focus:** (a) apply CW-1 migration + verify passport on preview; (b) mobile on-device pass (adb Pixel 7a `3A021JEHN02437` + emulator; Metro from real source hot-reloads JS) — verify thali/allergen-gate/CM-1/CM-2/CM-3 with screenshots; (c) Playwright authed allergen-gate spec (opt-in, reuse Rahul login) + Maestro specs; (d) then Phase 3 (restaurant surfaces).
 

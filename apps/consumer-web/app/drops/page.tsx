@@ -9,7 +9,7 @@ export default async function DropsPage() {
   const drops = await loadPublicDrops();
 
   return (
-    <main id="main-content">
+    <main id="main-content" data-screen-id="drops-list">
       <ShellHeader>
         <ConsumerNavLinks />
       </ShellHeader>
