@@ -13,6 +13,7 @@ import {
   financeSettlementStatusLabel,
   formatBasisPoints,
   formatPaise,
+  IST_TIME_ZONE,
   rateLabel,
   rateToBasisPoints,
   rateTone,
@@ -101,7 +102,7 @@ export function dateInputValue(value: string): string {
 }
 
 export function periodLabel(startAt: string, endAt: string): string {
-  return `${new Date(startAt).toLocaleDateString("en-IN")} - ${new Date(endAt).toLocaleDateString("en-IN")}`;
+  return `${new Date(startAt).toLocaleDateString("en-IN", { timeZone: IST_TIME_ZONE })} - ${new Date(endAt).toLocaleDateString("en-IN", { timeZone: IST_TIME_ZONE })}`;
 }
 
 export function mapRoiDrop(row: RoiDropDetailDbRow): RoiReportDropDetailRow {
