@@ -21,6 +21,7 @@ Devices: Pixel 7a `3A021JEHN02437` (canonical) + `emulator-5554` (confirm).
 | `account-passport` | `(tabs)/account/passport` | `5-A3__account-passport.png` | ☐ | — |
 | `account-consent` | `(tabs)/account/consent` | `5-A4__account-consent.png` | ☐ | — |
 | `account-profile` | `(tabs)/account/profile` | `5-A5__account-profile.png` | ☐ | — |
+| `drops-list` (CM-3) | `(tabs)/drops/index` w/ active hold | `4-C1__drops-list-peekbar.png` | ☑ | 2026-07-07 emulator (Priya). CM-3 PeekBar floats above tab bar, list inset keeps cards clear |
 
 > **BUILD BLOCKER — RESOLVED 2026-07-07.** A fresh debug dev-client was built from
 > `C:\tmp\gozaika-build` (`android/gradlew :app:assembleDebug`, BUILD SUCCESSFUL 8m52s)
