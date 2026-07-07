@@ -96,6 +96,7 @@ export default function DropDetailScreen() {
 
   const soldOut = drop.quantityAvailable <= 0;
   const closed = isClosed(drop);
+  const isBlindAdventure = drop.dropTypeCode === "BLIND_ADVENTURE";
   const disabled = soldOut || closed;
   const primaryLabel = !session ? "Sign in to claim" : soldOut ? "Sold out" : closed ? "Pickup closed" : "Claim a bag";
 
@@ -122,6 +123,17 @@ export default function DropDetailScreen() {
           <Text variant="title">{drop.bagDisplayName}</Text>
           {drop.bagShortDescription ? <Text color={palette.muted}>{drop.bagShortDescription}</Text> : null}
         </View>
+
+        <Card elevated="sm" style={{ backgroundColor: palette.cream }}>
+          <Text variant="caption" color={palette.forest}>
+            Not a deal. A discovery.
+          </Text>
+          <Text color={palette.charcoal}>
+            A chef-curated thali — {isBlindAdventure ? "a cuisine to discover" : "a generous spread from one kitchen"}, portioned so you get
+            more to try, not less. {isBlindAdventure ? "Know the kitchen; discover the cuisine." : "Know the kitchen; discover the dishes."} The
+            full lineup is a surprise; every allergen is disclosed below.
+          </Text>
+        </Card>
 
         <AvailabilityCard drop={drop} />
 

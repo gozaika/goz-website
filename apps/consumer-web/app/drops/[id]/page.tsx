@@ -36,6 +36,7 @@ export default async function DropDetailPage({
       : "Serving guidance pending";
   const publicDropUrl = createPublicDropUrl(drop.dropPk);
   const alertText = generateManualDropAlertText(drop, publicDropUrl);
+  const isBlindAdventure = drop.dropTypeCode === "BLIND_ADVENTURE";
 
   return (
     <main id="main-content">
@@ -47,6 +48,16 @@ export default async function DropDetailPage({
           <p className="text-sm font-bold uppercase text-forest">{drop.restaurantName}</p>
           <h1 className="mt-2 text-4xl font-bold text-charcoal">{drop.bagDisplayName}</h1>
           {drop.bagShortDescription ? <p className="mt-3 text-lg text-muted">{drop.bagShortDescription}</p> : null}
+
+          <div className="mt-5 rounded-lg border border-forest/15 bg-cream p-4">
+            <p className="text-xs font-bold uppercase tracking-wide text-forest">Not a deal. A discovery.</p>
+            <p className="mt-1.5 text-sm text-charcoal">
+              A chef-curated thali — {isBlindAdventure ? "a cuisine to discover" : `dishes from ${drop.restaurantName}'s best`}, generously
+              portioned so you get more to try, not less.{" "}
+              {isBlindAdventure ? "Know the kitchen; discover the cuisine." : "Know the kitchen; discover the dishes."} The full lineup is a
+              surprise — every allergen, dietary category, spice level, and pickup window is disclosed before you claim.
+            </p>
+          </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-2">
             <DietaryBadge code={drop.dietaryCategoryCode} />

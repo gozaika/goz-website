@@ -223,7 +223,7 @@ export default function DropsScreen() {
           <View style={{ flex: 1 }}>
             <Text variant="title">Drops near you</Text>
             <Text color={palette.muted}>
-              {visibleDrops.length} live BAM Bag{visibleDrops.length === 1 ? "" : "s"} from public pickup locations.
+              {visibleDrops.length} live chef-curated thali{visibleDrops.length === 1 ? "" : "s"} — a generous spread from one kitchen, the lineup a surprise.
             </Text>
           </View>
           <Badge label={`${liveDrops.length} live`} tone="success" />
