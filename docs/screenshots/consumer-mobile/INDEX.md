@@ -7,8 +7,8 @@ Devices: Pixel 7a `3A021JEHN02437` (canonical) + `emulator-5554` (confirm).
 | screen-id | route | filename | attr | last captured |
 |---|---|---|---|---|
 | `home` | `(tabs)/index` | `1-A1__home.png` | ☐ | — |
-| `drops-list` | `(tabs)/drops/index` | `2-A1__drops-list.png` | ◐ | testID embedded in source (root View); on-device verify BLOCKED — see build note below |
-| `drop-detail` | `(tabs)/drops/[dropPk]` (standard) | `2-A2__drop-detail.png` | ☐ | — |
+| `drops-list` | `(tabs)/drops/index` | `2-A1__drops-list.png` | ☑ | 2026-07-07 emulator. testID `screen:drops-list` VERIFIED in uiautomator; thali header copy confirmed |
+| `drop-detail` | `(tabs)/drops/[dropPk]` (standard) | `2-A2__drop-detail.png` | ☑ | 2026-07-07 emulator. "Not a deal. A discovery." thali block + "discover the dishes" confirmed. testID pending (add to route root) |
 | `drop-detail-blind` | `(tabs)/drops/[dropPk]` (BLIND_ADVENTURE) | `2-A3__drop-detail-blind.png` | ☐ | — |
 | `restaurants-list` | `(tabs)/restaurants/index` | `2-B1__restaurants-list.png` | ☐ | — |
 | `restaurant-detail` | `(tabs)/restaurants/[slug]` | `2-B2__restaurant-detail.png` | ☐ | — |
@@ -22,7 +22,19 @@ Devices: Pixel 7a `3A021JEHN02437` (canonical) + `emulator-5554` (confirm).
 | `account-consent` | `(tabs)/account/consent` | `5-A4__account-consent.png` | ☐ | — |
 | `account-profile` | `(tabs)/account/profile` | `5-A5__account-profile.png` | ☐ | — |
 
-> **BUILD BLOCKER (2026-07-07): on-device capture needs a fresh native debug build.**
+> **BUILD BLOCKER — RESOLVED 2026-07-07.** A fresh debug dev-client was built from
+> `C:\tmp\gozaika-build` (`android/gradlew :app:assembleDebug`, BUILD SUCCESSFUL 8m52s)
+> and installed on both Pixel 7a + emulator. It loads current Metro JS (Phase 2 + testIDs)
+> with no redbox. **Working setup for on-device capture (use the EMULATOR for live data):**
+> the mobile `.env` API origin is `http://10.0.2.2:3000` = emulator→host-localhost, so data
+> only loads on `emulator-5554` with consumer-web (the mobile BFF, `/api/mobile/v1/*`) running
+> on host:3000 (`preview_start consumer-web`). Physical Pixel loads JS but not BFF data (10.0.2.2
+> is meaningless on-device). Metro: `cd apps/consumer-mobile && npx expo start` (watch mode);
+> `adb -s <serial> reverse tcp:8081 tcp:8081`. On first launch: dismiss dev-menu (Continue),
+> toggle OFF "Tools button", close. Verify screen-id: `MSYS_NO_PATHCONV=1 adb -s <serial> shell
+> uiautomator dump /sdcard/wd.xml` then `... shell cat /sdcard/wd.xml | grep 'screen:'`.
+>
+> Historical (why the rebuild was needed):
 > The installed `in.gozaika.customer` was a Jun-29 *release* APK with an embedded
 > (pre-Phase-2) JS bundle — it does NOT load from Metro, so it shows neither Phase 2
 > features nor screen-id testIDs. The only other prebuilt APK (`C:\tmp\gozaika-build/
