@@ -36,12 +36,12 @@ Commits on `claude-feature-parity`: `a1d3315` (thali + CW-1), `8c23916` (§16 + 
 
 **Seed-tooling bug — ☑ FIXED + applied to remote (2026-07-07).** Migration `supabase/migrations/20260706120000_demo_cleanup_appendonly_fix.sql` (seed source kept in sync): (a) `raise_immutable_error()` guarded carve-out — permits DELETE + referential UPDATE only under transaction-local flag `app.demo_cleanup_active='on'` set solely by service_role-only `demo_cleanup_data` (real paths still immutable — verified); (b) fixed a pre-existing FK RESTRICT bug (`payment_order_intent.drop_inventory_hold_fk`) — Step 2b + Steps 5/6 now remove order_fk-null hold intents before Step 12; (c) hardened all four `demo_*` fns to service_role-only (`revoke from anon, authenticated` — default privileges had left them open). `demo_prepare_for_demo(p_create_live_drops=>true)` now runs clean + idempotent (5 fresh live drops). Workaround retired.
 
-## Phase 3 — Restaurant surfaces (portal + mobile)
+## Phase 3 — Restaurant surfaces (portal + mobile) — STARTED 2026-07-07
 - ☐ §19 template archetype + allergen envelope + reusable copy.
 - ☐ Drop-time surplus fill (internal note/config).
-- ☐ Calculator / decision-support tab (restaurant web app).
+- ☑ Calculator / decision-support tab (restaurant web app) — done in Phase 1 (`/portal/planner`).
 - ☐ RP-1 #418 hydration fix.
-- ☐ RP-2 finance "Orders 0".
+- ☑ **RP-2 finance "Orders 0" — DONE.** Root cause: the demo seed inserts the static settlement run (`…f00000000001`) with explicit totals but omits `order_count` (defaults 0), inserts 6 ORDER_GROSS entries, advances to PAID — never recomputing. Fix: seed now calls `api_finance_recalculate_run_totals(...)` right after inserting entries (run still DRAFT). Remote demo data corrected in place (`order_count` 0→6) via a PAID→DRAFT→recompute→PAID transaction (the locked-guard allows status-only changes; blocks the money/count fields). View `api_restaurant_finance_settlement_summary` projects `sr.order_count` directly → summary card now reads "Orders 6". Verified at data + view layer (RLS hides it from raw psql).
 - ☐ RM-1 mobile ROI parity.
 - ☐ Order Again surfaced in Orders/counter queue.
 

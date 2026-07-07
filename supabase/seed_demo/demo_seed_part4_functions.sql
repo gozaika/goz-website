@@ -436,6 +436,12 @@ begin
        'COMMISSION', -16410,
        'Platform commission 15% (STANDARD_15PCT) on ₹1,094.00 gross',
        now()-interval '18 days', now()-interval '18 days');
+
+    -- RP-2 fix: populate order_count + reconcile stored totals from the entries just
+    -- inserted, using the same canonical recompute the API uses. The run is still DRAFT
+    -- here (advanced to PAID below), so the update is allowed. Without this the summary
+    -- card read "Orders 0" while the ledger listed 6 real orders.
+    perform public.api_finance_recalculate_run_totals('20000000-0000-0000-0000-f00000000001');
   end if;
 end $$;
 
