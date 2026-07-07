@@ -218,7 +218,7 @@ export default function DropsScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: palette.cream }}>
+    <View testID="screen:drops-list" style={{ flex: 1, backgroundColor: palette.cream }}>
       {offline ? <OfflineBanner offline /> : null}
       <View style={{ gap: spacing.md, padding: spacing.lg, paddingBottom: spacing.md }}>
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: spacing.md }}>

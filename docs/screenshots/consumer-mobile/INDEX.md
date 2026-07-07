@@ -7,7 +7,7 @@ Devices: Pixel 7a `3A021JEHN02437` (canonical) + `emulator-5554` (confirm).
 | screen-id | route | filename | attr | last captured |
 |---|---|---|---|---|
 | `home` | `(tabs)/index` | `1-A1__home.png` | ☐ | — |
-| `drops-list` | `(tabs)/drops/index` | `2-A1__drops-list.png` | ☐ | — |
+| `drops-list` | `(tabs)/drops/index` | `2-A1__drops-list.png` | ◐ | testID embedded in source (root View); on-device verify BLOCKED — see build note below |
 | `drop-detail` | `(tabs)/drops/[dropPk]` (standard) | `2-A2__drop-detail.png` | ☐ | — |
 | `drop-detail-blind` | `(tabs)/drops/[dropPk]` (BLIND_ADVENTURE) | `2-A3__drop-detail-blind.png` | ☐ | — |
 | `restaurants-list` | `(tabs)/restaurants/index` | `2-B1__restaurants-list.png` | ☐ | — |
@@ -21,3 +21,17 @@ Devices: Pixel 7a `3A021JEHN02437` (canonical) + `emulator-5554` (confirm).
 | `account-passport` | `(tabs)/account/passport` | `5-A3__account-passport.png` | ☐ | — |
 | `account-consent` | `(tabs)/account/consent` | `5-A4__account-consent.png` | ☐ | — |
 | `account-profile` | `(tabs)/account/profile` | `5-A5__account-profile.png` | ☐ | — |
+
+> **BUILD BLOCKER (2026-07-07): on-device capture needs a fresh native debug build.**
+> The installed `in.gozaika.customer` was a Jun-29 *release* APK with an embedded
+> (pre-Phase-2) JS bundle — it does NOT load from Metro, so it shows neither Phase 2
+> features nor screen-id testIDs. The only other prebuilt APK (`C:\tmp\gozaika-build/
+> apps/consumer-mobile/android/.../debug/app-debug.apk`, Jun 25) DOES load Metro JS but
+> its native layer is too old for current source — it redboxes with `Cannot find native
+> module 'ExpoPushTokenManager'` (expo-notifications native module added after that build).
+> **Fix recipe:** sync `C:\tmp\gozaika-build` to current `claude-feature-parity`, `npm
+> install` (copy is missing expo-notifications in node_modules), then `npx expo run:android`
+> (or gradlew assembleDebug + install) from the short path → installs a current dev-client
+> that loads Metro JS. Then: Metro `npx expo start` from real source, `adb reverse tcp:8081
+> tcp:8081`, open the dev-client → tap `http://localhost:8081`. Device restored to the
+> working release APK in the meantime.
