@@ -9,6 +9,10 @@ export * from "./primitives-model";
 // the gozaika.in fill-the-gap tool and the restaurant web app decision-support tab.
 export * from "./economics";
 
+// Product-level allergen/dietary conflict model (business-model-audit §16) —
+// shared by the consumer web + mobile claim flows so the safety gate can't drift.
+export * from "./allergen-safety";
+
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }

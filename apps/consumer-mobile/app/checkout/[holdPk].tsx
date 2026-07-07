@@ -3,7 +3,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   ErrorState,
   palette,
   ProgressRing,
@@ -102,7 +101,11 @@ export default function CheckoutScreen() {
     );
   }
 
-  // Real Razorpay checkout (stub until SDK + keys).
+  // Real Razorpay checkout is not wired for the pilot (the payment simulator is the
+  // canonical path — see CM-1). When the simulator flag is effective the server
+  // returns mode="simulated" and this branch never renders; keep it an honest,
+  // non-dead-ending fallback so a mis-set flag can never trap the customer without
+  // an affordance. The hold stays reserved until its timer expires — no charge here.
   if (data.mode === "razorpay") {
     return (
       <Screen contentStyle={{ gap: spacing.md }}>
@@ -117,10 +120,13 @@ export default function CheckoutScreen() {
             {data.description}
           </Text>
         </Card>
-        <EmptyState
-          title="Razorpay checkout"
-          message="Secure card / UPI payment opens here. Native Razorpay checkout is wired once payment credentials are configured."
-        />
+        <Card elevated="sm" style={{ backgroundColor: palette.cream }}>
+          <Text variant="label">Online payment is coming soon</Text>
+          <Text color={palette.muted}>
+            Card &amp; UPI checkout goes live shortly. Your hold stays reserved until its timer expires — you have not been charged.
+          </Text>
+        </Card>
+        <Button label="Back to drops" accent={palette.forest} onPress={() => router.replace("/(tabs)/drops")} />
       </Screen>
     );
   }

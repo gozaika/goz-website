@@ -1,6 +1,7 @@
 import { ApiError } from "@gozaika/mobile-core";
 import {
   Badge,
+  Button,
   Card,
   CountdownChip,
   ErrorState,
@@ -15,9 +16,11 @@ import {
   toneColors,
 } from "@gozaika/mobile-ui";
 import type { MobilePublicDropCard } from "@gozaika/types";
-import { formatPaise } from "@gozaika/utils";
+import { evaluateAllergenConflict, formatAllergenLabel, formatDietaryLabel, formatPaise } from "@gozaika/utils";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ScrollView, View } from "react-native";
+import { useMemo, useState } from "react";
+import { Modal, ScrollView, View } from "react-native";
+import { useSafetyPrefs } from "@/api/account";
 import { useClaim } from "@/api/checkout";
 import { useDrop } from "@/api/discovery";
 import { useAuth } from "@/auth/useAuth";
@@ -74,6 +77,19 @@ export default function DropDetailScreen() {
   const { session } = useAuth();
   const router = useRouter();
   const claim = useClaim();
+  const safetyPrefs = useSafetyPrefs(Boolean(session));
+  const [showConflict, setShowConflict] = useState(false);
+  const [acknowledged, setAcknowledged] = useState(false);
+
+  // §16 allergen-conflict gate — warn + explicit acknowledgement before a hold.
+  const conflict = useMemo(
+    () =>
+      evaluateAllergenConflict(safetyPrefs.data ?? { avoidAllergenCodes: [], dietaryPreferenceCodes: [] }, {
+        allergenCodes: drop?.allergenCodes ?? [],
+        dietaryCategoryCode: drop?.dietaryCategoryCode ?? "",
+      }),
+    [safetyPrefs.data, drop?.allergenCodes, drop?.dietaryCategoryCode],
+  );
 
   if (isError) {
     return (
@@ -99,6 +115,16 @@ export default function DropDetailScreen() {
   const isBlindAdventure = drop.dropTypeCode === "BLIND_ADVENTURE";
   const disabled = soldOut || closed;
   const primaryLabel = !session ? "Sign in to claim" : soldOut ? "Sold out" : closed ? "Pickup closed" : "Claim a bag";
+
+  const runClaim = () => {
+    claim.mutate({ dropPk: drop.dropPk }, { onSuccess: (result) => router.push(`/checkout/${result.holdPk}`) });
+  };
+
+  const acknowledgeAndClaim = () => {
+    setAcknowledged(true);
+    setShowConflict(false);
+    runClaim();
+  };
 
   return (
     <Screen scroll={false} contentStyle={{ padding: 0, gap: 0 }}>
@@ -182,7 +208,11 @@ export default function DropDetailScreen() {
             router.push("/auth/login");
             return;
           }
-          claim.mutate({ dropPk: drop.dropPk }, { onSuccess: (result) => router.push(`/checkout/${result.holdPk}`) });
+          if (conflict.hasConflict && !acknowledged) {
+            setShowConflict(true);
+            return;
+          }
+          runClaim();
         }}
       >
         {claim.isError ? (
@@ -191,6 +221,43 @@ export default function DropDetailScreen() {
           </Text>
         ) : null}
       </StickyActionBar>
+
+      <Modal
+        visible={showConflict}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowConflict(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.45)", justifyContent: "center", padding: spacing.xl }}>
+          <Card elevated="md" style={{ borderColor: toneColors("danger").fg, borderWidth: 1, gap: spacing.sm }}>
+            <Text variant="heading" color={toneColors("danger").fg}>
+              Check this against your preferences
+            </Text>
+            {conflict.conflictingAllergens.length > 0 ? (
+              <Text color={palette.charcoal}>
+                You&apos;ve asked us to flag {conflict.conflictingAllergens.map(formatAllergenLabel).join(", ")}. This bag discloses{" "}
+                {conflict.conflictingAllergens.length === 1 ? "it" : "them"} in its allergens.
+              </Text>
+            ) : null}
+            {conflict.dietaryConflict ? (
+              <Text color={palette.charcoal}>
+                This bag is {formatDietaryLabel(conflict.dietaryConflict)}, which doesn&apos;t match your saved dietary preference.
+              </Text>
+            ) : null}
+            <Text variant="caption" color={palette.muted}>
+              You can still claim it — just confirm you&apos;ve checked. Update saved preferences any time in your account.
+            </Text>
+            <View style={{ flexDirection: "row", gap: spacing.sm, marginTop: spacing.xs }}>
+              <View style={{ flex: 1 }}>
+                <Button label="Cancel" variant="secondary" accent={palette.forest} onPress={() => setShowConflict(false)} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Button label="Claim anyway" accent={toneColors("danger").fg} onPress={acknowledgeAndClaim} />
+              </View>
+            </View>
+          </Card>
+        </View>
+      </Modal>
     </Screen>
   );
 }

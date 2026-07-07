@@ -9,9 +9,15 @@ import {
   type DiscoveryProfile,
   type ZaykaPassportPayload,
 } from "@gozaika/types";
+import type { ConsumerSafetyPrefs } from "@gozaika/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { apiClient } from "./client";
+
+const safetyPrefsSchema = z.object({
+  avoidAllergenCodes: z.array(z.string()),
+  dietaryPreferenceCodes: z.array(z.string()),
+});
 
 const erasureResultSchema = z.object({
   status: z.string(),
@@ -55,6 +61,19 @@ export function useDiscoveryProfile() {
     queryFn: async (): Promise<DiscoveryProfile> => {
       const res = await apiClient.request("/account/discovery-profile", { dataSchema: discoveryProfileSchema });
       return res.data as unknown as DiscoveryProfile;
+    },
+  });
+}
+
+/** The signed-in consumer's saved allergen/dietary preferences (§16 allergen gate). */
+export function useSafetyPrefs(enabled = true) {
+  return useQuery({
+    queryKey: ["account-safety-prefs"],
+    enabled,
+    staleTime: STALE_TIMES.active,
+    queryFn: async (): Promise<ConsumerSafetyPrefs> => {
+      const res = await apiClient.request("/account/safety-preferences", { dataSchema: safetyPrefsSchema });
+      return res.data as unknown as ConsumerSafetyPrefs;
     },
   });
 }

@@ -2,10 +2,18 @@
 
 import { Button } from "@gozaika/ui";
 import type { ApiResponse, ClaimCreationResult, PublicDropCard } from "@gozaika/types";
-import { formatPaise, getDropClaimAvailability, safeErrorMessage } from "@gozaika/utils";
-import { Clock, ShieldCheck } from "lucide-react";
+import type { ConsumerSafetyPrefs } from "@gozaika/utils";
+import {
+  evaluateAllergenConflict,
+  formatAllergenLabel,
+  formatDietaryLabel,
+  formatPaise,
+  getDropClaimAvailability,
+  safeErrorMessage,
+} from "@gozaika/utils";
+import { AlertTriangle, Clock, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 function claimKey(dropPk: string) {
   return `gozaika:claim-idempotency:${dropPk}`;
@@ -25,19 +33,34 @@ export function ClaimPanel({
   drop,
   isSignedIn,
   autoClaim,
+  safetyPrefs,
 }: {
   readonly drop: PublicDropCard;
   readonly isSignedIn: boolean;
   readonly autoClaim: boolean;
+  readonly safetyPrefs?: ConsumerSafetyPrefs;
 }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
+  const [showConflict, setShowConflict] = useState(false);
+  const [acknowledged, setAcknowledged] = useState(false);
   const autoClaimStarted = useRef(false);
   const availability = getDropClaimAvailability(drop);
   const loginHref = `/auth/login?next=${encodeURIComponent(`/drops/${drop.dropPk}?claim=1`)}`;
 
-  const claim = useCallback(async () => {
+  // §16 allergen-conflict gate. Warn + explicit acknowledgement (owner decision):
+  // a conflict never silently blocks, but the customer must actively confirm.
+  const conflict = useMemo(
+    () =>
+      evaluateAllergenConflict(safetyPrefs ?? { avoidAllergenCodes: [], dietaryPreferenceCodes: [] }, {
+        allergenCodes: drop.allergenCodes,
+        dietaryCategoryCode: drop.dietaryCategoryCode,
+      }),
+    [safetyPrefs, drop.allergenCodes, drop.dietaryCategoryCode],
+  );
+
+  const claim = useCallback(async (options?: { readonly bypassGate?: boolean }) => {
     setMessage("");
 
     if (!availability.canClaim) {
@@ -47,6 +70,11 @@ export function ClaimPanel({
 
     if (!isSignedIn) {
       router.push(loginHref);
+      return;
+    }
+
+    if (conflict.hasConflict && !acknowledged && !options?.bypassGate) {
+      setShowConflict(true);
       return;
     }
 
@@ -73,7 +101,13 @@ export function ClaimPanel({
     } finally {
       setPending(false);
     }
-  }, [availability.canClaim, availability.reason, drop.dropPk, isSignedIn, loginHref, router]);
+  }, [availability.canClaim, availability.reason, conflict.hasConflict, acknowledged, drop.dropPk, isSignedIn, loginHref, router]);
+
+  const acknowledgeAndClaim = useCallback(() => {
+    setAcknowledged(true);
+    setShowConflict(false);
+    void claim({ bypassGate: true });
+  }, [claim]);
 
   useEffect(() => {
     if (!autoClaim || autoClaimStarted.current || pending) {
@@ -86,7 +120,44 @@ export function ClaimPanel({
 
   return (
     <div className="mt-5 grid gap-3">
-      <Button type="button" className="w-full gap-2" disabled={pending || !availability.canClaim} onClick={claim}>
+      {showConflict && conflict.hasConflict ? (
+        <div role="alertdialog" aria-labelledby="allergen-gate-title" className="rounded-lg border-2 border-danger bg-danger-soft p-4">
+          <p id="allergen-gate-title" className="flex items-start gap-2 text-sm font-bold text-danger">
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+            Check this against your preferences
+          </p>
+          <div className="mt-2 grid gap-2 text-sm text-charcoal">
+            {conflict.conflictingAllergens.length > 0 ? (
+              <p>
+                You&apos;ve asked us to flag{" "}
+                <span className="font-semibold">
+                  {conflict.conflictingAllergens.map(formatAllergenLabel).join(", ")}
+                </span>
+                . This bag discloses{" "}
+                {conflict.conflictingAllergens.length === 1 ? "it" : "them"} in its allergens.
+              </p>
+            ) : null}
+            {conflict.dietaryConflict ? (
+              <p>
+                This bag is <span className="font-semibold">{formatDietaryLabel(conflict.dietaryConflict)}</span>, which doesn&apos;t match your
+                saved dietary preference.
+              </p>
+            ) : null}
+            <p className="text-muted">
+              You can still claim it — just confirm you&apos;ve checked. Update saved preferences any time in your account.
+            </p>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Button type="button" variant="danger" onClick={acknowledgeAndClaim} disabled={pending}>
+              Claim anyway
+            </Button>
+            <Button type="button" variant="secondary" onClick={() => setShowConflict(false)} disabled={pending}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : null}
+      <Button type="button" className="w-full gap-2" disabled={pending || !availability.canClaim} onClick={() => claim()}>
         <ShieldCheck size={18} aria-hidden="true" />
         {pending ? "Holding..." : availability.canClaim ? "Hold this BAM Bag" : availability.reason}
       </Button>

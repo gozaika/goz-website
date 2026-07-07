@@ -2,6 +2,8 @@ import { AllergenChips, CountdownChip, DietaryBadge, DropShareActions, ProgressB
 import { createPublicDropUrl, formatPaise, formatPickupWindow, generateManualDropAlertText } from "@gozaika/utils";
 import { notFound } from "next/navigation";
 import { loadPublicDrop } from "@/lib/drops";
+import { getConsumerPkByUserId } from "@/lib/passport";
+import { EMPTY_SAFETY_PREFS, loadConsumerSafetyPrefs } from "@/lib/safety-prefs";
 import { createClient } from "@/lib/supabase/server";
 import { ClaimPanel } from "./claim-panel";
 import { ConsumerNavLinks } from "../../consumer-nav";
@@ -27,6 +29,16 @@ export default async function DropDetailPage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // §16 allergen-conflict gate: load the signed-in customer's saved allergen/dietary
+  // preferences so the claim panel can warn on a conflict before a hold is created.
+  let safetyPrefs = EMPTY_SAFETY_PREFS;
+  if (user) {
+    const consumerPk = await getConsumerPkByUserId(supabase, user.id);
+    if (consumerPk) {
+      safetyPrefs = await loadConsumerSafetyPrefs(supabase, consumerPk);
+    }
+  }
 
   const serves =
     drop.servesMin && drop.servesMax
@@ -118,7 +130,7 @@ export default async function DropDetailPage({
               {drop.quantityAvailable} of {drop.quantityTotal} bags remaining
             </p>
           </div>
-          <ClaimPanel drop={drop} isSignedIn={Boolean(user)} autoClaim={query?.claim === "1"} />
+          <ClaimPanel drop={drop} isSignedIn={Boolean(user)} autoClaim={query?.claim === "1"} safetyPrefs={safetyPrefs} />
           <DropShareActions publicUrl={publicDropUrl} shareText={alertText} className="mt-3" />
           <p className="mt-3 text-xs text-muted">
             Holds are temporary inventory reservations. Pay from checkout before the timer expires to confirm pickup.
