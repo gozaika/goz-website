@@ -60,6 +60,7 @@ export function TemplateForm({
       spiceLevelCode: String(form.get("spiceLevelCode") ?? ""),
       servesMin: Number(form.get("servesMin") ?? 1),
       servesMax: Number(form.get("servesMax") ?? 1),
+      archetypeItemCount: form.get("archetypeItemCount") ? Number(form.get("archetypeItemCount")) : null,
       maxHoldingMinutes: Number(form.get("maxHoldingMinutes") ?? 120),
       holdingGuidanceText: String(form.get("holdingGuidanceText") ?? ""),
       minMenuValuePaise: Math.round(Number(form.get("minMenuValueRupees") ?? 0) * 100),
@@ -185,6 +186,25 @@ export function TemplateForm({
           </label>
         </div>
 
+        <div className="rounded-md border border-forest/20 bg-success-soft/40 p-3">
+          <label className="grid gap-1 text-sm font-medium">
+            Composition guide — items per bag (internal)
+            <input
+              name="archetypeItemCount"
+              type="number"
+              min="1"
+              max="20"
+              defaultValue={editingTemplate?.archetypeItemCount ?? ""}
+              placeholder="e.g. 3"
+              className="min-h-11 max-w-40 rounded-md border border-hairline px-3"
+            />
+          </label>
+          <p className="mt-1 text-xs text-muted">
+            Guides how many distinct items you compose into this archetype from the day&apos;s surplus. Internal only —
+            never shown to customers and never a promise. Keep the bag a loose chef&apos;s selection, not a fixed recipe.
+          </p>
+        </div>
+
         <div className="grid gap-3 sm:grid-cols-3">
           <label className="grid gap-1 text-sm font-medium">
             Menu value INR
@@ -221,7 +241,12 @@ export function TemplateForm({
         </div>
 
         <div>
-          <p className="text-sm font-medium">Allergen disclosure</p>
+          <p className="text-sm font-medium">Allergen envelope</p>
+          <p className="mt-1 text-xs text-muted">
+            Declare the union of every allergen that could <em>ever</em> appear in this archetype. Each drop&apos;s surplus
+            fill must stay inside this envelope, so a same-envelope swap can never surprise a customer with an undisclosed
+            allergen. If a fill would fall outside it, publish a new revision that widens the envelope first.
+          </p>
           <div className="mt-2 grid gap-2 sm:grid-cols-3">
             {allergenCodes.map((code) => (
               <label key={code} className="flex items-center gap-2 rounded-md border border-hairline px-3 py-2 text-sm">
@@ -233,7 +258,7 @@ export function TemplateForm({
         </div>
 
         <label className="grid gap-1 text-sm font-medium">
-          Allergen summary
+          Allergen summary (shown to customers)
           <input name="allergenSummaryText" required defaultValue={editingTemplate?.allergenSummaryText ?? ""} className="min-h-11 rounded-md border border-hairline px-3" />
         </label>
         <label className="grid gap-1 text-sm font-medium">
@@ -282,6 +307,9 @@ export function TemplateForm({
                 <p className="mt-2 text-xs text-muted">
                   Defaults: {template.defaultDropQuantity} bags, starts after {template.defaultPickupStartOffsetMinutes} min, {template.defaultPickupDurationMinutes} min window
                 </p>
+                {template.archetypeItemCount ? (
+                  <p className="mt-1 text-xs text-muted">Composition guide: ~{template.archetypeItemCount} items per bag (internal)</p>
+                ) : null}
                 <div className="mt-3 flex flex-wrap gap-2">
                   {!template.activeRevisionPk ? (
                     <button

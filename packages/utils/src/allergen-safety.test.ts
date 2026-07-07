@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   evaluateAllergenConflict,
+  evaluateEnvelopeBounding,
   formatAllergenLabel,
   formatDietaryLabel,
   type ConsumerSafetyPrefs,
@@ -109,6 +110,40 @@ describe("evaluateAllergenConflict — combined", () => {
     expect(result.hasConflict).toBe(true);
     expect(result.conflictingAllergens).toEqual(["DAIRY"]);
     expect(result.dietaryConflict).toBe("NON_VEG");
+  });
+});
+
+describe("evaluateEnvelopeBounding — §19 fill within the template allergen envelope", () => {
+  it("is within bounds when the fill uses a subset of the envelope", () => {
+    const result = evaluateEnvelopeBounding(["DAIRY", "WHEAT_GLUTEN", "NUTS"], ["DAIRY", "NUTS"]);
+    expect(result.withinEnvelope).toBe(true);
+    expect(result.outOfEnvelope).toEqual([]);
+  });
+
+  it("flags a fill allergen not declared in the envelope", () => {
+    const result = evaluateEnvelopeBounding(["DAIRY", "WHEAT_GLUTEN"], ["DAIRY", "SHELLFISH"]);
+    expect(result.withinEnvelope).toBe(false);
+    expect(result.outOfEnvelope).toEqual(["SHELLFISH"]);
+  });
+
+  it("reports every out-of-envelope allergen, deduped", () => {
+    const result = evaluateEnvelopeBounding(["DAIRY"], ["FISH", "SHELLFISH", "FISH"]);
+    expect(new Set(result.outOfEnvelope)).toEqual(new Set(["FISH", "SHELLFISH"]));
+  });
+
+  it("is case- and whitespace-insensitive on both sides", () => {
+    const result = evaluateEnvelopeBounding([" dairy ", "Nuts"], ["DAIRY", "nuts"]);
+    expect(result.withinEnvelope).toBe(true);
+  });
+
+  it("treats an empty fill as trivially within any envelope", () => {
+    expect(evaluateEnvelopeBounding(["DAIRY"], []).withinEnvelope).toBe(true);
+  });
+
+  it("flags any fill when the envelope is empty", () => {
+    const result = evaluateEnvelopeBounding([], ["DAIRY"]);
+    expect(result.withinEnvelope).toBe(false);
+    expect(result.outOfEnvelope).toEqual(["DAIRY"]);
   });
 });
 

@@ -93,6 +93,37 @@ export function evaluateAllergenConflict(
   };
 }
 
+/**
+ * §19 template-vs-drop safety invariant. A template declares an *allergen envelope*
+ * (the union of anything that could ever be in this archetype). At drop time the
+ * restaurant fills the archetype from today's surplus; that fill's allergens MUST
+ * stay inside the declared envelope.
+ *
+ * Why this is the guardrail (ties to §16): a customer only ever sees the template's
+ * envelope disclosure, and the §16 conflict gate warns/blocks against that envelope.
+ * So a same-envelope swap can never violate a customer's disclosed allergens, while
+ * an out-of-envelope fill introduces an *undisclosed* allergen and must be flagged so
+ * the restaurant either re-declares the envelope (new revision) or excludes the item.
+ *
+ * Pure and conservative: any fill allergen not present in the envelope is out-of-bounds.
+ * Empty fill is trivially within any envelope.
+ */
+export interface EnvelopeBoundingResult {
+  /** True when every fill allergen is covered by the declared envelope. */
+  readonly withinEnvelope: boolean;
+  /** Fill allergen codes NOT covered by the envelope (upper-cased, deduped). */
+  readonly outOfEnvelope: readonly string[];
+}
+
+export function evaluateEnvelopeBounding(
+  envelopeCodes: readonly string[],
+  fillCodes: readonly string[],
+): EnvelopeBoundingResult {
+  const envelope = new Set(normalise(envelopeCodes));
+  const outOfEnvelope = normalise(fillCodes).filter((code) => !envelope.has(code));
+  return { withinEnvelope: outOfEnvelope.length === 0, outOfEnvelope };
+}
+
 /** Human-readable allergen label, e.g. WHEAT_GLUTEN -> "Wheat gluten". */
 export function formatAllergenLabel(code: string): string {
   const cleaned = code.trim().replaceAll("_", " ").toLowerCase();

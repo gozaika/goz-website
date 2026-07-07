@@ -97,6 +97,7 @@ export async function POST(request: Request) {
       publish_at: publishedAt,
       pickup_start_at: parsed.data.pickupStartAt,
       pickup_end_at: parsed.data.pickupEndAt,
+      internal_fill_note: parsed.data.internalFillNote ?? null,
       visibility_code: "PUBLIC",
       created_by_profile_fk: actor.profilePk,
       published_by_profile_fk: publishedAt ? actor.profilePk : null,
