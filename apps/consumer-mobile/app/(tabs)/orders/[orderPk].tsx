@@ -195,7 +195,7 @@ export default function OrderDetailScreen() {
   const collected = order.orderStatusCode === "COLLECTED";
 
   return (
-    <Screen contentStyle={{ gap: spacing.md }}>
+    <Screen contentStyle={{ gap: spacing.md }} testID="screen:order-pickup-proof">
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
         <Text variant="title">{order.bagDisplayName}</Text>
         <Badge label={order.orderStatusCode.replaceAll("_", " ")} tone={statusTone(order.orderStatusCode)} />

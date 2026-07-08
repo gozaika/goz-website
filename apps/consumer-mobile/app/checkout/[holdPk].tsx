@@ -133,7 +133,7 @@ export default function CheckoutScreen() {
 
   // Simulated checkout (demo/test only).
   return (
-    <Screen scroll={false} contentStyle={{ padding: 0, gap: 0 }}>
+    <Screen scroll={false} contentStyle={{ padding: 0, gap: 0 }} testID="screen:checkout-simulated">
       <ScrollView contentContainerStyle={{ padding: spacing.xl, gap: spacing.md }}>
         <Badge label="Demo · simulated payment" tone="warning" />
         <View>

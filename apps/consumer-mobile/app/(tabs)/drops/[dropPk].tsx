@@ -129,7 +129,7 @@ export default function DropDetailScreen() {
   };
 
   return (
-    <Screen scroll={false} contentStyle={{ padding: 0, gap: 0 }}>
+    <Screen scroll={false} contentStyle={{ padding: 0, gap: 0 }} testID="screen:drop-detail">
       <ScrollView contentContainerStyle={{ padding: spacing.xl, paddingBottom: spacing.xl, gap: spacing.md }}>
         <ProductMedia
           media={drop.image}
@@ -231,7 +231,10 @@ export default function DropDetailScreen() {
         animationType="fade"
         onRequestClose={() => setShowConflict(false)}
       >
-        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.45)", justifyContent: "center", padding: spacing.xl }}>
+        <View
+          testID="screen:claim-allergen-gate"
+          style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.45)", justifyContent: "center", padding: spacing.xl }}
+        >
           <Card elevated="md" style={{ borderColor: toneColors("danger").fg, borderWidth: 1, gap: spacing.sm }}>
             <Text variant="heading" color={toneColors("danger").fg}>
               Check this against your preferences
