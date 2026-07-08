@@ -1,5 +1,5 @@
 -- Phase 3 §20: "Order Again" — post-taste full-price reorder on the EXISTING
--- drops -> hold -> pay -> pickup rails (see docs/audit/business-model-audit.md §20/§24).
+-- drops -> hold -> pay -> pickup rails (see docs/audits/2026-07-05-launch-readiness/business-model-strategy.md §20/§24).
 --
 -- Design (reuse rails, not a new ordering engine):
 --   * The reorderable unit is the bag TEMPLATE (no dish-level SKUs exist) — a reorder

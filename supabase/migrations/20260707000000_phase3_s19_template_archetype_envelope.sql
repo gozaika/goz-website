@@ -1,6 +1,6 @@
 -- Phase 3 §19 — template archetype + allergen envelope (the one non-cosmetic change).
 -- Append-only, additive columns only (nullable) so this is safe to apply to a live DB and
--- does not touch existing rows. See docs/audit/business-model-audit.md §19/§16/§14/§24.
+-- does not touch existing rows. See docs/audits/2026-07-05-launch-readiness/business-model-strategy.md §19/§16/§14/§24.
 --
 -- Two internal-only fields:
 --   1. catalog_bag_template_revision.archetype_item_count — the reusable archetype's target
