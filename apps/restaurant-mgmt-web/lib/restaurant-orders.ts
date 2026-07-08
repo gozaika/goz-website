@@ -37,6 +37,7 @@ export type PickupOrderRow = {
   readonly incident_count: number | string;
   readonly created_at: string;
   readonly updated_at: string;
+  readonly is_reorder?: boolean | null;
 };
 
 export type LegacyOrderRow = {
@@ -61,6 +62,7 @@ export type LegacyOrderRow = {
   readonly updated_at: string;
   readonly order_item: { readonly quantity: number | string }[] | null;
   readonly payment_order_intent: { readonly payment_intent_status_code: RestaurantOrderSummary["paymentIntentStatusCode"] }[] | null;
+  readonly drop_drop: { readonly drop_type_code: string } | { readonly drop_type_code: string }[] | null;
 };
 
 const LEGACY_PICKUP_STATUSES = ["PAID", "CONFIRMED", "READY_FOR_PICKUP", "COLLECTED", "NO_SHOW"] as const;
@@ -92,6 +94,7 @@ export function mapPickupOrder(row: PickupOrderRow): RestaurantOrderSummary {
     lastPickupVerificationResultCode: row.last_pickup_verification_result_code,
     lastPickupVerificationAt: row.last_pickup_verification_at,
     incidentCount: Number(row.incident_count ?? 0),
+    isReorder: Boolean(row.is_reorder),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -134,6 +137,7 @@ export function mapLegacyOrder(row: LegacyOrderRow): RestaurantOrderSummary {
     lastPickupVerificationResultCode: null,
     lastPickupVerificationAt: null,
     incidentCount: 0,
+    isReorder: (Array.isArray(row.drop_drop) ? row.drop_drop[0]?.drop_type_code : row.drop_drop?.drop_type_code) === "REORDER",
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -143,7 +147,7 @@ const LEGACY_SELECT =
   "order_order_pk,order_number,restaurant_fk,drop_fk,order_status_code,payment_status_code," +
   "snapshot_restaurant_name,snapshot_drop_title,snapshot_bag_display_name,snapshot_dietary_category_code," +
   "snapshot_spice_level_code,snapshot_allergen_summary_text,total_paise,currency_code,pickup_window_start_at," +
-  "pickup_window_end_at,collected_at,created_at,updated_at,order_item(quantity),payment_order_intent(payment_intent_status_code)";
+  "pickup_window_end_at,collected_at,created_at,updated_at,order_item(quantity),payment_order_intent(payment_intent_status_code),drop_drop(drop_type_code)";
 
 /**
  * Load pickup orders for the given restaurant tenant(s). `viewClient` reads the

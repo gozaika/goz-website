@@ -22,6 +22,8 @@ Devices: Pixel 7a `3A021JEHN02437` (canonical) + `emulator-5554` (confirm).
 | `account-consent` | `(tabs)/account/consent` | `5-A4__account-consent.png` | ☐ | — |
 | `account-profile` | `(tabs)/account/profile` | `5-A5__account-profile.png` | ☐ | — |
 | `drops-list` (CM-3) | `(tabs)/drops/index` w/ active hold | `4-C1__drops-list-peekbar.png` | ☑ | 2026-07-07 emulator (Priya). CM-3 PeekBar floats above tab bar, list inset keeps cards clear |
+| `order-reorder-card` (§20) | `(tabs)/orders/[orderPk]` COLLECTED — "Get it again" | `4-D1__order-reorder-card.png` | ☑ | 2026-07-08 emulator (Rahul, collected "Full Veg Thali Bag" from Sattvik). §20 Order Again entry: "Get it again / Loved the … Order it again at full menu price" + Order again button |
+| `checkout-simulated` (§20 reorder) | `checkout/[holdPk]` for a REORDER drop | `4-D2__reorder-checkout.png` | ☑ | 2026-07-08 emulator. Reorder checkout at **full price ₹220** (vs ₹99 discounted original) — §24 anti-cannibalization. Confirmed → real reorder order `GZ-HYD-202607-000099` (REORDER drop, CAPTURED). Portal reports ROI card + counter-queue "↻ Reorder" flag verified |
 
 > **CAPTURE NOTES (2026-07-08, §16/CM-1/CM-2 pass).**
 > - **CM-1 simulator flag:** the mobile checkout renders `mode=simulated` only when the BFF

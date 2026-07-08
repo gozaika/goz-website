@@ -1310,6 +1310,8 @@ export interface RestaurantOrderSummary {
   readonly lastPickupVerificationResultCode?: PickupVerificationResultCode | null;
   readonly lastPickupVerificationAt?: string | null;
   readonly incidentCount?: number;
+  /** §20: true when this order is a full-price "Order Again" reorder (drop_type=REORDER). */
+  readonly isReorder?: boolean;
   readonly notifications?: readonly NotificationSummary[];
   readonly createdAt: string;
   readonly updatedAt: string;

@@ -202,6 +202,7 @@ export function OrdersClient({ initialOrders }: { readonly initialOrders: readon
                 formatPickupWindow(order.pickupWindowStartAt, order.pickupWindowEndAt),
                 `Qty ${order.quantity} · ${order.dietaryCategoryCode.replaceAll("_", "-")} · ${order.paymentIntentStatusCode ?? order.paymentStatusCode}`,
                 `${order.pickupVerificationAttemptCount ?? 0} verification attempts`,
+                ...(order.isReorder ? ["↻ Reorder — full-price Order Again"] : []),
               ]}
               amountLabel={formatPaise(order.paidAmountPaise)}
               incidentLabel={(order.incidentCount ?? 0) > 0 ? `${order.incidentCount} incident${order.incidentCount === 1 ? "" : "s"}` : undefined}

@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { issuePickupProof, loadConsumerNotifications, loadConsumerOrder } from "@/lib/orders";
 import { createClient } from "@/lib/supabase/server";
 import { PickupProofCard } from "./pickup-proof-card";
+import { ReorderCard } from "./reorder-card";
 import { ReviewSubmitCard } from "./review-submit-card";
 import { ConsumerNavLinks } from "../../consumer-nav";
 
@@ -131,6 +132,10 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
               ) : null}
             </div>
           </section>
+
+          {order.orderStatusCode === "COLLECTED" && (
+            <ReorderCard orderPk={order.orderPk} bagDisplayName={order.bagDisplayName} restaurantName={order.restaurantName} />
+          )}
 
           {order.orderStatusCode === "COLLECTED" && (
             <ReviewSubmitCard orderPk={order.orderPk} restaurantName={order.restaurantName} />

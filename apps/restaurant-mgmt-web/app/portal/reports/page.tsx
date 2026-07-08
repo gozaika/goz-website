@@ -46,6 +46,27 @@ export default async function PortalReportsPage({
     periodEndAt: period.periodEndAt,
   });
 
+  // §20 Order Again — sample→reorder ROI (all-time; the pilot's discovery-funnel proof).
+  const { data: reorderRoiRows } = await supabase
+    .from("api_restaurant_reorder_roi")
+    .select("*")
+    .eq("restaurant_pk", restaurant.restaurantPk)
+    .limit(1);
+  const reorderRoiRow = (reorderRoiRows?.[0] ?? null) as {
+    readonly sample_orders: number | string;
+    readonly reorder_orders: number | string;
+    readonly converted_sample_orders: number | string;
+    readonly reorder_gmv_paise: number | string;
+    readonly reorder_conversion_bps: number | string | null;
+  } | null;
+  const reorderRoi = {
+    sampleOrders: Number(reorderRoiRow?.sample_orders ?? 0),
+    reorderOrders: Number(reorderRoiRow?.reorder_orders ?? 0),
+    convertedSampleOrders: Number(reorderRoiRow?.converted_sample_orders ?? 0),
+    reorderGmvPaise: Number(reorderRoiRow?.reorder_gmv_paise ?? 0),
+    reorderConversionBps: reorderRoiRow?.reorder_conversion_bps == null ? null : Number(reorderRoiRow.reorder_conversion_bps),
+  };
+
   return (
     <PortalChrome restaurantName={restaurant.restaurantName} statusCode="ACTIVE">
       <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
@@ -85,6 +106,40 @@ export default async function PortalReportsPage({
             </article>
           ))}
         </div>
+
+        <section className="mt-5 rounded-lg border border-saffron/30 bg-white p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-saffron-text">Order Again</p>
+              <h2 className="mt-1 text-lg font-bold">Reorder ROI — the discovery funnel, measured</h2>
+            </div>
+            <p className="max-w-md text-xs text-muted">
+              Full-price reorders of a bag a customer already tasted. This conversion is the pilot ROI proof — counted all-time, not just this period.
+            </p>
+          </div>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <article className="rounded-lg border border-hairline bg-white p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] opacity-75">Reorders (full price)</p>
+              <p className="mt-2 text-2xl font-bold">{reorderRoi.reorderOrders}</p>
+              <p className="mt-1 text-sm opacity-80">Paid full-price Order Again purchases</p>
+            </article>
+            <article className="rounded-lg border border-hairline bg-white p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] opacity-75">Reorder GMV</p>
+              <p className="mt-2 text-2xl font-bold">{formatPaise(reorderRoi.reorderGmvPaise)}</p>
+              <p className="mt-1 text-sm opacity-80">Full-price value from reorders</p>
+            </article>
+            <article className="rounded-lg border border-hairline bg-white p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] opacity-75">Samples converted</p>
+              <p className="mt-2 text-2xl font-bold">{reorderRoi.convertedSampleOrders} / {reorderRoi.sampleOrders}</p>
+              <p className="mt-1 text-sm opacity-80">Tasted orders that led to a reorder</p>
+            </article>
+            <article className="rounded-lg border border-hairline bg-white p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] opacity-75">Reorder conversion</p>
+              <p className="mt-2 text-2xl font-bold">{formatBasisPoints(reorderRoi.reorderConversionBps)}</p>
+              <p className="mt-1 text-sm opacity-80">Share of samples that reordered</p>
+            </article>
+          </div>
+        </section>
 
         <section className="mt-5 rounded-lg border border-gold/40 bg-warning-soft p-4">
           <h2 className="font-bold">Report assumptions</h2>

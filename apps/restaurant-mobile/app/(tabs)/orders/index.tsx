@@ -65,6 +65,9 @@ function detailLines(order: CounterOrder): readonly string[] {
   if (order.pickupVerificationAttemptCount > 0) {
     lines.push(`${order.pickupVerificationAttemptCount} verification attempt${order.pickupVerificationAttemptCount > 1 ? "s" : ""}`);
   }
+  if (order.isReorder) {
+    lines.push("↻ Reorder — full-price Order Again");
+  }
   return lines;
 }
 

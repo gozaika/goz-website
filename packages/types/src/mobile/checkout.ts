@@ -35,6 +35,38 @@ export interface ClaimRequest {
   readonly idempotencyKey: string;
 }
 
+// ---- Order Again (§20) — full-price reorder on the existing hold→pay→pickup rails ----
+
+export const reorderResultSchema = z.object({
+  holdPk: z.string(),
+  dropPk: z.string(),
+  amountPaise: z.number(),
+  currencyCode: z.string(),
+  bagDisplayName: z.string(),
+  restaurantName: z.string(),
+  pickupStartAt: z.string(),
+  pickupEndAt: z.string(),
+  alreadyHeld: z.boolean(),
+});
+
+export interface ReorderResultDto {
+  readonly holdPk: string;
+  readonly dropPk: string;
+  readonly amountPaise: number;
+  readonly currencyCode: string;
+  readonly bagDisplayName: string;
+  readonly restaurantName: string;
+  readonly pickupStartAt: string;
+  readonly pickupEndAt: string;
+  /** True when an earlier tap already reserved this reorder (idempotent replay). */
+  readonly alreadyHeld: boolean;
+}
+
+export interface ReorderRequest {
+  readonly sourceOrderPk: string;
+  readonly idempotencyKey: string;
+}
+
 // ---- Checkout order (provider order creation) ----
 
 export const checkoutProviderModes = ["razorpay", "simulated"] as const;
