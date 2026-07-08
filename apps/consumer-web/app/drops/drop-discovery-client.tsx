@@ -188,7 +188,7 @@ export function DropDiscoveryClient({
               <article key={drop.dropPk} className="min-w-[280px] overflow-hidden rounded-lg border border-gold/40 bg-cream p-4">
                 <div className="relative -mx-4 -mt-4 mb-3 h-24">
                   <Image
-                    src={`/art/cover-${dropCoverKey(drop) ?? "biryani"}.svg`}
+                    src={`/art/cover-${dropCoverKey(drop) ?? "biryani"}.webp`}
                     alt=""
                     aria-hidden
                     fill

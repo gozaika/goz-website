@@ -260,7 +260,7 @@ export function DropCard({
           Blind-adventure drops use the cuisine-agnostic surprise cover; premium types get a ribbon. */}
       <div className="relative -mx-4 -mt-4 mb-3">
         <img
-          src={`/art/cover-${dropCoverKey(drop) ?? "biryani"}.svg`}
+          src={`/art/cover-${dropCoverKey(drop) ?? "biryani"}.webp`}
           alt=""
           aria-hidden
           className="h-28 w-full object-cover"

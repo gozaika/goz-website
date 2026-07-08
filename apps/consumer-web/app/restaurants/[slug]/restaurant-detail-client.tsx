@@ -264,7 +264,7 @@ export function RestaurantDetailClient({
       {/* Photo strip / hero — cuisine art behind a forest overlay (keeps white text AA-readable) */}
       <section className="relative overflow-hidden px-4 py-12">
         <Image
-          src={`/art/cover-${cuisineCoverKey(restaurant.restaurantName, restaurant.cuisineTags) ?? "biryani"}.svg`}
+          src={`/art/cover-${cuisineCoverKey(restaurant.restaurantName, restaurant.cuisineTags) ?? "biryani"}.webp`}
           alt=""
           aria-hidden
           fill
