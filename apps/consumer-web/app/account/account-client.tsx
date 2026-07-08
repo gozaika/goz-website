@@ -2,7 +2,7 @@
 
 import { Button, GoZaikaLogo } from "@gozaika/ui";
 import { consentPurposeCodes, type ClaimIntent, type ConsentPurposeCode, type ConsumerOrderSummary, type NotificationSummary } from "@gozaika/types";
-import { formatPaise, formatPickupWindow, notificationStatusLabel, safeErrorMessage } from "@gozaika/utils";
+import { formatPaise, formatPickupWindow, IST_TIME_ZONE, notificationStatusLabel, safeErrorMessage } from "@gozaika/utils";
 import { Crown, LogOut, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -172,7 +172,7 @@ export function AccountClient({
                   <p className="text-sm font-semibold text-forest">{claim.restaurantName}</p>
                   <h3 className="mt-0.5 font-bold text-charcoal">{claim.bagDisplayName}</h3>
                   <p className="mt-1 text-xs text-muted">
-                    {claim.quantityHeld} held · {formatPaise(claim.pricePaise)} · Expires {new Date(claim.expiresAt).toLocaleString("en-IN")}
+                    {claim.quantityHeld} held · {formatPaise(claim.pricePaise)} · Expires {new Date(claim.expiresAt).toLocaleString("en-IN", { timeZone: IST_TIME_ZONE })}
                   </p>
                 </div>
                 <Link
@@ -290,7 +290,7 @@ export function AccountClient({
                       {consent.recorded_at
                         ? `Latest ${consent.consent_state_code?.toLowerCase()} on ${new Date(
                             consent.recorded_at,
-                          ).toLocaleString("en-IN")}`
+                          ).toLocaleString("en-IN", { timeZone: IST_TIME_ZONE })}`
                         : "No consent event recorded yet"}
                     </span>
                   </span>
@@ -341,7 +341,7 @@ export function AccountClient({
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
                   <span>{formatPaise(order.paidAmountPaise)}</span>
                   <span>{order.quantity} bag</span>
-                  {order.collectedAt ? <span>Collected {new Date(order.collectedAt).toLocaleString("en-IN")}</span> : null}
+                  {order.collectedAt ? <span>Collected {new Date(order.collectedAt).toLocaleString("en-IN", { timeZone: IST_TIME_ZONE })}</span> : null}
                   <Link className="font-semibold text-forest" href={`/orders/${order.orderPk}`}>
                     View order
                   </Link>
@@ -387,7 +387,7 @@ export function AccountClient({
                 </div>
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
                   <span>{formatPaise(claim.pricePaise)}</span>
-                  <span>Expired {new Date(claim.expiresAt).toLocaleString("en-IN")}</span>
+                  <span>Expired {new Date(claim.expiresAt).toLocaleString("en-IN", { timeZone: IST_TIME_ZONE })}</span>
                 </div>
               </article>
             ))

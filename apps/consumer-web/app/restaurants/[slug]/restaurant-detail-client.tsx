@@ -3,7 +3,7 @@
 import { DietaryBadge, DropCard, FilterChipRow } from "@gozaika/ui";
 import { palette } from "@gozaika/design-tokens";
 import type { PublicRestaurantProfile, PublicReview, ReviewsPayload } from "@gozaika/types";
-import { cuisineCoverKey, formatCountdown, formatPaise, ratingLabel } from "@gozaika/utils";
+import { cuisineCoverKey, formatCountdown, formatPaise, IST_TIME_ZONE, ratingLabel } from "@gozaika/utils";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Flag, Heart, MapPin, Star } from "lucide-react";
@@ -91,7 +91,7 @@ function StarRow({ value }: { readonly value: number }) {
 function ReviewCard({ review }: { readonly review: PublicReview }) {
   const [expanded, setExpanded] = useState(false);
   const label = ratingLabel(review.ratingValue);
-  const date = new Intl.DateTimeFormat("en-IN", { month: "short", year: "numeric" }).format(new Date(review.createdAt));
+  const date = new Intl.DateTimeFormat("en-IN", { month: "short", year: "numeric", timeZone: IST_TIME_ZONE }).format(new Date(review.createdAt));
 
   return (
     <article className="rounded-lg border border-black/10 bg-white p-4">
@@ -447,7 +447,7 @@ export function RestaurantDetailClient({
                       <div>
                         <p className="font-bold text-charcoal">{drop.bagDisplayName}</p>
                         <p className="mt-0.5 text-xs text-muted">
-                          {new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(new Date(drop.pickupStartAt))}
+                          {new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeZone: IST_TIME_ZONE }).format(new Date(drop.pickupStartAt))}
                         </p>
                       </div>
                       <DietaryBadge code={drop.dietaryCategoryCode} />

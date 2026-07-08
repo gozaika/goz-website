@@ -2,7 +2,7 @@
 
 import { Button, GoZaikaLogo } from "@gozaika/ui";
 import { consentPurposeCodes, type ConsentPurposeCode } from "@gozaika/types";
-import { safeErrorMessage } from "@gozaika/utils";
+import { IST_TIME_ZONE, safeErrorMessage } from "@gozaika/utils";
 import { ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -171,7 +171,7 @@ export function ConsentForm({ nextPath = "/account" }: { readonly nextPath?: str
                     {latestEvent?.recorded_at ? (
                       <span className="mt-2 block text-xs text-muted">
                         Latest: {latestEvent.consent_state_code?.toLowerCase()} on{" "}
-                        {new Date(latestEvent.recorded_at).toLocaleString("en-IN")}
+                        {new Date(latestEvent.recorded_at).toLocaleString("en-IN", { timeZone: IST_TIME_ZONE })}
                       </span>
                     ) : null}
                   </span>

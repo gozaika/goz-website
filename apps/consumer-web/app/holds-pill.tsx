@@ -1,4 +1,5 @@
 import type { ClaimIntent } from "@gozaika/types";
+import { IST_TIME_ZONE } from "@gozaika/utils";
 import { loadConsumerClaimIntents } from "@/lib/claims";
 import { HoldsPillBar } from "./holds-pill-bar";
 
@@ -13,7 +14,7 @@ function summarizeActiveHolds(claims: readonly ClaimIntent[]): { count: number; 
   );
   return {
     count: active.length,
-    expiresLabel: new Date(earliest.expiresAt).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }),
+    expiresLabel: new Date(earliest.expiresAt).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", timeZone: IST_TIME_ZONE }),
   };
 }
 

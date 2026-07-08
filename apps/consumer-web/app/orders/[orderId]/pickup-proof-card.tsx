@@ -1,4 +1,5 @@
 import type { PickupProof } from "@gozaika/types";
+import { IST_TIME_ZONE } from "@gozaika/utils";
 import { createHash } from "node:crypto";
 
 function qrCells(payload: string) {
@@ -53,7 +54,7 @@ export function PickupProofCard({ proof }: { readonly proof: PickupProof }) {
             Show this proof at the restaurant counter during the pickup window. The QR nonce and OTP are shown here only for
             you; goZaika stores hashes for future verification.
           </p>
-          <p className="mt-3 text-xs text-muted">Issued {new Date(proof.issuedAt).toLocaleString("en-IN")}.</p>
+          <p className="mt-3 text-xs text-muted">Issued {new Date(proof.issuedAt).toLocaleString("en-IN", { timeZone: IST_TIME_ZONE })}.</p>
         </div>
       </div>
     </section>

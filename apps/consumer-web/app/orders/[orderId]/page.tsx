@@ -117,7 +117,7 @@ export default async function OrderDetailPage({ params }: { readonly params: Pro
               {order.collectedAt ? (
                 <div>
                   <dt className="font-semibold text-charcoal">Collected</dt>
-                  <dd>{new Date(order.collectedAt).toLocaleString("en-IN")}</dd>
+                  <dd>{new Date(order.collectedAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</dd>
                 </div>
               ) : null}
             </dl>
