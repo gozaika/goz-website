@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "a11y": "playwright test tests/a11y.spec.ts --reporter=line",
-    "e2e": "playwright test tests/a11y.spec.ts tests/smoke.spec.ts --reporter=line"
+    "e2e": "playwright test tests/a11y.spec.ts tests/smoke.spec.ts tests/allergen-gate.spec.ts tests/order-again.spec.ts --reporter=line",
+    "e2e:authed": "playwright test tests/allergen-gate.spec.ts tests/order-again.spec.ts --reporter=line"
   },
   "dependencies": {
     "@gozaika/config": "*",
