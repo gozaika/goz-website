@@ -1,6 +1,6 @@
 # goZaika Docs
 
-Status: current as of 2026-06-30.
+Status: current as of 2026-07-08.
 
 ## Read First
 
@@ -13,6 +13,7 @@ Status: current as of 2026-06-30.
 ## Current Areas
 
 - `docs/strategy/` - business, technical, strategic, and feature-planning sources.
+- `docs/audits/` - dated audit runs (findings, evidence, follow-ups); see its README for the reusable convention and past runs.
 - `docs/mobile/` - mobile implementation plans, specs, parity ledger, release readiness, and runbooks.
 - `docs/web/` - web parity specs, plans, ledgers, audit, and decisions.
 - `docs/product/` - feature-level product specs and product/brand material.

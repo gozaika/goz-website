@@ -2,7 +2,7 @@
 
 **Auditor:** Fable (hands-on, live audit against seeded demo data on the shared remote Supabase `nxvthewcwimrpjbzbcvx`)
 **Scope:** 5 apps — consumer web, restaurant portal, marketing site, consumer mobile (Android), restaurant mobile (Android). admin-web out of scope. Razorpay KYC out of scope (payment treated as simulator per brief).
-**Method:** Seeded live drops via `demo_prepare_for_demo(p_create_live_drops => true)`; drove the deployed web URLs through the Chrome MCP and the two installed Android apps through adb on a connected Pixel 7a (Android 16). Evidence screenshots in `docs/audit/evidence-2026-07-05/`.
+**Method:** Seeded live drops via `demo_prepare_for_demo(p_create_live_drops => true)`; drove the deployed web URLs through the Chrome MCP and the two installed Android apps through adb on a connected Pixel 7a (Android 16). Evidence screenshots in `docs/audits/2026-07-05-launch-readiness/evidence/`.
 
 ---
 
@@ -203,4 +203,4 @@ Severity: **P0** launch-blocker · **P1** major · **P2** minor · **P3** nice-t
 
 ---
 
-*Evidence:* `docs/audit/evidence-2026-07-05/` (web screenshots inline in-session; device screenshots `cust-01…09`, `rest-01…05`). Seed run: `demo_prepare_for_demo(p_create_live_drops => true)` created 5 fresh live drops across the 5 demo restaurants and rolled static drops D11–D17 forward. Note: 28 expired ACTIVE holds remain in the DB (the demo release job / `api_release_expired_inventory_holds` isn't scheduled on the remote project — availability accounting relies on it; worth confirming the Edge Function schedule before launch).*
+*Evidence:* `docs/audits/2026-07-05-launch-readiness/evidence/` (web screenshots inline in-session; device screenshots `cust-01…09`, `rest-01…05`). Seed run: `demo_prepare_for_demo(p_create_live_drops => true)` created 5 fresh live drops across the 5 demo restaurants and rolled static drops D11–D17 forward. Note: 28 expired ACTIVE holds remain in the DB (the demo release job / `api_release_expired_inventory_holds` isn't scheduled on the remote project — availability accounting relies on it; worth confirming the Edge Function schedule before launch).*

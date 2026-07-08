@@ -39,14 +39,16 @@ The `20260425000000_gozaika_consolidated_schema.sql` migration is significantly 
 
 ### Current App Readiness (honest audit)
 
-> **Parity note (2026-07-07):** the table below is the **v4-authoring baseline** and is
+> **Parity note (2026-07-08):** the table below is the **v4-authoring baseline** and is
 > now superseded by later work. Since it was written, the web-parity program (W0–W7) and
-> Phase 1–2 landed: website copy/SEO + restaurant economics calculator; consumer web+mobile
-> thali/variety framing, §16 allergen-conflict gate, CW-1 passport cuisines, and mobile
-> checkout/pickup-proof/PeekBar (CM-1/2/3); consumer-mobile is now feature-built (Slices 0–18),
-> not a shell. For the live per-surface state, treat these as source of truth:
-> `docs/audit/IMPLEMENTATION-PLAN.md`, `docs/audit/CONTINUE-HERE-impl.md`, and
-> `docs/audit/launch-readiness-audit-2026-07-05.md`. The percentages below are retained only
+> Phase 1–5 landed: website copy/SEO + restaurant economics calculator; consumer web+mobile
+> thali/variety framing, §16 allergen-conflict gate, CW-1 passport cuisines, mobile
+> checkout/pickup-proof/PeekBar (CM-1/2/3), restaurant portal/mobile fixes, Order Again
+> reorder (§20), and real cover imagery (CW-3) — all merged to `main` (PR #1, `d8dae0d`).
+> Consumer-mobile is now feature-built (Slices 0–18), not a shell. For the closed-out
+> per-surface record, see `docs/audits/2026-07-05-launch-readiness/` (`README.md` for the
+> outcome, `implementation-plan.md` for the phase-by-phase detail, `audit.md` for the
+> original findings, `follow-ups.md` for durable items still open). The percentages below are retained only
 > as the historical starting point for the v4 slices.
 
 | App | Real Readiness (v4 baseline) | Key Gaps (as of authoring — many since addressed) |

@@ -1,15 +1,14 @@
 # goZaika feature-parity — Implementation Plan (phased checklist)
 
-**Branch:** `claude-feature-parity` (off current `origin/main` = `2813a67`, includes Marketing-v2 + handoff doc).
-**Sources of truth:** `docs/audit/business-model-audit.md` (§0 build sequence), `docs/audit/launch-readiness-audit-2026-07-05.md` (gaps CW-*/RP-*/MK-*/CM-*/RM-*), `docs/handoff/gozaika_handoff_v1.md` + `docs/web/w5-w7-autonomous-decisions.md` (anti-drift).
-**Companion:** `docs/audit/CONTINUE-HERE-impl.md` (live state — update both after every meaningful chunk).
+**Status: COMPLETE — merged to `main` via PR #1 (`d8dae0d`, 2026-07-08).** Originally executed on branches `claude-feature-parity` (Phase 1–2, off `origin/main` = `2813a67`) then `claude-phase3-strategy` (Phase 3–5).
+**Sources of truth (at the time):** `business-model-strategy.md` (§0 build sequence), `audit.md` (gaps CW-*/RP-*/MK-*/CM-*/RM-*), `docs/handoff/gozaika_handoff_v1.md` + `docs/web/w5-w7-autonomous-decisions.md` (anti-drift). See `follow-ups.md` for durable items left open at close.
 
 Status key: ☐ todo · ◐ in progress · ☑ done+verified
 
 ---
 
 ## Phase 0 — Setup & tooling
-- ☑ Create branch `claude-feature-parity` off current `origin/main`; carry `docs/audit/` across (commit `afd629b`).
+- ☑ Create branch `claude-feature-parity` off current `origin/main`; carry the pre-existing `docs/audit/` folder across (since reorganized into `docs/audits/2026-07-05-launch-readiness/`) (commit `afd629b`).
 - ☑ Verify tooling: adb (Pixel 7a `3A021JEHN02437` + emulator), remote Supabase (docker psql, 11 restaurants), npx, docker, `.env.local` CLOUD_*, palette tokens.
 - ☐ Seed refresh `demo_prepare_for_demo(p_create_live_drops => true)` on remote — run right before hands-on device/web testing (keeps live drops fresh).
 
@@ -54,4 +53,4 @@ Commits on `claude-feature-parity`: `a1d3315` (thali + CW-1), `8c23916` (§16 + 
 - ☑ **Extend Playwright (web *.spec.ts) — DONE 2026-07-08.** Added opt-in authed consumer-web specs `tests/allergen-gate.spec.ts` (§16) + `tests/order-again.spec.ts` (§20) + shared `tests/auth-helpers.ts` (phone-OTP login). Gated behind `RUN_AUTHED_SMOKE=1` (skip by default → web-ci stays 10/10; matches the `RUN_AUTHED_A11Y` precedent). Wired into `e2e` (skipped) + new `e2e:authed` script. **Ran with the flag against live remote → both PASSED (2 passed, 14.1s), genuinely exercised (non-mutating: cancel/read-only).** thali-framing.spec.ts (prior) covers thali framing; calculator.spec.ts (website) covers the calculator.
 - ◐ Extend Maestro (mobile) — **deferred (not added this session).** No warm consumer-mobile dev-client to verify selectors; shipping unverified device flows fails the polish bar. The §16/CM-1/CM-2/§20 flows are already verified on-device in Session 6 evidence. Follow-up when a dev-client is warm.
 - ☑ **Green gates: web-ci 10/10, mobile-ci 7/7** (full runs, 2026-07-08) + the two new Playwright specs pass with `RUN_AUTHED_SMOKE=1`.
-- ◐ **Branch pushed; PR needs manual open (PAT lacks PR-write).** Compare link: `https://github.com/gozaika/goz-website/compare/main...claude-phase3-strategy?expand=1` (body in scratchpad `PR-body-phase3-phase5.md`). **NOT merged** — ASK owner before final merge to main (auto-deploys prod).
+- ☑ **Merged to main.** Branch `claude-phase3-strategy` merged via PR [#1](https://github.com/gozaika/goz-website/pull/1) (squash commit `d8dae0d`, 2026-07-08), owner-authorized. Prod deploy triggered. Program CLOSED — see `../README.md` and `follow-ups.md` for the durable items intentionally left open.
