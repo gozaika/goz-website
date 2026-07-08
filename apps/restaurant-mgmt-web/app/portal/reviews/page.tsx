@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { Badge, type StatusTone } from "@gozaika/ui";
 import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
-import { ratingLabel } from "@gozaika/utils";
+import { IST_TIME_ZONE, ratingLabel } from "@gozaika/utils";
 import { getPortalActor } from "@/lib/portal-auth";
 import { loadActiveRestaurantsForProfile } from "@/lib/slice3";
 import { PortalChrome } from "../portal-nav";
@@ -214,6 +214,7 @@ export default async function PortalReviewsPage() {
                       day: "numeric",
                       month: "short",
                       year: "numeric",
+                      timeZone: IST_TIME_ZONE,
                     })}
                   </p>
                 </article>

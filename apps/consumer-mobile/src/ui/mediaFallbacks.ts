@@ -9,11 +9,11 @@
 import { COVER_KEYS, cuisineCoverKey, dropCoverKey, type CoverKey } from "@gozaika/utils";
 
 const covers: Record<CoverKey, number> = {
-  biryani: require("../../assets/art/cover-biryani.png"),
-  thali: require("../../assets/art/cover-thali.png"),
-  grill: require("../../assets/art/cover-grill.png"),
-  coastal: require("../../assets/art/cover-coastal.png"),
-  bakery: require("../../assets/art/cover-bakery.png"),
+  biryani: require("../../assets/art/cover-biryani.jpg"),
+  thali: require("../../assets/art/cover-thali.jpg"),
+  grill: require("../../assets/art/cover-grill.jpg"),
+  coastal: require("../../assets/art/cover-coastal.jpg"),
+  bakery: require("../../assets/art/cover-bakery.jpg"),
 };
 
 // Cuisine-agnostic cover for blind-bag drops (must not reveal the cuisine).

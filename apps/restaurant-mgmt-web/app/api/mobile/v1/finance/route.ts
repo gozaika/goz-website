@@ -1,4 +1,4 @@
-import { createServiceRoleSupabaseClient } from "@gozaika/supabase";
+import { createServerSupabaseClient, parseBearerToken } from "@gozaika/supabase";
 import type { FinanceData } from "@gozaika/types";
 import { mobileResponseErr, mobileResponseOk } from "@/lib/mobile/handler";
 import { withMobileRestaurantRole } from "@/lib/mobile/restaurant-auth";
@@ -8,11 +8,17 @@ import { mapFinanceSettlementSummary } from "@/lib/finance";
  * Read-only finance settlements for the selected restaurant (Slice 15). Gated by
  * `viewFinance` (OWNER/ADMIN/FINANCE). Reuses the canonical settlement-summary view
  * + mapper; exposes the payout account only masked. No payment state is mutated.
+ *
+ * Uses a caller-scoped (bearer) client, NOT the service role: the summary view
+ * self-filters on `rls_has_restaurant_access(auth.uid())`, so a service-role client
+ * (no `auth.uid()`) reads back zero settlements — the same class of bug as the ROI
+ * report (RM-1). The bearer token is already validated + `viewFinance`-gated for this
+ * restaurant by the wrapper, so the predicate resolves as it does on web.
  */
-export const GET = withMobileRestaurantRole("viewFinance", async ({ restaurantPk, requestId }) => {
-  const service = createServiceRoleSupabaseClient();
+export const GET = withMobileRestaurantRole("viewFinance", async ({ req, restaurantPk, requestId }) => {
+  const supabase = createServerSupabaseClient(parseBearerToken(req.headers.get("authorization")) ?? undefined);
   try {
-    const { data, error } = await service
+    const { data, error } = await supabase
       .from("api_restaurant_finance_settlement_summary")
       .select("*")
       .eq("restaurant_fk", restaurantPk)

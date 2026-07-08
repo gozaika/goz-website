@@ -67,6 +67,8 @@ export interface CounterOrder {
   readonly lastPickupVerificationResultCode: PickupVerificationResultCode | null;
   readonly lastPickupVerificationAt: string | null;
   readonly incidentCount: number;
+  /** §20: true when this order is a full-price "Order Again" reorder. */
+  readonly isReorder?: boolean;
 }
 
 export interface CounterOrdersData {

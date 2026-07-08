@@ -17,13 +17,13 @@ import {
   type StatusTone,
 } from "@gozaika/mobile-ui";
 import type { RoiPartnerReportCopyPayload, RoiReportDropDetailRow } from "@gozaika/types";
-import { formatBasisPoints, formatPaise } from "@gozaika/utils";
+import { formatBasisPoints, formatPaise, IST_TIME_ZONE } from "@gozaika/utils";
 import { Share, View } from "react-native";
 import { useRoiReport } from "@/api/reports";
 import { useAuth } from "@/auth/useAuth";
 
 function periodLabel(startIso: string, endIso: string): string {
-  const d = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { day: "2-digit", month: "short" });
+  const d = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { day: "2-digit", month: "short", timeZone: IST_TIME_ZONE });
   return `${d(startIso)} - ${d(endIso)}`;
 }
 
@@ -67,7 +67,7 @@ function DropRow({ row }: { readonly row: RoiReportDropDetailRow }) {
         <View style={{ flex: 1 }}>
           <Text variant="heading">{row.dropTitle || row.bagDisplayName}</Text>
           <Text variant="caption" color={palette.muted}>
-            {new Date(row.pickupStartAt).toLocaleDateString("en-IN")} - {formatPaise(row.gmvPaise)} GMV
+            {new Date(row.pickupStartAt).toLocaleDateString("en-IN", { timeZone: IST_TIME_ZONE })} - {formatPaise(row.gmvPaise)} GMV
           </Text>
         </View>
         <Badge label={row.dropStatusCode.replaceAll("_", " ")} tone={statusTone(row.settlementStatusCode)} />

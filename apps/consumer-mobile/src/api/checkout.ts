@@ -3,10 +3,12 @@ import {
   checkoutOrderDataSchema,
   checkoutStatusDataSchema,
   claimResultSchema,
+  reorderResultSchema,
   simulateResultSchema,
   type CheckoutOrderData,
   type CheckoutStatusData,
   type ClaimResultDto,
+  type ReorderResultDto,
   type SimulateOutcome,
   type SimulateResultDto,
 } from "@gozaika/types";
@@ -23,6 +25,25 @@ export function useClaim() {
         dataSchema: claimResultSchema,
       });
       return res.data as unknown as ClaimResultDto;
+    },
+  });
+}
+
+/**
+ * Order Again (§20) — reorder a past order's bag at full price. The server creates a
+ * private full-price REORDER drop for the same template + reserves a hold; we then reuse
+ * the normal checkout rails by routing to `/checkout/[holdPk]`. One idempotency key per
+ * attempt so a double-tap replays the same hold instead of stacking reorders.
+ */
+export function useReorder() {
+  return useMutation({
+    mutationFn: async (input: { sourceOrderPk: string }): Promise<ReorderResultDto> => {
+      const res = await apiClient.request("/reorder", {
+        method: "POST",
+        body: { sourceOrderPk: input.sourceOrderPk, idempotencyKey: newIdempotencyKey() },
+        dataSchema: reorderResultSchema,
+      });
+      return res.data as unknown as ReorderResultDto;
     },
   });
 }

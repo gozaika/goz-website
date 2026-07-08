@@ -1100,6 +1100,9 @@ export const createDropDraftSchema = z.object({
   pickupEndAt: z.string().datetime(),
   dropTypeCode: z.enum(["STANDARD", "SPOTLIGHT", "CHEF_SPECIAL", "BLIND_ADVENTURE"]).default("STANDARD"),
   statusCode: z.enum(["DRAFT", "SCHEDULED", "ACTIVE"]).default("SCHEDULED"),
+  // §19: internal-only ops record of how today's actual surplus filled the archetype.
+  // Never surfaced to consumers — it exists to guide/audit composition against the template envelope.
+  internalFillNote: z.preprocess(optionalString, z.string().trim().min(3).max(500).optional()),
 });
 
 export const createBagTemplateSchema = z
@@ -1111,6 +1114,13 @@ export const createBagTemplateSchema = z
     spiceLevelCode: z.preprocess(optionalString, z.enum(spiceLevelCodes).optional()),
     servesMin: z.number().int().min(1).max(12),
     servesMax: z.number().int().min(1).max(12),
+    // §19: internal composition guide — the archetype's target number of distinct items
+    // (e.g. a 3-item flight). Restaurant/ops-only; NEVER surfaced to consumers as a promised
+    // dish/serving count (§14) and never a rigid recipe (§24). Optional.
+    archetypeItemCount: z.preprocess(
+      (value) => (value === "" || value === null ? undefined : value),
+      z.coerce.number().int().min(1).max(20).optional(),
+    ),
     maxHoldingMinutes: z.number().int().min(30).max(480),
     holdingGuidanceText: z.preprocess(optionalString, z.string().trim().min(10).max(240).optional()),
     minMenuValuePaise: paiseSchema.min(100),
@@ -1300,6 +1310,8 @@ export interface RestaurantOrderSummary {
   readonly lastPickupVerificationResultCode?: PickupVerificationResultCode | null;
   readonly lastPickupVerificationAt?: string | null;
   readonly incidentCount?: number;
+  /** §20: true when this order is a full-price "Order Again" reorder (drop_type=REORDER). */
+  readonly isReorder?: boolean;
   readonly notifications?: readonly NotificationSummary[];
   readonly createdAt: string;
   readonly updatedAt: string;
@@ -1365,6 +1377,8 @@ export interface PortalBagTemplate {
   readonly spiceLevelCode: SpiceLevelCode | null;
   readonly servesMin: number | null;
   readonly servesMax: number | null;
+  /** §19 internal composition guide (target distinct items). Portal/ops-only — never rendered to consumers. */
+  readonly archetypeItemCount: number | null;
   readonly maxHoldingMinutes: number | null;
   readonly holdingGuidanceText: string | null;
   readonly minMenuValuePaise: number | null;
@@ -1390,6 +1404,8 @@ export interface PortalDrop {
   readonly pickupStartAt: string;
   readonly pickupEndAt: string;
   readonly updatedAt: string;
+  /** §19 internal ops note of how surplus filled the archetype for this drop. Portal-only. */
+  readonly internalFillNote: string | null;
 }
 
 // ─── Slice 9: Reviews ─────────────────────────────────────────────────────────

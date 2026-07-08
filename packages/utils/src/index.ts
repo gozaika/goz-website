@@ -82,11 +82,26 @@ export function rateLabel(basisPoints: number | null | undefined): string {
   return "Not enough data";
 }
 
+// India is the only market, so every partner/consumer-facing date must resolve in
+// IST regardless of where the code runs. Rendering a Date in the server's local
+// zone (Vercel is UTC) both shows the wrong time to Indian users AND causes React
+// hydration mismatches when a Client Component's SSR (UTC) output differs from its
+// browser (local-zone) re-render. Pin this zone on every user-facing Date format.
+export const IST_TIME_ZONE = "Asia/Kolkata";
+
+/**
+ * IST calendar-day key (`YYYY-MM-DD`) for same-day comparisons that must not drift
+ * with the runtime's local zone. `en-CA` yields ISO-ordered parts.
+ */
+export function istDayKey(value: string | Date): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: IST_TIME_ZONE }).format(new Date(value));
+}
+
 export function formatPickupWindow(
   pickupStartAt: string | Date,
   pickupEndAt: string | Date,
   locale = "en-IN",
-  timeZone = "Asia/Kolkata",
+  timeZone = IST_TIME_ZONE,
 ): string {
   const start = new Date(pickupStartAt);
   const end = new Date(pickupEndAt);
@@ -103,7 +118,7 @@ function formatDropAlertPickupWindow(
   pickupStartAt: string | Date,
   pickupEndAt: string | Date,
   locale = "en-IN",
-  timeZone = "Asia/Kolkata",
+  timeZone = IST_TIME_ZONE,
 ): string {
   const start = new Date(pickupStartAt);
   const end = new Date(pickupEndAt);

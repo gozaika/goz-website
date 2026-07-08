@@ -123,6 +123,7 @@ type TemplateRevisionRelation = {
   readonly spice_level_code: PortalBagTemplate["spiceLevelCode"];
   readonly serves_min: number | string | null;
   readonly serves_max: number | string | null;
+  readonly archetype_item_count: number | string | null;
   readonly max_holding_minutes: number | string | null;
   readonly holding_guidance_text: string | null;
   readonly min_menu_value_paise: number | string | null;
@@ -248,7 +249,7 @@ export async function loadPortalTemplates(restaurantPk: string): Promise<PortalB
   const { data: templates, error } = await service
     .from("catalog_bag_template")
     .select(
-      "catalog_bag_template_pk,template_name,template_status_code,active_revision_fk,default_drop_quantity,default_pickup_start_offset_minutes,default_pickup_duration_minutes,created_at,updated_at,catalog_bag_template_revision!fk_catalog_bag_template_active_revision(catalog_bag_template_revision_pk,display_name,short_description,dietary_category_code,spice_level_code,serves_min,serves_max,max_holding_minutes,holding_guidance_text,min_menu_value_paise,suggested_price_paise,allergen_summary_text,included_item_hint_text)",
+      "catalog_bag_template_pk,template_name,template_status_code,active_revision_fk,default_drop_quantity,default_pickup_start_offset_minutes,default_pickup_duration_minutes,created_at,updated_at,catalog_bag_template_revision!fk_catalog_bag_template_active_revision(catalog_bag_template_revision_pk,display_name,short_description,dietary_category_code,spice_level_code,serves_min,serves_max,archetype_item_count,max_holding_minutes,holding_guidance_text,min_menu_value_paise,suggested_price_paise,allergen_summary_text,included_item_hint_text)",
     )
     .eq("restaurant_fk", restaurantPk)
     .order("updated_at", { ascending: false });
@@ -315,6 +316,7 @@ export async function loadPortalTemplates(restaurantPk: string): Promise<PortalB
       spiceLevelCode: revision?.spice_level_code ?? null,
       servesMin: revision?.serves_min == null ? null : Number(revision.serves_min),
       servesMax: revision?.serves_max == null ? null : Number(revision.serves_max),
+      archetypeItemCount: revision?.archetype_item_count == null ? null : Number(revision.archetype_item_count),
       maxHoldingMinutes: revision?.max_holding_minutes == null ? null : Number(revision.max_holding_minutes),
       holdingGuidanceText: revision?.holding_guidance_text ?? null,
       minMenuValuePaise: revision?.min_menu_value_paise == null ? null : Number(revision.min_menu_value_paise),
@@ -332,7 +334,7 @@ export async function loadPortalDrops(restaurantPk: string): Promise<PortalDrop[
   const service = createServiceRoleSupabaseClient();
   const { data, error } = await service
     .from("drop_drop")
-    .select("drop_drop_pk,drop_title,drop_status_code,quantity_total,quantity_reserved,computed_quantity_available,price_paise,pickup_start_at,pickup_end_at,updated_at")
+    .select("drop_drop_pk,drop_title,drop_status_code,quantity_total,quantity_reserved,computed_quantity_available,price_paise,pickup_start_at,pickup_end_at,updated_at,internal_fill_note")
     .eq("restaurant_fk", restaurantPk)
     .order("pickup_start_at", { ascending: false });
 
@@ -351,6 +353,7 @@ export async function loadPortalDrops(restaurantPk: string): Promise<PortalDrop[
     pickupStartAt: drop.pickup_start_at,
     pickupEndAt: drop.pickup_end_at,
     updatedAt: drop.updated_at,
+    internalFillNote: drop.internal_fill_note ?? null,
   }));
 }
 

@@ -206,6 +206,25 @@ values
    '20000000-0000-0000-0000-210000000005')
 on conflict (catalog_bag_template_revision_pk) do nothing;
 
+-- §19 internal composition guide (archetype target distinct items per bag). Restaurant/ops-only —
+-- never surfaced to consumers as a promised dish/serving count. Set explicitly (rows above use
+-- on-conflict-do-nothing, so this keeps existing demo rows in sync on re-seed).
+update catalog_bag_template_revision as r
+  set archetype_item_count = v.count
+  from (values
+    ('20000000-0000-0000-0000-600000000001'::uuid, 4),  -- Hyderabadi Biryani: biryani + raita + salan + salad
+    ('20000000-0000-0000-0000-600000000002'::uuid, 3),  -- Double Mutton: rice + curry/kebab + bread
+    ('20000000-0000-0000-0000-600000000003'::uuid, 6),  -- Full Veg Thali: rice + 2 sabzi + dal + roti + sweet
+    ('20000000-0000-0000-0000-600000000004'::uuid, 5),  -- Jain Special: rice + 2 sabzi + dal + roti
+    ('20000000-0000-0000-0000-600000000005'::uuid, 3),  -- Tandoor Surprise: tandoor item + bread + chutney
+    ('20000000-0000-0000-0000-600000000006'::uuid, 3),  -- Smoky Spotlight: protein + rice/bread + side
+    ('20000000-0000-0000-0000-600000000007'::uuid, 5),  -- Andhra Meals: rice + dal + 2 curries + rasam
+    ('20000000-0000-0000-0000-600000000008'::uuid, 3),  -- Coastal Delight: seafood + rice + side
+    ('20000000-0000-0000-0000-600000000009'::uuid, 4),  -- Artisan Bakes: baker's selection of 4 items
+    ('20000000-0000-0000-0000-600000000010'::uuid, 3)   -- Dessert Dreams: 3 dessert items
+  ) as v(revision_pk, count)
+  where r.catalog_bag_template_revision_pk = v.revision_pk;
+
 -- Link active_revision_fk on each template
 update catalog_bag_template
   set active_revision_fk = '20000000-0000-0000-0000-600000000001'

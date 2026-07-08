@@ -31,6 +31,7 @@ export function toCounterOrder(order: RestaurantOrderSummary): CounterOrder {
     lastPickupVerificationResultCode: order.lastPickupVerificationResultCode as PickupVerificationResultCode | null,
     lastPickupVerificationAt: order.lastPickupVerificationAt ?? null,
     incidentCount: order.incidentCount ?? 0,
+    isReorder: order.isReorder ?? false,
   };
 }
 

@@ -81,6 +81,7 @@ export function DropPublishingForm({
   const [pickupEndAt, setPickupEndAt] = useState(
     initialTemplate ? addMinutes(initialStart, initialTemplate.defaultPickupDurationMinutes) : "",
   );
+  const [internalFillNote, setInternalFillNote] = useState("");
   const [successLaunchDrop, setSuccessLaunchDrop] = useState<PublicDropCard | null>(null);
   const launchDropsByPk = useMemo(() => new Map(launchDrops.map((drop) => [drop.dropPk, drop])), [launchDrops]);
 
@@ -161,6 +162,7 @@ export function DropPublishingForm({
       pickupEndAt: toIsoDateTime(pickupEndAt),
       dropTypeCode,
       statusCode,
+      internalFillNote: internalFillNote.trim() || undefined,
     };
 
     try {
@@ -227,6 +229,7 @@ export function DropPublishingForm({
         });
       }
       if (template) applyTemplateDefaults(template);
+      setInternalFillNote("");
       setFeedback({ kind: "success", text: "Drop saved. Consumer discovery will show it according to its status." });
       router.refresh();
     } finally {
@@ -392,6 +395,48 @@ export function DropPublishingForm({
           </label>
         </div>
 
+        {(() => {
+          const template = selectedTemplate();
+          if (!template) return null;
+          return (
+            <div className="grid gap-2 rounded-md border border-forest/20 bg-success-soft/40 p-3">
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                <p className="text-sm font-medium">Fill from today&apos;s surplus</p>
+                {template.archetypeItemCount ? (
+                  <span className="text-xs text-muted">composition guide: ~{template.archetypeItemCount} items (internal)</span>
+                ) : null}
+              </div>
+              <p className="text-xs text-muted">
+                Keep the fill inside this template&apos;s declared allergen envelope. Anything outside it needs a new
+                template revision first.
+              </p>
+              <div className="flex flex-wrap gap-1.5" aria-label="Declared allergen envelope">
+                {template.allergenCodes.length ? (
+                  template.allergenCodes.map((code) => (
+                    <span key={code} className="rounded-full border border-hairline bg-white px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-charcoal">
+                      {code.replaceAll("_", " ")}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-xs text-muted">No allergens declared on this template.</span>
+                )}
+              </div>
+              <label className="mt-1 grid gap-1 text-sm font-medium">
+                Internal fill note (optional)
+                <textarea
+                  value={internalFillNote}
+                  onChange={(event) => setInternalFillNote(event.target.value)}
+                  rows={2}
+                  maxLength={500}
+                  placeholder="What actually went in today, e.g. paneer tikka + jeera rice + dal — for your records only."
+                  className="rounded-md border border-hairline px-3 py-2"
+                />
+              </label>
+              <p className="text-[11px] text-muted">Never shown to customers. Records how the archetype was filled for this drop.</p>
+            </div>
+          );
+        })()}
+
         <button disabled={pending || activeTemplates.length === 0 || !guardrails.publishingEnabled} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-saffron px-4 font-semibold text-charcoal disabled:opacity-60">
           <Save size={18} aria-hidden="true" />
           {pending ? "Publishing..." : "Publish drop"}
@@ -416,6 +461,11 @@ export function DropPublishingForm({
                       {drop.quantityAvailable} / {drop.quantityTotal} available - {drop.quantityHeld} held, not paid -{" "}
                       {formatPaise(drop.pricePaise)}
                     </p>
+                    {drop.internalFillNote ? (
+                      <p className="mt-1 text-xs text-muted">
+                        <span className="font-semibold">Fill note (internal):</span> {drop.internalFillNote}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">

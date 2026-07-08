@@ -13,6 +13,8 @@ export interface ScreenProps {
   /** Safe-area edges to apply. */
   readonly edges?: readonly Edge[];
   readonly contentStyle?: StyleProp<ViewStyle>;
+  /** Stable screen identity for the capture library (e.g. `screen:drop-detail`). */
+  readonly testID?: string;
 }
 
 /** Safe-area screen wrapper with consistent background and padding. */
@@ -22,11 +24,12 @@ export function Screen({
   background = palette.cream,
   edges = ["top", "bottom"],
   contentStyle,
+  testID,
 }: ScreenProps) {
   const padded: StyleProp<ViewStyle> = [{ padding: spacing.xl, gap: spacing.lg }, contentStyle];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: background }} edges={edges as Edge[]}>
+    <SafeAreaView testID={testID} style={{ flex: 1, backgroundColor: background }} edges={edges as Edge[]}>
       {scroll ? (
         <ScrollView contentContainerStyle={[{ flexGrow: 1 }, padded]} showsVerticalScrollIndicator={false}>
           {children}

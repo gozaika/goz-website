@@ -298,6 +298,23 @@ The surprise/variety is load-bearing in three independent ways:
 
 Implication: "surprise" is not a droppable marketing gimmick. **Guarding the unpredictability is guarding the revenue model.** Do not let templates become fixed/predictable recipes (ties to §19's loose-archetype principle).
 
+## 25. Brand assets — canonical set (standardize ALL surfaces on these) _[owner]_
+
+**Marks (`icons/`):**
+- `icons/flame.svg` — saffron `#FF6B35` flame with **"BAM" knocked out via mask** (embeds *Bada zayka Ayega Maza* → ties to §21). Icon-only form. Use for: app icons, favicon, splash/loading, badges, and as the **recurring brand motif** (loading/empty-state accents, section flourishes).
+- `icons/gozaika-logo.svg` — full horizontal lockup **"g·flame·Zaika"**: "g" + flame (the 'o') in saffron `#FF6B35`, "Zaika" in forest `#1A5C38` (~3.9:1). Use for: nav/header/footer logos, marketing lockups. **White variant (`gozaika-logo-white.svg`) on forest/dark surfaces; colour variant on light.**
+- Palette confirmed by the marks: saffron `#FF6B35` + forest `#1A5C38` (= `@gozaika/design-tokens`). In app code use TOKENS, not raw hex.
+
+**Marketing imagery (`apps/website/public/images/`) — brand layer:**
+- `hero-bam-bag-v3.webp` (landscape) + `hero-bam-bag-portrait-v3.webp` (portrait) — hero BAM bag; landscape on desktop, portrait on narrow/mobile.
+- `restaurant-hero-v3.webp` — for-restaurants hero · `about-illustration-v3.webp` — about page · `step-browse-v2.svg`/`step-buy-v2.svg`/`step-pickup-v2.svg` — how-it-works step icons · `social/` — OG/share images.
+
+**Directives for the implementation agent:**
+- **Single source of brand truth:** every surface (marketing, consumer web+mobile, restaurant web+mobile) uses these canonical logo/flame assets — same mark, correct variant per background. Reconcile any per-app logo copies to these. Closes the audit's cross-app brand-consistency gap.
+- **Flame as motif:** use the flame (carries BAM) for loading/empty/badge moments to reinforce the story at every touchpoint.
+- **Brand layer vs content layer:** the webp heroes/logos are FIXED brand assets (reuse); per-drop FOOD imagery (CW-3, web-sourced demo photos) is CONTENT — do NOT substitute the brand hero for food cards.
+- Generate favicon / app-icon / splash / OG from `flame.svg` for each app.
+
 ---
 
 ### Changelog

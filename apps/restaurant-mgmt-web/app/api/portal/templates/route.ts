@@ -82,6 +82,7 @@ export async function POST(request: Request) {
       spice_level_code: parsed.data.spiceLevelCode ?? null,
       serves_min: parsed.data.servesMin,
       serves_max: parsed.data.servesMax,
+      archetype_item_count: parsed.data.archetypeItemCount ?? null,
       max_holding_minutes: parsed.data.maxHoldingMinutes,
       holding_guidance_text: parsed.data.holdingGuidanceText ?? null,
       min_menu_value_paise: parsed.data.minMenuValuePaise,

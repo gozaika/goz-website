@@ -41,6 +41,9 @@ export const tokens = {
 export const brandAssets = {
   logoHorizontal: "/brand/gozaika-logo-horizontal.svg",
   logoWhite: "/brand/gozaika-logo-white.svg",
+  // Icon-only flame mark (carries the BAM story) — canonical §25 asset, shared by
+  // every web app's public/brand. Use it for empty/loading/badge brand moments.
+  mark: "/brand/gozaika-mark.svg",
   heroBamBag: "/brand/hero-bam-bag.webp",
   pickupIllustration: "/brand/pickup-illustration.svg",
 } as const;
@@ -139,6 +142,9 @@ export function EmptyState({
 }) {
   return (
     <section className="rounded-lg border border-dashed border-forest/30 bg-white p-8 text-center">
+      {/* Flame motif (carries BAM) — the canonical brand mark on empty moments (§25),
+          decorative so it stays out of the a11y tree. */}
+      <img src={brandAssets.mark} alt="" aria-hidden className="mx-auto mb-4 h-10 w-10 opacity-80" />
       <p className="text-lg font-semibold text-charcoal">{title}</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-muted">{body}</p>
       {action ? <div className="mt-5">{action}</div> : null}
@@ -254,7 +260,7 @@ export function DropCard({
           Blind-adventure drops use the cuisine-agnostic surprise cover; premium types get a ribbon. */}
       <div className="relative -mx-4 -mt-4 mb-3">
         <img
-          src={`/art/cover-${dropCoverKey(drop) ?? "biryani"}.svg`}
+          src={`/art/cover-${dropCoverKey(drop) ?? "biryani"}.webp`}
           alt=""
           aria-hidden
           className="h-28 w-full object-cover"

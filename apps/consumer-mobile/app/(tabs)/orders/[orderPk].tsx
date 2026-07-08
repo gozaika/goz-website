@@ -2,9 +2,10 @@ import { ApiError } from "@gozaika/mobile-core";
 import { Badge, Button, Card, EmptyState, ErrorState, palette, Screen, Skeleton, spacing, Text, toneColors } from "@gozaika/mobile-ui";
 import type { ConsumerOrderDto } from "@gozaika/types";
 import { formatPaise } from "@gozaika/utils";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
+import { useReorder } from "@/api/checkout";
 import { useOrder, usePickupProof, useResendPickup } from "@/api/orders";
 import { useOrderReview, useSubmitReview } from "@/api/reviews";
 import { PickupProofCard } from "@/ui/PickupProofCard";
@@ -169,6 +170,47 @@ function ReviewCard({ orderPk }: { readonly orderPk: string }) {
   );
 }
 
+// Order Again (§20) — post-taste full-price reorder. Reuses the hold→pay→pickup rails:
+// one tap creates a private full-price reorder of the same bag and drops the customer
+// straight into checkout. Full price (no discount) is the point — §24 anti-cannibalization.
+function ReorderCard({
+  orderPk,
+  bagDisplayName,
+  restaurantName,
+}: {
+  readonly orderPk: string;
+  readonly bagDisplayName: string;
+  readonly restaurantName: string;
+}) {
+  const router = useRouter();
+  const reorder = useReorder();
+
+  return (
+    <Card style={{ backgroundColor: palette.cream }}>
+      <Text variant="heading">Get it again</Text>
+      <Text variant="body" color={palette.muted}>
+        Loved the {bagDisplayName}? Order it again at full menu price for {restaurantName}&apos;s next pickup window.
+      </Text>
+      <Button
+        label="Order again"
+        accent={palette.saffron}
+        loading={reorder.isPending}
+        onPress={() =>
+          reorder.mutate(
+            { sourceOrderPk: orderPk },
+            { onSuccess: (result) => router.push(`/checkout/${result.holdPk}`) },
+          )
+        }
+      />
+      {reorder.isError ? (
+        <Text variant="caption" color={palette.dangerFg}>
+          {reorder.error instanceof ApiError ? reorder.error.message : "Could not start your reorder. Please try again."}
+        </Text>
+      ) : null}
+    </Card>
+  );
+}
+
 export default function OrderDetailScreen() {
   const { orderPk } = useLocalSearchParams<{ orderPk: string }>();
   const { data: order, isLoading, isError, error, refetch } = useOrder(orderPk ?? null);
@@ -195,7 +237,7 @@ export default function OrderDetailScreen() {
   const collected = order.orderStatusCode === "COLLECTED";
 
   return (
-    <Screen contentStyle={{ gap: spacing.md }}>
+    <Screen contentStyle={{ gap: spacing.md }} testID="screen:order-pickup-proof">
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
         <Text variant="title">{order.bagDisplayName}</Text>
         <Badge label={order.orderStatusCode.replaceAll("_", " ")} tone={statusTone(order.orderStatusCode)} />
@@ -260,6 +302,10 @@ export default function OrderDetailScreen() {
       ) : (
         <EmptyState title="Pickup unavailable" message="This order's pickup window is closed." />
       )}
+
+      {collected && orderPk ? (
+        <ReorderCard orderPk={orderPk} bagDisplayName={order.bagDisplayName} restaurantName={order.restaurantName} />
+      ) : null}
 
       <OrderTimeline order={order} />
 
